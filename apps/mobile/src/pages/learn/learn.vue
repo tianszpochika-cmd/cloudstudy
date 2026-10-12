@@ -156,4 +156,31 @@ onShow(async () => { await session.restore(); if (!session.isAuthenticated) { ge
 .b10-flow{display:grid;gap:14rpx}.b10-flow__title{font-size:32rpx;font-weight:750}.yx-button--secondary{color:var(--yx-brand);background:var(--yx-surface-card)}
 .content-card{display:grid;gap:12rpx;margin-bottom:20rpx}.content-title{font-size:30rpx;font-weight:750}.content-meta,.content-summary{color:var(--yx-text-secondary);font-size:22rpx;line-height:1.5}.content-item{display:grid;gap:8rpx;padding-top:14rpx;border-top:1rpx solid var(--yx-border)}.content-item__text{font-size:26rpx;font-weight:650}.content-option{padding:8rpx 12rpx;border-radius:10rpx;color:var(--yx-text-secondary);background:var(--yx-surface-card);font-size:22rpx}
 .review-card{display:grid;gap:14rpx;margin-top:20rpx}.review-row{display:flex;align-items:center;justify-content:space-between;gap:14rpx;padding-top:14rpx;border-top:1rpx solid var(--yx-border)}.review-row__copy{min-width:0;overflow-wrap:anywhere}.review-row text{display:block}.review-button{flex:0 0 auto;min-width:110rpx;padding:8rpx 14rpx;border-radius:12rpx;color:var(--yx-brand);background:var(--yx-surface-card);font-size:22rpx}.review-error{color:var(--yx-danger);font-size:22rpx}
+/* v2 学习页换皮：对齐 mobile/styles.css 与 refine.css 中 .card/.eyebrow/.opt/.btn/.fb/.list-row，对齐 practice.vue today.vue v2-* 同样数值，仅用 var(--v2-*)。 */
+.v2-learn-body{box-sizing:border-box;display:flex;flex-direction:column;gap:var(--v2-space-4);min-width:0;max-width:100%;font-family:var(--v2-font)}
+.v2-learn-card{box-sizing:border-box;display:grid;gap:var(--v2-space-2);min-width:0;max-width:100%;padding:var(--v2-space-5);border:1px solid var(--v2-line);border-radius:var(--v2-radius-lg);background:var(--v2-card);box-shadow:var(--v2-shadow);font-family:var(--v2-font)}
+.v2-learn-card:hover{border-color:var(--v2-brand)}
+.v2-learn-content,.v2-learn-practice,.v2-learn-review{box-sizing:border-box;min-width:0;max-width:100%}
+.v2-learn-eyebrow{box-sizing:border-box;display:flex;align-items:center;gap:var(--v2-space-2);min-width:0;max-width:100%;margin:0 0 var(--v2-space-2);color:var(--v2-mut);font-family:var(--v2-font);font-size:var(--v2-text-xs);font-weight:700;letter-spacing:.06em;text-transform:uppercase;overflow-wrap:anywhere}
+.v2-learn-title{box-sizing:border-box;display:block;min-width:0;max-width:100%;margin:var(--v2-space-1) 0 0;color:var(--v2-ink);font-family:var(--v2-font);font-size:var(--v2-text-lg);font-weight:700;line-height:1.45;overflow-wrap:anywhere}
+.v2-learn-h2{box-sizing:border-box;min-width:0;max-width:100%;overflow-wrap:anywhere}
+.v2-learn-desc{box-sizing:border-box;display:block;min-width:0;max-width:100%;margin-top:var(--v2-space-2);color:var(--v2-mut);font-family:var(--v2-font);font-size:var(--v2-text-sm);line-height:1.7;overflow-wrap:anywhere}
+.v2-learn-stem{box-sizing:border-box;display:block;flex:1 1 auto;min-width:0;max-width:100%;color:var(--v2-ink);font-family:var(--v2-font);font-size:var(--v2-text-lg);font-weight:700;line-height:1.45;overflow-wrap:anywhere}
+.v2-learn-fb{box-sizing:border-box;display:block;min-width:0;max-width:100%;margin-top:var(--v2-space-4);padding:var(--v2-space-3) var(--v2-space-4);border-radius:var(--v2-radius-md);background:var(--v2-surface);color:var(--v2-mut);font-family:var(--v2-font);font-size:var(--v2-text-sm);line-height:1.7;overflow-wrap:anywhere}
+.v2-learn-list{box-sizing:border-box;display:grid;gap:var(--v2-space-4);min-width:0;max-width:100%}
+.v2-learn-row{box-sizing:border-box;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--v2-space-2);min-width:0;max-width:100%;padding:var(--v2-space-4);border:1px solid var(--v2-line);border-radius:var(--v2-radius-md);background:var(--v2-card);font-family:var(--v2-font)}
+.v2-learn-row:hover{border-color:var(--v2-brand)}
+.v2-learn-item{box-sizing:border-box;min-width:0;max-width:100%;overflow-wrap:anywhere}
+.v2-learn-entry{box-sizing:border-box;display:grid;min-width:0;max-width:100%}
+.v2-learn-row__head{box-sizing:border-box;display:flex;align-items:center;gap:var(--v2-space-2);flex:1 1 100%;min-width:0;max-width:100%;color:var(--v2-ink);font-family:var(--v2-font);overflow-wrap:anywhere}
+.v2-learn-row__copy{box-sizing:border-box;display:flex;align-items:center;gap:var(--v2-space-2);flex:1 1 0;min-width:0;max-width:100%;color:var(--v2-ink);font-family:var(--v2-font);overflow-wrap:anywhere}
+.v2-learn-option{box-sizing:border-box;display:block;flex:1 1 100%;min-width:0;max-width:100%;padding:var(--v2-space-2) var(--v2-space-3);border-radius:var(--v2-radius-md);background:var(--v2-surface);color:var(--v2-mut);font-family:var(--v2-font);font-size:var(--v2-text-sm);line-height:1.7;overflow-wrap:anywhere}
+.v2-learn-btn,.v2-learn-opt{box-sizing:border-box;display:flex;align-items:center;justify-content:center;width:100%;max-width:100%;min-width:0;min-height:var(--v2-space-12);padding:var(--v2-space-3) var(--v2-space-4);border:1px solid var(--v2-line);border-radius:var(--v2-radius-md);background:var(--v2-card);color:var(--v2-ink);font-family:var(--v2-font);font-size:var(--v2-text-sm);font-weight:600;line-height:1.5;white-space:nowrap;overflow-wrap:anywhere}
+.v2-learn-row .v2-learn-btn,.v2-learn-row .v2-learn-opt,.v2-learn-item .v2-learn-btn,.v2-learn-item .v2-learn-opt{width:auto;flex:0 0 auto}
+.v2-learn-opt:hover{border-color:var(--v2-brand)}
+.v2-learn-opt:active{transform:scale(.97)}
+.v2-learn-opt:focus-visible{box-shadow:var(--v2-focus);outline:none}
+.v2-learn-opt:disabled{background:var(--v2-surface);color:var(--v2-mut);border:1px dashed var(--v2-line);box-shadow:none}
+.v2-learn-submit{border-color:transparent;background:var(--v2-brand);color:var(--v2-inverse);font-family:var(--v2-font);font-weight:700}
+.v2-learn-submit:hover{border-color:var(--v2-brand)}
 </style>
