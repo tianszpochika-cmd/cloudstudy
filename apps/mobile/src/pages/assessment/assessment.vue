@@ -206,4 +206,6 @@ button:disabled{opacity:.55}
 .v2-assess-progress-track{box-sizing:border-box;display:block;min-width:0;max-width:100%;height:14rpx;margin:var(--v2-space-2) 0 var(--v2-space-4);border-radius:var(--v2-radius-pill);background:var(--v2-surface);overflow:hidden}
 .v2-assess-progress-value{display:block;min-width:0;max-width:100%;height:100%;border-radius:inherit;background:var(--v2-brand)}
 @media(max-width:360px){.v2-assess-actions{flex-direction:column}.v2-assess-actions .v2-assess-btn,.v2-assess-actions .v2-assess-opt{flex:1 1 100%;width:100%}}
+.v2-assess-actions{display:flex;flex-wrap:wrap;gap:var(--v2-space-2);min-width:0;max-width:100%}
+.v2-assess-actions .v2-assess-btn,.v2-assess-btn{flex:1 1 100%;max-width:100%;min-width:0;white-space:normal;overflow-wrap:anywhere;box-sizing:border-box}
 </style>
