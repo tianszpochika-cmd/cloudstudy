@@ -10,10 +10,12 @@ import B2StatusPanel from '../../components/b2/B2StatusPanel.vue'
 import { createListeningSession, isB3OfflineError, listListeningMaterials, submitDictation } from '../../api/b3'
 import type { B3Status, DictationResult, ListeningMaterial } from '../../domain/b3'
 import { enableUniAudioPitchPreservation, getUniRuntime, type UniAudioContext } from '../../platform/uni-runtime'
+import { b10ThemeMode } from '../../platform/b10-foundation'
 import { useSessionStore } from '../../stores/session'
 
 const session = useSessionStore(); const engine = createAdaptivePerformanceEngine(); const performanceLevel = ref<PerformanceLevel>(engine.level)
 const status = ref<B3Status>('idle'); const message = ref<string | null>(null); const material = ref<ListeningMaterial | null>(null); const sessionId = ref<string | null>(null); const answer = ref(''); const result = ref<DictationResult | null>(null)
+const themeClass = computed(() => `b10-theme--${b10ThemeMode.value}`)
 const PLAYBACK_RATES = [0.5, 0.75, 1, 1.25, 1.5, 2] as const
 const segment = computed(() => material.value?.segments[0] ?? null); const audioSource = computed(() => material.value?.mediaRef?.availability === 'READY' ? material.value.mediaRef.signedUrl ?? null : null); const audio = ref<UniAudioContext | null>(null); const playbackRate = ref(1); const unsubscribe = engine.subscribe((state) => { performanceLevel.value = state.level })
 function setPerformance(level: PerformanceLevel): void { engine.setLevel(level, 'manual'); performanceLevel.value = level }
@@ -27,7 +29,7 @@ onUnmounted(() => { audio.value?.destroy(); unsubscribe(); engine.dispose() })
 </script>
 
 <template>
-  <view class="yx-page" :style="experienceStyle" :data-motion="experienceMotion">
+  <view class="yx-page" :style="experienceStyle" :data-motion="experienceMotion" :class="themeClass">
     <MobilePageHeader page="b3-listening" />
     <view class="v2-b3listen-body">
       <view class="yx-card card v2-b3listen-card" data-closed-practice role="status"><view class="eyebrow v2-b3listen-eyebrow"><AppIcon name="lock" :size="14" /><text>听力</text></view><text class="v2-b3listen-title v2-b3listen-h2">听力功能暂未开放，可以先做其他练习。</text><button type="button" class="btn v2-b3listen-btn" data-closed-back @click="getUniRuntime().navigateTo({ url: '/pages/today/today' })"><AppIcon name="back" :size="14" />回到可用学习</button></view>
