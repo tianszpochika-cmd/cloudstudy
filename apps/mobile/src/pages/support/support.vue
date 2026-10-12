@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import MobilePageHeader from '../../components/MobilePageHeader.vue'
+import AppIcon from '../../components/AppIcon.vue'
 import { useMobileExperience } from '../../platform/experience'
 const { experienceStyle, experienceMotion } = useMobileExperience()
 
@@ -44,29 +45,41 @@ onShow(async () => { if (await ensureMobilePageAccess('/pages/support/support'))
 </script>
 
 <template>
-  <view class="yx-page" :style="experienceStyle" :data-motion="experienceMotion">
+  <view class="yx-page v2-support-page" :style="experienceStyle" :data-motion="experienceMotion">
 
     <MobilePageHeader page="support" />
 
-    <view class="yx-card">
-      <text class="yx-eyebrow">客服与帮助</text>
-      <text class="yx-note">暂不能提交新工单，可查看已有工单。</text>
-      <text class="yx-note it7-closure">{{ ticketNotice(closure) }}</text>
-      <text v-if="supportNotice(closure)" class="yx-note">{{ supportNotice(closure) }}</text>
-    </view>
-
-    <view class="yx-card">
-      <text class="yx-eyebrow">我的工单</text>
-      <text v-if="loading" role="status">正在读取工单…</text>
-      <text v-else-if="error" class="yx-login-error" role="alert">工单暂不可用，请重试。</text>
-      <text v-else-if="!tickets.length">暂无可见工单。</text>
-      <view v-else class="yx-ticket-list">
-        <view v-for="ticket in tickets" :key="ticket.ticketId" class="yx-ticket">
-          <text>工单 {{ ticket.ticketId }}</text>
-          <text>{{ categoryNames[ticket.categoryCode] ?? '历史分类' }} · {{ stateNames[ticket.state] ?? '历史状态' }}</text>
+    <view class="v2-support-body">
+    <view class="yx-card card v2-support-card">
+      <view class="v2-support-head">
+        <view class="v2-support-titles">
+          <text class="yx-eyebrow eyebrow v2-support-eyebrow"><AppIcon name="help" :size="14" /><text>客服与帮助</text></text>
         </view>
       </view>
-      <button class="yx-button" type="button" :disabled="loading" @click="load">{{ error ? '重试' : '刷新' }}</button>
+      <text class="yx-note d v2-support-d">暂不能提交新工单，可查看已有工单。</text>
+      <text class="yx-note it7-closure d v2-support-d">{{ ticketNotice(closure) }}</text>
+      <text v-if="supportNotice(closure)" class="yx-note d v2-support-d">{{ supportNotice(closure) }}</text>
+    </view>
+
+    <view class="yx-card card v2-support-card">
+      <view class="v2-support-head">
+        <view class="v2-support-titles">
+          <text class="yx-eyebrow eyebrow v2-support-eyebrow"><AppIcon name="ticket" :size="14" /><text>我的工单</text></text>
+        </view>
+      </view>
+      <text v-if="loading" role="status" class="fb d v2-support-fb v2-support-d">正在读取工单…</text>
+      <text v-else-if="error" class="yx-login-error fb d v2-support-fb v2-support-d" role="alert">工单暂不可用，请重试。</text>
+      <text v-else-if="!tickets.length" class="fb d v2-support-fb v2-support-d v2-support-empty">暂无可见工单。</text>
+      <view v-else class="yx-ticket-list v2-support-list">
+        <view v-for="ticket in tickets" :key="ticket.ticketId" class="yx-ticket list-row row card v2-support-row v2-support-card">
+          <view class="v2-support-copy">
+            <text class="v2-support-name v2-support-h2">工单 {{ ticket.ticketId }}</text>
+            <text class="d v2-support-d">{{ categoryNames[ticket.categoryCode] ?? '历史分类' }} · {{ stateNames[ticket.state] ?? '历史状态' }}</text>
+          </view>
+        </view>
+      </view>
+      <button class="yx-button btn opt v2-support-btn v2-support-opt" type="button" :disabled="loading" @click="load">{{ error ? '重试' : '刷新' }}<AppIcon name="refresh" :size="14" /></button>
+    </view>
     </view>
   </view>
 </template>
