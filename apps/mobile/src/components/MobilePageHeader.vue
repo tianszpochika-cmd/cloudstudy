@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import { backMobile, mobileT } from '../platform/experience'
 import { openUniPage } from '../platform/uni-runtime'
-const props = defineProps<{ page: string; kicker?: string; title?: string; description?: string }>()
+const props = defineProps<{ page: string; kicker?: string; title?: string; description?: string; compact?: boolean }>()
 const isTab = computed(() => ['home', 'learn', 'b2-practice', 'world', 'profile'].includes(props.page))
 const isAuth = computed(() => ['login', 'register', 'reset-password'].includes(props.page))
 </script>
@@ -15,13 +15,13 @@ const isAuth = computed(() => ['login', 'register', 'reset-password'].includes(p
       <text v-if="isAuth" class="mobile-topbar-note">{{ mobileT('authTag') }}</text>
       <button tabindex="0" role="button" v-else class="mobile-settings" :aria-label="mobileT('settings')" @click="openUniPage('/pages/settings/settings')"><text aria-hidden="true">☷</text></button>
     </view>
-    <view class="mobile-intro" :class="{ 'mobile-intro--hero': page === 'home' || isAuth, 'mobile-intro--world': page === 'world' }">
+    <view class="mobile-intro" :class="{ 'mobile-intro--hero': page === 'home' || isAuth, 'mobile-intro--world': page === 'world', 'mobile-intro--compact': compact }">
       <view class="mobile-intro-copy">
         <text class="mobile-kicker">{{ kicker ?? mobileT(`pages.${page}.kicker`) }}</text>
         <text class="mobile-page-title" role="heading" aria-level="1">{{ title ?? mobileT(`pages.${page}.title`) }}</text>
         <text class="mobile-page-description">{{ description ?? mobileT(`pages.${page}.description`) }}</text>
       </view>
-      <view v-if="page === 'home' || isAuth || page === 'world'" class="mobile-book-art" aria-hidden="true">
+      <view v-if="(page === 'home' || isAuth || page === 'world') && !compact" class="mobile-book-art" aria-hidden="true">
         <view class="mobile-art-orbit"></view><text class="mobile-art-spark">✦</text>
         <view class="mobile-art-book"><text>Aa</text><view></view><view></view></view>
         <view class="mobile-art-disc"></view>
@@ -29,3 +29,14 @@ const isAuth = computed(() => ['login', 'register', 'reset-password'].includes(p
     </view>
   </view>
 </template>
+
+<style scoped>
+.mobile-intro--compact {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+</style>
