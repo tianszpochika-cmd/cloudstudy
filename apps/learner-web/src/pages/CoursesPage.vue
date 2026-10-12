@@ -35,7 +35,7 @@ function resumeActive(): void {
 }
 </script>
 <template>
-  <section class="page-stack library-experience" aria-labelledby="courses-title">
+  <section class="page-stack library-experience v2-page v2-page--courses" aria-labelledby="courses-title">
     <ExperienceHeader page="Courses" title-id="courses-title" icon="book" />
     <div class="library-toolbar"><div class="filter-pills"><button type="button" :class="{ active: !kind }" :aria-pressed="!kind" @click="kind = ''">{{ t('all') }}</button><button v-for="value in kinds" :key="value" type="button" :class="{ active: kind === value }" :aria-pressed="kind === value" @click="kind = value">{{ kindLabel(value) }}</button></div><label class="search-field"><AppIcon name="search" :size="18" /><input v-model="query" type="search" :aria-label="t('searchCourses')" :placeholder="t('searchCourses')" /></label><button v-if="activeContinue" class="button button--secondary" type="button" @click="resumeActive">继续学习</button></div>
     <p v-if="releaseNote" data-release-note>{{ releaseNote }}</p>
