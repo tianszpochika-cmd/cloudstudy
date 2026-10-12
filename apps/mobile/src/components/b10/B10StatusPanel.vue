@@ -13,6 +13,7 @@ const props = withDefaults(defineProps<{
 
 const emit = defineEmits<{ retry: []; sync: []; performance: [level: B10PerformanceLevel] }>()
 const levels: B10PerformanceLevel[] = ['Ultra', 'High', 'Medium', 'Performance']
+const levelLabels: Record<string, string> = { Ultra: '精致', High: '舒适', Medium: '轻量', Performance: '省资源' }
 const statusLabel = (): string => b10T(`status.${props.status}`)
 const statusMessage = (): string => props.message ?? (props.status === 'offline' ? b10T('status.pending') : props.status === 'stale' || props.stale ? b10T('common.stale') : b10T('status.noSample'))
 function openLogin(): void { openUniPage('/pages/login/login') }
@@ -29,8 +30,8 @@ function openLogin(): void { openUniPage('/pages/login/login') }
       <button tabindex="0" role="button" v-if="status === 'offline' || status === 'error' || status === 'stale'" class="b10-mini-button" type="button" @click="emit('retry')">{{ b10T('status.retry') }}</button>
       <button tabindex="0" role="button" v-if="status === 'forbidden'" class="b10-mini-button" type="button" @click="openLogin">{{ b10T('status.login') }}</button>
       <button tabindex="0" role="button" v-if="queueCount" class="b10-mini-button" type="button" @click="emit('sync')">{{ b10T('status.sync') }}</button>
-      <picker :range="levels" :value="levels.indexOf(performanceLevel)" @change="emit('performance', levels[Number($event.detail.value)] ?? 'High')">
-        <view class="b10-quality" :aria-label="`${b10T('common.performance')}: ${performanceLevel}`">{{ performanceLevel }}</view>
+      <picker :range="levels.map(l => levelLabels[l] ?? l)" :value="levels.indexOf(performanceLevel)" @change="emit('performance', levels[Number($event.detail.value)] ?? 'High')">
+        <view class="b10-quality" :aria-label="`${b10T('common.performance')}: ${levelLabels[performanceLevel] ?? performanceLevel}`">{{ levelLabels[performanceLevel] ?? performanceLevel }}</view>
       </picker>
     </view>
   </view>
