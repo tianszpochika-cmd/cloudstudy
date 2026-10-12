@@ -25,13 +25,36 @@ function gameStatusLabel(value: string): string { return ({ READY: '准备中', 
 </script>
 
 <template>
-  <view class="yx-page b4-games" :style="experienceStyle" :data-motion="experienceMotion">
+  <view class="yx-page b4-games v2-games-page" :style="experienceStyle" :data-motion="experienceMotion">
     <MobilePageHeader page="b4-games" />
 
-    <B4StatusPanel :status="b4.status" :online="b4.online" :message="b4.lastError" :queue-count="b4.queueCount" :performance-level="b4.performanceLevel" @retry="b4.loadWorld" @sync="b4.syncOffline" @performance="selectPerformance" />
-    <view class="yx-card"><view class="heading"><view><text class="kicker">学习游戏</text><text class="card-title">小游戏</text></view><text class="muted">{{ b4.games.length }} 项</text></view><view v-if="b4.games.length" class="game-grid"><view v-for="game in b4.games" :key="game.gameCode" class="game-card game-card--disabled"><text class="game-icon">✦</text><text class="game-title">{{ gameLabel(game.gameCode) }}</text><text class="muted">{{ game.enabled ? '玩法准备中' : '暂未开放' }}</text><text v-if="game.maxMinutes" class="muted">每次最多 {{ game.maxMinutes }} 分钟</text><button tabindex="0" role="button" class="yx-button" type="button" disabled>暂未开放</button></view></view><text v-else class="empty-copy">暂无可用游戏。</text></view>
-    <view v-if="b4.activeGame" class="yx-card session-card"><view class="heading"><view><text class="kicker">游戏进度</text><text class="card-title">{{ gameLabel(b4.activeGame.gameCode) }}</text></view><text class="state">{{ gameStatusLabel(b4.activeGame.status) }}</text></view><text class="muted">已进行 {{ b4.activeGame.attemptCount }} 回合</text><text class="warning">当前还没有可操作的题目。</text><view class="actions"><button tabindex="0" role="button" v-if="b4.activeGame.status === 'IN_PROGRESS' || b4.activeGame.status === 'READY'" class="small-button secondary" type="button" @click="b4.pauseGame">暂停</button><button tabindex="0" role="button" v-if="b4.activeGame.status === 'PAUSED'" class="small-button secondary" type="button" @click="b4.resumeGame">恢复</button><button tabindex="0" role="button" class="small-button secondary" type="button" @click="b4.refreshGame">刷新</button><button tabindex="0" role="button" class="small-button danger" type="button" @click="b4.finishGame">结束</button></view></view>
-    <view v-if="b4.lastGameResult" class="yx-card result-card"><text class="card-title">{{ b4.lastGameResult.passed ? '挑战通过' : '再练习一次' }}</text><text>正确率 {{ b4.lastGameResult.accuracyPercent }}% · 完成度 {{ b4.lastGameResult.completionPercent }}% · 得分 {{ b4.lastGameResult.serverScore }}</text><text class="muted">{{ b4.lastGameResult.rewardEligible ? '符合奖励条件' : '暂不符合奖励条件' }}</text></view>
+    <view class="v2-games-body">
+      <B4StatusPanel :status="b4.status" :online="b4.online" :message="b4.lastError" :queue-count="b4.queueCount" :performance-level="b4.performanceLevel" @retry="b4.loadWorld" @sync="b4.syncOffline" @performance="selectPerformance" />
+      <view class="yx-card card v2-games-card">
+        <view class="heading v2-games-head"><view class="v2-games-titles"><text class="kicker v2-games-eyebrow">学习游戏</text><text class="card-title v2-games-title v2-games-h2">小游戏</text></view><text class="muted v2-games-d v2-games-count">{{ b4.games.length }} 项</text></view>
+        <view v-if="b4.games.length" class="game-grid v2-games-list v2-games-grid">
+          <view v-for="game in b4.games" :key="game.gameCode" class="game-card game-card--disabled" :class="'card v2-games-card v2-games-row'">
+            <text class="game-icon v2-games-icon">✦</text>
+            <text class="game-title v2-games-name v2-games-h2">{{ gameLabel(game.gameCode) }}</text>
+            <text class="muted v2-games-d v2-games-tag">{{ game.enabled ? '玩法准备中' : '暂未开放' }}</text>
+            <text v-if="game.maxMinutes" class="muted v2-games-d">每次最多 {{ game.maxMinutes }} 分钟</text>
+            <button tabindex="0" role="button" class="yx-button btn v2-games-btn v2-games-opt" type="button" disabled>暂未开放</button>
+          </view>
+        </view>
+        <text v-else class="empty-copy v2-games-fb v2-games-d">暂无可用游戏。</text>
+      </view>
+      <view v-if="b4.activeGame" class="yx-card session-card card v2-games-card">
+        <view class="heading v2-games-head"><view class="v2-games-titles"><text class="kicker v2-games-eyebrow">游戏进度</text><text class="card-title v2-games-title v2-games-h2">{{ gameLabel(b4.activeGame.gameCode) }}</text></view><text class="state v2-games-state v2-games-tag">{{ gameStatusLabel(b4.activeGame.status) }}</text></view>
+        <text class="muted v2-games-d">已进行 {{ b4.activeGame.attemptCount }} 回合</text>
+        <text class="warning v2-games-fb v2-games-d">当前还没有可操作的题目。</text>
+        <view class="actions v2-games-actions"><button tabindex="0" role="button" v-if="b4.activeGame.status === 'IN_PROGRESS' || b4.activeGame.status === 'READY'" class="small-button secondary btn v2-games-btn v2-games-opt" type="button" @click="b4.pauseGame">暂停</button><button tabindex="0" role="button" v-if="b4.activeGame.status === 'PAUSED'" class="small-button secondary btn v2-games-btn v2-games-opt" type="button" @click="b4.resumeGame">恢复</button><button tabindex="0" role="button" class="small-button secondary btn v2-games-btn v2-games-opt" type="button" @click="b4.refreshGame">刷新</button><button tabindex="0" role="button" class="small-button danger btn v2-games-btn v2-games-opt" type="button" @click="b4.finishGame">结束</button></view>
+      </view>
+      <view v-if="b4.lastGameResult" class="yx-card result-card card v2-games-card">
+        <text class="card-title v2-games-title v2-games-h2">{{ b4.lastGameResult.passed ? '挑战通过' : '再练习一次' }}</text>
+        <text class="v2-games-d">正确率 {{ b4.lastGameResult.accuracyPercent }}% · 完成度 {{ b4.lastGameResult.completionPercent }}% · 得分 {{ b4.lastGameResult.serverScore }}</text>
+        <text class="muted v2-games-d">{{ b4.lastGameResult.rewardEligible ? '符合奖励条件' : '暂不符合奖励条件' }}</text>
+      </view>
+    </view>
   </view>
 </template>
 
