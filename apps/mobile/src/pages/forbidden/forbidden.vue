@@ -9,8 +9,10 @@ import { onLoad } from '@dcloudio/uni-app'
 import { authT } from '../../auth/i18n'
 import { useSessionStore } from '../../stores/session'
 import { openUniPage } from '../../platform/uni-runtime'
+import { b10ThemeMode } from '../../platform/b10-foundation'
 
 const session = useSessionStore()
+const themeClass = computed(() => `b10-theme--${b10ThemeMode.value}`)
 const isRejected = computed(() => session.adultGate === 'REJECTED')
 const explanation = computed(() => {
   if (isRejected.value) {
@@ -30,7 +32,7 @@ function goToSupport(): void { openUniPage('/pages/support/support') }
 </script>
 
 <template>
-  <view class="yx-page v2-forbid-page" :style="experienceStyle" :data-motion="experienceMotion">
+  <view class="yx-page v2-forbid-page" :style="experienceStyle" :data-motion="experienceMotion" :class="themeClass">
     <MobilePageHeader page="forbidden" />
     <view class="v2-forbid-body">
       <view class="yx-card card v2-forbid-card">
