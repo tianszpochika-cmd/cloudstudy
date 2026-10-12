@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import MobilePageHeader from '../../components/MobilePageHeader.vue'
+import AppIcon from '../../components/AppIcon.vue'
 import { useMobileExperience } from '../../platform/experience'
 const { experienceStyle, experienceMotion } = useMobileExperience()
 
@@ -27,12 +28,59 @@ function fileSize(bytes: number): string { return bytes >= 1048576 ? `${(bytes /
 </script>
 
 <template>
-  <view class="yx-page b4-offline" :style="experienceStyle" :data-motion="experienceMotion">
+  <view class="yx-page b4-offline v2-offline-page" :style="experienceStyle" :data-motion="experienceMotion">
     <MobilePageHeader page="b4-offline" />
 
-    <B4StatusPanel :status="b4.status" :online="b4.online" :message="b4.lastError" :queue-count="b4.queueCount" :performance-level="b4.performanceLevel" @retry="b4.loadWorld" @sync="b4.syncOffline" @performance="selectPerformance" />
-    <view class="yx-card"><view class="heading"><view><text class="kicker">离线学习</text><text class="card-title">内容包</text></view><text class="muted">{{ b4.online ? '在线' : '离线' }}</text></view><view v-if="b4.offlinePackages.length" class="package-list"><view v-for="item in b4.offlinePackages" :key="item.packageId" class="package"><view><text class="package-name">{{ item.packageCode }}</text><text class="muted">{{ fileSize(item.sizeBytes) }} · {{ item.completedPartCount }}/{{ item.partCount }} 部分</text></view><text class="package-state">{{ packageStatus(item.downloadState ?? item.state) }}</text><button tabindex="0" role="button" v-if="item.state === 'PUBLISHED' && !item.downloadId" class="small-button secondary" type="button" @click="b4.authorizeOfflinePackage(item.packageId)">请求授权</button><button tabindex="0" role="button" v-if="item.downloadId && ['AUTHORIZED', 'DOWNLOADING'].includes(item.downloadState ?? '')" class="small-button secondary" type="button" @click="b4.updateOfflineDownload(item.downloadId, 'PAUSE')">暂停</button><button tabindex="0" role="button" v-if="item.downloadId && item.downloadState === 'PAUSED'" class="small-button secondary" type="button" @click="b4.updateOfflineDownload(item.downloadId, 'RESUME')">继续</button><button tabindex="0" role="button" v-if="item.downloadId && item.downloadState !== 'ACTIVE_LOCAL'" class="small-button secondary" type="button" @click="b4.cleanupOfflineDownload(item.downloadId)">清理</button></view></view><text v-else class="empty-copy">暂无可下载的内容包。</text></view>
-    <view class="yx-card"><view class="heading"><view><text class="kicker">离线操作</text><text class="card-title">待同步</text></view><text class="muted">{{ b4.queueCount }} 条</text></view><view v-if="b4.offlineRecords.length" class="queue-list"><view v-for="item in b4.offlineRecords" :key="item.id" class="queue"><text>自习室互动</text><text class="queue-state">{{ queueStatus(item.status) }}</text><text v-if="item.lastError" class="muted">{{ item.lastError }}</text></view></view><text v-else class="empty-copy">没有待同步操作。</text><button tabindex="0" role="button" v-if="b4.queueCount" class="yx-button" type="button" @click="b4.syncOffline">立即同步</button></view>
+    <view class="v2-offline-body">
+      <B4StatusPanel class="v2-offline-status" :status="b4.status" :online="b4.online" :message="b4.lastError" :queue-count="b4.queueCount" :performance-level="b4.performanceLevel" @retry="b4.loadWorld" @sync="b4.syncOffline" @performance="selectPerformance" />
+      <view class="yx-card card v2-offline-card">
+        <view class="heading v2-offline-head">
+          <view class="v2-offline-titles">
+            <text class="kicker eyebrow v2-offline-eyebrow">离线学习</text>
+            <text class="card-title h2 v2-offline-title v2-offline-h2">内容包</text>
+          </view>
+          <view class="v2-offline-side">
+            <AppIcon name="inbox" :size="18" />
+            <text class="muted d v2-offline-d v2-offline-count">{{ b4.online ? '在线' : '离线' }}</text>
+          </view>
+        </view>
+        <view v-if="b4.offlinePackages.length" class="package-list v2-offline-list">
+          <view v-for="item in b4.offlinePackages" :key="item.packageId" class="package card v2-offline-card v2-offline-row row">
+            <view class="v2-offline-info">
+              <text class="package-name v2-offline-name">{{ item.packageCode }}</text>
+              <text class="muted d v2-offline-d">{{ fileSize(item.sizeBytes) }} · {{ item.completedPartCount }}/{{ item.partCount }} 部分</text>
+            </view>
+            <text class="package-state v2-offline-state v2-offline-tag">{{ packageStatus(item.downloadState ?? item.state) }}</text>
+            <button tabindex="0" role="button" v-if="item.state === 'PUBLISHED' && !item.downloadId" class="small-button secondary btn opt v2-offline-btn v2-offline-opt" type="button" @click="b4.authorizeOfflinePackage(item.packageId)">请求授权<AppIcon name="chev" :size="14" /></button>
+            <button tabindex="0" role="button" v-if="item.downloadId && ['AUTHORIZED', 'DOWNLOADING'].includes(item.downloadState ?? '')" class="small-button secondary btn opt v2-offline-btn v2-offline-opt" type="button" @click="b4.updateOfflineDownload(item.downloadId, 'PAUSE')">暂停</button>
+            <button tabindex="0" role="button" v-if="item.downloadId && item.downloadState === 'PAUSED'" class="small-button secondary btn opt v2-offline-btn v2-offline-opt" type="button" @click="b4.updateOfflineDownload(item.downloadId, 'RESUME')">继续</button>
+            <button tabindex="0" role="button" v-if="item.downloadId && item.downloadState !== 'ACTIVE_LOCAL'" class="small-button secondary btn opt v2-offline-btn v2-offline-opt" type="button" @click="b4.cleanupOfflineDownload(item.downloadId)">清理</button>
+          </view>
+        </view>
+        <text v-else class="empty-copy fb d v2-offline-fb v2-offline-d">暂无可下载的内容包。</text>
+      </view>
+      <view class="yx-card card v2-offline-card">
+        <view class="heading v2-offline-head">
+          <view class="v2-offline-titles">
+            <text class="kicker eyebrow v2-offline-eyebrow">离线操作</text>
+            <text class="card-title h2 v2-offline-title v2-offline-h2">待同步</text>
+          </view>
+          <view class="v2-offline-side">
+            <AppIcon name="refresh" :size="18" />
+            <text class="muted d v2-offline-d v2-offline-count">{{ b4.queueCount }} 条</text>
+          </view>
+        </view>
+        <view v-if="b4.offlineRecords.length" class="queue-list v2-offline-list">
+          <view v-for="item in b4.offlineRecords" :key="item.id" class="queue card v2-offline-card v2-offline-row row">
+            <text class="v2-offline-name">自习室互动</text>
+            <text class="queue-state v2-offline-state v2-offline-tag">{{ queueStatus(item.status) }}</text>
+            <text v-if="item.lastError" class="muted d v2-offline-d">{{ item.lastError }}</text>
+          </view>
+        </view>
+        <text v-else class="empty-copy fb d v2-offline-fb v2-offline-d">没有待同步操作。</text>
+        <button tabindex="0" role="button" v-if="b4.queueCount" class="yx-button btn opt v2-offline-btn v2-offline-opt v2-offline-submit" type="button" @click="b4.syncOffline">立即同步<AppIcon name="refresh" :size="14" /></button>
+      </view>
+    </view>
   </view>
 </template>
 
