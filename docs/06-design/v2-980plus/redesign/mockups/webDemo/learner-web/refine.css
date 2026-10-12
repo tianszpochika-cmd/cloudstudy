@@ -1,0 +1,36 @@
+/* 学员 Web 桌面端精修：独立布局质感，不改信息架构 */
+.desktop-sidebar{box-shadow:8px 0 32px #00000018}
+.desktop-brand strong{letter-spacing:.08em}
+.brand-mark{background:linear-gradient(135deg,#6c4dbb,#49319a);border:0!important;box-shadow:0 6px 16px #0006;font-size:20px!important}
+.desktop-search{transition:border-color var(--motion-base) var(--ease),background-color var(--motion-base) var(--ease)}
+.desktop-search:hover{background:#ffffff12;border-color:#ffffff55}
+.desktop-nav-item{transition:background-color var(--motion-base) var(--ease),color var(--motion-base) var(--ease),transform var(--motion-fast) var(--ease)}
+.desktop-nav-item:hover{background:#ffffff14!important;color:var(--side-ink)!important}
+.desktop-nav-item[aria-current=page]{box-shadow:0 6px 18px #00000040;transform:none}
+.desktop-nav-item:active{transform:scale(.985)}
+.desktop-topbar{backdrop-filter:saturate(1.4) blur(12px);-webkit-backdrop-filter:saturate(1.4) blur(12px);background:color-mix(in srgb,var(--bg) 88%,transparent);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:4}
+.desktop-page{animation:refine-rise var(--motion-slow) var(--ease-out) both}
+.desktop-hero{box-shadow:0 14px 36px color-mix(in srgb,var(--brand) 18%,transparent)!important;border:0!important}
+.desktop-hero .btn:hover:not(:disabled){transform:translateY(-1px)}
+.desktop-table-wrap{border-radius:16px;overflow:hidden;border:1px solid var(--line);box-shadow:var(--elev-1)}
+.desktop-table{width:100%;border-collapse:collapse}
+.desktop-table th{background:var(--surface);font-size:12px;letter-spacing:.04em;color:var(--mut);font-weight:700;padding:12px 16px;text-align:left;border-bottom:1px solid var(--line)}
+.desktop-table td{padding:14px 16px;border-bottom:1px solid var(--line);font-size:14px}
+.desktop-table tr:last-child td{border-bottom:0}
+.desktop-table tbody tr{transition:background-color var(--motion-fast) var(--ease)}
+.desktop-table tbody tr:hover td{background:var(--surface)}
+.task-card{transition:border-color var(--motion-base) var(--ease),box-shadow var(--motion-base) var(--ease),transform var(--motion-fast) var(--ease)}
+.task-card:hover{border-color:color-mix(in srgb,var(--brand) 28%,var(--line));box-shadow:var(--elev-2);transform:translateY(-1px)}
+.desktop-grid-three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+@media(max-width:1100px){.desktop-grid-three{grid-template-columns:1fr}}
+.desktop-chart-bar{border-radius:8px 8px 0 0;transition:height var(--motion-slow) var(--ease-out),filter var(--motion-base) var(--ease)}
+.desktop-chart-col:hover .desktop-chart-bar{filter:brightness(1.08)}
+.table-toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:0 0 14px}
+.toolbar-count{margin-left:auto;color:var(--mut);font-size:12px;white-space:nowrap}
+.desktop-page-title h1{letter-spacing:-.03em}
+.desktop-section-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:8px 0 14px}
+.desktop-user{display:flex;align-items:center;gap:10px}
+.desktop-footer{color:var(--mut);font-size:12px;padding:24px 0 8px}
+.desktop-body .study-nav{max-width:520px}
+.desktop-body .card{margin-bottom:16px}
+.checkin-card .card-heading{margin-bottom:10px}
