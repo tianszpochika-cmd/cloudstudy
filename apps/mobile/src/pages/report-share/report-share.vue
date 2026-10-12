@@ -1,13 +1,15 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import AppIcon from '../../components/AppIcon.vue'
 import MobilePageHeader from '../../components/MobilePageHeader.vue'
 import { useMobileExperience } from '../../platform/experience'
 import { getGatewayBaseUrl } from '../../platform/gateway'
 import { getUniRuntime } from '../../platform/uni-runtime'
+import { b10ThemeMode } from '../../platform/b10-foundation'
 
 const { experienceStyle, experienceMotion } = useMobileExperience()
+const themeClass = computed(() => `b10-theme--${b10ThemeMode.value}`)
 const status = ref('LOADING')
 const copy = ref('')
 const suggestion = ref('')
@@ -49,7 +51,7 @@ onLoad((query) => {
 </script>
 
 <template>
-  <view class="yx-page v2-share-page" :style="experienceStyle" :data-motion="experienceMotion" :data-share-status="status">
+  <view class="yx-page v2-share-page" :style="experienceStyle" :data-motion="experienceMotion" :data-share-status="status" :class="themeClass">
     <MobilePageHeader page="report-share" kicker="只读分享" title="分享的学习报告" description="这是只读分享，不包含登录信息。" />
     <view class="v2-share-body">
       <view class="yx-card share card v2-share-card">
