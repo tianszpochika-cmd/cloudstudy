@@ -82,3 +82,7 @@ onBeforeUnmount(() => {
 }
 .yx-app-bootstrap__title { font-size: 34rpx; font-weight: 700; }
 </style>
+
+<style lang="scss">
+@import "./theme/v2-tokens.scss";
+</style>
