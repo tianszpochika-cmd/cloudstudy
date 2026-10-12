@@ -74,6 +74,7 @@ function submitImitation(): void { void store.submitImitation(slotValues.value) 
       </article>
     </section>
     <section v-else-if="store.grammarStatus === 'empty'" class="empty-panel"><strong>{{ ui.t('b10.grammar.noTree') }}</strong><p>{{ ui.t('b10.state.empty') }}</p><CanonicalBridge :courses="[{ code: 'DEMO-P5-GRAMMAR-A1', title: 'Demo present simple', summary: 'Subject plus base verb for habits.', level: 'A1' }]" /></section>
+    </div><aside class="v2-b3grammar-tips" aria-label="练习提示"><h2>专注语法</h2><ol><li>先选一个语法点，再做对应练习。</li><li>提交后看反馈，弄清对错的原因。</li></ol></aside></div>
   </section>
 </template>
 
