@@ -15,7 +15,7 @@ const isAuth = computed(() => ['login', 'register', 'reset-password'].includes(p
       <text v-if="isAuth" class="mobile-topbar-note">{{ mobileT('authTag') }}</text>
       <button tabindex="0" role="button" v-else class="mobile-settings" :aria-label="mobileT('settings')" @click="openUniPage('/pages/settings/settings')"><text aria-hidden="true">☷</text></button>
     </view>
-    <view class="mobile-intro" :class="{ 'mobile-intro--hero': page === 'home' || isAuth, 'mobile-intro--world': page === 'world', 'mobile-intro--compact': compact }">
+    <view class="mobile-intro" :class="{ 'mobile-intro--hero': (page === 'home' || isAuth) && !compact, 'mobile-intro--world': page === 'world', 'mobile-intro--compact': compact }">
       <view class="mobile-intro-copy">
         <text class="mobile-kicker">{{ kicker ?? mobileT(`pages.${page}.kicker`) }}</text>
         <text class="mobile-page-title" role="heading" aria-level="1">{{ title ?? mobileT(`pages.${page}.title`) }}</text>
@@ -31,12 +31,7 @@ const isAuth = computed(() => ['login', 'register', 'reset-password'].includes(p
 </template>
 
 <style scoped>
-.mobile-intro--compact {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
-  white-space: nowrap;
-}
+.mobile-intro--compact { padding:0; margin:0 0 var(--v2-space-3); background:none; box-shadow:none; border:0; }
+.mobile-intro--compact .mobile-kicker, .mobile-intro--compact .mobile-page-description { display:none; }
+.mobile-intro--compact .mobile-page-title { font-size: var(--v2-text-lg); font-weight:700; color: var(--v2-ink); }
 </style>
