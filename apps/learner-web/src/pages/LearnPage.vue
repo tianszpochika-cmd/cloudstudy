@@ -58,7 +58,7 @@ async function saveAndExit(): Promise<void> {
 </script>
 
 <template>
-  <section class="page-stack" aria-labelledby="session-title">
+  <section class="page-stack v2-page v2-page--learn" aria-labelledby="session-title">
     <ExperienceHeader page="Session" icon="book" title-id="session-title" />
     <StatePanel v-if="loading" state="loading" title="正在读取课程内容" description="正在准备你的学习内容，请稍候。" />
     <StatePanel v-else-if="error || !content" state="error" title="课程暂时不可用" :description="error ?? '服务端没有返回课程内容。'" action-label="返回课程" @action="router.push({ name: 'courses' })" />
