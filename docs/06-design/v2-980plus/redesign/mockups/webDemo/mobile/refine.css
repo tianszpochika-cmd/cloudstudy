@@ -156,3 +156,41 @@
 /* 字母/音标按钮网格对齐 */
 #view .actions>.btn.sm{min-width:44px}
 #view .card>h2,#view .card>h3{white-space:normal;overflow-wrap:anywhere}
+
+/* R2 批次 11：移动端逐页细修（审计挑出的 10 类） */
+/* games：寻宝主卡 */
+#view[data-route=games]>.card:first-child{text-align:center;padding:28px 20px;background:linear-gradient(180deg,var(--soft),var(--card) 70%)}
+#view[data-route=games]>.card:first-child::before{content:"🧭";display:grid;place-items:center;width:64px;height:64px;margin:4px auto 12px;border-radius:20px;background:var(--card);font-size:32px;box-shadow:0 6px 18px #4b32b81f}
+#view[data-route=games]>.card:first-child .btn{margin-top:8px}
+/* rewards：任务行 */
+#view[data-route=rewards] article{display:grid;grid-template-columns:1fr auto;gap:4px 12px;align-items:center;padding:14px;margin:10px 0;border:1px solid var(--line);border-radius:14px;background:var(--surface,var(--card))}
+#view[data-route=rewards] article h3,#view[data-route=rewards] article p{grid-column:1/-1;margin:0}
+#view[data-route=rewards] article p{font-size:13px;color:var(--mut)}
+#view[data-route=rewards] article .tag{justify-self:start;margin:6px 0 0}
+#view[data-route=rewards] article .btn{width:auto;min-height:36px;padding:6px 14px;font-size:13px;margin:6px 0 0}
+/* alphabet：字母方格 */
+#view[data-route=alphabet] .card:first-child .actions{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px}
+#view[data-route=alphabet] .card:first-child .actions .btn{width:auto;aspect-ratio:1;min-height:0;padding:0;font-size:17px;font-weight:700;border-radius:12px}
+/* gate / npref：可点的勾选行 */
+#view[data-route=gate] label.lb:has(input[type=checkbox]){display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border:1px solid var(--line);border-radius:12px;font-weight:500;line-height:1.5;cursor:pointer}
+#view[data-route=gate] label.lb:has(input:checked){border-color:var(--brand);background:var(--soft)}
+#view[data-route=gate] input[type=checkbox]{width:20px;height:20px;flex:none;margin:1px 0 0;accent-color:var(--brand)}
+#view[data-route=npref] .opt .control-label{font-weight:500}
+#view[data-route=npref] .card:first-child h2{margin-top:10px}
+/* listening：两列控件 + 字幕气泡 */
+#view[data-route=listening] .card:first-child .reading-passage{padding:14px 16px;border-radius:14px;background:var(--soft);font-size:17px;line-height:1.6;margin:14px 0 6px}
+#view[data-route=listening] .card:first-child .actions .btn{flex:1}
+/* planexp：规则段落改为要点 */
+#view[data-route=planexp] .card>p.d+p.d{position:relative;padding-left:16px;font-size:13px}
+#view[data-route=planexp] .card>p.d+p.d::before{content:"";position:absolute;left:2px;top:.65em;width:6px;height:6px;border-radius:50%;background:var(--brand)}
+#view[data-route=planexp] .card>p.d:nth-of-type(1){font-weight:600;color:var(--ink)}
+/* AI / K12 / 语音预览族：主卡 + 边界提示 */
+:is(#view[data-route=ai],#view[data-route=aiflow],#view[data-route=aigate],#view[data-route=k12],#view[data-route=k12course],#view[data-route=k12guard],#view[data-route=voice],#view[data-route=vscore])>.card:first-child{padding-top:22px}
+:is(#view[data-route=ai],#view[data-route=aiflow],#view[data-route=aigate],#view[data-route=k12],#view[data-route=k12course],#view[data-route=k12guard],#view[data-route=voice],#view[data-route=vscore])>.card:first-child::before{content:"未来阶段 · 预览";display:inline-block;margin-bottom:10px;padding:3px 10px;border-radius:999px;background:var(--soft);color:var(--brand);font-size:12px;font-weight:700}
+:is(#view[data-route=ai],#view[data-route=aiflow],#view[data-route=aigate],#view[data-route=k12],#view[data-route=k12course],#view[data-route=k12guard],#view[data-route=voice],#view[data-route=vscore])>.card:nth-child(2){background:transparent;box-shadow:none;border:1px dashed var(--line)}
+/* pgen：生成主卡 */
+#view[data-route=pgen]>.card:first-child{text-align:center;padding:28px 20px}
+#view[data-route=pgen]>.card:first-child::before{content:"🗓️";display:grid;place-items:center;width:60px;height:60px;margin:0 auto 12px;border-radius:18px;background:var(--soft);font-size:28px}
+/* writing：草稿区与计数 */
+#view[data-route=writing] textarea{min-height:220px;font-size:15px;line-height:1.7;border-radius:14px}
+#view[data-route=writing] #writing-count{display:inline-block;padding:3px 10px;border-radius:999px;background:var(--soft);color:var(--brand);font-size:12px;font-weight:600;margin:8px 0 12px}
