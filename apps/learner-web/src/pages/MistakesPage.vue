@@ -52,10 +52,10 @@ onMounted(() => { void load() })
 <template>
   <section class="page-stack v2-page v2-page--mistakes">
     <ExperienceHeader page="Mistakes" icon="bookmark" />
-    <p data-zero-only>{{ ZERO_ONLY_COPY }}</p>
-    <p data-projection-version>{{ projectionVersion }}</p>
+    <p data-zero-only class="v2-mistakes-note">{{ ZERO_ONLY_COPY }}</p>
+    <p data-projection-version class="v2-sr-only">{{ projectionVersion }}</p>
     <p v-if="state === 'empty' || state === 'error'" data-empty-book>{{ emptyLabel }}</p>
-    <p v-if="remediationId" data-remediation>{{ remediationId }}</p>
+    <p v-if="remediationId" data-remediation class="v2-sr-only">{{ remediationId }}</p>
     <StatePanel
       v-if="state !== 'ready'"
       :state="state"
@@ -64,16 +64,16 @@ onMounted(() => { void load() })
       :action-label="state === 'error' ? '重试' : ''"
       @action="load"
     />
-    <section v-else class="info-card" aria-label="错题列表">
-      <ul class="yx-mistake-list">
-        <li v-for="item in mistakes" :key="String(item.interactionId ?? item.resourceKey)">
-          <div><strong>{{ item.resourceKey ?? '练习题' }}</strong><span class="yx-pill yx-pill--warning" data-closure>{{ closureLabel(item.mistakeStatus) }}</span></div>
-          <span class="yx-fact-tag">{{ item.domainCode ?? '' }} · {{ item.errorCategory ?? '' }}</span>
+    <section v-else class="info-card v2-mistakes" aria-label="错题列表">
+      <ul class="yx-mistake-list v2-mistakes-grid">
+        <li v-for="item in mistakes" :key="String(item.interactionId ?? item.resourceKey)" class="v2-mistake-card">
+          <div class="v2-mistake-head"><span class="yx-pill yx-pill--warning v2-mistake-status" data-closure>{{ closureLabel(item.mistakeStatus, ({ PENDING_RETRY: '待补救', DELAY_VERIFY_D1: '待次日验证', DELAY_VERIFY_D7: '待七日验证', REOPENED: '重新打开', OPEN: '待处理', NEW: '新错题' } as Record<string, string>)[item.mistakeStatus ?? ''] ?? '待处理') }}</span><strong>{{ item.resourceKey ?? '练习题' }}</strong></div>
+          <span class="yx-fact-tag v2-mistake-meta">{{ [({ GRAMMAR: '语法', VOCAB: '词汇', READING: '阅读', LISTENING: '听力' } as Record<string, string>)[item.domainCode ?? ''] ?? '', item.errorCategory ?? ''].filter(Boolean).join(' · ') }}</span>
           <p v-if="item.message">{{ item.message }}</p>
           <p v-if="item.feedbackCode" class="yx-fact-tag">反馈：{{ item.feedbackCode }}</p>
         </li>
       </ul>
-      <div class="actions">
+      <div class="actions v2-mistakes-actions">
         <button class="button button--primary" type="button" @click="verify">去练习验证</button>
         <button class="button" type="button" @click="report">看学习报告</button>
       </div>
