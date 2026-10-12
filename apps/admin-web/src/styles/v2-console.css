@@ -1,0 +1,79 @@
+/* v2 desktop operations console skin (webDemo/admin). Overrides styles.css; uses --v2-* tokens only. */
+
+/* === shell: sidebar === */
+.admin-aside {
+  background: var(--v2-side);
+  color: var(--v2-side-ink);
+  border-right: 0;
+  padding: 24px 14px;
+  box-shadow: 8px 0 28px #00000022;
+}
+.admin-aside .admin-brand {
+  padding: 0 12px 20px;
+  color: var(--v2-side-ink);
+}
+.admin-aside .admin-brand__mark {
+  width: 36px;
+  height: 36px;
+  border-radius: 11px;
+  background: var(--v2-brand);
+  color: var(--v2-side-ink);
+  box-shadow: 0 6px 16px #0006;
+}
+.admin-aside .admin-brand strong {
+  color: var(--v2-side-ink);
+}
+.admin-aside .admin-brand small {
+  color: var(--v2-side-muted);
+}
+.admin-aside .admin-nav-group h2 {
+  color: var(--v2-side-muted);
+}
+.admin-aside .admin-nav-link {
+  color: var(--v2-side-ink);
+  transition: background-color var(--v2-motion-base) var(--v2-ease), color var(--v2-motion-base) var(--v2-ease), transform var(--v2-motion-fast) var(--v2-ease);
+}
+.admin-aside .admin-nav-link:hover,
+.admin-aside .admin-nav-link.active {
+  background: var(--v2-grad);
+  color: var(--v2-side-ink);
+}
+.admin-aside .admin-nav-link:hover:not(.active) {
+  background: #ffffff14;
+  color: var(--v2-side-ink);
+}
+.admin-aside .admin-nav-link.active {
+  box-shadow: 0 6px 18px #0000004d;
+}
+.admin-aside .admin-nav-link:active {
+  transform: scale(0.985);
+}
+.admin-aside .nav-active-dot {
+  background: var(--v2-side-ink);
+}
+.admin-aside .admin-aside__footer {
+  border-top-color: #ffffff1f;
+  color: var(--v2-side-muted);
+}
+.admin-aside .admin-aside__footer strong {
+  color: var(--v2-side-ink);
+}
+.admin-aside .admin-avatar {
+  background: #ffffff14;
+  color: var(--v2-side-ink);
+}
+.admin-aside .text-button {
+  color: var(--v2-side-muted);
+  transition: color var(--v2-motion-base) var(--v2-ease);
+}
+.admin-aside .text-button:hover {
+  color: var(--v2-side-ink);
+}
+@media (min-width: 1101px) {
+  .admin-aside {
+    width: 224px;
+  }
+  .admin-workspace {
+    margin-left: 224px;
+  }
+}
