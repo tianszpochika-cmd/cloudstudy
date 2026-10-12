@@ -67,43 +67,46 @@ async function confirm(): Promise<void> {
 </script>
 
 <template>
-  <view class="yx-page yx-login-page" :style="experienceStyle" :data-motion="experienceMotion">
+  <view class="yx-page yx-login-page v2-reset" :style="experienceStyle" :data-motion="experienceMotion">
 
     <MobilePageHeader page="reset-password" />
 
-    <view class="yx-card yx-login-card" :aria-busy="submitting">
-      <text v-if="resetCompleted" class="mobile-success-note" role="status" aria-live="polite">{{ mobileT('resetComplete') }}</text>
-      <text v-else-if="done && step === 'request'" class="mobile-success-note" role="status" aria-live="polite">{{ mobileT('resetSent') }}</text>
-      <text v-if="!resetCompleted && !(done && step === 'request')" class="mobile-auth-note">{{ mobileT(step === 'request' ? 'auth.resetPassword.requestHint' : 'auth.resetPassword.confirmHint') }}</text>
-      <form v-if="!resetCompleted && step === 'request'" @submit="send" :aria-busy="submitting">
-        <label class="yx-field">
+    <view class="v2-reset-brand" aria-hidden="true"><text class="v2-reset-brand-mark">✦</text></view>
+
+    <view class="yx-card yx-login-card v2-reset-card" :aria-busy="submitting">
+      <text class="v2-reset-title">{{ mobileT('auth.resetPassword.resetAction') }}</text>
+      <text class="mobile-auth-note v2-reset-desc">{{ mobileT('adultNote') }}</text>
+      <text v-if="resetCompleted" class="mobile-success-note v2-reset-note" role="status" aria-live="polite">{{ mobileT('resetComplete') }}</text>
+      <text v-else-if="done && step === 'request'" class="mobile-success-note v2-reset-note" role="status" aria-live="polite">{{ mobileT('resetSent') }}</text>
+      <text v-if="!resetCompleted && !(done && step === 'request')" class="mobile-auth-note v2-reset-note">{{ mobileT(step === 'request' ? 'auth.resetPassword.requestHint' : 'auth.resetPassword.confirmHint') }}</text>
+      <form v-if="!resetCompleted && step === 'request'" class="v2-reset-form" @submit="send" :aria-busy="submitting">
+        <label class="yx-field v2-reset-field">
           <text>{{ mobileT('auth.resetPassword.identifier') }}</text>
-          <input :aria-label="mobileT('auth.resetPassword.identifier')" v-model="identifier" type="text" autocomplete="username" :placeholder="mobileT('auth.resetPassword.requestIdentifierPlaceholder')" :disabled="submitting" />
+          <input class="v2-reset-input" :aria-label="mobileT('auth.resetPassword.identifier')" v-model="identifier" type="text" autocomplete="username" :placeholder="mobileT('auth.resetPassword.requestIdentifierPlaceholder')" :disabled="submitting" />
         </label>
-        <text v-if="error" class="yx-login-error" role="alert" aria-live="polite">{{ error }}</text>
-        <button tabindex="0" role="button" class="yx-button" form-type="submit" :disabled="submitting">{{ submitting ? mobileT('auth.resetPassword.sending') : mobileT('auth.resetPassword.sendInstructions') }}</button>
-        <button tabindex="0" role="button" class="yx-button yx-button--ghost" type="button" @click="step = 'confirm'">{{ mobileT('auth.resetPassword.receivedCode') }}</button>
+        <text v-if="error" class="yx-login-error v2-reset-error" role="alert" aria-live="polite">{{ error }}</text>
+        <button tabindex="0" role="button" class="yx-button v2-reset-primary" form-type="submit" :disabled="submitting">{{ submitting ? mobileT('auth.resetPassword.sending') : mobileT('auth.resetPassword.sendInstructions') }}</button>
+        <button tabindex="0" role="button" class="mobile-text-button v2-reset-secondary" type="button" @click="step = 'confirm'">{{ mobileT('auth.resetPassword.receivedCode') }}</button>
       </form>
-      <form v-else-if="!resetCompleted" @submit="confirm" :aria-busy="submitting">
-        <label class="yx-field">
+      <form v-else-if="!resetCompleted" class="v2-reset-form" @submit="confirm" :aria-busy="submitting">
+        <label class="yx-field v2-reset-field">
           <text>{{ mobileT('auth.resetPassword.identifier') }}</text>
-          <input :aria-label="mobileT('auth.resetPassword.identifier')" v-model="identifier" type="text" autocomplete="username" :placeholder="mobileT('auth.resetPassword.confirmIdentifierPlaceholder')" :disabled="submitting" />
+          <input class="v2-reset-input" :aria-label="mobileT('auth.resetPassword.identifier')" v-model="identifier" type="text" autocomplete="username" :placeholder="mobileT('auth.resetPassword.confirmIdentifierPlaceholder')" :disabled="submitting" />
         </label>
-        <label class="yx-field">
+        <label class="yx-field v2-reset-field">
           <text>{{ mobileT('auth.resetPassword.token') }}</text>
-          <input :aria-label="mobileT('auth.resetPassword.token')" v-model="token" type="text" autocomplete="one-time-code" :placeholder="mobileT('auth.resetPassword.tokenPlaceholder')" :disabled="submitting" />
+          <input class="v2-reset-input" :aria-label="mobileT('auth.resetPassword.token')" v-model="token" type="text" autocomplete="one-time-code" :placeholder="mobileT('auth.resetPassword.tokenPlaceholder')" :disabled="submitting" />
         </label>
-        <label class="yx-field">
+        <label class="yx-field v2-reset-field">
           <text>{{ mobileT('auth.resetPassword.newPassword') }}</text>
-          <input :aria-label="mobileT('auth.resetPassword.newPassword')" v-model="newPassword" type="password" autocomplete="new-password" :placeholder="mobileT('auth.resetPassword.newPasswordPlaceholder')" :disabled="submitting" />
+          <input class="v2-reset-input" :aria-label="mobileT('auth.resetPassword.newPassword')" v-model="newPassword" type="password" autocomplete="new-password" :placeholder="mobileT('auth.resetPassword.newPasswordPlaceholder')" :disabled="submitting" />
         </label>
-        <text v-if="error" class="yx-login-error" role="alert" aria-live="polite">{{ error }}</text>
-        <button tabindex="0" role="button" class="yx-button" form-type="submit" :disabled="submitting">{{ submitting ? mobileT('auth.resetPassword.resetting') : mobileT('auth.resetPassword.resetAction') }}</button>
-        <button tabindex="0" role="button" class="yx-button yx-button--ghost" type="button" @click="step = 'request'">{{ mobileT('auth.resetPassword.back') }}</button>
+        <text v-if="error" class="yx-login-error v2-reset-error" role="alert" aria-live="polite">{{ error }}</text>
+        <button tabindex="0" role="button" class="yx-button v2-reset-primary" form-type="submit" :disabled="submitting">{{ submitting ? mobileT('auth.resetPassword.resetting') : mobileT('auth.resetPassword.resetAction') }}</button>
+        <button tabindex="0" role="button" class="mobile-text-button v2-reset-secondary" type="button" @click="step = 'request'">{{ mobileT('auth.resetPassword.back') }}</button>
       </form>
+      <button tabindex="0" role="button" class="mobile-text-button v2-reset-secondary" @click="openUniPage('/pages/login/login')">{{ mobileT('toLogin') }}</button>
     </view>
-    <button tabindex="0" role="button" class="mobile-text-button mobile-auth-return" @click="openUniPage('/pages/login/login')">{{ mobileT('toLogin') }}</button>
-    <text class="mobile-auth-note">{{ mobileT('adultNote') }}</text>
   </view>
 </template>
 
