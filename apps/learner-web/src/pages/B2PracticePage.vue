@@ -62,60 +62,65 @@ onMounted(() => { void load() })
   <section class="real-practice-page v2-page v2-page--practice" aria-labelledby="practice-title">
     <ExperienceHeader page="Practice" icon="check" title-id="practice-title" />
 
-    <section v-if="isCompleted && report" class="result-panel" aria-live="polite">
-      <p class="card-kicker">历史两题练习结果</p>
-      <h3>{{ report.cefrLevel }} · {{ scorePercent }} 分</h3>
-      <p>旧版练习仅供参考，不能代替四维定级。</p>
-      <p v-if="!showPracticeReward()" data-reward-hidden>本次练习已完成。</p>
-      <div class="actions">
-        <button class="primary-button" type="button" @click="openToday">查看今日任务</button>
-        <button class="secondary-button" type="button" @click="void load()">重新读取报告</button>
+    <div class="v2-practice-layout">
+      <div class="v2-practice-main">
+        <section v-if="isCompleted && report" class="result-panel v2-practice-card" aria-live="polite">
+          <p class="card-kicker">历史两题练习结果</p>
+          <h3>{{ report.cefrLevel }} · {{ scorePercent }} 分</h3>
+          <p>旧版练习仅供参考，不能代替四维定级。</p>
+          <p v-if="!showPracticeReward()" data-reward-hidden>本次练习已完成。</p>
+          <div class="actions">
+            <button class="primary-button" type="button" @click="openToday">查看今日任务</button>
+            <button class="secondary-button" type="button" @click="void load()">重新读取报告</button>
+          </div>
+        </section>
+
+        <p v-if="resume?.stopped" data-offline-exit role="status">{{ resume.copy }}</p>
+        <section v-else-if="question" class="question-panel v2-practice-card">
+          <p data-resume>{{ resume?.copy }}</p>
+          <div class="question-meta">
+            <span>{{ ({ GRAMMAR: '语法', VOCABULARY: '词汇', LISTENING: '听力' } as Record<string, string>)[question.dimension] ?? question.dimension }} · 第 {{ question.stepIndex }} / {{ question.totalSteps }} 题</span>
+            <span>{{ progress }}%</span>
+          </div>
+          <progress :value="progress" max="100">{{ progress }}%</progress>
+          <h3>{{ question.stemText }}</h3>
+          <p v-if="question.helperText" class="helper-text">{{ question.helperText }}</p>
+          <div class="options">
+            <button
+              v-for="option in question.options"
+              :key="option.key"
+              class="option"
+              :class="{ selected: selectedKey === option.key }"
+              type="button"
+              :disabled="isLoading"
+              @click="selectedKey = option.key"
+            >
+              <b>{{ option.key }}</b>
+              <span>{{ option.text }}</span>
+            </button>
+          </div>
+          <button class="primary-button" type="button" data-single-submit :disabled="!selectedKey || isLoading || submitting" @click="void submit()">
+            {{ isLoading ? '正在记录…' : '提交答案' }}
+          </button>
+        </section>
+
+        <section v-else-if="isLoading" class="state-panel v2-practice-card" role="status" aria-live="polite">
+          <strong>正在读取真实练习</strong>
+          <p>正在读取测评状态…</p>
+        </section>
+
+        <section v-else class="state-panel state-panel--error v2-practice-card" role="alert">
+          <strong>{{ store.lastError ? '真实练习暂时不可用' : '当前没有可用练习题' }}</strong>
+          <p>{{ store.lastError || '服务端尚未返回可用的已发布测评内容。' }}</p>
+          <button class="secondary-button" type="button" @click="void load()">重新读取</button>
+        </section>
+
+        <p v-if="store.pendingAssessmentAnswers.length" class="pending-note" role="status">
+          有 {{ store.pendingAssessmentAnswers.length }} 条答案等待服务端确认；未确认前不会显示为完成。
+        </p>
       </div>
-    </section>
-
-    <p v-if="resume?.stopped" data-offline-exit role="status">{{ resume.copy }}</p>
-    <section v-else-if="question" class="question-panel">
-      <p data-resume>{{ resume?.copy }}</p>
-      <div class="question-meta">
-        <span>{{ question.dimension }} · {{ question.stepIndex }} / {{ question.totalSteps }}</span>
-        <span>{{ progress }}%</span>
-      </div>
-      <progress :value="progress" max="100">{{ progress }}%</progress>
-      <h3>{{ question.stemText }}</h3>
-      <p v-if="question.helperText" class="helper-text">{{ question.helperText }}</p>
-      <div class="options">
-        <button
-          v-for="option in question.options"
-          :key="option.key"
-          class="option"
-          :class="{ selected: selectedKey === option.key }"
-          type="button"
-          :disabled="isLoading"
-          @click="selectedKey = option.key"
-        >
-          <b>{{ option.key }}</b>
-          <span>{{ option.text }}</span>
-        </button>
-      </div>
-      <button class="primary-button" type="button" data-single-submit :disabled="!selectedKey || isLoading || submitting" @click="void submit()">
-        {{ isLoading ? '正在记录…' : '提交答案' }}
-      </button>
-    </section>
-
-    <section v-else-if="isLoading" class="state-panel" role="status" aria-live="polite">
-      <strong>正在读取真实练习</strong>
-      <p>正在读取测评状态…</p>
-    </section>
-
-    <section v-else class="state-panel state-panel--error" role="alert">
-      <strong>{{ store.lastError ? '真实练习暂时不可用' : '当前没有可用练习题' }}</strong>
-      <p>{{ store.lastError || '服务端尚未返回可用的已发布测评内容。' }}</p>
-      <button class="secondary-button" type="button" @click="void load()">重新读取</button>
-    </section>
-
-    <p v-if="store.pendingAssessmentAnswers.length" class="pending-note" role="status">
-      有 {{ store.pendingAssessmentAnswers.length }} 条答案等待服务端确认；未确认前不会显示为完成。
-    </p>
+      <aside class="v2-practice-guide" aria-label="操作提示"><p class="card-kicker">专注练习</p><h3>一次完成一小步</h3><ol><li>先读题目与材料。</li><li>选择答案后提交。</li><li>对照反馈理解，再继续。</li></ol><p class="muted">退出页面会保留本机进度，回来后从原来的位置继续。</p><ul class="v2-practice-keys"><li><kbd>Tab</kbd> 移动焦点</li><li><kbd>Enter</kbd> 执行选中操作</li></ul><RouterLink class="button button--ghost" :to="{ name: 'today' }">返回今日任务</RouterLink></aside>
+    </div>
   </section>
 </template>
 
