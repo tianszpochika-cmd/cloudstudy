@@ -9,6 +9,7 @@ import { computed, ref } from 'vue'
 import { createMobileB5Order, getMobileB5PublicCatalog, listMobileB5Entitlements, listMobileB5Orders, prepareMobileB5Payment } from '../../api/b5'
 import { listRecords, money, text, toEntitlement, toOrder, toPublicPlan, type MobileB5Entitlement, type MobileB5Order, type MobileB5PublicPlan } from '../../domain/b5'
 import { openUniPage, getUniRuntime } from '../../platform/uni-runtime'
+import { b10ThemeMode } from '../../platform/b10-foundation'
 import { useSessionStore } from '../../stores/session'
 
 const session = useSessionStore()
@@ -18,6 +19,7 @@ const entitlements = ref<MobileB5Entitlement[]>([])
 const status = ref<'idle' | 'loading' | 'ready' | 'error'>('idle')
 const message = ref('')
 const active = computed(() => entitlements.value.filter((item) => item.status === 'ACTIVE'))
+const themeClass = computed(() => `b10-theme--${b10ThemeMode.value}`)
 
 const statusLabels: Record<string, string> = { ACTIVE: '生效中', EXPIRED: '已过期', REVOKED: '已撤销', CREATED: '待支付', PENDING_PAYMENT: '待支付', PAID: '已支付', CANCELLED: '已取消', REFUNDED: '已退款', FAILED: '支付失败' }
 function statusText(value: string): string { return statusLabels[value] ?? value }
@@ -44,7 +46,7 @@ onShow(async () => { await session.restore(); if (!session.isAuthenticated) { ge
 </script>
 
 <template>
-  <view class="yx-page b5-page v2-shop-page" :style="experienceStyle" :data-motion="experienceMotion">
+  <view class="yx-page b5-page v2-shop-page" :class="themeClass" :style="experienceStyle" :data-motion="experienceMotion">
     <MobilePageHeader page="b5-commerce" />
     <view class="v2-shop-body">
       <view v-if="message" class="b5-message fb d v2-shop-fb v2-shop-d" role="status"><AppIcon name="alert" :size="14" /><text>{{ message }}</text></view>
