@@ -74,4 +74,34 @@ async function logoutAndLeave(): Promise<void> {
 
 <style scoped>
 .profile-state,.profile-facts{display:grid;gap:18rpx}.card-title{font-size:30rpx;font-weight:700}.profile-facts text:not(.card-title){color:var(--yx-text-secondary);font-size:24rpx}.mobile-profile-banner>view:last-child{min-width:0;overflow-wrap:anywhere}.yx-button--secondary{color:var(--yx-brand);background:var(--yx-surface-card)}.error{display:block;color:var(--yx-danger);font-size:24rpx}
+/* v2 我的页换皮：对齐 mobile/styles.css 与 refine.css 中 .card/.eyebrow/.btn/.opt/.fb/.menu-row，对齐 practice.vue v2-practice-* 与 today.vue v2-today-* 卡片数值，仅用 var(--v2-*)。 */
+.v2-profile-body{box-sizing:border-box;display:flex;flex-direction:column;gap:var(--v2-space-4);min-width:0;max-width:100%;font-family:var(--v2-font)}
+.v2-profile-body>view,.v2-profile-body>button{box-sizing:border-box;min-width:0;max-width:100%}
+.v2-profile-card{box-sizing:border-box;display:grid;gap:var(--v2-space-2);min-width:0;max-width:100%;padding:var(--v2-space-5);border:1px solid var(--v2-line);border-radius:var(--v2-radius-lg);background:var(--v2-card);box-shadow:var(--v2-shadow);font-family:var(--v2-font);overflow-wrap:anywhere}
+.v2-profile-card:hover{border-color:var(--v2-brand)}
+.v2-profile-eyebrow{box-sizing:border-box;display:flex;align-items:center;gap:var(--v2-space-2);min-width:0;max-width:100%;margin:0 0 var(--v2-space-2);color:var(--v2-mut);font-family:var(--v2-font);font-size:var(--v2-text-xs);font-weight:700;letter-spacing:.06em;text-transform:uppercase;overflow-wrap:anywhere}
+.v2-profile-title{box-sizing:border-box;display:block;min-width:0;max-width:100%;margin:var(--v2-space-1) 0 0;color:var(--v2-ink);font-family:var(--v2-font);font-size:var(--v2-text-lg);font-weight:700;line-height:1.45;overflow-wrap:anywhere}
+.v2-profile-h2{box-sizing:border-box;display:flex;align-items:center;flex-wrap:wrap;gap:var(--v2-space-2);min-width:0;max-width:100%;color:var(--v2-ink);font-family:var(--v2-font);font-size:var(--v2-text-lg);font-weight:700;line-height:1.45;overflow-wrap:anywhere}
+.v2-profile-h2>*{min-width:0;max-width:100%}
+.v2-profile-d{box-sizing:border-box;display:block;min-width:0;max-width:100%;margin-top:var(--v2-space-2);color:var(--v2-mut);font-family:var(--v2-font);font-size:var(--v2-text-sm);line-height:1.7;overflow-wrap:anywhere}
+.v2-profile-summary{box-sizing:border-box;display:flex;align-items:center;flex-wrap:wrap;gap:var(--v2-space-4);min-width:0;max-width:100%;font-family:var(--v2-font);overflow-wrap:anywhere}
+.v2-profile-summary>*{min-width:0;max-width:100%}
+.v2-profile-dot{box-sizing:border-box;display:flex;flex:none;align-items:center;justify-content:center;width:var(--v2-space-12);height:var(--v2-space-12);border-radius:var(--v2-radius-md);background:var(--v2-soft);color:var(--v2-brand);font-family:var(--v2-font);font-size:var(--v2-text-lg);font-weight:700;line-height:1}
+.v2-profile-titles{box-sizing:border-box;display:grid;gap:var(--v2-space-1);flex:1 1 0;min-width:0;max-width:100%;font-family:var(--v2-font);overflow-wrap:anywhere}
+.v2-profile-links{box-sizing:border-box;display:grid;gap:var(--v2-space-2);min-width:0;max-width:100%;font-family:var(--v2-font)}
+.v2-profile-list{box-sizing:border-box;display:grid;gap:var(--v2-space-2);min-width:0;max-width:100%;font-family:var(--v2-font)}
+.v2-profile-list>*{min-width:0;max-width:100%}
+.v2-profile-row{box-sizing:border-box;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:var(--v2-space-2);min-width:0;max-width:100%;padding:var(--v2-space-4);border:1px solid var(--v2-line);border-radius:var(--v2-radius-md);background:var(--v2-card);color:var(--v2-ink);font-family:var(--v2-font);font-size:var(--v2-text-sm);font-weight:600;line-height:1.5;text-align:left;white-space:normal;overflow-wrap:anywhere}
+.v2-profile-row:hover{border-color:var(--v2-brand)}
+.v2-profile-row>*{min-width:0;max-width:100%}
+.v2-profile-btn,.v2-profile-opt{box-sizing:border-box;display:flex;align-items:center;justify-content:center;gap:var(--v2-space-2);width:100%;max-width:100%;min-width:0;min-height:var(--v2-space-12);padding:var(--v2-space-3) var(--v2-space-4);border:1px solid var(--v2-line);border-radius:var(--v2-radius-md);background:var(--v2-card);color:var(--v2-ink);font-family:var(--v2-font);font-size:var(--v2-text-sm);font-weight:600;line-height:1.5;text-align:center;white-space:nowrap;overflow-wrap:anywhere}
+.v2-profile-btn>*,.v2-profile-opt>*{min-width:0;max-width:100%}
+.v2-profile-opt:hover,.v2-profile-btn:hover{border-color:var(--v2-brand)}
+.v2-profile-opt:active,.v2-profile-btn:active{transform:scale(.97)}
+.v2-profile-opt:focus-visible,.v2-profile-btn:focus-visible{box-shadow:var(--v2-focus);outline:none}
+.v2-profile-opt:disabled,.v2-profile-btn:disabled{background:var(--v2-surface);color:var(--v2-mut);border:1px dashed var(--v2-line);box-shadow:none}
+.v2-profile-submit{border-color:transparent;background:var(--v2-brand);color:var(--v2-inverse);font-family:var(--v2-font);font-weight:700}
+.v2-profile-submit:hover{border-color:var(--v2-brand)}
+.v2-profile-row.v2-profile-btn,.v2-profile-row.v2-profile-opt,.v2-profile-list .v2-profile-btn,.v2-profile-list .v2-profile-opt{justify-content:space-between;text-align:left;white-space:normal}
+.v2-profile-fb{box-sizing:border-box;display:block;min-width:0;max-width:100%;margin-top:var(--v2-space-4);padding:var(--v2-space-3) var(--v2-space-4);border-radius:var(--v2-radius-md);background:var(--v2-surface);color:var(--v2-mut);font-family:var(--v2-font);font-size:var(--v2-text-sm);line-height:1.7;overflow-wrap:anywhere}
 </style>
