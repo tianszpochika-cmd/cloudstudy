@@ -311,6 +311,7 @@ onMounted(() => {
 
 <template>
   <div class="view-stack">
+    <div class="questions-page">
     <AdminPageIntro
       ><el-space>
         <el-button @click="batchVisible = true" :disabled="!canWrite"
@@ -323,7 +324,7 @@ onMounted(() => {
     >
 
     <el-card shadow="never">
-      <el-space wrap>
+      <el-space wrap class="questions-toolbar">
         <el-select
           v-model="kind"
           placeholder="类型"
@@ -392,7 +393,8 @@ onMounted(() => {
       show-icon
     />
 
-    <el-card shadow="never">
+    <el-card shadow="never" class="questions-list">
+      <template #header><div class="card-header"><span>题目与练习</span><el-tag>{{ rows.length }} 条</el-tag></div></template>
       <el-skeleton v-if="state === 'loading'" :rows="5" animated /><el-table
         v-else-if="rows.length && state === 'ready'"
         :data="rows"
@@ -554,7 +556,7 @@ onMounted(() => {
         :rows="10"
         :placeholder="batchTemplate()"
       />
-      <el-card v-if="batchResult" shadow="never" style="margin-top: 12px">
+      <el-card v-if="batchResult" shadow="never" style="margin-top: 12px" class="questions-batch-result">
         <p>
           总数 {{ batchResult.total }} · 成功 {{ batchResult.accepted }} · 跳过
           {{ batchResult.skipped }} · 失败 {{ batchResult.failed }}
@@ -567,5 +569,6 @@ onMounted(() => {
         >
       </template>
     </el-dialog>
+    </div>
   </div>
 </template>
