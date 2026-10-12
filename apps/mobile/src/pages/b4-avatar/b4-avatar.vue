@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
 import AppIcon from '../../components/AppIcon.vue'
 import MobilePageHeader from '../../components/MobilePageHeader.vue'
@@ -9,12 +9,14 @@ import type { B4AvatarItem, B4Loadout, B4PerformanceLevel } from '../../domain/b
 import { useMobileExperience } from '../../platform/experience'
 import { openUniPage } from '../../platform/uni-runtime'
 import { useB4Store } from '../../stores/b4'
+import { b10ThemeMode } from '../../platform/b10-foundation'
 
 const { experienceStyle, experienceMotion } = useMobileExperience()
 const b4 = useB4Store()
 const accessGranted = ref(false)
 const pageLoading = ref(true)
 const pageReady = ref(false)
+const themeClass = computed(() => `b10-theme--${b10ThemeMode.value}`)
 
 onShow(async () => {
   accessGranted.value = false
@@ -55,7 +57,7 @@ function itemQuality(quality: string): string {
 </script>
 
 <template>
-  <view class="yx-page b4-avatar v2-avatar-page" :style="experienceStyle" :data-motion="experienceMotion">
+  <view class="yx-page b4-avatar v2-avatar-page" :style="experienceStyle" :data-motion="experienceMotion" :class="themeClass">
     <MobilePageHeader page="b4-avatar" />
 
     <view class="v2-avatar-body">
