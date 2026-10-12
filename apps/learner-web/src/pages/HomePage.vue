@@ -145,4 +145,18 @@ onMounted(() => { store.restore(); void store.loadHome(); void loadGuide() })
 .home-experience.v2-home .daily-task--done { opacity: .6; }
 .home-experience.v2-home .text-link { color: var(--v2-brand); font-weight: 600; }
 .home-experience.v2-home .onboarding-guide { background: var(--v2-soft); border-color: var(--v2-line); }
+.home-experience.v2-home .v2-home-thead { display: grid; grid-template-columns: 44px minmax(0, 1fr) 90px 110px; gap: 12px; padding: 10px 16px; background: var(--v2-surface); color: var(--v2-mut); font-size: 12px; font-weight: 600; border-bottom: 1px solid var(--v2-line); }
+.home-experience.v2-home .v2-home-thead span:first-child { grid-column: 1 / 3; }
+.home-experience.v2-home .v2-home-row { display: grid; grid-template-columns: 44px minmax(0, 1fr) 90px 110px; gap: 12px; align-items: center; border-top: 0; text-align: left; }
+.home-experience.v2-home .v2-home-row > svg { display: none; }
+.home-experience.v2-home .v2-home-row .daily-task__copy small { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+.home-experience.v2-home .v2-home-min { color: var(--v2-mut); font-size: 13px; }
+.home-experience.v2-home .v2-home-row .daily-task__state { justify-self: start; padding: 4px 12px; border-radius: var(--v2-radius-pill); background: var(--v2-soft); color: var(--v2-brand); font-size: 12px; font-weight: 700; }
+.home-experience.v2-home .v2-home-row.daily-task--done .daily-task__state { background: var(--v2-ok-soft); color: var(--v2-ok); }
+.home-experience.v2-home .v2-home-rail { display: flex; flex-direction: column; gap: 16px; }
+.home-experience.v2-home .v2-home-rail .world-invitation { background: var(--v2-card); border: 1px solid var(--v2-line); border-radius: var(--v2-radius-lg); box-shadow: var(--v2-shadow); color: var(--v2-ink); }
+.home-experience.v2-home .v2-home-quick { display: flex; flex-direction: column; gap: 6px; padding: 18px 20px; }
+.home-experience.v2-home .v2-home-quick a { display: flex; align-items: center; justify-content: space-between; min-height: 40px; padding: 0 12px; border-radius: var(--v2-radius-md); color: var(--v2-ink); text-decoration: none; font-size: 13px; transition: background var(--v2-motion-fast); }
+.home-experience.v2-home .v2-home-quick a:hover { background: var(--v2-surface); color: var(--v2-brand); }
+@media (max-width: 650px) { .home-experience.v2-home .v2-home-thead { display: none; } .home-experience.v2-home .v2-home-row { grid-template-columns: 40px minmax(0, 1fr); } .home-experience.v2-home .v2-home-min { display: none; } .home-experience.v2-home .v2-home-row .daily-task__state { grid-column: 2; } }
 </style>
