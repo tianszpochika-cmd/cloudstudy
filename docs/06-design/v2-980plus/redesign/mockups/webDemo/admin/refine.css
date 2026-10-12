@@ -48,3 +48,12 @@
 .state-loading{position:relative;overflow:hidden}
 .state-loading .skeleton{background:linear-gradient(90deg,var(--aline) 0%,var(--abg) 50%,var(--aline) 100%);background-size:200% 100%;border-radius:10px}
 .state-loading .skeleton.big{height:160px}
+
+/* —— R2·B5：详情页/审批流节奏 —— */
+.detail-row{display:grid!important;grid-template-columns:120px minmax(0,1fr);gap:16px;align-items:center;font-size:13px!important}
+.detail-row>:last-child{justify-self:end;text-align:right;font-weight:600}
+.panel h2{display:flex;align-items:center;gap:8px}
+.timeline:empty,.timeline>.muted:only-child{border-left-style:dashed}
+.callout{border-radius:10px!important;line-height:1.65}
+.panel textarea{border-radius:10px;transition:border-color var(--motion-base) var(--ease),box-shadow var(--motion-base) var(--ease)}
+.panel .actions .button{min-height:40px;padding:9px 16px}

@@ -91,3 +91,6 @@ input[type=checkbox],input[type=radio]{accent-color:var(--brand);width:18px;heig
 
 .toast:not(.show){animation:none!important;opacity:0;pointer-events:none}
 .ico{width:1em;height:1em;display:inline-block;vertical-align:-.125em;flex:none}
+.nav-ico{display:inline-grid!important;place-items:center;width:20px;height:20px;font-size:0!important;flex:none;opacity:.9}
+.nav-ico .ico{width:18px;height:18px}
+[aria-current=page] .nav-ico,.active .nav-ico{opacity:1}

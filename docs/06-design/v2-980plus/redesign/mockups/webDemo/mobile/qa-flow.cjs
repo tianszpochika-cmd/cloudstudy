@@ -4780,7 +4780,7 @@ const QA_URL = process.env.STATIC_DEMO_URL || 'http://127.0.0.1:18283/webDemo/mo
 
 // LAST_RUN_RESULT
 // {
-//   "at": "2026-10-12T07:06:06.786Z",
+//   "at": "2026-10-12T07:23:43.578Z",
 //   "url": "http://127.0.0.1:18283/webDemo/mobile/",
 //   "surface": "mobile",
 //   "viewport": 390,
@@ -5085,7 +5085,7 @@ const QA_URL = process.env.STATIC_DEMO_URL || 'http://127.0.0.1:18283/webDemo/mo
 //   ],
 //   "pageErrors": [],
 //   "externalRequests": [],
-//   "evidenceDir": "/workspace/cs/.git/codex-local-backups/mobile-qa-1791788766789-light",
+//   "evidenceDir": "/workspace/cs/.git/codex-local-backups/mobile-qa-1791789823581-light",
 //   "loadedScripts": [
 //     "../shared/data.js",
 //     "app.js",
