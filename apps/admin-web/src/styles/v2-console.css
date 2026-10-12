@@ -1197,3 +1197,46 @@
   font-size: 12px;
   color: var(--v2-mut);
 }
+
+/* === page: audit === */
+.audit-page .audit-list .card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.audit-page .audit-list .list-toolbar {
+  padding: 12px;
+  background: var(--v2-surface);
+  border-radius: var(--v2-radius-md);
+  margin-bottom: 14px;
+}
+.audit-page .audit-list .el-table td:first-child .cell {
+  font-weight: 700;
+  color: var(--v2-ink);
+}
+.audit-page .audit-list .el-tag {
+  border-radius: 999px;
+}
+.audit-page .audit-list .list-footer {
+  justify-content: flex-end;
+}
+.audit-page .audit-list .audit-load-more {
+  justify-content: flex-end;
+}
+.audit-page .audit-mobile-card .detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--v2-line);
+}
+.audit-page .audit-mobile-card .detail-row dt {
+  font-size: 12px;
+  color: var(--v2-mut);
+}
+.audit-page .audit-mobile-card .detail-row dd {
+  color: var(--v2-ink);
+  font-weight: 600;
+  text-align: right;
+}

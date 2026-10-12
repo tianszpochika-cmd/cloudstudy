@@ -138,7 +138,7 @@ onUnmounted(() => { ++loadRequest; });
     ><el-alert title="脱敏记录" type="info" :closable="false" show-icon
       >仅显示审计引用与处理结果。</el-alert
     ><p class="it7-closure">{{ auditNotice(closure) }}内部审计不提供给学习端。</p
-    ><el-card shadow="never"
+    ><el-card shadow="never" class="audit-list"
       ><div class="list-toolbar">
         <el-input
           v-model="query"
@@ -147,6 +147,7 @@ onUnmounted(() => { ++loadRequest; });
           :aria-label="ui('filter')"
         /><span class="list-count">已加载 {{ rows.length }} 条</span>
       </div>
+      <template #header><div class="card-header"><span>审计日志</span><el-tag>{{ rows.length }} 条</el-tag></div></template>
       <el-skeleton v-if="loading" :rows="4" animated /><el-alert
         v-else-if="errorMessage"
         :title="errorMessage"
@@ -183,10 +184,10 @@ onUnmounted(() => { ++loadRequest; });
             </div>
             <time>{{ formatTime(entry.occurredAt) }}</time>
             <dl>
-              <div><dt>资源</dt><dd>{{ entry.resourceRef || "—" }}</dd></div>
-              <div v-if="entry.resultCode"><dt>结果</dt><dd>{{ entry.resultCode }}</dd></div>
-              <div v-if="entry.commandId"><dt>命令</dt><dd>{{ entry.commandId }}</dd></div>
-              <div v-if="entry.traceId"><dt>追踪</dt><dd>{{ entry.traceId }}</dd></div>
+              <div class="detail-row"><dt>资源</dt><dd>{{ entry.resourceRef || "—" }}</dd></div>
+              <div v-if="entry.resultCode" class="detail-row"><dt>结果</dt><dd>{{ entry.resultCode }}</dd></div>
+              <div v-if="entry.commandId" class="detail-row"><dt>命令</dt><dd>{{ entry.commandId }}</dd></div>
+              <div v-if="entry.traceId" class="detail-row"><dt>追踪</dt><dd>{{ entry.traceId }}</dd></div>
             </dl>
           </article>
         </div>
