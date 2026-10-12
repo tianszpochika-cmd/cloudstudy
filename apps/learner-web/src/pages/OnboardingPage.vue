@@ -185,9 +185,9 @@ async function cancel(): Promise<void> {
 </script>
 
 <template>
-  <main class="public-page public-page--setup">
-    <section class="onboarding-flow" aria-labelledby="onboarding-title" :aria-busy="saving || store.onboardingStatus === 'loading'">
-      <header class="onboarding-flow__header">
+  <main class="public-page public-page--setup v2-onboard">
+    <section class="onboarding-flow v2-onboard-flow" aria-labelledby="onboarding-title" :aria-busy="saving || store.onboardingStatus === 'loading'">
+      <header class="onboarding-flow__header v2-onboard-aside">
         <div class="brand">
           <AppIcon name="spark" :size="32" />
           <span>语学星</span>
@@ -196,7 +196,7 @@ async function cancel(): Promise<void> {
         <h1 id="onboarding-title">欢迎来到语学星</h1>
         <p class="lead">{{ progressLabel }}</p>
 
-        <ol class="setup-progress" aria-label="设置进度">
+        <ol class="setup-progress v2-onboard-steps" aria-label="设置进度">
           <li :class="{ 'setup-progress__item--active': stepRank === 0, 'setup-progress__item--done': stepRank > 0 }" :aria-current="stepRank === 0 ? 'step' : undefined">
             <span class="setup-progress__number">1</span>
             <span>确认身份</span>
@@ -215,7 +215,7 @@ async function cancel(): Promise<void> {
       <p v-if="session.adultGate === 'REJECTED'" class="policy-note" role="status">正在打开无权限页。</p>
 
       <Transition v-else name="setup-step" mode="out-in">
-        <form v-if="step === 'gate'" key="gate" class="setup-card" @submit.prevent="next">
+        <form v-if="step === 'gate'" key="gate" class="setup-card v2-onboard-card" @submit.prevent="next">
           <p class="setup-card__kicker">{{ stepLabel }}</p>
           <h2>确认成人身份</h2>
           <p class="setup-card__description">只收集出生年份，用来判断是否已满 18 岁。现有成人门不需要月和日，所以不收集完整生日。成人门还没通过时，停在这一步。</p>
@@ -235,7 +235,7 @@ async function cancel(): Promise<void> {
           </div>
         </form>
 
-        <form v-else-if="step === 'consent'" key="consent" class="setup-card" @submit.prevent="next">
+        <form v-else-if="step === 'consent'" key="consent" class="setup-card v2-onboard-card" @submit.prevent="next">
           <p class="setup-card__kicker">{{ stepLabel }}</p>
           <h2>完成必要同意</h2>
           <p class="setup-card__description">账号条款、隐私说明和成人学习资格要逐项看见。开始时不勾选，也不默认全选。</p>
@@ -261,7 +261,7 @@ async function cancel(): Promise<void> {
           </div>
         </form>
 
-        <form v-else key="goal" class="setup-card" @submit.prevent="next">
+        <form v-else key="goal" class="setup-card v2-onboard-card" @submit.prevent="next">
           <p class="setup-card__kicker">{{ stepLabel }}</p>
           <h2>{{ step === 'assessment' ? '目标已保存' : '你想先解决什么？' }}</h2>
           <p class="setup-card__description">{{ step === 'assessment' ? '已保存的目标仍在服务端。没有改目标的话，直接开始定级，不必重填。' : '选一个目标并保存后，进入现有定级入口。' }}</p>
@@ -301,7 +301,7 @@ async function cancel(): Promise<void> {
         </form>
       </Transition>
 
-      <button class="setup-cancel" type="button" :disabled="saving" @click="cancel">退出登录</button>
+      <button class="setup-cancel v2-onboard-cancel" type="button" :disabled="saving" @click="cancel">退出登录</button>
     </section>
   </main>
 </template>
@@ -363,4 +363,30 @@ async function cancel(): Promise<void> {
 @media (prefers-reduced-motion: reduce) {
   .setup-step-enter-active, .setup-step-leave-active { transition-duration: .01ms; }
 }
+</style>
+
+<style>
+.public-page.v2-onboard { background: var(--v2-bg); color: var(--v2-ink); font-family: var(--v2-font); min-height: 100dvh; padding: 40px 46px; }
+.public-page.v2-onboard .v2-onboard-flow { display: grid; grid-template-columns: minmax(280px, 380px) minmax(0, 640px); grid-template-areas: "aside card" "aside cancel"; gap: 20px 40px; justify-content: center; align-items: start; max-width: 1120px; margin: 0 auto; }
+.public-page.v2-onboard .v2-onboard-flow > * { grid-column: 2; }
+.public-page.v2-onboard .v2-onboard-aside { grid-area: aside; grid-column: 1; position: sticky; top: 40px; padding: 32px; background: var(--v2-grad-soft); border: 1px solid var(--v2-line); border-radius: 24px; }
+.public-page.v2-onboard .v2-onboard-aside .brand { color: var(--v2-brand); }
+.public-page.v2-onboard .v2-onboard-aside h1 { font-size: 30px; letter-spacing: -1px; margin: 10px 0 6px; color: var(--v2-ink); }
+.public-page.v2-onboard .v2-onboard-aside .eyebrow { color: var(--v2-brand); font-weight: 700; font-size: 12px; }
+.public-page.v2-onboard .v2-onboard-aside .lead { color: var(--v2-mut); }
+.public-page.v2-onboard .v2-onboard-steps { display: grid; gap: 10px; margin: 24px 0 0; padding: 0; list-style: none; }
+.public-page.v2-onboard .v2-onboard-steps li { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: var(--v2-radius-md); color: var(--v2-mut); background: transparent; }
+.public-page.v2-onboard .v2-onboard-steps .setup-progress__number { width: 28px; height: 28px; display: grid; place-items: center; border-radius: 50%; border: 1px solid var(--v2-line); background: var(--v2-card); font-size: 12px; font-weight: 700; }
+.public-page.v2-onboard .v2-onboard-steps .setup-progress__item--active { background: var(--v2-card); color: var(--v2-brand); font-weight: 700; box-shadow: var(--v2-shadow); }
+.public-page.v2-onboard .v2-onboard-steps .setup-progress__item--active .setup-progress__number { background: var(--v2-brand); color: var(--v2-inverse); border-color: var(--v2-brand); }
+.public-page.v2-onboard .v2-onboard-steps .setup-progress__item--done .setup-progress__number { background: var(--v2-ok-soft); color: var(--v2-ok); border-color: transparent; }
+.public-page.v2-onboard .v2-onboard-card { grid-area: card; padding: 32px; background: var(--v2-card); border: 1px solid var(--v2-line); border-radius: var(--v2-radius-lg); box-shadow: var(--v2-shadow); }
+.public-page.v2-onboard .v2-onboard-card h2 { font-size: 24px; letter-spacing: -.6px; }
+.public-page.v2-onboard .v2-onboard-card .setup-card__kicker { color: var(--v2-brand); font-weight: 700; font-size: 12px; }
+.public-page.v2-onboard .v2-onboard-card .policy-note { background: var(--v2-surface); border-radius: var(--v2-radius-md); padding: 10px 12px; color: var(--v2-mut); font-size: 12px; }
+.public-page.v2-onboard .v2-onboard-card .choice, .public-page.v2-onboard .v2-onboard-card .quota, .public-page.v2-onboard .v2-onboard-card .tag { border: 1px solid var(--v2-line); border-radius: var(--v2-radius-md); background: var(--v2-card); color: var(--v2-ink); transition: border-color var(--v2-motion-fast); }
+.public-page.v2-onboard .v2-onboard-card :is(.choice, .quota, .tag).selected { border-color: var(--v2-brand); background: var(--v2-soft); color: var(--v2-brand); }
+.public-page.v2-onboard .v2-onboard-card .button--primary { background: var(--v2-brand); color: var(--v2-inverse); border-radius: var(--v2-radius-md); }
+.public-page.v2-onboard .v2-onboard-cancel { grid-area: cancel; justify-self: start; color: var(--v2-mut); background: transparent; border: 0; }
+@media (max-width: 900px) { .public-page.v2-onboard { padding: 20px 16px; } .public-page.v2-onboard .v2-onboard-flow { grid-template-columns: 1fr; grid-template-areas: "aside" "card" "cancel"; } .public-page.v2-onboard .v2-onboard-flow > *, .public-page.v2-onboard .v2-onboard-aside { grid-column: 1; position: static; } }
 </style>
