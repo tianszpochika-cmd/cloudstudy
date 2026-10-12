@@ -4,15 +4,18 @@ import AppIcon from '../../components/AppIcon.vue'
 import { useMobileExperience } from '../../platform/experience'
 const { experienceStyle, experienceMotion } = useMobileExperience()
 
+import { computed } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
 import B4StatusPanel from '../../components/b4/B4StatusPanel.vue'
 import type { B4PerformanceLevel } from '../../domain/b4'
 import { getUniRuntime } from '../../platform/uni-runtime'
 import { useSessionStore } from '../../stores/session'
 import { useB4Store } from '../../stores/b4'
+import { b10ThemeMode } from '../../platform/b10-foundation'
 
 const session = useSessionStore()
 const b4 = useB4Store()
+const themeClass = computed(() => `b10-theme--${b10ThemeMode.value}`)
 
 onShow(async () => {
   await session.restore()
@@ -28,7 +31,7 @@ function fileSize(bytes: number): string { return bytes >= 1048576 ? `${(bytes /
 </script>
 
 <template>
-  <view class="yx-page b4-offline v2-offline-page" :style="experienceStyle" :data-motion="experienceMotion">
+  <view class="yx-page b4-offline v2-offline-page" :style="experienceStyle" :data-motion="experienceMotion" :class="themeClass">
     <MobilePageHeader page="b4-offline" />
 
     <view class="v2-offline-body">
