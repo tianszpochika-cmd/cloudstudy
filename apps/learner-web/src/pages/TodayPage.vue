@@ -98,3 +98,21 @@ function continueLearning(): void {
 .practice-options{display:grid;gap:6px;margin-top:8px}.practice-options label{display:flex;gap:8px;align-items:flex-start;line-height:1.6;cursor:pointer}
 @media(max-width:640px){.section-heading{flex-wrap:wrap}.task-row{flex-wrap:wrap}.task-copy{flex-basis:calc(100% - 54px)}.task-row .button{margin-left:auto}}
 </style>
+<style>
+.v2-page--today .v2-today { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; background: transparent; border: 0; box-shadow: none; padding: 0; }
+.v2-page--today .v2-today > * { grid-column: 1 / -1; }
+.v2-page--today .v2-today > .v2-today-card { grid-column: auto; }
+.v2-page--today .v2-today-heading { display: flex; align-items: flex-end; justify-content: space-between; padding: 22px; background: var(--v2-card); border: 1px solid var(--v2-line); border-radius: var(--v2-radius-lg); box-shadow: var(--v2-shadow); }
+.v2-page--today .v2-today-heading h3 { margin: 4px 0 0; font-size: 20px; }
+.v2-page--today .v2-today-arrangement { display: none; }
+.v2-page--today .v2-today-banner { margin: 0; padding: 12px 16px; background: var(--v2-soft); color: var(--v2-ink); border-radius: var(--v2-radius-md); font-size: 13px; }
+.v2-page--today .v2-today-card { display: grid; grid-template-columns: 40px minmax(0, 1fr); grid-template-rows: auto auto; gap: 10px 12px; align-items: start; padding: 20px; background: var(--v2-card); border: 1px solid var(--v2-line); border-radius: var(--v2-radius-lg); box-shadow: var(--v2-shadow); transition: border-color var(--v2-motion-fast); }
+.v2-page--today .v2-today-card:hover { border-color: var(--v2-brand2); }
+.v2-page--today .v2-today-card .task-icon { width: 40px; height: 40px; display: grid; place-items: center; border-radius: 12px; background: var(--v2-soft); color: var(--v2-brand); font-weight: 700; }
+.v2-page--today .v2-today-card .task-copy strong { color: var(--v2-ink); font-size: 15px; }
+.v2-page--today .v2-today-card .task-copy p { margin: 4px 0 0; color: var(--v2-mut); font-size: 12px; }
+.v2-page--today .v2-today-card > .button { grid-column: 2; justify-self: start; min-height: 36px; background: var(--v2-brand); color: var(--v2-inverse); border: 0; }
+.v2-page--today .v2-today-card.completed { opacity: .6; }
+.v2-page--today .v2-today-card.completed > .button { background: var(--v2-surface); color: var(--v2-mut); }
+@media (max-width: 650px) { .v2-page--today .v2-today { grid-template-columns: 1fr; } }
+</style>
