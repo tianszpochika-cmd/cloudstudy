@@ -119,6 +119,6 @@ const reportLabels: Record<string, string> = { PENDING_RETRY: "待补救", DELAY
 .v2-report-sr-only{display:none !important;}
 .v2-report-mistakes .v2-report-item{flex-direction:column;align-items:stretch;gap:var(--v2-space-2);background:var(--v2-card);border:1px solid var(--v2-line);border-radius:var(--v2-radius-lg);padding:var(--v2-space-4);box-shadow:var(--v2-shadow);}
 .v2-report-mistakes .v2-report-desc{font-size:var(--v2-text-md);font-weight:600;color:var(--v2-ink);}
-.v2-report-mistakes [data-closure]{display:inline-block;align-self:flex-start;padding:var(--v2-space-1) var(--v2-space-3);border-radius:var(--v2-radius-pill);background:var(--v2-warn-soft);color:var(--v2-warn);font-size:var(--v2-text-xs);font-weight:700;}
+.v2-report-mistakes [data-closure]{display:inline-block !important;width:fit-content;max-width:100%;align-self:flex-start;padding:var(--v2-space-1) var(--v2-space-3);border-radius:var(--v2-radius-pill);background:var(--v2-warn-soft);color:var(--v2-warn);font-size:var(--v2-text-xs);font-weight:700;}
 .v2-report-mistakes .v2-report-retry{width:100%;min-height:44px;background:var(--v2-brand);color:#fff;border-radius:var(--v2-radius-md);border:0;}
 </style>
