@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import MobilePageHeader from '../../components/MobilePageHeader.vue'
+import AppIcon from '../../components/AppIcon.vue'
 import { useMobileExperience } from '../../platform/experience'
 const { experienceStyle, experienceMotion } = useMobileExperience()
 
@@ -38,7 +39,74 @@ onShow(async () => { await session.restore(); if (!session.isAuthenticated) { ge
 </script>
 
 <template>
-  <view class="yx-page b5-page" :style="experienceStyle" :data-motion="experienceMotion"><MobilePageHeader page="b5-commerce" /><view v-if="message" class="b5-message">{{ message }}</view><view class="b5-section"><view class="b5-section__heading"><text>当前权益</text><text class="b5-muted">{{ active.length }} 项</text></view><view v-if="active.length" class="b5-list"><view v-for="item in active" :key="item.sourceRef" class="b5-row"><view><text>{{ item.entitlementCode }}</text><text class="b5-muted">有效至 {{ item.expiresAt.slice(0, 10) }}</text></view><text class="b5-status">{{ item.status }}</text></view></view><text v-else class="b5-empty">暂无生效权益</text></view><view class="b5-section"><view class="b5-section__heading"><text>学习方案</text></view><view v-if="status === 'loading'" class="b5-empty">正在加载学习方案…</view><view v-else-if="!plans.length" class="b5-empty">当前没有可购买的方案。</view><view v-else class="b5-plan-list"><view v-for="plan in plans" :key="plan.skuId" class="b5-plan"><view><text class="b5-plan__title">{{ plan.title }}</text></view><view class="b5-plan__action"><text class="b5-price">{{ money(plan.amountMinor, plan.currency) }}</text><button tabindex="0" role="button" class="b5-primary" type="button" @click="createOrder(plan)">选择方案</button></view></view></view></view><view class="b5-section"><view class="b5-section__heading"><text>订单恢复</text><text class="b5-muted">服务端状态</text></view><view v-if="orders.length" class="b5-list"><view v-for="order in orders" :key="order.orderId" class="b5-row"><view><text>{{ order.orderId }}</text><text class="b5-muted">{{ order.skuId }} · {{ money(order.amountMinor, order.currency) }}</text></view><view class="b5-row__right"><text class="b5-status">{{ order.status }}</text><button tabindex="0" role="button" v-if="order.status === 'CREATED'" class="b5-secondary" type="button" @click="recover(order)">恢复</button></view></view></view><text v-else class="b5-empty">还没有订单</text></view></view>
+  <view class="yx-page b5-page v2-shop-page" :style="experienceStyle" :data-motion="experienceMotion">
+    <MobilePageHeader page="b5-commerce" />
+    <view class="v2-shop-body">
+      <view v-if="message" class="b5-message fb d v2-shop-fb v2-shop-d" role="status"><AppIcon name="alert" :size="14" /><text>{{ message }}</text></view>
+      <view class="b5-section card v2-shop-card">
+        <view class="b5-section__heading v2-shop-head">
+          <view class="v2-shop-titles">
+            <text class="v2-shop-eyebrow eyebrow"><AppIcon name="ticket" :size="14" /><text>ENTITLEMENTS</text></text>
+            <text class="v2-shop-title v2-shop-h2 h2">当前权益</text>
+            <text class="b5-muted v2-shop-d d">{{ active.length }} 项</text>
+          </view>
+        </view>
+        <view v-if="active.length" class="b5-list v2-shop-list">
+          <view v-for="item in active" :key="item.sourceRef" class="b5-row list-row row v2-shop-row">
+            <view class="v2-shop-copy">
+              <text class="v2-shop-name v2-shop-h2">{{ item.entitlementCode }}</text>
+              <text class="b5-muted v2-shop-d d">有效至 {{ item.expiresAt.slice(0, 10) }}</text>
+            </view>
+            <text class="b5-status v2-shop-state v2-shop-tag">{{ item.status }}</text>
+          </view>
+        </view>
+        <text v-else class="b5-empty fb d v2-shop-fb v2-shop-d v2-shop-empty">暂无生效权益</text>
+      </view>
+      <view class="b5-section card v2-shop-card">
+        <view class="b5-section__heading v2-shop-head">
+          <view class="v2-shop-titles">
+            <text class="v2-shop-eyebrow eyebrow"><AppIcon name="store" :size="14" /><text>PLANS</text></text>
+            <text class="v2-shop-title v2-shop-h2 h2">学习方案</text>
+          </view>
+        </view>
+        <view v-if="status === 'loading'" class="b5-empty fb d v2-shop-fb v2-shop-d" role="status"><AppIcon name="refresh" :size="14" /><text>正在加载学习方案…</text></view>
+        <view v-else-if="!plans.length" class="b5-empty fb d v2-shop-fb v2-shop-d"><AppIcon name="inbox" :size="14" /><text>当前没有可购买的方案。</text></view>
+        <view v-else class="b5-plan-list v2-shop-list">
+          <view v-for="plan in plans" :key="plan.skuId" class="b5-plan list-row row v2-shop-row">
+            <view class="v2-shop-copy">
+              <text class="b5-plan__title v2-shop-name v2-shop-h2">{{ plan.title }}</text>
+            </view>
+            <view class="b5-plan__action v2-shop-actions row">
+              <text class="b5-price v2-shop-price">{{ money(plan.amountMinor, plan.currency) }}</text>
+              <button tabindex="0" role="button" class="b5-primary btn v2-shop-btn v2-shop-opt v2-shop-submit" type="button" @click="createOrder(plan)">选择方案<AppIcon name="chev" :size="14" /></button>
+            </view>
+          </view>
+        </view>
+      </view>
+      <view class="b5-section card v2-shop-card">
+        <view class="b5-section__heading v2-shop-head">
+          <view class="v2-shop-titles">
+            <text class="v2-shop-eyebrow eyebrow"><AppIcon name="swap" :size="14" /><text>ORDERS</text></text>
+            <text class="v2-shop-title v2-shop-h2 h2">订单恢复</text>
+            <text class="b5-muted v2-shop-d d">服务端状态</text>
+          </view>
+        </view>
+        <view v-if="orders.length" class="b5-list v2-shop-list">
+          <view v-for="order in orders" :key="order.orderId" class="b5-row list-row row v2-shop-row">
+            <view class="v2-shop-copy">
+              <text class="v2-shop-name v2-shop-h2">{{ order.orderId }}</text>
+              <text class="b5-muted v2-shop-d d">{{ order.skuId }} · {{ money(order.amountMinor, order.currency) }}</text>
+            </view>
+            <view class="b5-row__right v2-shop-actions row">
+              <text class="b5-status v2-shop-state v2-shop-tag">{{ order.status }}</text>
+              <button tabindex="0" role="button" v-if="order.status === 'CREATED'" class="b5-secondary btn v2-shop-btn v2-shop-opt" type="button" @click="recover(order)">恢复<AppIcon name="refresh" :size="14" /></button>
+            </view>
+          </view>
+        </view>
+        <text v-else class="b5-empty fb d v2-shop-fb v2-shop-d v2-shop-empty">还没有订单</text>
+      </view>
+    </view>
+  </view>
 </template>
 
 <style scoped lang="scss">
