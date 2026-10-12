@@ -2740,13 +2740,13 @@ const QA_URL = process.env.STATIC_DEMO_URL || 'http://127.0.0.1:18283/webDemo/le
 
 // LAST_RUN_RESULT
 // {
-//   "at": "2026-10-12T06:51:52.677Z",
+//   "at": "2026-10-12T07:02:26.566Z",
 //   "url": "http://127.0.0.1:18283/webDemo/learner-web/",
 //   "surface": "learner-web",
 //   "viewport": 1440,
 //   "mode": "real DOM click; synthetic facts",
 //   "sourceHashes": {
-//     "index.html": "bffc39a1e306beed3a89932739760ddb387e80149256e4937c2e665e8e675aaa",
+//     "index.html": "df7d1b60ac6def0790a5b0db013393ced09af923c7169b6bbbf46576984481a9",
 //     "desktop.js": "d34831338c4d3d3ac7dd4f93b454cd3033f68aac251b4be4fe415dc184b18e0b",
 //     "desktop.css": "356b8eb696b4fe1e8832a35c6607b07a762ac4e4c84fb01e145a2eee69bd403d",
 //     "../shared/data.js": "37a257521ad60beb443aec03c06729063435210652deee30fff1779910050877",
@@ -2982,7 +2982,7 @@ const QA_URL = process.env.STATIC_DEMO_URL || 'http://127.0.0.1:18283/webDemo/le
 //   ],
 //   "pageErrors": [],
 //   "externalRequests": [],
-//   "evidenceDir": "/workspace/cs/.git/codex-local-backups/desktop-qa-1791787912679-1440",
+//   "evidenceDir": "/workspace/cs/.git/codex-local-backups/desktop-qa-1791788546569-1440",
 //   "loadedScripts": [
 //     "../shared/data.js",
 //     "../mobile/app.js",

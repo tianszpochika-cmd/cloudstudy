@@ -49,7 +49,7 @@ input[type=checkbox],input[type=radio]{accent-color:var(--brand);width:18px;heig
 /* —— 提示与弹层 —— */
 .toast{font-weight:550;letter-spacing:.01em}
 .demo-dialog{box-shadow:var(--elev-3)}
-.demo-dialog[open]{animation:refine-rise var(--motion-slow) var(--ease-out) both}
+.demo-dialog[open]{animation:refine-fade var(--motion-base) var(--ease) both}
 .demo-dialog::backdrop{animation:refine-fade var(--motion-base) var(--ease) both}
 .dialog-head button:hover{background:var(--soft);color:var(--brand)}
 
@@ -90,3 +90,4 @@ input[type=checkbox],input[type=radio]{accent-color:var(--brand);width:18px;heig
 .button:focus-visible{box-shadow:var(--ring);outline:none}
 
 .toast:not(.show){animation:none!important;opacity:0;pointer-events:none}
+.ico{width:1em;height:1em;display:inline-block;vertical-align:-.125em;flex:none}
