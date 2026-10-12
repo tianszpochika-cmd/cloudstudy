@@ -80,3 +80,26 @@ async function saveAndExit(): Promise<void> {
 <style scoped>
 .lesson-card{padding:36px;border-radius:20px;color:var(--yx-color-on-brand);background:var(--yx-hero-gradient);box-shadow:0 16px 48px color-mix(in srgb,var(--yx-color-brand-primary) 20%, transparent)}.lesson-card h2{max-width:680px;margin:12px 0;font-size:clamp(28px,5vw,46px);line-height:1.2}.lesson-card .lead{color:color-mix(in srgb,var(--yx-color-on-brand) 84%, transparent)}.lesson-meta{display:flex;justify-content:space-between;margin-top:24px;font-size:13px;opacity:.85}.info-card{padding:28px}.info-card h3{margin:10px 0}.info-card p{color:var(--yx-color-text-secondary);line-height:1.8}.option-list{display:flex;flex-wrap:wrap;gap:10px}.option{padding:10px 14px;border:1px solid var(--yx-color-border);border-radius:10px;color:var(--yx-color-text-secondary)}.state-card{display:grid;gap:12px}.actions{display:flex;gap:12px;margin-top:24px}@media(max-width:640px){.lesson-card{padding:24px}.actions{display:grid}}
 </style>
+
+<style>
+.v2-page--learn .v2-learn-layout { display: grid; grid-template-columns: 185px minmax(0, 1fr) 270px; gap: 20px; align-items: start; }
+.v2-page--learn .v2-learn-toc, .v2-page--learn .v2-learn-tools { position: sticky; top: 96px; display: flex; flex-direction: column; gap: 6px; padding: 18px; background: var(--v2-card); border: 1px solid var(--v2-line); border-radius: var(--v2-radius-lg); box-shadow: var(--v2-shadow); }
+.v2-page--learn .v2-learn-toc a { display: block; padding: 8px 10px; border-radius: var(--v2-radius-md); color: var(--v2-ink); font-size: 13px; text-decoration: none; transition: background var(--v2-motion-fast); }
+.v2-page--learn .v2-learn-toc a:hover { background: var(--v2-soft); color: var(--v2-brand); }
+.v2-page--learn .v2-learn-main { display: grid; gap: 16px; min-width: 0; }
+.v2-page--learn .lesson-card { background: var(--v2-grad-soft); border: 1px solid var(--v2-line); border-radius: var(--v2-radius-lg); padding: 26px; }
+.v2-page--learn .lesson-card h2 { font-size: 26px; letter-spacing: -.6px; margin: 6px 0; }
+.v2-page--learn .lesson-meta { display: flex; gap: 10px; color: var(--v2-mut); font-size: 12px; }
+.v2-page--learn .v2-learn-unit h3 { white-space: pre-line; font-size: 17px; line-height: 1.7; color: var(--v2-ink); }
+.v2-page--learn .v2-learn-unit .option-list { display: grid; gap: 8px; }
+.v2-page--learn .v2-learn-unit .option { padding: 10px 14px; border: 1px solid var(--v2-line); border-radius: var(--v2-radius-md); background: var(--v2-surface); }
+.v2-page--learn .v2-learn-unit { scroll-margin-top: 96px; }
+.v2-page--learn .v2-learn-main > .actions { display: none; }
+.v2-page--learn .v2-learn-tools dl { margin: 6px 0; display: grid; gap: 8px; }
+.v2-page--learn .v2-learn-tools dl div { display: flex; justify-content: space-between; font-size: 13px; }
+.v2-page--learn .v2-learn-tools dt { color: var(--v2-mut); }
+.v2-page--learn .v2-learn-tools dd { margin: 0; font-weight: 700; }
+.v2-page--learn .v2-learn-tools p { font-size: 12px; margin: 0 0 6px; }
+@media (max-width: 1190px) { .v2-page--learn .v2-learn-layout { grid-template-columns: 170px minmax(0, 1fr); } .v2-page--learn .v2-learn-tools { grid-column: 2; position: static; } }
+@media (max-width: 900px) { .v2-page--learn .v2-learn-layout { grid-template-columns: 1fr; } .v2-page--learn .v2-learn-toc { display: none; } .v2-page--learn .v2-learn-tools { grid-column: 1; } }
+</style>
