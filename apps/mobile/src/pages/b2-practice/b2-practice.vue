@@ -86,4 +86,24 @@ onUnmounted(() => engine.dispose())
 
 <style scoped lang="scss">
 .b10-practice-card{display:grid;gap:18rpx}.b10-practice-card__progress,.b10-practice-card__actions{display:flex;align-items:center;justify-content:space-between;gap:12rpx;color:var(--yx-text-secondary);font-size:23rpx}.b10-practice-card__actions{align-items:stretch}.b10-practice-card__actions .yx-button{flex:1}.b10-result{display:grid;gap:8rpx;padding:18rpx;border:1rpx solid var(--yx-success-border);border-radius:14rpx;background:var(--yx-success-soft);color:var(--yx-text-secondary);font-size:23rpx;line-height:1.5}.b10-result__title{color:var(--yx-success-strong);font-size:30rpx;font-weight:750}.b10-result__stale{color:var(--yx-warning-strong)}.b10-empty{display:grid;gap:16rpx;color:var(--yx-text-secondary);font-size:24rpx}.b10-empty__title{color:var(--yx-text-primary);font-size:32rpx;font-weight:750}.yx-button--secondary{color:var(--yx-brand);background:var(--yx-surface-card)}
+/* v2 练习入口页换皮：对齐 practice.vue 与 today.vue 中 v2-* 卡片/eyebrow/标题/按钮同样数值，仅用 var(--v2-*)。 */
+.v2-b2p-page{font-family:var(--v2-font)}
+.v2-b2p-body{display:flex;flex-direction:column;gap:var(--v2-space-4);font-family:var(--v2-font)}
+.v2-b2p-status{display:grid;gap:var(--v2-space-2);font-family:var(--v2-font)}
+.v2-b2p-card{display:grid;gap:var(--v2-space-2);padding:var(--v2-space-5);border:1px solid var(--v2-line);border-radius:var(--v2-radius-lg);background:var(--v2-card);box-shadow:var(--v2-shadow);font-family:var(--v2-font)}
+.v2-b2p-card:hover{border-color:var(--v2-brand)}
+.v2-b2p-eyebrow{display:flex;align-items:center;gap:var(--v2-space-2);margin:0 0 var(--v2-space-2);color:var(--v2-mut);font-family:var(--v2-font);font-size:var(--v2-text-xs);font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.v2-b2p-title{display:block;margin:var(--v2-space-1) 0 0;color:var(--v2-ink);font-family:var(--v2-font);font-size:var(--v2-text-lg);font-weight:700;line-height:1.45}
+.v2-b2p-meta{display:flex;justify-content:space-between;align-items:center;color:var(--v2-mut);font-family:var(--v2-font);font-size:var(--v2-text-sm);line-height:1.7}
+.v2-b2p-actions{display:flex;align-items:stretch;gap:var(--v2-space-2);font-family:var(--v2-font)}
+.v2-b2p-actions .v2-b2p-btn{flex:1}
+.v2-b2p-btn{box-sizing:border-box;display:flex;align-items:center;justify-content:center;width:100%;min-height:var(--v2-space-12);padding:var(--v2-space-3) var(--v2-space-4);border:1px solid var(--v2-line);border-radius:var(--v2-radius-md);background:var(--v2-card);color:var(--v2-ink);font-family:var(--v2-font);font-size:var(--v2-text-sm);font-weight:600;line-height:1.5;white-space:nowrap}
+.v2-b2p-btn:hover{border-color:var(--v2-brand)}
+.v2-b2p-btn:active{transform:scale(.97)}
+.v2-b2p-btn:focus-visible{box-shadow:var(--v2-focus);outline:none}
+.v2-b2p-btn:disabled{background:var(--v2-surface);color:var(--v2-mut);border:1px dashed var(--v2-line);box-shadow:none}
+.v2-b2p-submit{border-color:transparent;background:var(--v2-brand);color:var(--v2-inverse);font-family:var(--v2-font);font-weight:700}
+.v2-b2p-submit:hover{border-color:var(--v2-brand)}
+.v2-b2p-fb{display:grid;gap:var(--v2-space-2);margin-top:var(--v2-space-4);padding:var(--v2-space-3) var(--v2-space-4);border-radius:var(--v2-radius-md);background:var(--v2-surface);color:var(--v2-mut);font-family:var(--v2-font);font-size:var(--v2-text-sm);line-height:1.7}
+.v2-b2p-d{display:block;color:var(--v2-mut);font-family:var(--v2-font);font-size:var(--v2-text-sm);line-height:1.7}
 </style>
