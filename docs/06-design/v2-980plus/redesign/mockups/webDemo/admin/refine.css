@@ -53,7 +53,15 @@
 .detail-row{display:grid!important;grid-template-columns:120px minmax(0,1fr);gap:16px;align-items:center;font-size:13px!important}
 .detail-row>:last-child{justify-self:end;text-align:right;font-weight:600}
 .panel h2{display:flex;align-items:center;gap:8px}
-.timeline:empty,.timeline>.muted:only-child{border-left-style:dashed}
+.timeline:empty{border-left-style:dashed}
 .callout{border-radius:10px!important;line-height:1.65}
 .panel textarea{border-radius:10px;transition:border-color var(--motion-base) var(--ease),box-shadow var(--motion-base) var(--ease)}
 .panel .actions .button{min-height:40px;padding:9px 16px}
+
+/* R2 批次 8：数据视图细修 */
+.timeline:has(>.muted:only-child){border-left:0;padding:14px 16px;margin:0;border:1px dashed var(--line,#d9d6e8);border-radius:10px;text-align:center}
+.timeline>.muted:only-child{margin:0;font-size:13px}
+td>span[aria-label="有权限"]{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:6px;background:var(--brand-soft,#efeaff);color:var(--brand-ink,#4b32b8);font-weight:700}
+td>span[aria-label="无权限"]{color:var(--muted,#8b88a0);opacity:.6}
+:root[data-theme=dark] td>span[aria-label="有权限"]{background:#2e2850;color:#d8ccff}
+.timeline:has(>.muted:only-child)::before,.timeline:has(>.muted:only-child)::after,.timeline>.muted:only-child::before{display:none}
