@@ -1240,3 +1240,55 @@
   font-weight: 600;
   text-align: right;
 }
+
+/* === page: policy === */
+.policy-page .policy-list-head .card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+.policy-page .policy-list-head .el-tag {
+  border-radius: 999px;
+}
+.policy-page .list-toolbar {
+  padding: 12px;
+  background: var(--v2-surface);
+  border-radius: var(--v2-radius-md);
+  margin-bottom: 14px;
+}
+.policy-page .list-toolbar .policy-note {
+  color: var(--v2-mut);
+}
+.policy-page div.policy-card div.policy-heading strong {
+  color: var(--v2-ink);
+  font-weight: 700;
+}
+.policy-page div.policy-detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  padding: 12px 0;
+  border-top: 0;
+  border-bottom: 1px solid var(--v2-line);
+}
+.policy-page div.policy-detail-section div.policy-detail-row:last-child {
+  border-bottom: 0;
+}
+.policy-page div.policy-detail-row strong {
+  font-size: 12px;
+  color: var(--v2-mut);
+  font-weight: 600;
+}
+.policy-page div.policy-detail-row span {
+  color: var(--v2-ink);
+  font-weight: 600;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+.policy-page div.policy-load-more {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 14px;
+}
