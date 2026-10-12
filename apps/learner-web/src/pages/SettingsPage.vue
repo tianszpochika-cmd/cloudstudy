@@ -128,3 +128,19 @@ async function refreshDevices(): Promise<void> { await b1.refreshDevices() }
 </template>
 
 <style scoped>.muted{color:var(--yx-color-text-secondary)}.settings-nav{display:flex;gap:8px;flex-wrap:wrap}.settings-nav a{padding:10px 14px;border-radius:10px;color:var(--yx-color-text-secondary)}.settings-nav a.active{color:var(--yx-color-brand-primary);background:var(--yx-color-brand-primary-soft)}.form-card{display:grid;gap:18px;padding:28px;border:1px solid var(--yx-color-border);border-radius:var(--yx-radius-card);background:var(--yx-color-surface-card)}.form-card h3{margin:0 0 6px;font-size:24px}.form-card label{display:grid;gap:8px;color:var(--yx-color-text-secondary);font-weight:600}.form-card input,.form-card select{padding:12px;border:1px solid var(--yx-color-border);border-radius:10px;background:var(--yx-color-surface-card);color:inherit}.privacy-toggle{display:flex!important;align-items:center;gap:8px}.privacy-toggle input{width:auto}.device{display:flex;justify-content:space-between;gap:16px;padding:16px 0;border-bottom:1px solid var(--yx-color-border)}.device p{margin:6px 0 0;color:var(--yx-color-text-secondary);font-size:13px}.device>span{color:var(--yx-color-success);font-size:13px}.success-text{color:var(--yx-color-success)}.error-text{color:var(--yx-color-danger)}</style>
+
+<style>
+.v2-page--settings .v2-settings-grid { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(280px, 1fr); grid-template-areas: "main nav" "main side"; gap: 18px; align-items: start; }
+.v2-page--settings .v2-settings-grid > article { grid-area: main; margin: 0; }
+.v2-page--settings .v2-settings-nav { grid-area: nav; width: auto; display: flex; flex-direction: column; gap: 8px; padding: 22px; background: var(--v2-card); border: 1px solid var(--v2-line); border-radius: var(--v2-radius-lg); box-shadow: var(--v2-shadow); }
+.v2-page--settings .v2-settings-nav__title { margin: 0 0 6px; font-size: 16px; color: var(--v2-ink); }
+.v2-page--settings .v2-settings-nav a { display: flex; align-items: center; justify-content: space-between; min-height: 44px; padding: 10px 14px; border: 1px solid var(--v2-line); border-radius: var(--v2-radius-md); background: var(--v2-card); color: var(--v2-ink); font-size: 13px; text-decoration: none; transition: background var(--v2-motion-fast), border-color var(--v2-motion-fast); }
+.v2-page--settings .v2-settings-nav a::after { content: "›"; color: var(--v2-mut); }
+.v2-page--settings .v2-settings-nav a:hover { background: var(--v2-surface); }
+.v2-page--settings .v2-settings-nav a.active { border-color: var(--v2-brand); background: var(--v2-soft); color: var(--v2-brand); font-weight: 700; }
+.v2-page--settings .v2-settings-side { grid-area: side; padding: 22px; background: var(--v2-card); border: 1px solid var(--v2-line); border-radius: var(--v2-radius-lg); box-shadow: var(--v2-shadow); display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
+.v2-page--settings .v2-settings-side h3 { margin: 0; font-size: 16px; }
+.v2-page--settings .v2-settings-side p { margin: 0; font-size: 13px; }
+.v2-page--settings .form-card select { min-height: 40px; border: 1px solid var(--v2-line); border-radius: var(--v2-radius-md); background: var(--v2-card); color: var(--v2-ink); padding: 0 10px; }
+@media (max-width: 900px) { .v2-page--settings .v2-settings-grid { grid-template-columns: 1fr; grid-template-areas: "nav" "main" "side"; } }
+</style>
