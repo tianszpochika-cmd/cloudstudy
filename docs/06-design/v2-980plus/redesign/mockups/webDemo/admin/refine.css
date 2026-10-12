@@ -33,3 +33,18 @@
 .pagination{display:flex;gap:8px;align-items:center;justify-content:flex-end;margin-top:14px;flex-wrap:wrap}
 .login-card,.auth-card{box-shadow:var(--elev-3)!important;border-radius:20px}
 .states{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+
+/* —— R2·B2：六态插图与状态面板 —— */
+.panel.empty{min-height:380px;gap:14px;padding:48px 24px;background:radial-gradient(circle at 50% 30%,var(--asoft) 0,transparent 55%),var(--asurface)}
+.panel.empty h2{font-size:18px;margin:6px 0 0;letter-spacing:-.01em}
+.panel.empty .muted{max-width:440px;line-height:1.7;margin:0}
+.panel.empty .actions{justify-content:center;margin-top:6px}
+.state-ill{width:132px!important;height:106px!important;background:none!important;border-radius:0!important;animation:refine-pop var(--motion-slow) var(--ease-out) both}
+.state-ill svg{width:100%;height:100%}
+.state-ill .f-soft{fill:var(--asoft);stroke:color-mix(in srgb,var(--abrand) 30%,var(--aline));stroke-width:2}
+.state-ill .f-bad{fill:var(--bad-soft);stroke:color-mix(in srgb,var(--abad) 35%,var(--aline));stroke-width:2}
+.state-ill .s-brand{stroke:var(--abrand)}.state-ill .s-bad{stroke:var(--abad)}.state-ill .s-mut{stroke:var(--aline)}
+.state-ill .d-brand{fill:var(--abrand)}.state-ill .d-bad{fill:var(--abad)}
+.state-loading{position:relative;overflow:hidden}
+.state-loading .skeleton{background:linear-gradient(90deg,var(--aline) 0%,var(--abg) 50%,var(--aline) 100%);background-size:200% 100%;border-radius:10px}
+.state-loading .skeleton.big{height:160px}
