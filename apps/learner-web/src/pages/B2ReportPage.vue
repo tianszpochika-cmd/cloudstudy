@@ -55,3 +55,25 @@ function performance(level: B10PerformanceLevel): void { store.setPerformanceLev
 .b10-page{display:grid;gap:22px}.page-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:20px}.page-heading h2{margin:8px 0;font-size:clamp(30px,5vw,48px);line-height:1.1}.page-heading p:not(.eyebrow){max-width:720px;margin:0;color:var(--yx-color-text-secondary);line-height:1.7}.eyebrow{margin:0;color:var(--yx-color-brand-primary);font-size:12px;font-weight:800;letter-spacing:.12em}.report-switch{display:flex;gap:6px;padding:5px;border:1px solid var(--yx-color-border);border-radius:12px;background:var(--yx-color-surface-card)}.report-switch button{min-height:36px;padding:0 12px;border:0;border-radius:8px;color:var(--yx-color-text-secondary);background:transparent}.report-switch button.active{color:var(--yx-color-brand-primary);background:var(--yx-color-brand-primary-soft)}.report-card,.empty-panel{display:grid;gap:22px;padding:28px;border:1px solid var(--yx-color-border);border-radius:var(--yx-radius-card);background:var(--yx-color-surface-card);box-shadow:var(--yx-shadow-card)}.report-heading{display:flex;justify-content:space-between;gap:18px}.report-heading h3{margin:8px 0 0;font-size:clamp(24px,4vw,38px)}.report-heading>span{color:var(--yx-color-text-secondary);font-size:12px}.metrics{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}.metrics div{display:grid;gap:5px;padding:16px;border-radius:14px;background:var(--yx-color-surface-muted)}.metrics strong{font-size:26px}.metrics span{color:var(--yx-color-text-secondary);font-size:12px}.report-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.report-grid section{padding:18px;border:1px solid var(--yx-color-border);border-radius:14px}.report-grid h3{margin:0 0 12px}.report-grid p{margin:8px 0;color:var(--yx-color-text-secondary);line-height:1.6}.weakness-list{display:grid;gap:12px}.weakness{display:grid;gap:5px}.weakness>div{display:flex;justify-content:space-between}.weakness small,.muted,.footnote{color:var(--yx-color-text-secondary);font-size:12px}.weakness progress{width:100%;height:8px;accent-color:var(--yx-color-brand-primary)}.footnote{margin:0;border-top:1px solid var(--yx-color-border);padding-top:14px}.empty-panel{min-height:160px}.empty-panel button{justify-self:start;min-height:40px;padding:0 14px;border:1px solid var(--yx-color-border);border-radius:10px;color:var(--yx-color-brand-primary);background:var(--yx-color-surface-page)}
 @media(max-width:760px){.page-heading,.report-heading{align-items:flex-start;flex-direction:column}.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.report-grid{grid-template-columns:1fr}}
 </style>
+
+<style>
+.v2-page--report .v2-report { display: grid; gap: 18px; background: transparent; border: 0; box-shadow: none; padding: 0; }
+.v2-page--report .v2-report > .report-heading, .v2-page--report .v2-report-period { padding: 22px; background: var(--v2-card); border: 1px solid var(--v2-line); border-radius: var(--v2-radius-lg); box-shadow: var(--v2-shadow); }
+.v2-page--report .report-heading h3 { margin: 4px 0 0; font-size: 20px; }
+.v2-page--report .v2-report-period { display: grid; gap: 6px; }
+.v2-page--report .v2-report-period p { margin: 0; color: var(--v2-mut); font-size: 13px; }
+.v2-page--report .v2-report-period [data-period-copy] { color: var(--v2-ink); font-size: 16px; font-weight: 700; }
+.v2-page--report .v2-report-suggestion { margin-top: 8px !important; padding: 12px 14px; background: var(--v2-soft); border-radius: var(--v2-radius-md); color: var(--v2-ink) !important; font-weight: 600; }
+.v2-page--report .v2-report-metrics { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; }
+.v2-page--report .v2-report-metrics > div { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 18px 10px; background: var(--v2-surface); border: 1px solid var(--v2-line); border-radius: var(--v2-radius-md); }
+.v2-page--report .v2-report-metrics strong { font-size: 26px; color: var(--v2-ink); letter-spacing: -.5px; }
+.v2-page--report .v2-report-metrics span { font-size: 12px; color: var(--v2-mut); }
+.v2-page--report .v2-report-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.v2-page--report .v2-report-panel { padding: 22px; background: var(--v2-card); border: 1px solid var(--v2-line); border-radius: var(--v2-radius-lg); box-shadow: var(--v2-shadow); }
+.v2-page--report .v2-report-panel h3 { margin: 0 0 10px; font-size: 16px; }
+.v2-page--report .v2-report-panel progress { width: 100%; accent-color: var(--v2-brand); height: 6px; }
+.v2-page--report .v2-report-foot { color: var(--v2-mut); font-size: 12px; margin: 0; }
+.v2-page--report .report-switch button.active { background: var(--v2-card); color: var(--v2-brand); font-weight: 700; }
+@media (max-width: 900px) { .v2-page--report .v2-report-metrics { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 650px) { .v2-page--report .v2-report-grid { grid-template-columns: 1fr; } .v2-page--report .v2-report-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+</style>
