@@ -72,35 +72,38 @@ async function submit(): Promise<void> {
 </script>
 
 <template>
-  <view class="yx-page yx-login-page" :style="experienceStyle" :data-motion="experienceMotion">
+  <view class="yx-page yx-login-page v2-login" :style="experienceStyle" :data-motion="experienceMotion">
 
     <MobilePageHeader page="login" />
 
-    <view class="yx-card yx-login-card">
-      <view class="mobile-auth-heading"><text>{{ mobileT('account') }}</text><button tabindex="0" role="button" class="mobile-text-button" @click="openUniPage('/pages/register/register')">{{ mobileT('register') }} ↗</button></view>
+    <view class="v2-login-brand" aria-hidden="true"><text class="v2-login-brand-mark">✦</text></view>
+
+    <view class="yx-card yx-login-card v2-login-card">
+      <text class="v2-login-title">{{ mobileT('account') }}</text>
+      <text class="mobile-auth-note v2-login-desc">{{ mobileT('adultNote') }}</text>
       <!-- No .prevent here: uni emits submit as a component event whose payload has no
            preventDefault, and Vue skips a handler guarded by a modifier that does not apply to a
            non-DOM event. There is also no native default action left to cancel. -->
-      <form @submit="submit">
-        <label class="yx-field">
+      <form class="v2-login-form" @submit="submit">
+        <label class="yx-field v2-login-field">
           <text>{{ authT('login.identifier') }}</text>
-          <input :aria-label="authT('login.identifier')" v-model="identifier" type="text" autocomplete="username" :placeholder="authT('login.identifierPlaceholder')" :disabled="submitting" />
+          <input class="v2-login-input" :aria-label="authT('login.identifier')" v-model="identifier" type="text" autocomplete="username" :placeholder="authT('login.identifierPlaceholder')" :disabled="submitting" />
         </label>
-        <label class="yx-field">
+        <label class="yx-field v2-login-field">
           <text>{{ authT('login.password') }}</text>
-          <view class="mobile-password"><input :aria-label="authT('login.password')" v-model="password" :password="!showPassword" type="text" autocomplete="current-password" :placeholder="authT('login.passwordPlaceholder')" :disabled="submitting" @confirm="submit" /><button tabindex="0" role="button" class="mobile-text-button mobile-password-toggle" :aria-pressed="showPassword" @click="showPassword = !showPassword">{{ mobileT(showPassword ? 'hide' : 'show') }}</button></view>
+          <view class="mobile-password v2-login-password"><input class="v2-login-input" :aria-label="authT('login.password')" v-model="password" :password="!showPassword" type="text" autocomplete="current-password" :placeholder="authT('login.passwordPlaceholder')" :disabled="submitting" @confirm="submit" /><button tabindex="0" role="button" class="mobile-text-button mobile-password-toggle v2-login-toggle" :aria-pressed="showPassword" @click="showPassword = !showPassword">{{ mobileT(showPassword ? 'hide' : 'show') }}</button></view>
         </label>
-        <text v-if="error" class="yx-login-error" role="alert">{{ error }}</text>
+        <text v-if="error" class="yx-login-error v2-login-error" role="alert">{{ error }}</text>
         <!-- uni-app resolves form submission from the form-type prop, not from the HTML type
              attribute: its button component only calls form.submit() when props.formType is
              'submit'. A plain type="submit" therefore looks right on H5 but never submits. -->
-        <button tabindex="0" role="button" class="yx-button" form-type="submit" :disabled="submitting">
+        <button tabindex="0" role="button" class="yx-button v2-login-primary" form-type="submit" :disabled="submitting">
           {{ submitting ? authT('login.submitting') : authT('login.start') }}
         </button>
       </form>
-      <view class="mobile-auth-links"><button tabindex="0" role="button" class="mobile-text-button" @click="openUniPage('/pages/reset-password/reset-password')">{{ mobileT('forgot') }}</button></view>
+      <button tabindex="0" role="button" class="mobile-text-button v2-login-secondary" @click="openUniPage('/pages/register/register')">{{ mobileT('register') }} ↗</button>
+      <button tabindex="0" role="button" class="mobile-text-button v2-login-secondary" @click="openUniPage('/pages/reset-password/reset-password')">{{ mobileT('forgot') }}</button>
     </view>
-    <text class="mobile-auth-note">{{ mobileT('adultNote') }}</text>
   </view>
 </template>
 
