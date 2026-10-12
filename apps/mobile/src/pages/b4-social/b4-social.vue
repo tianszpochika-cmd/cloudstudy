@@ -26,6 +26,10 @@ const focusSeconds = computed(() => {
   return Number.isFinite(start) ? Math.max(serverSeconds, Math.floor((now.value - start) / 1000)) : serverSeconds
 })
 const noticeTypeLabels: Record<string, string> = { REVIEW_DUE: '复习提醒', LEARNING_PLAN: '学习计划', ROOM_INTERACTIONS: '自习室互动', FOCUS_REMINDERS: '专注提醒', SYSTEM: '系统消息' }
+const roomTemplateLabels: Record<string, string> = { FOCUS: '专注房', STUDY: '自习房' }
+const roomChatModeLabels: Record<string, string> = { PRESET_ONLY: '仅预设互动', DISABLED: '不开放聊天' }
+function roomTemplateLabel(value: string): string { return roomTemplateLabels[value] ?? '学习房间' }
+function roomChatModeLabel(value: string): string { return roomChatModeLabels[value] ?? '预设互动' }
 function noticeMeta(item: { category: string | null; createdAt: string | null }): string {
   const category = noticeTypeLabels[item.category ?? ''] ?? '通知'
   const time = item.createdAt ? Date.parse(item.createdAt) : NaN
@@ -54,7 +58,7 @@ function send(roomId: string): void { void b4.sendInteraction(roomId, interactio
       <view class="yx-card card v2-social-card">
         <view class="heading v2-social-head">
           <view class="v2-social-titles">
-            <text class="kicker v2-social-eyebrow eyebrow"><AppIcon name="inbox" :size="14" /><text>NOTIFICATIONS</text></text>
+            <text class="kicker v2-social-eyebrow eyebrow"><AppIcon name="inbox" :size="14" /><text>通知</text></text>
             <text class="card-title v2-social-title v2-social-h2">通知</text>
           </view>
           <view class="notice-actions v2-social-actions row">
@@ -79,7 +83,7 @@ function send(roomId: string): void { void b4.sendInteraction(roomId, interactio
       <view class="yx-card card v2-social-card">
         <view class="heading v2-social-head">
           <view class="v2-social-titles">
-            <text class="kicker v2-social-eyebrow eyebrow"><AppIcon name="users" :size="14" /><text>STUDY ROOMS</text></text>
+            <text class="kicker v2-social-eyebrow eyebrow"><AppIcon name="users" :size="14" /><text>自习室</text></text>
             <text class="card-title v2-social-title v2-social-h2">房间列表</text>
           </view>
           <text v-if="b4.rooms.length" class="muted v2-social-d d v2-social-count">预设互动</text>
@@ -88,7 +92,7 @@ function send(roomId: string): void { void b4.sendInteraction(roomId, interactio
           <view v-for="room in b4.rooms" :key="room.roomId" class="room list-row v2-social-row">
             <view class="room-main v2-social-copy">
               <text class="room-name v2-social-name v2-social-h2">{{ room.name }}</text>
-              <text class="muted v2-social-d d">{{ room.templateCode }} · {{ room.memberCount }} / {{ room.capacity }} 人 · {{ room.chatMode }}</text>
+              <text class="muted v2-social-d d">{{ roomTemplateLabel(room.templateCode) }} · {{ room.memberCount }} / {{ room.capacity }} 人 · {{ roomChatModeLabel(room.chatMode) }}</text>
             </view>
             <button tabindex="0" role="button" class="small-button secondary btn v2-social-btn v2-social-opt" type="button" @click="room.joined ? b4.leaveRoom(room.roomId) : b4.joinRoom(room.roomId)">{{ room.joined ? '离开' : '加入' }}<AppIcon name="users" :size="14" /></button>
             <view v-if="room.joined" class="room-actions v2-social-actions row">
@@ -104,7 +108,7 @@ function send(roomId: string): void { void b4.sendInteraction(roomId, interactio
       <view class="yx-card focus-card card v2-social-card">
         <view class="heading v2-social-head">
           <view class="v2-social-titles">
-            <text class="kicker v2-social-eyebrow eyebrow"><AppIcon name="clock" :size="14" /><text>POMODORO</text></text>
+            <text class="kicker v2-social-eyebrow eyebrow"><AppIcon name="clock" :size="14" /><text>番茄专注</text></text>
             <text class="card-title v2-social-title v2-social-h2">番茄专注</text>
           </view>
           <text class="state v2-social-state v2-social-tag" v-if="b4.activeFocus">{{ b4.activeFocus.status }}</text>
