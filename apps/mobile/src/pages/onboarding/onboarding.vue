@@ -252,13 +252,13 @@ async function cancel(): Promise<void> {
         <label class="consent v2-gate-confirm"><checkbox :checked="ageConfirmed" @click="ageConfirmed = !ageConfirmed" /><text>我确认自己已满 18 周岁</text></label>
       </view>
 
-      <view v-else-if="step === 'consent'" class="yx-onboarding-step">
-        <text class="section-kicker">必要同意</text>
-        <text class="section-title">完成必要同意</text>
-        <text class="section-description">账号条款、隐私说明和成人学习资格要逐项看见。开始时不勾选，也不默认全选。</text>
-        <label v-for="item in requiredConsentItems" :key="item.purpose" class="consent">
+      <view v-else-if="step === 'consent'" class="yx-onboarding-step v2-consent-step">
+        <text class="section-kicker v2-consent-kicker">必要同意</text>
+        <text class="section-title v2-consent-title">完成必要同意</text>
+        <text class="section-description v2-consent-desc">账号条款、隐私说明和成人学习资格要逐项看见。开始时不勾选，也不默认全选。</text>
+        <label v-for="item in requiredConsentItems" :key="item.purpose" class="consent v2-consent-item">
           <checkbox :checked="consentChecked[item.purpose]" @click="toggleConsent(item.purpose)" />
-          <view class="consent-copy">
+          <view class="consent-copy v2-consent-copy">
             <text>{{ item.label }}</text>
             <text>用途码 {{ item.purpose }}</text>
             <text>必要</text>
