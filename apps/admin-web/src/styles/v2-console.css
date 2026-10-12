@@ -1398,3 +1398,41 @@
   display: flex;
   justify-content: flex-end;
 }
+
+/* === page: forbidden === */
+.forbidden-page {
+  max-width: 520px;
+  margin: 64px auto;
+  padding: 40px 32px;
+  background: var(--v2-card);
+  border: 1px solid var(--v2-line);
+  border-radius: var(--v2-radius-lg);
+  text-align: center;
+  display: grid;
+  gap: 12px;
+  justify-items: center;
+}
+.forbidden-page .shortcut-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--v2-soft);
+  color: var(--v2-brand);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.forbidden-page h1 {
+  font-size: 22px;
+  color: var(--v2-ink);
+}
+.forbidden-page .muted {
+  color: var(--v2-mut);
+}
+.forbidden-page .login-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
