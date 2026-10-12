@@ -821,3 +821,35 @@
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
+
+/* === page: dashboard team/side === */
+.dashboard-side {
+  display: grid;
+  gap: 16px;
+  align-content: start;
+}
+.dashboard-team p {
+  margin: 0 0 12px;
+  color: var(--v2-mut);
+  font-size: 13px;
+}
+.dashboard-team__link {
+  display: inline-flex;
+  align-items: center;
+  height: 34px;
+  padding: 0 14px;
+  border-radius: var(--v2-radius-sm);
+  background: var(--v2-grad);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+}
+.dashboard-team__link:hover {
+  filter: brightness(1.06);
+}
+@media (min-width: 1201px) {
+  .view-stack .dashboard-metrics {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
