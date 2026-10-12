@@ -118,3 +118,28 @@
 #view article li{position:relative;padding:10px 12px 10px 14px;background:var(--surface);border-radius:12px;font-size:14.5px;line-height:1.7}
 #view article li::before{content:"";position:absolute;left:0;top:14px;bottom:14px;width:3px;border-radius:2px;background:color-mix(in srgb,var(--brand) 45%,transparent)}
 .section-heading .eyebrow{margin:0}
+
+/* —— R2·B4：复习闪卡 / 收银台 / 订单退款 / 会话检查点 —— */
+.word-card{text-align:center;min-height:260px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:32px 20px!important;background:radial-gradient(circle at 50% 0,var(--soft) 0,transparent 60%),var(--card)!important}
+.word-card h2{font-size:36px!important;letter-spacing:-.02em;margin:0!important}
+.word-card .d{margin:0}
+.word-card .word-meaning{margin-top:14px;min-height:48px;display:grid;place-items:center}
+.word-card .word-meaning p{font-size:22px;font-weight:700;color:var(--brand);margin:0;animation:refine-rise var(--motion-slow) var(--ease-out) both}
+.word-card .word-meaning .btn{min-width:160px}
+.word-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 0 12px}
+.word-actions .btn{min-height:52px;font-size:14px;font-weight:650}
+.word-actions .btn[onclick="srsRate(0)"]{background:var(--bad-soft)!important;color:var(--bad)!important}
+.word-actions .btn[onclick="srsRate(1)"]{background:var(--warn-soft)!important;color:var(--warn)!important}
+.word-actions .btn[onclick="srsRate(3)"]{background:var(--ok-soft)!important;color:var(--ok)!important}
+.word-card+.actions,.word-actions+.actions{justify-content:center}
+.word-card+.actions .btn,.word-actions+.actions .btn{background:transparent!important;color:var(--mut)!important}
+/* 收银台 */
+#view .card:has(>button[onclick^="payGo"]){padding:24px!important}
+#view .card>button[onclick^="payGo"]{width:100%;min-height:52px;font-size:16px;margin:16px 0 4px}
+#view .card:has(>button[onclick^="payGo"])>.d{padding:14px 16px;border-radius:12px;background:var(--surface);color:var(--ink);font-weight:550}
+#view .card:has(>button[onclick^="payGo"]) .action-row{margin:12px 0 0;justify-content:center}
+#view .card p[style*="font-size:26px"] b{color:var(--brand);letter-spacing:-.02em}
+#view .card p[style*="font-size:26px"] s{font-size:15px;margin-left:6px}
+/* 订单/退款卡：价格徽标与操作对齐 */
+#view .card h2 .tag{vertical-align:middle;margin-left:6px}
+.word-actions .btn{box-shadow:none!important}
