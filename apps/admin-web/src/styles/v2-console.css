@@ -401,3 +401,141 @@
   font-size: 12px;
   color: var(--v2-mut);
 }
+
+/* === shared: page parts === */
+.admin-main .view-intro {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  padding: 0;
+}
+.admin-main .view-intro .admin-header__eyebrow {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+  color: var(--v2-mut);
+}
+.admin-main .view-intro h2 {
+  font-size: 26px;
+  font-weight: 750;
+  letter-spacing: -0.03em;
+  color: var(--v2-ink);
+}
+.admin-main .view-intro p {
+  color: var(--v2-mut);
+}
+.admin-main .el-card {
+  background: var(--v2-card) !important;
+  border: 1px solid var(--v2-line) !important;
+  border-radius: 16px !important;
+  box-shadow: var(--v2-elev-1) !important;
+}
+.admin-main .el-card__header {
+  border-bottom: 1px solid var(--v2-line) !important;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--v2-ink);
+}
+.admin-main .card-header {
+  color: var(--v2-ink);
+}
+.admin-main .el-table {
+  --el-table-header-bg-color: var(--v2-surface);
+  --el-table-row-hover-bg-color: var(--v2-surface);
+  --el-table-border-color: var(--v2-line);
+  --el-table-tr-bg-color: var(--v2-card);
+  --el-table-bg-color: var(--v2-card);
+  --el-table-text-color: var(--v2-ink);
+  --el-table-header-text-color: var(--v2-mut);
+}
+.admin-main .el-table th.el-table__cell {
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  font-weight: 700;
+  color: var(--v2-mut);
+}
+.admin-main .el-table td.el-table__cell {
+  font-size: 13px;
+  border-bottom: 1px solid var(--v2-line);
+}
+.admin-main .el-tag {
+  border: 0;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  --el-tag-bg-color: var(--v2-soft);
+  --el-tag-border-color: transparent;
+  --el-tag-text-color: var(--v2-brand);
+}
+.admin-main .el-tag--primary {
+  --el-tag-bg-color: var(--v2-soft);
+  --el-tag-border-color: transparent;
+  --el-tag-text-color: var(--v2-brand);
+}
+.admin-main .el-tag--info {
+  --el-tag-bg-color: var(--v2-soft);
+  --el-tag-border-color: transparent;
+  --el-tag-text-color: var(--v2-mut);
+}
+.admin-main .el-tag--warning {
+  --el-tag-bg-color: var(--v2-warn-soft);
+  --el-tag-border-color: transparent;
+  --el-tag-text-color: var(--v2-warn);
+}
+.admin-main .el-tag--danger {
+  --el-tag-bg-color: var(--v2-bad-soft);
+  --el-tag-border-color: transparent;
+  --el-tag-text-color: var(--v2-bad);
+}
+.admin-main .el-tag--success {
+  --el-tag-bg-color: var(--v2-ok-soft);
+  --el-tag-border-color: transparent;
+  --el-tag-text-color: var(--v2-ok);
+}
+.admin-main .el-button {
+  border-radius: var(--v2-radius-sm);
+}
+.admin-main .el-button--primary {
+  background: var(--v2-grad);
+  border: 0;
+  color: #fff;
+}
+.admin-main .el-button--primary:hover {
+  background: var(--v2-grad);
+  border-color: transparent;
+  color: #fff;
+  filter: brightness(1.06);
+}
+.admin-main .el-input__wrapper,
+.admin-main .el-select__wrapper {
+  border-radius: var(--v2-radius-sm) !important;
+}
+.admin-main .el-input__wrapper:focus-within,
+.admin-main .el-select__wrapper:focus-within {
+  box-shadow:
+    0 0 0 1px var(--v2-brand) inset,
+    0 0 0 3px var(--v2-soft) !important;
+}
+.admin-main .el-tabs__item:hover {
+  color: var(--v2-brand);
+}
+.admin-main .el-tabs__item.is-active {
+  color: var(--v2-brand);
+}
+.admin-main .el-tabs__active-bar {
+  background-color: var(--v2-brand);
+}
+.admin-main .el-pager li.is-active {
+  color: var(--v2-brand);
+}
+.admin-main .el-pagination.is-background .el-pager li.is-active {
+  background-color: var(--v2-brand);
+  color: #fff;
+}
+.admin-main .list-toolbar .list-count {
+  color: var(--v2-mut);
+}
+.admin-main .muted {
+  color: var(--v2-mut);
+}
