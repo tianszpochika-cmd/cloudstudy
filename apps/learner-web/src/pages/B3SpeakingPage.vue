@@ -677,3 +677,70 @@ async function advanceRoleplay(choiceCode?: string): Promise<void> {
   }
 }
 </style>
+
+<style>
+/* B3Speaking v2 页面级样式（只做样式）：对齐 webDemo“专项练习会话（左主练习卡 + 右侧提示栏）”原型。
+ * 选择器全部以 .v2-page--b3speaking 开头；颜色只用 --v2-* tokens，不写死色值以适配暗色。 */
+.v2-page--b3speaking.v2-page{background:var(--v2-bg);color:var(--v2-ink);font-family:var(--v2-font);display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:var(--v2-space-5);align-items:start}
+.v2-page--b3speaking .experience-heading{grid-column:1/-1;min-width:0}
+.v2-page--b3speaking [data-closed-practice]{grid-column:1/-1;margin:0;padding:var(--v2-space-3) var(--v2-space-4);border-radius:var(--v2-radius-md);background:var(--v2-soft);color:var(--v2-mut);font-size:var(--v2-text-sm);line-height:1.6}
+.v2-page--b3speaking [data-closed-back]{grid-column:1/-1;width:max-content;color:var(--v2-brand);font-size:var(--v2-text-sm);font-weight:600}
+.v2-page--b3speaking .v2-b3speaking-main{grid-column:1;display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,0.9fr);gap:var(--v2-space-5);min-width:0}
+.v2-page--b3speaking > .panel{grid-column:1;min-width:0}
+.v2-page--b3speaking .panel,.v2-page--b3speaking .roleplay-panel,.v2-page--b3speaking .v2-b3speaking-rail{background:var(--v2-card);border:1px solid var(--v2-line);border-radius:var(--v2-radius-lg);box-shadow:var(--v2-shadow);padding:var(--v2-space-6);min-width:0}
+.v2-page--b3speaking .roleplay-panel{grid-column:1;display:grid;gap:var(--v2-space-3);align-content:start}
+.v2-page--b3speaking .roleplay-panel > p{margin:0;color:var(--v2-mut);font-size:var(--v2-text-sm);line-height:1.6}
+.v2-page--b3speaking .roleplay-panel > button{width:max-content;max-width:100%}
+.v2-page--b3speaking .v2-b3speaking-rail{grid-column:2;grid-row:4 / span 2;position:sticky;top:var(--v2-space-6);display:grid;align-content:start;gap:var(--v2-space-3)}
+.v2-page--b3speaking .v2-b3speaking-rail h2{margin:0;font-size:var(--v2-text-lg);color:var(--v2-ink)}
+.v2-page--b3speaking .v2-b3speaking-rail ol{margin:0;padding-left:var(--v2-space-5);color:var(--v2-mut);font-size:var(--v2-text-sm);line-height:1.7}
+.v2-page--b3speaking .panel-head{display:flex;justify-content:space-between;align-items:flex-start;gap:var(--v2-space-4)}
+.v2-page--b3speaking .panel h3{margin:var(--v2-space-1) 0 var(--v2-space-5);font-size:var(--v2-text-lg);color:var(--v2-ink)}
+.v2-page--b3speaking .eyebrow{margin:0;color:var(--v2-brand);font-size:var(--v2-text-xs);font-weight:800;letter-spacing:.12em}
+.v2-page--b3speaking .fallback{padding:var(--v2-space-1) var(--v2-space-3);border-radius:var(--v2-radius-pill);background:var(--v2-soft);color:var(--v2-brand);font-size:var(--v2-text-xs);font-weight:600;white-space:nowrap}
+.v2-page--b3speaking .phonemes{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--v2-space-2)}
+.v2-page--b3speaking .phonemes button{display:grid;gap:var(--v2-space-1);min-width:0;padding:var(--v2-space-4);border:1px solid var(--v2-line);border-radius:var(--v2-radius-md);background:var(--v2-soft);color:var(--v2-ink);cursor:pointer}
+.v2-page--b3speaking .phonemes button.active{border-color:var(--v2-brand);background:var(--v2-card);color:var(--v2-brand);box-shadow:var(--v2-shadow)}
+.v2-page--b3speaking .phonemes strong{font-size:var(--v2-text-xl);color:var(--v2-brand)}
+.v2-page--b3speaking .phonemes small{color:var(--v2-mut);font-size:var(--v2-text-xs);overflow-wrap:anywhere}
+.v2-page--b3speaking .pairs{display:flex;flex-wrap:wrap;gap:var(--v2-space-2);margin-top:var(--v2-space-5)}
+.v2-page--b3speaking .pairs .eyebrow{width:100%}
+.v2-page--b3speaking .pairs span{padding:var(--v2-space-1) var(--v2-space-3);border-radius:var(--v2-radius-pill);background:var(--v2-soft);color:var(--v2-brand);font-size:var(--v2-text-xs);font-weight:600}
+.v2-page--b3speaking .recorder{display:grid;align-content:start;gap:var(--v2-space-3)}
+.v2-page--b3speaking .recorder h3{margin:var(--v2-space-1) 0 0;font-size:var(--v2-text-xl);color:var(--v2-ink)}
+.v2-page--b3speaking .recorder > p:not(.eyebrow){margin:0;color:var(--v2-mut);font-size:var(--v2-text-sm);line-height:1.6}
+.v2-page--b3speaking .mouth{display:grid;place-items:center;gap:var(--v2-space-3);min-height:160px;padding:var(--v2-space-4);border-radius:var(--v2-radius-md);background:var(--v2-grad-soft);color:var(--v2-ink);text-align:center}
+.v2-page--b3speaking .mouth span{color:var(--v2-ink);font-size:var(--v2-text-sm)}
+.v2-page--b3speaking .mouth b{font-size:var(--v2-text-sm);color:var(--v2-ok)}
+.v2-page--b3speaking .mouth small{color:var(--v2-mut);font-size:var(--v2-text-xs)}
+.v2-page--b3speaking .demo-audio,.v2-page--b3speaking .permission-banner{display:grid;gap:var(--v2-space-2);padding:var(--v2-space-3);border:1px solid var(--v2-line);border-radius:var(--v2-radius-md);background:var(--v2-surface)}
+.v2-page--b3speaking .demo-audio p{margin:0}
+.v2-page--b3speaking .demo-audio span,.v2-page--b3speaking .permission-banner span{color:var(--v2-mut);font-size:var(--v2-text-sm);line-height:1.5}
+.v2-page--b3speaking .demo-audio-player{width:100%;max-width:100%}
+.v2-page--b3speaking .permission-banner strong{color:var(--v2-ink);font-size:var(--v2-text-sm)}
+.v2-page--b3speaking .permission-banner--denied,.v2-page--b3speaking .permission-banner--unsupported{border-color:var(--v2-bad)}
+.v2-page--b3speaking .permission-banner--granted{border-color:var(--v2-ok)}
+.v2-page--b3speaking .actions,.v2-page--b3speaking .rating{display:flex;flex-wrap:wrap;gap:var(--v2-space-2)}
+.v2-page--b3speaking .actions button,.v2-page--b3speaking .rating button,.v2-page--b3speaking .roleplay-panel > button,.v2-page--b3speaking .roleplay-turn button{min-height:38px;padding:0 var(--v2-space-3);border:0;border-radius:var(--v2-radius-sm);background:var(--v2-brand);color:var(--v2-inverse);font-weight:750;cursor:pointer}
+.v2-page--b3speaking .actions button:nth-child(2){background:var(--v2-bad);color:var(--v2-inverse)}
+.v2-page--b3speaking .actions button:nth-child(3){background:var(--v2-ok);color:var(--v2-inverse)}
+.v2-page--b3speaking .rating button,.v2-page--b3speaking .roleplay-turn button{background:var(--v2-soft);color:var(--v2-brand);border:1px solid var(--v2-line)}
+.v2-page--b3speaking .actions button:disabled,.v2-page--b3speaking .rating button:disabled,.v2-page--b3speaking .roleplay-turn button:disabled{opacity:.5;cursor:not-allowed}
+.v2-page--b3speaking .actions button:first-child:hover:not(:disabled),.v2-page--b3speaking .roleplay-panel > button:hover:not(:disabled){background:var(--v2-brand2)}
+.v2-page--b3speaking .saved{padding:var(--v2-space-4);border-radius:var(--v2-radius-md);background:var(--v2-soft);color:var(--v2-brand);font-size:var(--v2-text-sm);line-height:1.6;overflow-wrap:anywhere}
+.v2-page--b3speaking .saved .rating{margin-top:var(--v2-space-2)}
+.v2-page--b3speaking .rating--disabled{display:grid;gap:var(--v2-space-2);color:var(--v2-mut);font-size:var(--v2-text-sm)}
+.v2-page--b3speaking .rating--disabled button{cursor:not-allowed;opacity:.45}
+.v2-page--b3speaking .roleplay-turn{display:grid;gap:var(--v2-space-3);padding:var(--v2-space-4);border-radius:var(--v2-radius-md);background:var(--v2-surface);color:var(--v2-ink)}
+.v2-page--b3speaking .roleplay-turn strong{color:var(--v2-ink);font-size:var(--v2-text-sm)}
+.v2-page--b3speaking .roleplay-turn span{color:var(--v2-mut);font-size:var(--v2-text-sm);line-height:1.6}
+.v2-page--b3speaking .roleplay-turn button{width:max-content;max-width:100%}
+.v2-page--b3speaking .progress{height:6px;border-radius:var(--v2-radius-pill);background:var(--v2-surface);overflow:hidden}
+.v2-page--b3speaking .progress span{display:block;height:100%;background:var(--v2-brand)}
+.v2-page--b3speaking progress{width:100%;height:6px;accent-color:var(--v2-brand)}
+.v2-page--b3speaking [role="progressbar"]{height:6px;background:var(--v2-surface);border-radius:var(--v2-radius-pill);overflow:hidden}
+.v2-page--b3speaking input[type="range"]{width:100%;accent-color:var(--v2-brand)}
+.v2-page--b3speaking button:focus-visible,.v2-page--b3speaking a:focus-visible,.v2-page--b3speaking input:focus-visible{outline:2px solid var(--v2-brand);outline-offset:2px}
+@media(max-width:1190px){.v2-page--b3speaking.v2-page{grid-template-columns:minmax(0,1fr) 250px}.v2-page--b3speaking .v2-b3speaking-main{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
+@media(max-width:900px){.v2-page--b3speaking.v2-page{grid-template-columns:1fr}.v2-page--b3speaking .experience-heading,.v2-page--b3speaking [data-closed-practice],.v2-page--b3speaking [data-closed-back],.v2-page--b3speaking .v2-b3speaking-main,.v2-page--b3speaking > .panel,.v2-page--b3speaking .roleplay-panel{grid-column:1}.v2-page--b3speaking .v2-b3speaking-main{grid-template-columns:1fr}.v2-page--b3speaking .v2-b3speaking-rail{grid-column:1;grid-row:auto;position:static}.v2-page--b3speaking .panel-head{flex-direction:column;align-items:flex-start}}
+</style>
