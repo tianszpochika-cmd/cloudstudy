@@ -873,3 +873,38 @@
   font-size: 15px;
   font-weight: 700;
 }
+
+/* === page: learners === */
+.learner-directory .card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.learner-directory__count {
+  border-radius: 999px;
+  padding: 3px 10px;
+  font-size: 11px;
+  font-weight: 700;
+  background: var(--v2-soft);
+  color: var(--v2-brand);
+}
+.learner-toolbar {
+  width: 100%;
+  padding: 12px;
+  background: var(--v2-surface);
+  border-radius: var(--v2-radius-md);
+}
+.learner-directory .el-table {
+  margin-top: 14px;
+}
+.learner-directory .el-table__row {
+  cursor: pointer;
+}
+.learner-profile .el-card__header span {
+  font-size: 17px;
+  font-weight: 750;
+  letter-spacing: -0.02em;
+}
+.learner-profile .el-tabs__header {
+  margin-bottom: 18px;
+}
