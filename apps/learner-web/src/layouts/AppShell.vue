@@ -139,3 +139,37 @@ onUnmounted(() => { stopTheme(); window.removeEventListener('keydown', keyboard)
   pointer-events: none;
 }
 </style>
+
+<style>
+.app-shell.v2-shell { --sidebar-width: 236px; background: var(--v2-bg); color: var(--v2-ink); font-family: var(--v2-font); }
+.app-shell.v2-shell .v2-side { background: var(--v2-side); color: var(--v2-side-ink); padding: 28px 18px; border-right: 0; }
+.app-shell.v2-shell .v2-side-brand { color: var(--v2-side-ink); padding: 0 10px; }
+.app-shell.v2-shell .v2-side-brand small { color: var(--v2-side-muted); }
+.app-shell.v2-shell .v2-side-label { color: var(--v2-side-muted); font-size: 10px; letter-spacing: 1.5px; padding: 0 12px; background: transparent; }
+.app-shell.v2-shell .v2-side-item { color: var(--v2-side-ink); font-size: 13px; border-radius: 9px; min-height: 40px; padding: 9px 12px; transition: background var(--v2-motion-fast), color var(--v2-motion-fast); }
+.app-shell.v2-shell .v2-side-item:hover { background: rgba(255, 255, 255, .08); color: var(--v2-side-ink); }
+.app-shell.v2-shell .v2-side-item.is-current { background: var(--v2-card); color: var(--v2-brand); font-weight: 700; }
+.app-shell.v2-shell .v2-side-item.is-current i { display: none; }
+.app-shell.v2-shell .v2-side-item:focus-visible,
+.app-shell.v2-shell .v2-icon-btn:focus-visible,
+.app-shell.v2-shell .v2-search:focus-visible { outline: 2px solid var(--v2-focus); outline-offset: 2px; }
+.app-shell.v2-shell .v2-side-footer { border-top: 1px solid var(--v2-side-muted); padding-top: 16px; }
+.app-shell.v2-shell .v2-side-note { background: rgba(255, 255, 255, .06); color: var(--v2-side-ink); border-radius: var(--v2-radius-md); }
+.app-shell.v2-shell .v2-topbar { background: var(--v2-card); border-bottom: 1px solid var(--v2-line); padding: 20px 38px; min-height: 76px; }
+.app-shell.v2-shell .v2-crumb { color: var(--v2-mut); font-size: 12px; }
+.app-shell.v2-shell .v2-crumb strong { color: var(--v2-ink); font-size: 20px; font-weight: 700; letter-spacing: -.4px; }
+.app-shell.v2-shell .v2-search { border: 1px solid var(--v2-line); background: var(--v2-surface); color: var(--v2-mut); border-radius: 9px; }
+.app-shell.v2-shell .v2-icon-btn { border: 1px solid var(--v2-line); border-radius: 10px; background: var(--v2-card); color: var(--v2-ink); }
+.app-shell.v2-shell .v2-icon-btn:hover { background: var(--v2-soft); }
+.app-shell.v2-shell .v2-user .profile-chip__avatar { background: var(--v2-soft); color: var(--v2-brand); }
+.app-shell.v2-shell .v2-content { padding: 28px 38px; }
+.app-shell.v2-shell .v2-footer { color: var(--v2-mut); border-top: 1px solid var(--v2-line); font-size: 12px; }
+@media (min-width: 1400px) {
+  .app-shell.v2-shell .v2-content { padding: 32px 46px; }
+  .app-shell.v2-shell .v2-topbar { padding-left: 46px; padding-right: 46px; }
+}
+@media (max-width: 820px) {
+  .app-shell.v2-shell .v2-content { padding: 20px 16px; }
+  .app-shell.v2-shell .v2-topbar { padding: 14px 16px; }
+}
+</style>
