@@ -19,6 +19,10 @@ const accessibility = ref<B6Accessibility>(toAccessibility({}))
 const engine = createAdaptivePerformanceEngine()
 const performanceLevel = ref<PerformanceLevel>(engine.level)
 const unsubscribe = engine.subscribe((state) => { performanceLevel.value = state.level })
+const QUALITY_LEVEL_LABELS: Record<string, string> = { Ultra: '极致', High: '高清', Medium: '标准', Performance: '省电' }
+function qualityLevelLabel(level: unknown): string { return typeof level === 'string' ? (QUALITY_LEVEL_LABELS[level] ?? level) : '' }
+const STATUS_LABELS: Record<string, string> = { READY_FOR_TEST_STAGE: '待测试阶段验证', PENDING_TEST_STAGE: '等待测试阶段', TEST_STAGE_REQUIRED: '需测试阶段验证' }
+function statusLabel(value: unknown): string { return typeof value === 'string' ? (STATUS_LABELS[value] ?? '待确认') : '待确认' }
 
 async function load(): Promise<void> { loading.value = true; errorMessage.value = ''; try { const [matrixResponse, budgetResponse, accessibilityResponse] = await Promise.all([getMobileB6ReleaseMatrix(), getMobileB6PerformanceBudget(), getMobileB6AccessibilityChecklist()]); matrix.value = toMatrix(matrixResponse); budget.value = toBudget(budgetResponse); accessibility.value = toAccessibility(accessibilityResponse) } catch (error) { errorMessage.value = error instanceof Error ? error.message : '网络不可用，当前使用本地性能设置。' } finally { loading.value = false } }
 function chooseLevel(level: PerformanceLevel): void { engine.setLevel(level, 'manual'); setMobileQuality(level) }
@@ -43,15 +47,15 @@ onUnload(() => { unsubscribe(); engine.dispose() })
           <view class="v2-platform-titles">
             <view class="eyebrow v2-platform-eyebrow"><AppIcon name="grid" :size="14" /><text>壳矩阵</text></view>
             <text class="b6-mobile-card-title h2 v2-platform-title v2-platform-h2">目标端矩阵</text>
-            <text class="b6-mobile-muted d v2-platform-d">{{ matrix.matrixVersion }} · {{ matrix.codeLayerStatus }}</text>
+            <text class="b6-mobile-muted d v2-platform-d">{{ matrix.matrixVersion }} · {{ statusLabel(matrix.codeLayerStatus) }}</text>
           </view>
-          <text class="b6-mobile-status v2-platform-state v2-platform-tag">{{ matrix.realDeviceEvidenceStatus }}</text>
+          <text class="b6-mobile-status v2-platform-state v2-platform-tag">{{ statusLabel(matrix.realDeviceEvidenceStatus) }}</text>
         </view>
         <view class="v2-platform-list">
           <view class="b6-mobile-target list-row row card v2-platform-row v2-platform-card" v-for="target in matrix.targets" :key="target.platformCode">
             <view class="v2-platform-copy"><text class="b6-mobile-target-code h2 v2-platform-name v2-platform-h2">{{ target.platformCode }}</text><text class="b6-mobile-muted d v2-platform-d">{{ target.priority }}</text></view>
             <text class="b6-mobile-muted d v2-platform-d">{{ target.implementation }}</text>
-            <text class="b6-mobile-status v2-platform-state v2-platform-tag">{{ target.buildStatus }}</text>
+            <text class="b6-mobile-status v2-platform-state v2-platform-tag">{{ statusLabel(target.buildStatus) }}</text>
           </view>
         </view>
       </view>
@@ -62,11 +66,11 @@ onUnload(() => { unsubscribe(); engine.dispose() })
             <text class="b6-mobile-card-title h2 v2-platform-title v2-platform-h2">画质与降级</text>
             <text class="b6-mobile-muted d v2-platform-d">低帧率、内存压力或离线时自动降级</text>
           </view>
-          <text class="b6-mobile-status v2-platform-state v2-platform-tag">{{ performanceLevel }}</text>
+          <text class="b6-mobile-status v2-platform-state v2-platform-tag">{{ qualityLevelLabel(performanceLevel) }}</text>
         </view>
-        <view class="b6-mobile-levels v2-platform-levels"><button tabindex="0" role="button" v-for="level in ['Ultra', 'High', 'Medium', 'Performance'] as PerformanceLevel[]" :key="level" class="btn opt v2-platform-btn v2-platform-opt" :class="['b6-level-button', { active: performanceLevel === level }]" :aria-pressed="performanceLevel === level" @tap="chooseLevel(level)">{{ level }}</button></view>
+        <view class="b6-mobile-levels v2-platform-levels"><button tabindex="0" role="button" v-for="level in ['Ultra', 'High', 'Medium', 'Performance'] as PerformanceLevel[]" :key="level" class="btn opt v2-platform-btn v2-platform-opt" :class="['b6-level-button', { active: performanceLevel === level }]" :aria-pressed="performanceLevel === level" @tap="chooseLevel(level)">{{ qualityLevelLabel(level) }}</button></view>
         <view class="v2-platform-list">
-          <view class="b6-budget-row list-row row v2-platform-row" v-for="profile in budget.levels" :key="profile.level"><text class="d v2-platform-d">{{ profile.level }}</text><text class="b6-mobile-muted d v2-platform-d">{{ profile.textureBudgetMb }}MB · 粒子 {{ profile.particleBudget }} · {{ profile.enableThreeD ? '3D' : 'SVG/静态' }}</text></view>
+          <view class="b6-budget-row list-row row v2-platform-row" v-for="profile in budget.levels" :key="profile.level"><text class="d v2-platform-d">{{ qualityLevelLabel(profile.level) }}</text><text class="b6-mobile-muted d v2-platform-d">{{ profile.textureBudgetMb }}MB · 粒子 {{ profile.particleBudget }} · {{ profile.enableThreeD ? '3D' : 'SVG/静态' }}</text></view>
         </view>
       </view>
       <view class="yx-card card v2-platform-card">
