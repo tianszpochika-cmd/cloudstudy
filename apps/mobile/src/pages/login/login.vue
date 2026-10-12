@@ -107,12 +107,192 @@ async function submit(): Promise<void> {
   </view>
 </template>
 
-<style scoped>
-.yx-login-card { margin-top: 28rpx; }
-.yx-field { display: grid; gap: 10rpx; margin-top: 22rpx; color: var(--yx-text-primary); font-size: 24rpx; font-weight: 700; }
-.yx-field:first-child { margin-top: 0; }
-.yx-field input { box-sizing: border-box; width: 100%; height: 80rpx; padding: 0 18rpx; border: 1rpx solid var(--yx-border); border-radius: 12rpx; color: var(--yx-text-primary); background: var(--yx-surface-page); font-size: 26rpx; font-weight: 400; }
-.yx-field input:focus { border-color: var(--yx-brand); }
-.yx-login-error { display: block; margin-top: 18rpx; color: var(--yx-danger); font-size: 22rpx; line-height: 1.55; }
-.yx-login-note { display: block; margin-top: 22rpx; color: var(--yx-text-tertiary); font-size: 22rpx; line-height: 1.6; }
+<style scoped lang="scss">
+/* v2 登录页换皮：对齐 webDemo shared/components.css 中 .card/.lb/input/.btn/.btn.ghost，
+ * 与 mobile/refine.css 登录区（品牌区居中、表单卡抬升、主按钮 50px、次按钮文本化）。
+ * 颜色/间距/圆角/字体/阴影一律取 var(--v2-*)，深色经 .yx-theme-dark 自动切换。 */
+.v2-login {
+  box-sizing: border-box;
+  background: var(--v2-bg);
+  color: var(--v2-ink);
+  font-family: var(--v2-font);
+  padding: var(--v2-space-5) var(--v2-space-4) var(--v2-space-8);
+}
+.v2-login-brand {
+  display: flex;
+  justify-content: center;
+  padding: var(--v2-space-4) var(--v2-space-2) var(--v2-space-2);
+}
+.v2-login-brand-mark {
+  display: grid;
+  place-items: center;
+  width: var(--v2-space-12);
+  height: var(--v2-space-12);
+  border-radius: var(--v2-radius-lg);
+  background: var(--v2-grad);
+  color: var(--v2-inverse);
+  font-size: var(--v2-text-xl);
+  box-shadow: var(--v2-shadow-pop);
+}
+.v2-login-card {
+  box-sizing: border-box;
+  background: var(--v2-card);
+  border: 1px solid var(--v2-line);
+  border-radius: var(--v2-radius-lg);
+  padding: var(--v2-space-6);
+  box-shadow: var(--v2-shadow-pop);
+  margin-top: var(--v2-space-4);
+}
+.v2-login-title {
+  display: block;
+  margin: 0 0 var(--v2-space-2);
+  color: var(--v2-ink);
+  font-family: var(--v2-font);
+  font-size: var(--v2-text-lg);
+  font-weight: 700;
+  line-height: 1.35;
+}
+.v2-login-desc {
+  display: block;
+  margin: 0 0 var(--v2-space-4);
+  color: var(--v2-mut);
+  font-family: var(--v2-font);
+  font-size: var(--v2-text-sm);
+  line-height: 1.6;
+}
+.v2-login-form {
+  display: grid;
+  gap: var(--v2-space-4);
+  margin-top: var(--v2-space-4);
+}
+.v2-login-field {
+  display: grid;
+  gap: var(--v2-space-2);
+  margin: 0;
+  color: var(--v2-ink);
+  font-family: var(--v2-font);
+  font-size: var(--v2-text-sm);
+  font-weight: 600;
+}
+.v2-login-input {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: var(--v2-space-12);
+  padding: var(--v2-space-3);
+  border: 1px solid var(--v2-line);
+  border-radius: var(--v2-radius-md);
+  background: var(--v2-card);
+  color: var(--v2-ink);
+  font-family: var(--v2-font);
+  font-size: var(--v2-text-md);
+  line-height: 1.5;
+  &::placeholder {
+    color: var(--v2-mut);
+  }
+  &:focus {
+    border-color: var(--v2-brand);
+    box-shadow: var(--v2-focus);
+    outline: none;
+  }
+  &:focus-visible {
+    border-color: var(--v2-brand);
+    box-shadow: var(--v2-focus);
+    outline: none;
+  }
+  &:disabled {
+    opacity: 0.55;
+  }
+}
+.v2-login-password {
+  display: flex;
+  align-items: center;
+  gap: var(--v2-space-2);
+  .v2-login-input {
+    flex: 1;
+    min-width: 0;
+  }
+}
+.v2-login-toggle {
+  flex: none;
+  min-height: var(--v2-space-8);
+  padding: var(--v2-space-2);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--v2-radius-sm);
+  color: var(--v2-brand);
+  font-family: var(--v2-font);
+  font-size: var(--v2-text-sm);
+  font-weight: 600;
+  &:focus-visible {
+    box-shadow: var(--v2-focus);
+    outline: none;
+  }
+}
+.v2-login-error {
+  display: block;
+  margin-top: var(--v2-space-2);
+  color: var(--v2-bad);
+  font-family: var(--v2-font);
+  font-size: var(--v2-text-sm);
+  line-height: 1.55;
+}
+.v2-login-primary {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: var(--v2-space-12);
+  margin-top: var(--v2-space-2);
+  padding: var(--v2-space-3) var(--v2-space-4);
+  border: 1px solid transparent;
+  border-radius: var(--v2-radius-md);
+  background: var(--v2-grad);
+  color: var(--v2-inverse);
+  font-family: var(--v2-font);
+  font-size: var(--v2-text-md);
+  font-weight: 700;
+  text-align: center;
+  box-shadow: var(--v2-shadow);
+  cursor: pointer;
+  &:hover {
+    filter: brightness(0.94);
+  }
+  &:active {
+    transform: scale(0.97);
+  }
+  &:focus-visible {
+    box-shadow: var(--v2-focus);
+    outline: none;
+  }
+  &:disabled {
+    background: var(--v2-surface);
+    color: var(--v2-mut);
+    border: 1px dashed var(--v2-line);
+    box-shadow: none;
+    filter: none;
+    opacity: 1;
+    cursor: not-allowed;
+  }
+}
+.v2-login-secondary {
+  display: block;
+  width: 100%;
+  min-height: var(--v2-space-8);
+  margin-top: var(--v2-space-2);
+  padding: var(--v2-space-2) var(--v2-space-3);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--v2-radius-md);
+  color: var(--v2-brand);
+  font-family: var(--v2-font);
+  font-size: var(--v2-text-sm);
+  font-weight: 600;
+  text-align: center;
+  cursor: pointer;
+  &:last-of-type {
+    color: var(--v2-mut);
+  }
+  &:focus-visible {
+    box-shadow: var(--v2-focus);
+    outline: none;
+  }
+}
 </style>
