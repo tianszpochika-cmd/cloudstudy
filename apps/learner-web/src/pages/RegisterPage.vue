@@ -61,38 +61,38 @@ async function submit(): Promise<void> {
 
 <template>
   <AuthLayout>
-    <section class="login-card login-card--quiet" aria-labelledby="register-title">
+    <section class="login-card login-card--quiet v2-auth-card" aria-labelledby="register-title">
       <div class="brand">
         <span class="brand__mark" aria-hidden="true">✦</span>
         <span>语学星</span>
       </div>
-      <h1 id="register-title">{{ authT('register.title') }}</h1>
-      <p class="lead">{{ authT('register.description') }}</p>
-      <form class="login-form" novalidate @submit.prevent="submit">
-        <label class="field">
+      <h1 id="register-title" class="v2-auth-title">{{ authT('register.title') }}</h1>
+      <p class="lead v2-auth-lead">{{ authT('register.description') }}</p>
+      <form class="login-form v2-auth-fields" novalidate @submit.prevent="submit">
+        <label class="field v2-field">
           <span>{{ authT('register.identifier') }}</span>
           <input v-model="identifier" name="identifier" type="text" autocomplete="username" inputmode="email" :aria-label="authT('register.identifier')" :placeholder="authT('register.identifierPlaceholder')" :disabled="submitting">
         </label>
-        <label class="field">
+        <label class="field v2-field">
           <span>{{ authT('register.password') }}</span>
           <input v-model="password" name="password" type="password" autocomplete="new-password" :aria-label="authT('register.password')" :placeholder="authT('register.passwordPlaceholder')" :disabled="submitting">
         </label>
-        <label class="field">
+        <label class="field v2-field">
           <span>{{ authT('register.confirmPassword') }}</span>
           <input v-model="confirm" name="confirm" type="password" autocomplete="new-password" :aria-label="authT('register.confirmPassword')" :placeholder="authT('register.confirmPasswordPlaceholder')" :disabled="submitting">
         </label>
-        <div class="login-status" :class="{ 'login-status--error': error }" :role="error ? 'alert' : 'status'" aria-live="polite" :aria-busy="submitting">
+        <div class="login-status v2-auth-status" :class="{ 'login-status--error': error }" :role="error ? 'alert' : 'status'" aria-live="polite" :aria-busy="submitting">
           <span class="login-status__mark" aria-hidden="true">{{ error ? '!' : '✦' }}</span>
           <div>
             <strong>{{ error ? authT(errorKind === 'validation' ? 'register.validationTitle' : 'register.errorTitle') : authT('register.ready') }}</strong>
             <p>{{ hint }}</p>
           </div>
         </div>
-        <button class="button button--primary" type="submit" :disabled="submitting">
+        <button class="button button--primary v2-btn v2-btn--primary v2-btn--block" type="submit" :disabled="submitting">
           {{ submitting ? authT('register.submitting') : authT('register.start') }}
         </button>
       </form>
-      <p class="micro-copy">{{ authT('register.existingAccount') }}<RouterLink class="micro-copy__action" :to="{ name: 'login', query: { redirect: redirectTarget } }">{{ authT('register.signIn') }}</RouterLink> · <RouterLink :to="{ name: 'reset-password', query: { redirect: redirectTarget } }">{{ authT('register.forgotPassword') }}</RouterLink></p>
+      <p class="micro-copy v2-auth-micro">{{ authT('register.existingAccount') }}<RouterLink class="micro-copy__action" :to="{ name: 'login', query: { redirect: redirectTarget } }">{{ authT('register.signIn') }}</RouterLink> · <RouterLink :to="{ name: 'reset-password', query: { redirect: redirectTarget } }">{{ authT('register.forgotPassword') }}</RouterLink></p>
     </section>
   </AuthLayout>
 </template>
