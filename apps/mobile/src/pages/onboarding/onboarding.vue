@@ -329,4 +329,19 @@ async function cancel(): Promise<void> {
 .onboarding-actions .yx-button { margin-top: 0; }
 .yx-flow-cancel { display: block; margin: 20rpx auto 0; border: 0; color: var(--yx-text-tertiary); background: transparent; font-size: 23rpx; }
 @media (min-width: 700px) { .yx-onboarding { max-width: 760rpx; margin: 0 auto; } }
+/* v2 gate + consent：对齐 webDemo shared/components.css（.card h2/.d/.lb/input/.fb）与 mobile/refine.css（checkbox 行） */
+.v2-gate-step, .v2-consent-step { display: flex; flex-direction: column; }
+.v2-gate-kicker, .v2-consent-kicker { color: var(--v2-brand); font-family: var(--v2-font); font-size: var(--v2-text-xs); font-weight: 700; }
+.v2-gate-title, .v2-consent-title { display: block; margin-top: var(--v2-space-3); color: var(--v2-ink); font-family: var(--v2-font); font-size: var(--v2-text-lg); font-weight: 700; line-height: 1.35; }
+.v2-gate-desc, .v2-consent-desc { display: block; margin-top: var(--v2-space-2); color: var(--v2-mut); font-family: var(--v2-font); font-size: var(--v2-text-sm); line-height: 1.7; }
+.v2-gate-status { display: block; margin-top: var(--v2-space-3); padding: var(--v2-space-3) var(--v2-space-4); border-radius: var(--v2-radius-md); background: var(--v2-warn-soft); color: var(--v2-warn); font-family: var(--v2-font); font-size: var(--v2-text-sm); line-height: 1.6; }
+.v2-gate-field { display: block; margin-top: var(--v2-space-4); color: var(--v2-ink); font-family: var(--v2-font); font-size: var(--v2-text-sm); font-weight: 650; }
+.v2-gate-input { box-sizing: border-box; width: 100%; min-height: var(--v2-space-12); margin-top: var(--v2-space-2); padding: var(--v2-space-3); border: 1px solid var(--v2-line); border-radius: var(--v2-radius-md); background: var(--v2-card); color: var(--v2-ink); font-family: var(--v2-font); font-size: var(--v2-text-md); line-height: 1.5; }
+.v2-gate-input::placeholder { color: var(--v2-mut); }
+.v2-gate-input:focus, .v2-gate-input:focus-visible { border-color: var(--v2-brand); box-shadow: var(--v2-focus); outline: none; }
+.v2-gate-confirm, .v2-consent-item { display: flex; align-items: flex-start; gap: var(--v2-space-3); margin-top: var(--v2-space-3); padding: var(--v2-space-3) var(--v2-space-4); border: 1px solid var(--v2-line); border-radius: var(--v2-radius-md); background: var(--v2-surface); color: var(--v2-ink); font-family: var(--v2-font); font-size: var(--v2-text-sm); font-weight: 500; line-height: 1.5; cursor: pointer; }
+.v2-gate-confirm:hover, .v2-consent-item:hover { border-color: var(--v2-brand); }
+.v2-gate-confirm:has(:checked), .v2-consent-item:has(:checked) { border-color: var(--v2-brand); background: var(--v2-soft); }
+.v2-gate-confirm checkbox, .v2-consent-item checkbox, .v2-gate-confirm input[type="checkbox"], .v2-consent-item input[type="checkbox"] { flex: none; width: var(--v2-space-5); height: var(--v2-space-5); margin-top: var(--v2-space-1); accent-color: var(--v2-brand); }
+.v2-consent-copy { display: flex; flex-direction: column; gap: var(--v2-space-1); color: var(--v2-mut); font-family: var(--v2-font); font-size: var(--v2-text-sm); line-height: 1.6; }
 </style>
