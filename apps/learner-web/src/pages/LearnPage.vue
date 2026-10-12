@@ -63,10 +63,16 @@ async function saveAndExit(): Promise<void> {
     <StatePanel v-if="loading" state="loading" title="正在读取课程内容" description="正在准备你的学习内容，请稍候。" />
     <StatePanel v-else-if="error || !content" state="error" title="课程暂时不可用" :description="error ?? '服务端没有返回课程内容。'" action-label="返回课程" @action="router.push({ name: 'courses' })" />
     <template v-else>
-      <article class="lesson-card"><p class="eyebrow">{{ content.kind }} · {{ content.contentLocale }}</p><h2 id="learn-title">{{ content.title }}</h2><p class="lead">{{ content.description || '按自己的节奏，完成今天的一小步。' }}</p><div class="lesson-meta"><span>{{ content.items.length }} 个学习单元</span><span>本次 {{ elapsed }} 秒</span></div></article>
-      <article v-for="(item, index) in content.items" :key="item.itemId" class="info-card"><span class="card-kicker">学习单元 {{ index + 1 }} · {{ item.itemType }}</span><h3>{{ item.text || '学习内容' }}</h3><div v-if="item.options.length" class="option-list"><span v-for="option in item.options" :key="option.key" class="option">{{ option.key }} · {{ option.text }}</span></div></article>
-      <article v-if="!content.items.length" class="info-card"><h3>课程没有可学习单元</h3><p>这节课程的内容正在准备中，先看看其他课程吧。</p></article>
-      <div class="actions"><button class="button button--secondary" type="button" @click="saveAndExit">保存并返回今日任务</button></div>
+      <div class="v2-learn-layout">
+        <nav class="v2-learn-toc" aria-label="学习单元目录"><p class="card-kicker">本课目录</p><a v-for="(item, index) in content.items" :key="`toc-${item.itemId}`" :href="`#unit-${index + 1}`">{{ index + 1 }}. {{ ({ DIALOGUE: '对话', VOCAB: '词汇', CHOICE: '选择题', LESSON: '讲解', READING: '阅读', LISTENING: '听力' } as Record<string, string>)[item.itemType] ?? '学习内容' }}</a></nav>
+        <div class="v2-learn-main">
+          <article class="lesson-card"><p class="eyebrow">{{ ({ COURSE_UNIT: '课程单元', LESSON: '课程', READING: '阅读', LISTENING: '听力' } as Record<string, string>)[content.kind] ?? '课程' }} · {{ content.contentLocale }}</p><h2 id="learn-title">{{ content.title }}</h2><p class="lead">{{ content.description || '按自己的节奏，完成今天的一小步。' }}</p><div class="lesson-meta"><span>{{ content.items.length }} 个学习单元</span><span>本次 {{ elapsed }} 秒</span></div></article>
+          <article v-for="(item, index) in content.items" :key="item.itemId" class="info-card v2-learn-unit" :id="`unit-${index + 1}`"><span class="card-kicker">学习单元 {{ index + 1 }} · {{ ({ DIALOGUE: '对话', VOCAB: '词汇', CHOICE: '选择题', LESSON: '讲解', READING: '阅读', LISTENING: '听力' } as Record<string, string>)[item.itemType] ?? '学习内容' }}</span><h3>{{ item.text || '学习内容' }}</h3><div v-if="item.options.length" class="option-list"><span v-for="option in item.options" :key="option.key" class="option">{{ option.key }} · {{ option.text }}</span></div></article>
+          <article v-if="!content.items.length" class="info-card"><h3>课程没有可学习单元</h3><p>这节课程的内容正在准备中，先看看其他课程吧。</p></article>
+          <div class="actions"><button class="button button--secondary" type="button" @click="saveAndExit">保存并返回今日任务</button></div>
+        </div>
+        <aside class="v2-learn-tools" aria-label="学习工具"><p class="card-kicker">本次学习</p><dl><div><dt>学习单元</dt><dd>{{ content.items.length }} 个</dd></div><div><dt>本次用时</dt><dd>{{ elapsed }} 秒</dd></div></dl><p class="muted">进度会自动保存，离开后可以从这里继续。</p><button class="button button--primary" type="button" @click="saveAndExit">保存并返回今日任务</button></aside>
+      </div>
     </template>
   </section>
 </template>
