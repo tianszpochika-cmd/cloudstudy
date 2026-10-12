@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import AppIcon from '../../components/AppIcon.vue'
-import MobileFeatureGrid from '../../components/MobileFeatureGrid.vue'
 import MobilePageHeader from '../../components/MobilePageHeader.vue'
 import { useMobileExperience } from '../../platform/experience'
 const { experienceStyle, experienceMotion } = useMobileExperience()
@@ -151,8 +150,7 @@ function openPlanEmpty(view: EmptyStateView): void {
       </view>
     </view>
 
-    <MobileFeatureGrid compact />
-    <view class="entry-grid"><button tabindex="0" role="button" class="yx-button yx-button--secondary" @click="open('/pages/onboarding/onboarding')">修改目标</button><button tabindex="0" role="button" class="yx-button" @click="open('/pages/assessment/assessment')">进入测评</button><button tabindex="0" role="button" class="yx-button yx-button--secondary" @click="open('/pages/today/today')">今日任务</button><button tabindex="0" role="button" class="yx-button yx-button--secondary" :disabled="!canContinueCourse" @click="continueCourse">继续课程</button></view>
+    <view class="entry-grid"><button tabindex="0" role="button" class="yx-button yx-button--secondary" @click="open('/pages/onboarding/onboarding')">修改目标</button><button tabindex="0" role="button" class="yx-button" @click="open('/pages/assessment/assessment')">进入测评</button></view>
 
     <view v-if="!session.isAuthenticated" class="yx-status"><text>登录后，继续查看你的学习进度。</text><button tabindex="0" role="button" class="login-button" @click="open('/pages/login/login')">登录后继续</button></view>
   </view>
