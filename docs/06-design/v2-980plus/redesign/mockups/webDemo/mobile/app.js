@@ -1259,7 +1259,8 @@ function render() {
   drillLifecycle(r);
   if (history.state?.yxxMobile && history.state.route === requested) ROUTE_DEPTH = history.state.depth;
   else if (LASTR) ROUTE_DEPTH++;
-  history.replaceState({ ...history.state, yxxMobile: true, route: r, depth: ROUTE_DEPTH }, "", "#/" + r);
+  const target = ADMIN_ROUTES.includes(requested) ? requested : (r === "alogin" ? (history.state?.route === "alogin" && history.state.target) || "alogin" : r);
+  history.replaceState({ ...history.state, yxxMobile: true, route: r, depth: ROUTE_DEPTH, target }, "", "#/" + r);
   if (LASTR === "chapter" && r !== "chapter") { try { BK.pos[BK.cur + ":" + BK.ch] = document.getElementById("view").scrollTop; } catch (e) { } }
   const view = document.getElementById("view");
   const pageChanged = LASTR !== r;
@@ -1274,6 +1275,7 @@ function render() {
   applyA11y();
   view.classList.toggle("page-enter", pageChanged);
   view.dataset.route = r;
+  view.dataset.target = target;
   view.dataset.tabs = TABS.includes(mainTab) ? "1" : "0";
   view.innerHTML = V[r]();
   layoutContent(view);

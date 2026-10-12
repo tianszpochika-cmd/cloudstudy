@@ -2740,7 +2740,7 @@ const QA_URL = process.env.STATIC_DEMO_URL || 'http://127.0.0.1:18283/webDemo/le
 
 // LAST_RUN_RESULT
 // {
-//   "at": "2026-10-12T07:58:58.417Z",
+//   "at": "2026-10-12T08:13:23.010Z",
 //   "url": "http://127.0.0.1:18283/webDemo/learner-web/",
 //   "surface": "learner-web",
 //   "viewport": 1440,
@@ -2753,7 +2753,7 @@ const QA_URL = process.env.STATIC_DEMO_URL || 'http://127.0.0.1:18283/webDemo/le
 //     "../shared/preview-data.js": "703faa17cc33537ea7cd5df433966c590a7432637d7345cf19a4f45d34f4fe36",
 //     "../shared/product-overrides.js": "eabaadfe7fd43518e63c175a3bc755bccb92a3fef649d32568fb5f00c11eae9a",
 //     "../shared/demo-ui.js": "5e3a23ef8bb68afd86baf4d1fae0d1e2567c6734b21d1518d69eb0833214bc0a",
-//     "../mobile/app.js": "99df303b7806965d7da5cca99440aef983a8135a9271f2072371809f2b413524",
+//     "../mobile/app.js": "8aeac6e3db3046f602066e63ae4355caffbac2904937cbbc2ab75173a3214711",
 //     "../mobile/learning.js": "4863003b4aa6082a4d1577a44c097e0d554fe3dd784536617bc24059ec8be0f6",
 //     "../mobile/legacy.css": "778dc02de0d7c0cdf410cae76bc4b0f88c0717026eaa5c83c64a1218604e5456",
 //     "../shared/tokens.css": "82eb54043fa4a26f1341284a562819fabef85e50bc978bb33ce07a67389fc5f9",
@@ -2982,7 +2982,7 @@ const QA_URL = process.env.STATIC_DEMO_URL || 'http://127.0.0.1:18283/webDemo/le
 //   ],
 //   "pageErrors": [],
 //   "externalRequests": [],
-//   "evidenceDir": "/workspace/cs/.git/codex-local-backups/desktop-qa-1791791938420-1440",
+//   "evidenceDir": "/workspace/cs/.git/codex-local-backups/desktop-qa-1791792803013-1440",
 //   "loadedScripts": [
 //     "../shared/data.js",
 //     "../mobile/app.js",

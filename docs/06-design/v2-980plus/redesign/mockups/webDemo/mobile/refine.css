@@ -194,3 +194,124 @@
 /* writing：草稿区与计数 */
 #view[data-route=writing] textarea{min-height:220px;font-size:15px;line-height:1.7;border-radius:14px}
 #view[data-route=writing] #writing-count{display:inline-block;padding:3px 10px;border-radius:999px;background:var(--soft);color:var(--brand);font-size:12px;font-weight:600;margin:8px 0 12px}
+
+/* R3 批次 1：长表单与设置类逐页精修 */
+/* register / reset：品牌区居中、表单卡层次 */
+:is(#view[data-route=register],#view[data-route=reset],#view[data-route=login]) .auth-intro{text-align:center;padding:12px 8px 4px}
+:is(#view[data-route=register],#view[data-route=reset],#view[data-route=login]) .auth-intro .brand-mark{margin:0 auto 14px;width:56px;height:56px;font-size:24px;border-radius:18px;box-shadow:0 10px 26px #4b32b833}
+:is(#view[data-route=register],#view[data-route=reset],#view[data-route=login]) .auth-intro h1{font-size:26px;letter-spacing:-.4px}
+:is(#view[data-route=register],#view[data-route=reset],#view[data-route=login]) .card input{min-height:48px;font-size:15px}
+:is(#view[data-route=register],#view[data-route=reset],#view[data-route=login]) .card .btn+.btn.ghost{background:transparent;border-color:transparent;color:var(--brand)}
+#view[data-route=register] .card>p.d::before,#view[data-route=reset] .card>p.d::before{content:"🔒 "}
+/* onboard / plan：七日圆点、分组 */
+:is(#view[data-route=onboard],#view[data-route=plan]) .day-picker{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+:is(#view[data-route=onboard],#view[data-route=plan]) .day-picker .mode-button{aspect-ratio:1;min-height:0;padding:0;border-radius:50%;font-size:12px}
+:is(#view[data-route=onboard],#view[data-route=plan]) .day-picker .mode-button.is-active{background:var(--brand);color:var(--inverse,#fff);border-color:var(--brand)}
+:is(#view[data-route=onboard],#view[data-route=plan]) .day-picker .mode-button.is-active::after{display:none}
+:is(#view[data-route=onboard],#view[data-route=plan]) .card label.lb{margin-top:14px}
+:is(#view[data-route=onboard],#view[data-route=plan]) .card select{min-height:48px}
+/* settings：分段主题选择、列表行 */
+#view[data-route=settings] .theme-picker{display:grid;grid-template-columns:repeat(3,1fr);gap:0;padding:4px;border-radius:14px;background:var(--surface,var(--soft));border:1px solid var(--line)}
+#view[data-route=settings] .theme-picker .mode-button{border:0;background:transparent;border-radius:10px;min-height:38px}
+#view[data-route=settings] .theme-picker .mode-button.is-active{background:var(--card);color:var(--brand);box-shadow:0 2px 8px #0000001a}
+#view[data-route=settings] .theme-picker .mode-button.is-active::after{display:none}
+:is(#view[data-route=settings],#view[data-route=me]) .entry-list .opt{border:0;border-bottom:1px solid var(--line);border-radius:0;margin:0;background:transparent}
+:is(#view[data-route=settings],#view[data-route=me]) .entry-list .opt:last-of-type{border-bottom:0}
+#view[data-route=settings] .entry-list .btn.ghost{margin-top:14px;color:var(--bad);border-color:var(--line)}
+/* privacy / devices：行内分隔、危险区 */
+:is(#view[data-route=privacy],#view[data-route=devices]) .list-row{padding:12px 0;border-bottom:1px solid var(--line)}
+:is(#view[data-route=privacy],#view[data-route=devices]) .list-row:last-of-type{border-bottom:0}
+:is(#view[data-route=privacy],#view[data-route=devices]) .list-row .btn.sm:not(:disabled){background:transparent;color:var(--bad);border:1px solid var(--line)}
+#view[data-route=privacy] .card:last-of-type{border:1px solid var(--bad-soft,#f6d5d5)}
+#view[data-route=privacy] .card:last-of-type h2::before{content:"⚠️ "}
+#view[data-route=devices] .list-row:first-of-type{margin:6px -10px 0;padding:12px 10px;border-radius:12px;background:var(--soft);border-bottom:0}
+#view[data-route=devices] .list-row b::before{content:"💻 ";font-weight:400}
+#view[data-route=devices] .list-row:nth-of-type(2) b::before{content:"📱 "}
+#view[data-route=devices] .list-row:nth-of-type(3) b::before{content:"📲 "}
+/* cupgrade：同意项卡片化 */
+#view[data-route=cupgrade] .card>p.d:has(b){padding:10px 12px 10px 38px;margin:8px 0;border:1px solid var(--line);border-radius:12px;position:relative;font-size:13px}
+#view[data-route=cupgrade] .card>p.d:has(b)::before{content:"✓";position:absolute;left:12px;top:10px;width:18px;height:18px;border-radius:50%;background:var(--ok-soft,#e3f5ea);color:var(--ok,#1c7c45);display:grid;place-items:center;font-size:11px;font-weight:700}
+#view[data-route=cupgrade] .card>p.d:has(b) b{color:var(--ink);letter-spacing:.3px}
+/* pfault：恢复场景色带 */
+#view[data-route=pfault]>.card:not(:first-child){border-left:4px solid var(--brand)}
+#view[data-route=pfault]>.card:nth-child(2){border-left-color:var(--warn,#b66a00)}
+#view[data-route=pfault]>.card:nth-child(3){border-left-color:var(--info,#2f6fd6)}
+#view[data-route=pfault]>.card:nth-child(4){border-left-color:var(--ok,#1c7c45)}
+#view[data-route=pfault]>.card:first-child{background:linear-gradient(180deg,var(--soft),var(--card))}
+/* offpkg：进度条与按钮组 */
+#view[data-route=offpkg] .prog{height:8px;border-radius:99px;margin:10px 0 12px}
+#view[data-route=offpkg] .prog i{border-radius:99px}
+#view[data-route=offpkg] .actions{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:8px}
+#view[data-route=offpkg] .actions .btn{width:auto;margin:0}
+#view[data-route=offpkg] section.card:not(:first-child) h2::before{content:"📦 "}
+
+/* R3 批次 1 补丁 */
+:is(#view[data-route=privacy],#view[data-route=devices]) .list-row{display:flex;align-items:center;gap:12px}
+:is(#view[data-route=privacy],#view[data-route=devices]) .list-row>div{flex:1;min-width:0}
+:is(#view[data-route=privacy],#view[data-route=devices]) .list-row .btn.sm{flex:none;width:auto;min-width:64px;white-space:nowrap;padding:6px 14px}
+#view[data-route=settings] .theme-picker .mode-button.is-active{background:var(--card)!important;color:var(--brand)!important;border:0!important}
+
+/* R3 批次 1 补丁 2 */
+:is(#view[data-route=privacy],#view[data-route=devices]) .list-row{border:0;border-bottom:1px solid var(--line);border-radius:0;background:transparent;box-shadow:none;margin:0}
+#view[data-route=devices] .list-row:first-of-type{border-radius:12px;background:var(--soft);border-bottom:0;margin:6px -10px 4px}
+
+/* R3 批次 2：空态/结果页差异化插画 */
+#view[data-route=celebrate] .card.empty::before{content:"";display:block;width:104px;height:104px;margin:4px auto 14px;border-radius:0;box-shadow:none;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 96'%3E%3Ccircle cx='48' cy='48' r='40' fill='%23efeaff'/%3E%3Cpath d='M34 30h28v10a14 14 0 0 1-28 0z' fill='%237555cb'/%3E%3Cpath d='M34 33h-6a6 6 0 0 0 6 9M62 33h6a6 6 0 0 1-6 9' stroke='%237555cb' stroke-width='3' fill='none'/%3E%3Crect x='44' y='54' width='8' height='8' fill='%237555cb'/%3E%3Crect x='38' y='62' width='20' height='5' rx='2' fill='%234b32b8'/%3E%3Ccircle cx='22' cy='26' r='3' fill='%23f2a33a'/%3E%3Ccircle cx='74' cy='22' r='2.5' fill='%232fb37a'/%3E%3Crect x='72' y='60' width='6' height='3' rx='1.5' transform='rotate%2830 75 61%29' fill='%23e2557a'/%3E%3Crect x='18' y='58' width='6' height='3' rx='1.5' transform='rotate%28-25 21 59%29' fill='%233b82f6'/%3E%3C/svg%3E") center/contain no-repeat}
+#view[data-route=result] .card.empty::before{content:"";display:block;width:104px;height:104px;margin:4px auto 14px;border-radius:0;box-shadow:none;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 96'%3E%3Ccircle cx='48' cy='48' r='40' fill='%23eef3ff'/%3E%3Crect x='26' y='24' width='34' height='44' rx='5' fill='%23fff' stroke='%239aa7c7' stroke-width='2'/%3E%3Cpath d='M33 35h20M33 43h14' stroke='%23c3cbe0' stroke-width='3' stroke-linecap='round'/%3E%3Ccircle cx='58' cy='58' r='11' fill='%23fff' stroke='%233b6fd6' stroke-width='4'/%3E%3Cpath d='m66 66 8 8' stroke='%233b6fd6' stroke-width='5' stroke-linecap='round'/%3E%3Cpath d='M55 55l6 6M61 55l-6 6' stroke='%233b6fd6' stroke-width='2.5' stroke-linecap='round'/%3E%3C/svg%3E") center/contain no-repeat}
+#view[data-route=arrears] .card.empty::before{content:"";display:block;width:104px;height:104px;margin:4px auto 14px;border-radius:0;box-shadow:none;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 96'%3E%3Ccircle cx='48' cy='48' r='40' fill='%23fff4e3'/%3E%3Cpath d='M34 24h28M34 72h28' stroke='%23b66a00' stroke-width='4' stroke-linecap='round'/%3E%3Cpath d='M37 25c0 13 22 15 22 23S37 59 37 71h22c0-12-22-15-22-23s22-10 22-23z' fill='%23fff' stroke='%23b66a00' stroke-width='3' stroke-linejoin='round'/%3E%3Cpath d='M41 66c3-5 11-5 14 0z' fill='%23f2a33a'/%3E%3Cpath d='M43 33h10l-5 6z' fill='%23f2a33a'/%3E%3C/svg%3E") center/contain no-repeat}
+#view[data-route=greject] .card.empty::before{content:"";display:block;width:104px;height:104px;margin:4px auto 14px;border-radius:0;box-shadow:none;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 96'%3E%3Ccircle cx='48' cy='48' r='40' fill='%23fdecee'/%3E%3Cpath d='M48 20 70 28v16c0 15-9 26-22 32-13-6-22-17-22-32V28z' fill='%23fff' stroke='%23c2414b' stroke-width='3' stroke-linejoin='round'/%3E%3Crect x='39' y='45' width='18' height='14' rx='3' fill='%23c2414b'/%3E%3Cpath d='M42 45v-4a6 6 0 0 1 12 0v4' stroke='%23c2414b' stroke-width='3' fill='none'/%3E%3C/svg%3E") center/contain no-repeat}
+#view[data-route=offlinet] .card.empty::before{content:"";display:block;width:104px;height:104px;margin:4px auto 14px;border-radius:0;box-shadow:none;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 96'%3E%3Ccircle cx='48' cy='48' r='40' fill='%23eaf6f0'/%3E%3Cpath d='M30 62a12 12 0 0 1 1-24 16 16 0 0 1 31-3 11 11 0 0 1 4 22z' fill='%23fff' stroke='%232a8a5c' stroke-width='3' stroke-linejoin='round'/%3E%3Cpath d='M26 26l46 46' stroke='%232a8a5c' stroke-width='4' stroke-linecap='round'/%3E%3Ccircle cx='70' cy='70' r='9' fill='%232a8a5c'/%3E%3Cpath d='M66 70l3 3 5-6' stroke='%23fff' stroke-width='2.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") center/contain no-repeat}
+#view[data-route=space]>.card:first-child::after{content:"";display:block;width:104px;height:104px;margin:4px auto 14px;border-radius:0;box-shadow:none;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 96'%3E%3Ccircle cx='48' cy='48' r='40' fill='%23efeaff'/%3E%3Crect x='22' y='26' width='52' height='38' rx='6' fill='%23fff' stroke='%237555cb' stroke-width='3'/%3E%3Cpath d='M24 58l14-14 10 10 8-7 16 13' fill='%23cfe9d9' stroke='%232fb37a' stroke-width='2.5' stroke-linejoin='round'/%3E%3Ccircle cx='60' cy='38' r='5' fill='%23f2a33a'/%3E%3Cpath d='M36 72h24' stroke='%237555cb' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E") center/contain no-repeat}
+
+/* R3 批次 2：空态/结果页排版 */
+:is(#view[data-route=celebrate],#view[data-route=result],#view[data-route=arrears],#view[data-route=greject],#view[data-route=offlinet]) .card.empty{padding:32px 22px 24px;text-align:center}
+:is(#view[data-route=celebrate],#view[data-route=result],#view[data-route=arrears],#view[data-route=greject],#view[data-route=offlinet]) .card.empty h2,#view[data-route=greject] .card.empty b{display:block;font-size:20px;margin-bottom:6px}
+:is(#view[data-route=celebrate],#view[data-route=result],#view[data-route=arrears],#view[data-route=greject],#view[data-route=offlinet]) .card.empty .d{max-width:300px;margin:0 auto 16px;line-height:1.65}
+#view[data-route=celebrate] .card.empty{background:linear-gradient(180deg,var(--soft),var(--card) 60%)}
+#view[data-route=greject] .card.empty .btn.sm{width:calc(50% - 6px);display:inline-flex;justify-content:center}
+#view[data-route=greject] .card.empty .btn.sm:first-of-type{background:transparent;color:var(--ink);border:1px solid var(--line)}
+#view[data-route=offlinet] .card.empty .d{text-align:left;font-size:13px;padding:12px 14px;border-radius:12px;background:var(--surface,var(--soft));max-width:none}
+#view[data-route=space]>.card:first-child{text-align:center;background:linear-gradient(180deg,var(--soft),var(--card))}
+#view[data-route=space]>.card:first-child .btn.sm.ghost{float:left}
+#view[data-route=space]>.card:first-child h2{clear:both}
+#view[data-route=space]>.card:nth-child(2) .action-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+#view[data-route=space]>.card:last-child{background:transparent;box-shadow:none;border:1px dashed var(--line)}
+
+/* R3 批次 2 补丁 */
+#view[data-route=greject] .card.empty{display:flex;flex-wrap:wrap;justify-content:center;gap:10px}
+#view[data-route=greject] .card.empty::before,#view[data-route=greject] .card.empty b,#view[data-route=greject] .card.empty .d{flex-basis:100%}
+#view[data-route=greject] .card.empty .btn.sm{flex:1;width:auto;margin:0}
+#view[data-route=space]>.card:first-child{display:flex;flex-direction:column;align-items:center}
+#view[data-route=space]>.card:first-child .btn.sm.ghost{align-self:flex-start;float:none;order:0}
+#view[data-route=space]>.card:first-child::after{order:1;margin:0 auto 8px}
+#view[data-route=space]>.card:first-child h2{order:2}#view[data-route=space]>.card:first-child .d{order:3}
+#view[data-route=greject] .card.empty .btn.sm{min-width:0}
+
+/* R3 批次 3：管理入口按目标页区分 */
+#view[data-route=alogin][data-target=admin]>.card:first-child{border-top:4px solid #7555cb}
+#view[data-route=alogin][data-target=admin]>.card:first-child::before{content:"🧭  目标页 · 运营工作台\A 总览待办、指标与风险提醒\A 建议职责：运营负责人";white-space:pre-line;display:block;margin:-4px 0 16px;padding:12px 14px;border-radius:12px;background:#7555cb14;color:var(--ink);font-size:13px;line-height:1.7;font-weight:500}
+#view[data-route=alogin][data-target=aperm]>.card:first-child{border-top:4px solid #3b6fd6}
+#view[data-route=alogin][data-target=aperm]>.card:first-child::before{content:"🔐  目标页 · 权限矩阵\A 核对每个职责能做什么\A 建议职责：运营负责人";white-space:pre-line;display:block;margin:-4px 0 16px;padding:12px 14px;border-radius:12px;background:#3b6fd614;color:var(--ink);font-size:13px;line-height:1.7;font-weight:500}
+#view[data-route=alogin][data-target=adraft]>.card:first-child{border-top:4px solid #7555cb}
+#view[data-route=alogin][data-target=adraft]>.card:first-child::before{content:"✏️  目标页 · 内容编辑\A 起草原创学习内容并送审\A 建议职责：教研编辑";white-space:pre-line;display:block;margin:-4px 0 16px;padding:12px 14px;border-radius:12px;background:#7555cb14;color:var(--ink);font-size:13px;line-height:1.7;font-weight:500}
+#view[data-route=alogin][data-target=areview]>.card:first-child{border-top:4px solid #7555cb}
+#view[data-route=alogin][data-target=areview]>.card:first-child::before{content:"✅  目标页 · 双人审核\A 初审与终审分别留痕\A 建议职责：内容初审 / 终审";white-space:pre-line;display:block;margin:-4px 0 16px;padding:12px 14px;border-radius:12px;background:#7555cb14;color:var(--ink);font-size:13px;line-height:1.7;font-weight:500}
+#view[data-route=alogin][data-target=apublish]>.card:first-child{border-top:4px solid #7555cb}
+#view[data-route=alogin][data-target=apublish]>.card:first-child::before{content:"🚀  目标页 · 发布管理\A 排期、发布与回滚版本\A 建议职责：发布运营";white-space:pre-line;display:block;margin:-4px 0 16px;padding:12px 14px;border-radius:12px;background:#7555cb14;color:var(--ink);font-size:13px;line-height:1.7;font-weight:500}
+#view[data-route=alogin][data-target=agov]>.card:first-child{border-top:4px solid #c2414b}
+#view[data-route=alogin][data-target=agov]>.card:first-child::before{content:"🛡️  目标页 · 风险案件\A 分诊、隔离与恢复演示对象\A 建议职责：运营负责人";white-space:pre-line;display:block;margin:-4px 0 16px;padding:12px 14px;border-radius:12px;background:#c2414b14;color:var(--ink);font-size:13px;line-height:1.7;font-weight:500}
+#view[data-route=alogin][data-target=aaudit]>.card:first-child{border-top:4px solid #3b6fd6}
+#view[data-route=alogin][data-target=aaudit]>.card:first-child::before{content:"📜  目标页 · 审计日志\A 追溯每一次操作与依据\A 建议职责：任一职责";white-space:pre-line;display:block;margin:-4px 0 16px;padding:12px 14px;border-radius:12px;background:#3b6fd614;color:var(--ink);font-size:13px;line-height:1.7;font-weight:500}
+#view[data-route=alogin][data-target=alogin]>.card:first-child{border-top:4px solid #4b32b8}
+#view[data-route=alogin][data-target=alogin]>.card:first-child::before{content:"🔑  目标页 · 管理登录\A 选择合成职责进入工作台\A 建议职责：任一职责";white-space:pre-line;display:block;margin:-4px 0 16px;padding:12px 14px;border-radius:12px;background:#4b32b814;color:var(--ink);font-size:13px;line-height:1.7;font-weight:500}
+#view[data-route=alogin][data-target=amedia]>.card:first-child{border-top:4px solid #7555cb}
+#view[data-route=alogin][data-target=amedia]>.card:first-child::before{content:"🖼️  目标页 · 媒体资源\A 上传、绑定与替换音图素材\A 建议职责：教研编辑 / 发布运营";white-space:pre-line;display:block;margin:-4px 0 16px;padding:12px 14px;border-radius:12px;background:#7555cb14;color:var(--ink);font-size:13px;line-height:1.7;font-weight:500}
+#view[data-route=alogin][data-target=acs]>.card:first-child{border-top:4px solid #2a8a5c}
+#view[data-route=alogin][data-target=acs]>.card:first-child::before{content:"💬  目标页 · 客服工单\A 回复学员并跟踪处理进度\A 建议职责：二线客服";white-space:pre-line;display:block;margin:-4px 0 16px;padding:12px 14px;border-radius:12px;background:#2a8a5c14;color:var(--ink);font-size:13px;line-height:1.7;font-weight:500}
+#view[data-route=alogin][data-target=ashop]>.card:first-child{border-top:4px solid #b66a00}
+#view[data-route=alogin][data-target=ashop]>.card:first-child::before{content:"🧾  目标页 · 商城订单\A 订单、退款与权益对账\A 建议职责：财务审批";white-space:pre-line;display:block;margin:-4px 0 16px;padding:12px 14px;border-radius:12px;background:#b66a0014;color:var(--ink);font-size:13px;line-height:1.7;font-weight:500}
+#view[data-route=alogin][data-target=areport]>.card:first-child{border-top:4px solid #c2414b}
+#view[data-route=alogin][data-target=areport]>.card:first-child::before{content:"🚩  目标页 · 举报核查\A 核查证据并给出处置\A 建议职责：运营负责人";white-space:pre-line;display:block;margin:-4px 0 16px;padding:12px 14px;border-radius:12px;background:#c2414b14;color:var(--ink);font-size:13px;line-height:1.7;font-weight:500}
+#view[data-route=alogin][data-target=aobs]>.card:first-child{border-top:4px solid #3b6fd6}
+#view[data-route=alogin][data-target=aobs]>.card:first-child::before{content:"📈  目标页 · 运行观测\A 服务健康、延迟与恢复任务\A 建议职责：运营负责人";white-space:pre-line;display:block;margin:-4px 0 16px;padding:12px 14px;border-radius:12px;background:#3b6fd614;color:var(--ink);font-size:13px;line-height:1.7;font-weight:500}
+#view[data-route=alogin]:is([data-target=admin],[data-target=aperm],[data-target=adraft],[data-target=areview],[data-target=apublish],[data-target=agov],[data-target=aaudit],[data-target=alogin],[data-target=amedia],[data-target=acs],[data-target=ashop],[data-target=areport],[data-target=aobs])>.card:first-child::first-line{font-weight:700;font-size:15px}
