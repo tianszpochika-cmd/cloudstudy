@@ -225,7 +225,7 @@ function feedbackText(result: { feedbackCodes?: string[]; feedbackCode?: string;
 </script>
 
 <template>
-  <section class="b11-page" :data-performance="b11.performanceLevel" aria-labelledby="b11-listening-title">
+  <section class="b11-page v2-page v2-page--b11listening" :data-performance="b11.performanceLevel" aria-labelledby="b11-listening-title">
     <ExperienceHeader page="Listening" icon="headphones" title-id="b11-listening-title" />
 
     <section
@@ -273,7 +273,7 @@ function feedbackText(result: { feedbackCodes?: string[]; feedbackCode?: string;
       >{{ ui.t('b11.common.retry') }}</button>
     </section>
 
-    <section v-else class="listening-layout">
+    <section v-else class="listening-layout v2-b11listening-main">
       <aside class="side-panel">
         <div class="material-meta">
           <strong>{{ material.title }}</strong>
@@ -395,6 +395,7 @@ function feedbackText(result: { feedbackCodes?: string[]; feedbackCode?: string;
         </article>
       </section>
     </section>
+    <aside class="v2-b11listening-rail" aria-label="练习提示"><h2>听力练习</h2><ol><li>先完整听一遍，再逐句回放。</li><li>答完题提交后查看反馈。</li></ol></aside>
   </section>
 </template>
 
