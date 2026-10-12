@@ -1009,3 +1009,23 @@
   justify-content: space-between;
   align-items: center;
 }
+
+/* === page: governance search/pagination === */
+.risk-toolbar {
+  justify-content: flex-start;
+  gap: 10px;
+}
+.risk-toolbar__search {
+  max-width: 320px;
+}
+.risk-toolbar__status {
+  width: 160px;
+}
+.risk-toolbar__count {
+  margin-left: auto;
+}
+.risk-pagination {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 14px;
+}
