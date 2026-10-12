@@ -169,4 +169,26 @@ function openPlanEmpty(view: EmptyStateView): void {
 .course-search { box-sizing: border-box; width: 100%; max-width: 100%; min-width: 0; margin: 8rpx 0; padding: 12rpx 14rpx; border: 1rpx solid var(--yx-border); border-radius: 12rpx; color: var(--yx-text-primary); background: var(--yx-surface-card); }
 .first-learning-guide, .plan-banner { margin-top: 12rpx; padding: 14rpx 16rpx; border: 1rpx solid var(--yx-border); border-radius: 12rpx; color: var(--yx-text-secondary); font-size: 24rpx; }.entry-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14rpx; margin-top: 20rpx; }.yx-button--secondary { color: var(--yx-brand); background: var(--yx-surface-card); }.state-title,.state-description{display:block}.state-title{font-weight:700}.state-description{margin-top:12rpx;color:var(--yx-text-secondary);font-size:23rpx}.first-day { display: grid; gap: 8rpx; margin-top: 20rpx; color: var(--yx-text-tertiary); font-size: 21rpx; }.yx-status { display: grid; gap: 12rpx; margin-top: 22rpx; color: var(--yx-text-secondary); font-size: 22rpx; }
 @media (max-width: 420px) { .task-row { flex-wrap: wrap; }.task-copy { flex-basis: 100%; }.task-button { margin-left: auto; } }
+/* v2 首页换皮：对齐 webDemo mobile/styles.css 与 refine.css（.hero/.kpis/.kpi/.prog/.card/.eyebrow/.btn.sm）。
+ * hero 用 var(--v2-grad) 渐变，白字不用 var(--v2-inverse)（暗色不可用），仅此一处用 #fff；
+ * 其余颜色/底/边框/阴影/字体一律取 var(--v2-*)。 */
+.v2-home-body { display: flex; flex-direction: column; gap: var(--v2-space-4); font-family: var(--v2-font); }
+.v2-home-hero { padding: var(--v2-space-5); border: 0; border-radius: var(--v2-radius-lg); background: var(--v2-grad); color: #fff; box-shadow: var(--v2-shadow); font-family: var(--v2-font); }
+.v2-home-eyebrow { display: flex; align-items: center; gap: var(--v2-space-2); margin: 0 0 var(--v2-space-2); color: var(--v2-mut); font-family: var(--v2-font); font-size: var(--v2-text-xs); font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+.v2-home-hero .v2-home-eyebrow, .v2-home-hero .v2-home-hi, .v2-home-hero .v2-home-sub, .v2-home-hero .v2-home-kpi-value, .v2-home-hero .v2-home-kpi-label, .v2-home-hero .progress-row, .v2-home-hero .progress { color: #fff; }
+.v2-home-hi { display: block; margin: var(--v2-space-2) 0 0; font-size: var(--v2-text-xl); font-weight: 800; letter-spacing: -.04em; line-height: 1.3; }
+.v2-home-sub { display: block; margin-top: var(--v2-space-1); font-size: var(--v2-text-sm); line-height: 1.7; }
+.v2-home-kpis { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--v2-space-2); margin-top: var(--v2-space-4); }
+.v2-home-kpi { padding: var(--v2-space-4) var(--v2-space-2); border-radius: var(--v2-radius-md); background: color-mix(in srgb, var(--v2-card) 18%, transparent); text-align: center; }
+.v2-home-kpi-value { display: block; font-size: var(--v2-text-lg); font-weight: 800; line-height: 1.2; }
+.v2-home-kpi-label { display: block; margin-top: var(--v2-space-1); font-size: var(--v2-text-xs); line-height: 1.35; }
+.v2-home-hero .progress-track { background: color-mix(in srgb, var(--v2-card) 35%, transparent); border-radius: var(--v2-radius-pill); overflow: hidden; }
+.v2-home-hero .progress-value { background: #fff; border-radius: inherit; }
+.v2-home-continue, .v2-home-card-action { box-sizing: border-box; min-height: var(--v2-space-12); margin-top: var(--v2-space-4); padding: var(--v2-space-3) var(--v2-space-4); border: 1px solid transparent; border-radius: var(--v2-radius-md); background: var(--v2-soft); color: var(--v2-brand); font-family: var(--v2-font); font-size: var(--v2-text-sm); font-weight: 700; line-height: 1.5; white-space: nowrap; }
+.v2-home-continue:active, .v2-home-card-action:active { transform: scale(.97); }
+.v2-home-continue:focus-visible, .v2-home-card-action:focus-visible { box-shadow: var(--v2-focus); outline: none; }
+.v2-home-continue:disabled { background: var(--v2-surface); color: var(--v2-mut); border: 1px dashed var(--v2-line); box-shadow: none; }
+.v2-home-card { padding: var(--v2-space-5); border: 1px solid var(--v2-line); border-radius: var(--v2-radius-lg); background: var(--v2-card); box-shadow: var(--v2-shadow); font-family: var(--v2-font); }
+.v2-home-card-title { display: block; margin: var(--v2-space-1) 0 0; color: var(--v2-ink); font-family: var(--v2-font); font-size: var(--v2-text-lg); font-weight: 700; line-height: 1.45; }
+.v2-home-card-desc { display: block; margin-top: var(--v2-space-2); color: var(--v2-mut); font-family: var(--v2-font); font-size: var(--v2-text-sm); line-height: 1.7; }
 </style>
