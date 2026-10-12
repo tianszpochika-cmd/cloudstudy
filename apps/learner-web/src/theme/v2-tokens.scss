@@ -1,8 +1,6 @@
-/* learner-web v2 design tokens —— 复制自 apps/mobile/src/theme/v2-tokens.scss，
- * :root 与 :root[data-theme=dark] 的全部变量统一加 --v2- 前缀（含 var() 引用同步改名）。
- * 选择器改为 :root, page 与 :root[data-theme=dark], .yx-theme-dark, .b10-theme--dark（App.vue 实际使用的暗色类名）。 */
-:root,
-page {
+/* learner-web v2 设计 tokens（桌面端），变量源自 webDemo/shared 与 learner-web 原型，统一 --v2- 前缀；
+ * 暗色通过 @englishflow/design-tokens 在 <html> 上设置 data-theme="dark" 生效。 */
+:root {
   color-scheme: light;
   --v2-bg: #f5f5fa;
   --v2-card: #ffffff;
@@ -56,9 +54,7 @@ page {
   --v2-r-sm: var(--v2-radius-md);
 }
 
-:root[data-theme="dark"],
-.yx-theme-dark,
-.b10-theme--dark {
+:root[data-theme="dark"] {
   color-scheme: dark;
   --v2-bg: #15151f;
   --v2-card: #20202d;
