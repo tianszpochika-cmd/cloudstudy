@@ -4,6 +4,7 @@ import { RouterLink, useRoute } from "vue-router";
 import { useAdminStore } from "../stores/admin";
 import { adminPages, ui } from "../platform/experience";
 import AdminIcon from "./AdminIcon.vue";
+import V2Icon from "./V2Icon.vue";
 defineEmits<{ navigate: []; logout: [] }>();
 const session = useAdminStore();
 const route = useRoute();
@@ -39,7 +40,7 @@ const groups = computed(() =>
         :class="['admin-nav-link', { active: route.path === page.path }]"
         :aria-current="route.path === page.path ? 'page' : undefined"
         @click="$emit('navigate')"
-        ><AdminIcon :name="page.icon" :size="19" /><span>{{
+        ><V2Icon :name="page.icon" :size="19" /><span>{{
           ui(`nav.${page.key}.title`)
         }}</span
         ><span
