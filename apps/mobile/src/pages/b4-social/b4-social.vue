@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import AppIcon from '../../components/AppIcon.vue'
 import MobilePageHeader from '../../components/MobilePageHeader.vue'
 import { useMobileExperience } from '../../platform/experience'
 const { experienceStyle, experienceMotion } = useMobileExperience()
@@ -45,14 +46,82 @@ function send(roomId: string): void { void b4.sendInteraction(roomId, interactio
 </script>
 
 <template>
-  <view class="yx-page b4-social" :style="experienceStyle" :data-motion="experienceMotion">
+  <view class="yx-page b4-social v2-social-page" :style="experienceStyle" :data-motion="experienceMotion">
     <MobilePageHeader page="b4-social" />
 
-    <B4StatusPanel :status="b4.status" :online="b4.online" :message="b4.lastError" :queue-count="b4.queueCount" :performance-level="b4.performanceLevel" @retry="b4.loadWorld" @sync="b4.syncOffline" @performance="selectPerformance" />
-    <view class="yx-card"><view class="heading"><view><text class="kicker">NOTIFICATIONS</text><text class="card-title">通知</text></view><view class="notice-actions"><text v-if="b4.notificationStatus === 'ready'" class="muted">{{ b4.notifications.filter(item => !item.read).length }} 未读</text><button tabindex="0" role="button" v-if="b4.notificationStatus === 'ready' && b4.notifications.some(item => !item.read)" class="small-button secondary" type="button" @click="b4.readAllNotifications">全部已读</button></view></view><text v-if="b4.notificationStatus === 'loading'" class="empty-copy" role="status">正在读取通知…</text><view v-else-if="b4.notificationStatus === 'error'" class="empty-copy" role="alert">通知暂时无法读取。<button tabindex="0" role="button" class="small-button secondary" type="button" @click="b4.loadWorld">重试</button></view><view v-else-if="b4.notifications.length" class="notice-list"><view v-for="item in b4.notifications" :key="item.messageId" class="notice" :class="{ unread: !item.read }"><view><text class="notice-title">{{ item.title }}</text><text class="muted">{{ item.body }}</text><text class="muted">{{ noticeMeta(item) }}</text></view><button tabindex="0" role="button" v-if="!item.read" class="small-button secondary" type="button" @click="b4.readNotification(item.messageId)">已读</button></view></view><text v-else class="empty-copy">暂无通知。</text></view>
-    <view class="yx-card"><view class="heading"><view><text class="kicker">STUDY ROOMS</text><text class="card-title">房间列表</text></view><text v-if="b4.rooms.length" class="muted">预设互动</text></view><view v-if="b4.rooms.length" class="room-list"><view v-for="room in b4.rooms" :key="room.roomId" class="room"><view class="room-main"><text class="room-name">{{ room.name }}</text><text class="muted">{{ room.templateCode }} · {{ room.memberCount }} / {{ room.capacity }} 人 · {{ room.chatMode }}</text></view><button tabindex="0" role="button" class="small-button secondary" type="button" @click="room.joined ? b4.leaveRoom(room.roomId) : b4.joinRoom(room.roomId)">{{ room.joined ? '离开' : '加入' }}</button><view v-if="room.joined" class="room-actions"><picker :range="[25, 45]" :value="focusMinutes === 25 ? 0 : 1" @change="focusMinutes = [25, 45][$event.detail.value] as 25 | 45"><view class="picker">{{ focusMinutes }} 分钟</view></picker><button tabindex="0" role="button" class="small-button" type="button" @click="b4.startFocus(room.roomId, focusMinutes)">开始番茄</button><picker :range="['CHEER_UP', 'STUDY_TOGETHER', 'CONGRATS', 'TRY_AGAIN', 'TONIGHT_20_MIN']" :value="0" @change="interactionCode = ['CHEER_UP', 'STUDY_TOGETHER', 'CONGRATS', 'TRY_AGAIN', 'TONIGHT_20_MIN'][$event.detail.value] as B4InteractionCode"><view class="picker">{{ interactionLabel(interactionCode) }}</view></picker><button tabindex="0" role="button" class="small-button secondary" type="button" @click="send(room.roomId)">发送鼓励</button></view></view></view><text v-else class="empty-copy">暂时没有可加入的自习室。</text></view>
-    <view class="yx-card focus-card"><view class="heading"><view><text class="kicker">POMODORO</text><text class="card-title">番茄专注</text></view><text class="state" v-if="b4.activeFocus">{{ b4.activeFocus.status }}</text></view><template v-if="b4.activeFocus"><text class="timer">{{ formatSeconds(focusSeconds) }}</text><text class="muted">专注时长以服务端记录为准。</text><view class="room-actions"><button tabindex="0" role="button" v-if="b4.activeFocus.status === 'RUNNING'" class="small-button secondary" type="button" @click="b4.updateFocus('PAUSE')">暂停</button><button tabindex="0" role="button" v-if="b4.activeFocus.status === 'PAUSED'" class="small-button secondary" type="button" @click="b4.updateFocus('RESUME')">恢复</button><button tabindex="0" role="button" v-if="['RUNNING', 'PAUSED'].includes(b4.activeFocus.status)" class="small-button danger" type="button" @click="b4.updateFocus('COMPLETE')">完成专注</button></view></template><text v-else class="empty-copy">加入房间后即可开始专注。</text></view>
-    <B12SocialExtensions />
+    <view class="v2-social-body">
+      <B4StatusPanel class="v2-social-status" :status="b4.status" :online="b4.online" :message="b4.lastError" :queue-count="b4.queueCount" :performance-level="b4.performanceLevel" @retry="b4.loadWorld" @sync="b4.syncOffline" @performance="selectPerformance" />
+      <view class="yx-card card v2-social-card">
+        <view class="heading v2-social-head">
+          <view class="v2-social-titles">
+            <text class="kicker v2-social-eyebrow eyebrow"><AppIcon name="inbox" :size="14" /><text>NOTIFICATIONS</text></text>
+            <text class="card-title v2-social-title v2-social-h2">通知</text>
+          </view>
+          <view class="notice-actions v2-social-actions row">
+            <text v-if="b4.notificationStatus === 'ready'" class="muted v2-social-d d">{{ b4.notifications.filter(item => !item.read).length }} 未读</text>
+            <button tabindex="0" role="button" v-if="b4.notificationStatus === 'ready' && b4.notifications.some(item => !item.read)" class="small-button secondary btn v2-social-btn v2-social-opt" type="button" @click="b4.readAllNotifications">全部已读<AppIcon name="check" :size="14" /></button>
+          </view>
+        </view>
+        <text v-if="b4.notificationStatus === 'loading'" class="empty-copy v2-social-fb v2-social-d d" role="status">正在读取通知…</text>
+        <view v-else-if="b4.notificationStatus === 'error'" class="empty-copy v2-social-fb v2-social-d d" role="alert">通知暂时无法读取。<button tabindex="0" role="button" class="small-button secondary btn v2-social-btn v2-social-opt" type="button" @click="b4.loadWorld">重试<AppIcon name="refresh" :size="14" /></button></view>
+        <view v-else-if="b4.notifications.length" class="notice-list v2-social-list">
+          <view v-for="item in b4.notifications" :key="item.messageId" class="notice list-row v2-social-row" :class="{ unread: !item.read }">
+            <view class="v2-social-copy">
+              <text class="notice-title v2-social-name v2-social-h2">{{ item.title }}</text>
+              <text class="muted v2-social-d d">{{ item.body }}</text>
+              <text class="muted v2-social-d d">{{ noticeMeta(item) }}</text>
+            </view>
+            <button tabindex="0" role="button" v-if="!item.read" class="small-button secondary btn v2-social-btn v2-social-opt" type="button" @click="b4.readNotification(item.messageId)">已读<AppIcon name="check" :size="14" /></button>
+          </view>
+        </view>
+        <text v-else class="empty-copy v2-social-fb v2-social-d d">暂无通知。</text>
+      </view>
+      <view class="yx-card card v2-social-card">
+        <view class="heading v2-social-head">
+          <view class="v2-social-titles">
+            <text class="kicker v2-social-eyebrow eyebrow"><AppIcon name="users" :size="14" /><text>STUDY ROOMS</text></text>
+            <text class="card-title v2-social-title v2-social-h2">房间列表</text>
+          </view>
+          <text v-if="b4.rooms.length" class="muted v2-social-d d v2-social-count">预设互动</text>
+        </view>
+        <view v-if="b4.rooms.length" class="room-list v2-social-list">
+          <view v-for="room in b4.rooms" :key="room.roomId" class="room list-row v2-social-row">
+            <view class="room-main v2-social-copy">
+              <text class="room-name v2-social-name v2-social-h2">{{ room.name }}</text>
+              <text class="muted v2-social-d d">{{ room.templateCode }} · {{ room.memberCount }} / {{ room.capacity }} 人 · {{ room.chatMode }}</text>
+            </view>
+            <button tabindex="0" role="button" class="small-button secondary btn v2-social-btn v2-social-opt" type="button" @click="room.joined ? b4.leaveRoom(room.roomId) : b4.joinRoom(room.roomId)">{{ room.joined ? '离开' : '加入' }}<AppIcon name="users" :size="14" /></button>
+            <view v-if="room.joined" class="room-actions v2-social-actions row">
+              <picker :range="[25, 45]" :value="focusMinutes === 25 ? 0 : 1" @change="focusMinutes = [25, 45][$event.detail.value] as 25 | 45"><view class="picker v2-social-picker v2-social-opt"><AppIcon name="clock" :size="14" />{{ focusMinutes }} 分钟</view></picker>
+              <button tabindex="0" role="button" class="small-button btn v2-social-btn v2-social-opt v2-social-submit" type="button" @click="b4.startFocus(room.roomId, focusMinutes)">开始番茄<AppIcon name="clock" :size="14" /></button>
+              <picker :range="['CHEER_UP', 'STUDY_TOGETHER', 'CONGRATS', 'TRY_AGAIN', 'TONIGHT_20_MIN']" :value="0" @change="interactionCode = ['CHEER_UP', 'STUDY_TOGETHER', 'CONGRATS', 'TRY_AGAIN', 'TONIGHT_20_MIN'][$event.detail.value] as B4InteractionCode"><view class="picker v2-social-picker v2-social-opt"><AppIcon name="spark" :size="14" />{{ interactionLabel(interactionCode) }}</view></picker>
+              <button tabindex="0" role="button" class="small-button secondary btn v2-social-btn v2-social-opt" type="button" @click="send(room.roomId)">发送鼓励<AppIcon name="spark" :size="14" /></button>
+            </view>
+          </view>
+        </view>
+        <text v-else class="empty-copy v2-social-fb v2-social-d d">暂时没有可加入的自习室。</text>
+      </view>
+      <view class="yx-card focus-card card v2-social-card">
+        <view class="heading v2-social-head">
+          <view class="v2-social-titles">
+            <text class="kicker v2-social-eyebrow eyebrow"><AppIcon name="clock" :size="14" /><text>POMODORO</text></text>
+            <text class="card-title v2-social-title v2-social-h2">番茄专注</text>
+          </view>
+          <text class="state v2-social-state v2-social-tag" v-if="b4.activeFocus">{{ b4.activeFocus.status }}</text>
+        </view>
+        <template v-if="b4.activeFocus">
+          <text class="timer v2-social-timer">{{ formatSeconds(focusSeconds) }}</text>
+          <text class="muted v2-social-d d">专注时长以服务端记录为准。</text>
+          <view class="room-actions v2-social-actions row">
+            <button tabindex="0" role="button" v-if="b4.activeFocus.status === 'RUNNING'" class="small-button secondary btn v2-social-btn v2-social-opt" type="button" @click="b4.updateFocus('PAUSE')">暂停<AppIcon name="clock" :size="14" /></button>
+            <button tabindex="0" role="button" v-if="b4.activeFocus.status === 'PAUSED'" class="small-button secondary btn v2-social-btn v2-social-opt" type="button" @click="b4.updateFocus('RESUME')">恢复<AppIcon name="refresh" :size="14" /></button>
+            <button tabindex="0" role="button" v-if="['RUNNING', 'PAUSED'].includes(b4.activeFocus.status)" class="small-button danger btn v2-social-btn v2-social-opt" type="button" @click="b4.updateFocus('COMPLETE')">完成专注<AppIcon name="check" :size="14" /></button>
+          </view>
+        </template>
+        <text v-else class="empty-copy v2-social-fb v2-social-d d">加入房间后即可开始专注。</text>
+      </view>
+      <B12SocialExtensions class="v2-social-ext" />
+    </view>
   </view>
 </template>
 
