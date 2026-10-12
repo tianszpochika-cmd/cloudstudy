@@ -10,6 +10,7 @@ import { canRevokeMobileDevice, isCurrentMobileDevice } from '../../domain/devic
 import { useSessionStore } from '../../stores/session'
 import { useMobileExperience } from '../../platform/experience'
 import { sameMobilePreferenceIdentity } from '../../domain/mobile-preference-sync'
+import { b10ThemeMode } from '../../platform/b10-foundation'
 
 const { experienceStyle, experienceMotion } = useMobileExperience()
 const session = useSessionStore()
@@ -22,6 +23,7 @@ const busyAction = ref<string | null>(null)
 let devicesVisible = false
 let loadEpoch = 0
 const revocableDevices = computed(() => devices.value.filter(device => canRevokeMobileDevice(device, session.deviceId)))
+const themeClass = computed(() => `b10-theme--${b10ThemeMode.value}`)
 
 function currentAccount(identity: { subject: string; revision: number } | null): boolean {
   return sameMobilePreferenceIdentity(identity, session.getMobileApiIdentity())
@@ -153,7 +155,7 @@ onHide(() => { devicesVisible = false })
 </script>
 
 <template>
-  <view class="yx-page devices-page v2-devices-page" :style="experienceStyle" :data-motion="experienceMotion">
+  <view class="yx-page devices-page v2-devices-page" :style="experienceStyle" :data-motion="experienceMotion" :class="themeClass">
     <MobilePageHeader page="settings" kicker="账户安全" title="设备与会话" description="查看已登录设备，退出不再使用的会话。" />
 
     <view class="v2-devices-body">
