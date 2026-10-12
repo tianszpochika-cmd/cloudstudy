@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
+import AppIcon from '../../components/AppIcon.vue'
 import MobilePageHeader from '../../components/MobilePageHeader.vue'
 import B4StatusPanel from '../../components/b4/B4StatusPanel.vue'
 import { ensureMobilePageAccess } from '../../auth/navigation'
@@ -54,42 +55,44 @@ function itemQuality(quality: string): string {
 </script>
 
 <template>
-  <view class="yx-page b4-avatar" :style="experienceStyle" :data-motion="experienceMotion">
+  <view class="yx-page b4-avatar v2-avatar-page" :style="experienceStyle" :data-motion="experienceMotion">
     <MobilePageHeader page="b4-avatar" />
 
-    <template v-if="accessGranted">
-      <B4StatusPanel :status="b4.status" :online="b4.online" :message="b4.lastError" :queue-count="b4.queueCount" :performance-level="b4.performanceLevel" @retry="loadAvatarPage" @sync="b4.syncOffline" @performance="selectPerformance" />
-      <text v-if="pageLoading" class="empty-copy">正在加载角色信息…</text>
-      <text v-else-if="!pageReady" class="empty-copy">角色信息暂不可用。</text>
-      <template v-else>
-        <view class="yx-card preview-card">
-          <view class="heading"><view><text class="kicker">形象</text><text class="card-title">展示预览</text></view><text class="muted">本机画质</text></view>
-          <view class="avatar-preview" :class="{ static: b4.effectiveAvatarRenderMode === '2D_FALLBACK' }"><text>✦</text><text>形象示意</text></view>
-          <text class="muted">画质只影响本机显示；角色素材尚未就绪。</text>
-        </view>
+    <view class="v2-avatar-body">
+      <template v-if="accessGranted">
+        <B4StatusPanel :status="b4.status" :online="b4.online" :message="b4.lastError" :queue-count="b4.queueCount" :performance-level="b4.performanceLevel" @retry="loadAvatarPage" @sync="b4.syncOffline" @performance="selectPerformance" />
+        <text v-if="pageLoading" class="empty-copy v2-avatar-fb">正在加载角色信息…</text>
+        <text v-else-if="!pageReady" class="empty-copy v2-avatar-fb">角色信息暂不可用。</text>
+        <template v-else>
+          <view class="yx-card preview-card card v2-avatar-card">
+            <view class="heading v2-avatar-head"><view class="v2-avatar-titles"><text class="kicker v2-avatar-eyebrow">形象</text><text class="card-title v2-avatar-title">展示预览</text></view><view class="v2-avatar-side"><AppIcon name="spark" :size="18" /><text class="muted v2-avatar-desc">本机画质</text></view></view>
+            <text class="muted v2-avatar-desc">画质只影响本机显示；角色素材尚未就绪。</text>
+            <view class="avatar-preview v2-avatar-preview" :class="{ static: b4.effectiveAvatarRenderMode === '2D_FALLBACK' }"><text>✦</text><text>形象示意</text></view>
+          </view>
 
-        <view class="yx-card">
-          <view class="heading"><view><text class="kicker">衣柜</text><text class="card-title">套装素材</text></view><text class="muted">{{ b4.loadouts.length }} 套</text></view>
-          <view v-if="b4.loadouts.length" class="loadout-list">
-            <view v-for="(loadout, index) in b4.loadouts" :key="loadout.loadoutId" class="loadout">
-              <view><text class="loadout-name">{{ loadoutTitle(loadout, index) }}</text><text class="muted">{{ loadout.items.length }} 件素材</text></view>
-              <text class="muted">预览</text>
+          <view class="yx-card card v2-avatar-card">
+            <view class="heading v2-avatar-head"><view class="v2-avatar-titles"><text class="kicker v2-avatar-eyebrow">衣柜</text><text class="card-title v2-avatar-title">套装素材</text></view><view class="v2-avatar-side"><AppIcon name="grid" :size="18" /><text class="muted v2-avatar-desc">{{ b4.loadouts.length }} 套</text></view></view>
+            <view v-if="b4.loadouts.length" class="loadout-list v2-avatar-list">
+              <view v-for="(loadout, index) in b4.loadouts" :key="loadout.loadoutId" class="loadout v2-avatar-row">
+                <view class="v2-avatar-info"><text class="loadout-name v2-avatar-name">{{ loadoutTitle(loadout, index) }}</text><text class="muted v2-avatar-desc">{{ loadout.items.length }} 件素材</text></view>
+                <view class="v2-avatar-go"><text class="muted v2-avatar-desc">预览</text><AppIcon name="chev" :size="14" /></view>
+              </view>
             </view>
+            <text v-else class="empty-copy v2-avatar-fb">暂无可展示的套装素材。</text>
           </view>
-          <text v-else class="empty-copy">暂无可展示的套装素材。</text>
-        </view>
 
-        <view class="yx-card">
-          <view class="heading"><view><text class="kicker">装扮</text><text class="card-title">外观素材</text></view><text class="muted">{{ b4.avatarItems.length }} 款</text></view>
-          <view v-if="b4.avatarItems.length" class="item-grid">
-            <view v-for="item in b4.avatarItems" :key="item.itemCode" class="item"><text>{{ itemQuality(item.quality) }}</text><text class="item-title">{{ itemTitle(item) }}</text></view>
+          <view class="yx-card card v2-avatar-card">
+            <view class="heading v2-avatar-head"><view class="v2-avatar-titles"><text class="kicker v2-avatar-eyebrow">装扮</text><text class="card-title v2-avatar-title">外观素材</text></view><view class="v2-avatar-side"><AppIcon name="star" :size="18" /><text class="muted v2-avatar-desc">{{ b4.avatarItems.length }} 款</text></view></view>
+            <text class="muted v2-avatar-desc">素材展示不代表已获得奖励。</text>
+            <view v-if="b4.avatarItems.length" class="item-grid v2-avatar-grid">
+              <view v-for="item in b4.avatarItems" :key="item.itemCode" class="item v2-avatar-item"><AppIcon name="spark" :size="16" /><text class="v2-avatar-quality">{{ itemQuality(item.quality) }}</text><text class="item-title v2-avatar-name">{{ itemTitle(item) }}</text></view>
+            </view>
+            <text v-else class="empty-copy v2-avatar-fb">暂无可展示的装扮素材。</text>
+            <button tabindex="0" role="button" class="yx-button yx-button--secondary btn v2-avatar-btn v2-avatar-opt v2-avatar-next" type="button" @click="openUniPage('/pages/world/world')">查看奖励<AppIcon name="chev" :size="14" /></button>
           </view>
-          <text v-else class="empty-copy">暂无可展示的装扮素材。</text>
-          <text class="muted">素材展示不代表已获得奖励。</text>
-          <button tabindex="0" role="button" class="yx-button yx-button--secondary" type="button" @click="openUniPage('/pages/world/world')">查看奖励</button>
-        </view>
+        </template>
       </template>
-    </template>
+    </view>
   </view>
 </template>
 
