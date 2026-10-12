@@ -5,7 +5,8 @@ import { setMobileQuality, useMobileExperience } from '../../platform/experience
 const { experienceStyle, experienceMotion } = useMobileExperience()
 
 import { onShow, onUnload } from '@dcloudio/uni-app'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
+import { b10ThemeMode } from '../../platform/b10-foundation'
 import { createAdaptivePerformanceEngine, type PerformanceLevel } from '@englishflow/performance'
 import { getMobileB6AccessibilityChecklist, getMobileB6PerformanceBudget, getMobileB6ReleaseMatrix } from '../../api/b6'
 import { toAccessibility, toBudget, toMatrix, type B6Accessibility, type B6Budget, type B6Matrix } from '../../domain/b6'
@@ -19,6 +20,7 @@ const accessibility = ref<B6Accessibility>(toAccessibility({}))
 const engine = createAdaptivePerformanceEngine()
 const performanceLevel = ref<PerformanceLevel>(engine.level)
 const unsubscribe = engine.subscribe((state) => { performanceLevel.value = state.level })
+const themeClass = computed(() => `b10-theme--${b10ThemeMode.value}`)
 const QUALITY_LEVEL_LABELS: Record<string, string> = { Ultra: '极致', High: '高清', Medium: '标准', Performance: '省电' }
 function qualityLevelLabel(level: unknown): string { return typeof level === 'string' ? (QUALITY_LEVEL_LABELS[level] ?? level) : '' }
 const STATUS_LABELS: Record<string, string> = { READY_FOR_TEST_STAGE: '待测试阶段验证', PENDING_TEST_STAGE: '等待测试阶段', TEST_STAGE_REQUIRED: '需测试阶段验证', CODE_READY: '代码已就绪', READY: '已就绪', PASSED: '已通过', FAILED: '未通过', BUILT: '已构建' }
@@ -31,7 +33,7 @@ onUnload(() => { unsubscribe(); engine.dispose() })
 </script>
 
 <template>
-  <view class="yx-page b6-mobile-page v2-platform-page" :style="experienceStyle" :data-motion="experienceMotion">
+  <view class="yx-page b6-mobile-page v2-platform-page" :style="experienceStyle" :data-motion="experienceMotion" :class="themeClass">
     <MobilePageHeader page="b6-platform" />
     <view class="v2-platform-body">
       <view class="b6-mobile-heading v2-platform-head">
