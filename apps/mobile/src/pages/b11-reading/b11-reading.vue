@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import MobilePageHeader from '../../components/MobilePageHeader.vue'
+import AppIcon from '../../components/AppIcon.vue'
 import { useMobileExperience } from '../../platform/experience'
 const { experienceStyle, experienceMotion } = useMobileExperience()
 
@@ -28,17 +29,19 @@ onMounted(() => { void load() })
 </script>
 
 <template>
-  <view class="yx-page b11-page" :class="themeClass" :style="experienceStyle" :data-motion="store.motionDisabled || store.performanceLevel === 'Performance' ? 'off' : experienceMotion">
+  <view class="yx-page b11-page v2-b11read-page" :class="themeClass" :style="experienceStyle" :data-motion="store.motionDisabled || store.performanceLevel === 'Performance' ? 'off' : experienceMotion">
     <MobilePageHeader page="b11-reading" />
 
+    <view class="v2-b11read-body">
     <B11StatusPanel :status="store.readingStatus" :message="store.readingMessage" :queue-count="store.queueCount" :performance-level="store.performanceLevel" :motion-disabled="store.motionDisabled" @retry="load" @sync="sync" @performance="setPerformance" @motion="setMotion" />
 
-    <view v-if="store.reading && store.reading.article.rightsStatus !== 'REVOKED'" class="yx-card reader-card">
-      <view class="reader-heading"><view><text class="kicker">{{ store.reading.article.cefrLevel }} · {{ store.reading.article.wordCount }} words</text><text class="card-title">{{ store.reading.article.title }}</text></view><text class="subtle">{{ b11T('common.contentVersion') }} {{ store.reading.contentVersion }}</text></view>
-      <view class="progress-track"><view class="progress-value" :style="{ width: `${store.readingProgress}%` }"></view></view><text class="subtle">{{ store.readingProgress }}% · 第 {{ store.readingBlockIndex + 1 }} / {{ store.reading.article.blocks.length }} 段</text>
-      <view class="reading-block"><text>{{ blockText }}</text><text v-if="blockTranslation" class="translation">{{ blockTranslation }}</text></view>
-      <view class="reader-actions"><button tabindex="0" role="button" class="small-button" type="button" @click="store.setReadingBlock(store.readingBlockIndex - 1)">上一段</button><button tabindex="0" role="button" class="small-button" type="button" @click="nextBlock">{{ b11T('reading.next') }}</button><button tabindex="0" role="button" class="yx-button" type="button" @click="store.saveReadingPosition(true)">{{ b11T('reading.save') }}</button></view>
-      <view v-if="store.reading.questions.length" class="question-list"><text class="kicker">{{ b11T('reading.question') }}</text><view v-for="question in store.reading.questions" :key="question.questionId" class="question"><text class="question-stem">{{ question.stemText }}</text><radio-group @change="setAnswer(question, $event)"><label v-for="option in question.options" :key="option.optionCode" class="option"><radio :value="option.optionCode" :checked="store.readingAnswers[String(question.questionId)] === option.optionCode" /><text>{{ option.label }}</text></label></radio-group><button tabindex="0" role="button" class="small-button" type="button" :disabled="Boolean(store.readingAttempts[String(question.questionId)])" @click="store.submitReadingAnswer(question)">{{ b11T('reading.submit') }}</button><view v-if="store.readingAttempts[String(question.questionId)]" class="feedback"><text>{{ store.readingAttempts[String(question.questionId)].correct ? '回答正确' : '服务端已记录本次练习' }}</text><text>{{ store.readingAttempts[String(question.questionId)].feedbackCode }}</text></view></view></view>
+    <view v-if="store.reading && store.reading.article.rightsStatus !== 'REVOKED'" class="yx-card reader-card card v2-b11read-card">
+      <view class="reader-heading v2-b11read-heading"><view class="v2-b11read-titlewrap"><text class="kicker eyebrow v2-b11read-eyebrow">{{ store.reading.article.cefrLevel }} · {{ store.reading.article.wordCount }} words</text><text class="card-title v2-b11read-h2">{{ store.reading.article.title }}</text></view><text class="subtle d v2-b11read-d">{{ b11T('common.contentVersion') }} {{ store.reading.contentVersion }}</text></view>
+      <view class="progress-track v2-b11read-progress"><view class="progress-value v2-b11read-progress-value" :style="{ width: `${store.readingProgress}%` }"></view></view><text class="subtle d v2-b11read-d">{{ store.readingProgress }}% · 第 {{ store.readingBlockIndex + 1 }} / {{ store.reading.article.blocks.length }} 段</text>
+      <view class="reading-block v2-b11read-block"><text class="v2-b11read-passage">{{ blockText }}</text><text v-if="blockTranslation" class="translation d v2-b11read-d v2-b11read-translation">{{ blockTranslation }}</text></view>
+      <view class="reader-actions actions v2-b11read-actions"><button tabindex="0" role="button" class="small-button btn sm v2-b11read-btn v2-b11read-prev" type="button" @click="store.setReadingBlock(store.readingBlockIndex - 1)"><AppIcon name="back" :size="14" />上一段</button><button tabindex="0" role="button" class="small-button btn sm v2-b11read-btn v2-b11read-next" type="button" @click="nextBlock">{{ b11T('reading.next') }}<AppIcon name="chev" :size="14" /></button><button tabindex="0" role="button" class="yx-button btn v2-b11read-btn v2-b11read-save" type="button" @click="store.saveReadingPosition(true)"><AppIcon name="check" :size="14" />{{ b11T('reading.save') }}</button></view>
+      <view v-if="store.reading.questions.length" class="question-list v2-b11read-list"><text class="kicker eyebrow v2-b11read-eyebrow">{{ b11T('reading.question') }}</text><view v-for="question in store.reading.questions" :key="question.questionId" class="question card v2-b11read-card v2-b11read-question"><text class="question-stem v2-b11read-stem">{{ question.stemText }}</text><radio-group class="v2-b11read-options" @change="setAnswer(question, $event)"><label v-for="option in question.options" :key="option.optionCode" class="option opt v2-b11read-opt"><radio :value="option.optionCode" :checked="store.readingAnswers[String(question.questionId)] === option.optionCode" /><text>{{ option.label }}</text></label></radio-group><button tabindex="0" role="button" class="small-button btn sm v2-b11read-btn v2-b11read-submit" type="button" :disabled="Boolean(store.readingAttempts[String(question.questionId)])" @click="store.submitReadingAnswer(question)">{{ b11T('reading.submit') }}</button><view v-if="store.readingAttempts[String(question.questionId)]" class="feedback v2-b11read-fb"><text>{{ store.readingAttempts[String(question.questionId)].correct ? '回答正确' : '服务端已记录本次练习' }}</text><text>{{ store.readingAttempts[String(question.questionId)].feedbackCode }}</text></view></view></view>
+    </view>
     </view>
   </view>
 </template>
