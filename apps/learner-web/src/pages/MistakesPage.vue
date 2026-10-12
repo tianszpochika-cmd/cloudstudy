@@ -50,7 +50,7 @@ onMounted(() => { void load() })
 </script>
 
 <template>
-  <section class="page-stack">
+  <section class="page-stack v2-page v2-page--mistakes">
     <ExperienceHeader page="Mistakes" icon="bookmark" />
     <p data-zero-only>{{ ZERO_ONLY_COPY }}</p>
     <p data-projection-version>{{ projectionVersion }}</p>
