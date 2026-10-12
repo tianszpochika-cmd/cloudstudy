@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import AppIcon from '../../components/AppIcon.vue'
 import MobilePageHeader from '../../components/MobilePageHeader.vue'
 import { openUniPage } from '../../platform/uni-runtime'
 import { mobileT, useMobileExperience } from '../../platform/experience'
@@ -74,9 +75,9 @@ async function submit(): Promise<void> {
 <template>
   <view class="yx-page yx-login-page v2-login" :style="experienceStyle" :data-motion="experienceMotion">
 
-    <MobilePageHeader page="login" />
+    <MobilePageHeader page="login" compact />
 
-    <view class="v2-login-brand" aria-hidden="true"><text class="v2-login-brand-mark">✦</text></view>
+    <view class="v2-login-brand" aria-hidden="true"><AppIcon name="spark" :size="28" /></view>
 
     <view class="yx-card yx-login-card v2-login-card">
       <text class="v2-login-title">{{ mobileT('account') }}</text>
@@ -122,6 +123,7 @@ async function submit(): Promise<void> {
   display: flex;
   justify-content: center;
   padding: var(--v2-space-4) var(--v2-space-2) var(--v2-space-2);
+  color: #fff;
 }
 .v2-login-brand-mark {
   display: grid;
