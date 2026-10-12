@@ -55,7 +55,7 @@ function continueLearning(): void {
 </script>
 
 <template>
-  <section class="page-stack" aria-labelledby="today-title">
+  <section class="page-stack v2-page v2-page--today" aria-labelledby="today-title">
     <ExperienceHeader page="Today" icon="target" title-id="today-title" hero />
     <StatePanel v-if="store.todayStatus === 'loading'" state="loading" title="今日任务" description="正在读取今日任务。" />
     <StatePanel v-else-if="store.todayStatus === 'offline'" state="offline" title="今日任务" description="网络暂时不可用，请重试。" action-label="重试" @action="() => { void store.loadToday() }" />
