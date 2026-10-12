@@ -63,7 +63,7 @@ function backHome(): void { getUniRuntime().switchTab({ url: '/pages/home/home' 
         <view v-if="firstLearningCopy" class="empty v2-today-empty" role="status">{{ firstLearningCopy }}</view>
         <view v-if="store.planNotice" class="empty v2-today-empty" role="status">{{ store.planNotice }}</view>
         <view v-if="planEmpty" class="empty v2-today-empty"><text>{{ planEmpty.title }}</text><text>{{ planEmpty.description }}</text><button tabindex="0" role="button" type="button" @click="openPlanEmpty(planEmpty)">{{ planEmpty.action }}</button></view>
-        <view :hidden="planEmpty !== null" v-if="store.home && !store.home.tasks.length" class="empty v2-today-empty">今天还没有安排任务。</view>
+        <view :hidden="planEmpty !== null" :class="'v2-today-empty'" v-if="store.home && !store.home.tasks.length" class="empty">今天还没有安排任务。</view>
         <view v-for="task in store.home?.tasks" :key="task.id" class="task-row v2-today-task-row">
           <view class="task-copy"><text class="title">{{ task.title }}</text><text class="description">{{ task.description }} · {{ task.minutes }} 分钟</text></view>
           <button tabindex="0" role="button" :disabled="!canOpenTask(task)" @click="viewTask(task)">{{ task.status === 'COMPLETED' ? '已完成' : task.status === 'LOCKED' ? '未解锁' : canOpenTask(task) ? '查看课程' : '暂不可用' }}</button>
