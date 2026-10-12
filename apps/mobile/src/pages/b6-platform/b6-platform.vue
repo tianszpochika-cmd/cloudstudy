@@ -21,8 +21,8 @@ const performanceLevel = ref<PerformanceLevel>(engine.level)
 const unsubscribe = engine.subscribe((state) => { performanceLevel.value = state.level })
 const QUALITY_LEVEL_LABELS: Record<string, string> = { Ultra: '极致', High: '高清', Medium: '标准', Performance: '省电' }
 function qualityLevelLabel(level: unknown): string { return typeof level === 'string' ? (QUALITY_LEVEL_LABELS[level] ?? level) : '' }
-const STATUS_LABELS: Record<string, string> = { READY_FOR_TEST_STAGE: '待测试阶段验证', PENDING_TEST_STAGE: '等待测试阶段', TEST_STAGE_REQUIRED: '需测试阶段验证' }
-function statusLabel(value: unknown): string { return typeof value === 'string' ? (STATUS_LABELS[value] ?? '待确认') : '待确认' }
+const STATUS_LABELS: Record<string, string> = { READY_FOR_TEST_STAGE: '待测试阶段验证', PENDING_TEST_STAGE: '等待测试阶段', TEST_STAGE_REQUIRED: '需测试阶段验证', CODE_READY: '代码已就绪', READY: '已就绪', PASSED: '已通过', FAILED: '未通过', BUILT: '已构建' }
+function statusLabel(value: unknown): string { return typeof value === 'string' ? (STATUS_LABELS[value] ?? value) : '待确认' }
 
 async function load(): Promise<void> { loading.value = true; errorMessage.value = ''; try { const [matrixResponse, budgetResponse, accessibilityResponse] = await Promise.all([getMobileB6ReleaseMatrix(), getMobileB6PerformanceBudget(), getMobileB6AccessibilityChecklist()]); matrix.value = toMatrix(matrixResponse); budget.value = toBudget(budgetResponse); accessibility.value = toAccessibility(accessibilityResponse) } catch (error) { errorMessage.value = error instanceof Error ? error.message : '网络不可用，当前使用本地性能设置。' } finally { loading.value = false } }
 function chooseLevel(level: PerformanceLevel): void { engine.setLevel(level, 'manual'); setMobileQuality(level) }
