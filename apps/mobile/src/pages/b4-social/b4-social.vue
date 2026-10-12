@@ -11,8 +11,10 @@ import { formatSeconds, interactionLabel, type B4InteractionCode, type B4Perform
 import { ensureMobilePageAccess } from '../../auth/navigation'
 import { useB4Store } from '../../stores/b4'
 import B12SocialExtensions from '../../components/b12/B12SocialExtensions.vue'
+import { b10ThemeMode } from '../../platform/b10-foundation'
 
 const b4 = useB4Store()
+const themeClass = computed(() => `b10-theme--${b10ThemeMode.value}`)
 const interactionCode = ref<B4InteractionCode>('CHEER_UP')
 const focusMinutes = ref<25 | 45>(25)
 const now = ref(Date.now())
@@ -50,7 +52,7 @@ function send(roomId: string): void { void b4.sendInteraction(roomId, interactio
 </script>
 
 <template>
-  <view class="yx-page b4-social v2-social-page" :style="experienceStyle" :data-motion="experienceMotion">
+  <view class="yx-page b4-social v2-social-page" :style="experienceStyle" :data-motion="experienceMotion" :class="themeClass">
     <MobilePageHeader page="b4-social" />
 
     <view class="v2-social-body">
