@@ -77,39 +77,39 @@ onUnmounted(() => { stopTheme(); window.removeEventListener('keydown', keyboard)
 </script>
 
 <template>
-  <div class="app-shell experience-shell">
+  <div class="app-shell experience-shell v2-shell">
     <a class="skip-link" href="#learning-content" @click.prevent="skipToContent">{{ t('skip') }}</a>
-    <aside class="app-shell__sidebar" :aria-label="t('workspace')">
-      <RouterLink class="brand" :to="{ name: isRestricted ? 'forbidden' : 'home' }"><AppIcon name="spark" :size="32" /><span>{{ t('brand') }}<small>LEARN A LITTLE. EVERY DAY.</small></span></RouterLink>
-      <nav class="nav-list">
-        <div class="nav-group"><p class="nav-group__label">{{ t('learnGroup') }}</p>
-          <RouterLink v-for="item in primary" :key="item.name" class="nav-item" :class="{ 'is-current': active(item), 'is-disabled': isRestricted }" :to="{ name: isRestricted ? 'forbidden' : item.name }"><AppIcon :name="item.icon" :size="19" /><span>{{ t(item.key) }}</span><i v-if="active(item)"></i></RouterLink>
+    <aside class="app-shell__sidebar v2-side" :aria-label="t('workspace')">
+      <RouterLink class="brand v2-side-brand" :to="{ name: isRestricted ? 'forbidden' : 'home' }"><AppIcon name="spark" :size="32" /><span>{{ t('brand') }}<small>LEARN A LITTLE. EVERY DAY.</small></span></RouterLink>
+      <nav class="nav-list v2-side-nav">
+        <div class="nav-group v2-side-group"><p class="nav-group__label v2-side-label">{{ t('learnGroup') }}</p>
+          <RouterLink v-for="item in primary" :key="item.name" class="nav-item v2-side-item" :class="{ 'is-current': active(item), 'is-disabled': isRestricted }" :to="{ name: isRestricted ? 'forbidden' : item.name }"><AppIcon :name="item.icon" :size="19" /><span>{{ t(item.key) }}</span><i v-if="active(item)"></i></RouterLink>
         </div>
-        <div class="nav-group"><button class="nav-group__toggle" type="button" :aria-expanded="practiceOpen" aria-controls="practice-navigation" @click="practiceOpen = !practiceOpen"><span>{{ t('practiceGroup') }}</span><AppIcon name="chevron" :size="14" :class="{ 'is-open': practiceOpen }" /></button>
-          <div v-show="practiceOpen" id="practice-navigation"><RouterLink v-for="item in practices" :key="item.name" class="nav-item" :class="{ 'is-current': active(item), 'is-disabled': isRestricted }" :to="{ name: isRestricted ? 'forbidden' : item.name }"><AppIcon :name="item.icon" :size="19" /><span>{{ t(item.key) }}</span></RouterLink></div>
+        <div class="nav-group v2-side-group"><button class="nav-group__toggle v2-side-label v2-side-toggle" type="button" :aria-expanded="practiceOpen" aria-controls="practice-navigation" @click="practiceOpen = !practiceOpen"><span>{{ t('practiceGroup') }}</span><AppIcon name="chevron" :size="14" :class="{ 'is-open': practiceOpen }" /></button>
+          <div v-show="practiceOpen" id="practice-navigation"><RouterLink v-for="item in practices" :key="item.name" class="nav-item v2-side-item" :class="{ 'is-current': active(item), 'is-disabled': isRestricted }" :to="{ name: isRestricted ? 'forbidden' : item.name }"><AppIcon :name="item.icon" :size="19" /><span>{{ t(item.key) }}</span></RouterLink></div>
         </div>
-        <div class="nav-group"><p class="nav-group__label">{{ t('growthGroup') }}</p>
-          <RouterLink v-for="item in growth" :key="item.name" class="nav-item" :class="{ 'is-current': active(item), 'is-disabled': isRestricted }" :to="{ name: isRestricted ? 'forbidden' : item.name }"><AppIcon :name="item.icon" :size="19" /><span>{{ t(item.key) }}</span></RouterLink>
+        <div class="nav-group v2-side-group"><p class="nav-group__label v2-side-label">{{ t('growthGroup') }}</p>
+          <RouterLink v-for="item in growth" :key="item.name" class="nav-item v2-side-item" :class="{ 'is-current': active(item), 'is-disabled': isRestricted }" :to="{ name: isRestricted ? 'forbidden' : item.name }"><AppIcon :name="item.icon" :size="19" /><span>{{ t(item.key) }}</span></RouterLink>
         </div>
       </nav>
-      <div class="sidebar-footer">
-        <RouterLink class="sidebar-note" :class="{ 'is-disabled': isRestricted }" :to="{ name: isRestricted ? 'forbidden' : 'today' }"><AppIcon name="spark" :size="20" /><span>{{ t('tagline') }}</span><AppIcon name="arrow" :size="16" /></RouterLink>
-        <RouterLink class="nav-item" :to="{ name: 'support' }"><AppIcon name="help" :size="19" /><span>{{ t('support') }}</span></RouterLink>
-        <RouterLink class="nav-item" :to="{ name: 'settings', params: { section: 'profile' } }"><AppIcon name="settings" :size="19" /><span>{{ t('settings') }}</span></RouterLink>
+      <div class="sidebar-footer v2-side-footer">
+        <RouterLink class="sidebar-note v2-side-note" :class="{ 'is-disabled': isRestricted }" :to="{ name: isRestricted ? 'forbidden' : 'today' }"><AppIcon name="spark" :size="20" /><span>{{ t('tagline') }}</span><AppIcon name="arrow" :size="16" /></RouterLink>
+        <RouterLink class="nav-item v2-side-item" :to="{ name: 'support' }"><AppIcon name="help" :size="19" /><span>{{ t('support') }}</span></RouterLink>
+        <RouterLink class="nav-item v2-side-item" :to="{ name: 'settings', params: { section: 'profile' } }"><AppIcon name="settings" :size="19" /><span>{{ t('settings') }}</span></RouterLink>
       </div>
     </aside>
-    <div class="app-shell__main">
-      <header class="topbar">
-        <div class="topbar__title"><button type="button" class="icon-button mobile-menu-trigger" :aria-label="t('openMenu')" @click="mobileDialog?.showModal()"><AppIcon name="menu" /></button><span>{{ t('workspace') }}</span><AppIcon name="chevron" :size="13" /><strong>{{ current ? t(current) : route.meta.title }}</strong></div>
+    <div class="app-shell__main v2-main">
+      <header class="topbar v2-topbar">
+        <div class="topbar__title v2-crumb"><button type="button" class="icon-button mobile-menu-trigger v2-icon-btn" :aria-label="t('openMenu')" @click="mobileDialog?.showModal()"><AppIcon name="menu" /></button><span>{{ t('workspace') }}</span><AppIcon name="chevron" :size="13" /><strong>{{ current ? t(current) : route.meta.title }}</strong></div>
         <div class="topbar__actions">
-          <button class="topbar-search" type="button" :aria-label="t('searchLabel')" @click="openSearch"><AppIcon name="search" :size="18" /><span>{{ t('search') }}</span><kbd>⌘ K</kbd></button>
-          <button class="icon-button" type="button" :aria-label="t(theme === 'light' ? 'dark' : 'light')" @click="learnerThemeController.setTheme(theme === 'light' ? 'dark' : 'light')"><AppIcon :name="theme === 'light' ? 'moon' : 'sun'" :size="19" /></button>
-          <button class="icon-button icon-button--notification" type="button" :aria-label="t('notification')" @click="openMessages"><AppIcon name="bell" :size="19" /><span v-if="unread" class="notification-dot"></span></button>
-          <RouterLink class="profile-chip" :to="{ name: 'settings', params: { section: 'profile' } }" :aria-label="t('profile')"><span class="profile-chip__avatar"><AppIcon name="user" :size="19" /></span></RouterLink>
+          <button class="topbar-search v2-search" type="button" :aria-label="t('searchLabel')" @click="openSearch"><AppIcon name="search" :size="18" /><span>{{ t('search') }}</span><kbd>⌘ K</kbd></button>
+          <button class="icon-button v2-icon-btn" type="button" :aria-label="t(theme === 'light' ? 'dark' : 'light')" @click="learnerThemeController.setTheme(theme === 'light' ? 'dark' : 'light')"><AppIcon :name="theme === 'light' ? 'moon' : 'sun'" :size="19" /></button>
+          <button class="icon-button icon-button--notification v2-icon-btn" type="button" :aria-label="t('notification')" @click="openMessages"><AppIcon name="bell" :size="19" /><span v-if="unread" class="notification-dot"></span></button>
+          <RouterLink class="profile-chip v2-user" :to="{ name: 'settings', params: { section: 'profile' } }" :aria-label="t('profile')"><span class="profile-chip__avatar"><AppIcon name="user" :size="19" /></span></RouterLink>
         </div>
       </header>
-      <main id="learning-content" class="app-shell__content" tabindex="-1"><slot /></main>
-      <footer class="workspace-footer"><span>© {{ new Date().getFullYear() }} {{ t('brand') }}</span><span>{{ t('tagline') }}</span><RouterLink :to="{ name: 'commerce' }">{{ t('commerce') }}</RouterLink></footer>
+      <main id="learning-content" class="app-shell__content v2-content" tabindex="-1"><slot /></main>
+      <footer class="workspace-footer v2-footer"><span>© {{ new Date().getFullYear() }} {{ t('brand') }}</span><span>{{ t('tagline') }}</span><RouterLink :to="{ name: 'commerce' }">{{ t('commerce') }}</RouterLink></footer>
     </div>
     <nav class="mobile-tabbar" :aria-label="t('workspace')">
       <RouterLink v-for="item in [primary[0], primary[2], growth[0], account[0]]" :key="item.name" class="mobile-tabbar__item" :class="{ 'is-current': active(item) }" :to="{ name: item.name, params: item.params }"><AppIcon :name="item.icon" :size="20" /><span>{{ t(item.name === 'settings' ? 'profile' : item.key) }}</span></RouterLink>
