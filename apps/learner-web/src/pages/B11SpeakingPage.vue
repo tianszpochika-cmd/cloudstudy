@@ -91,7 +91,7 @@ async function saveShadowing(): Promise<void> { if (!shadowing.value || !selecte
 </script>
 
 <template>
-  <section class="b11-page" :data-performance="b11.performanceLevel" aria-labelledby="b11-speaking-title">
+  <section class="b11-page v2-page v2-page--b11speaking" :data-performance="b11.performanceLevel" aria-labelledby="b11-speaking-title">
     <ExperienceHeader page="Speaking" icon="mic" title-id="b11-speaking-title" />
      <section v-if="effectiveStatus !== 'ready' || b11.hasPending" class="state-panel" :class="`state-panel--${effectiveStatus}`" role="status" aria-live="polite"><div class="state-copy"><span class="eyebrow">SPK / RECORDING</span><strong>{{ statusTitle }}</strong><span>{{ effectiveMessage || (b11.hasPending ? `${ui.t('b11.common.offline')} · ${b11.pending.length}` : '') }}</span><small>{{ ui.t('b11.common.performance', { level: b11.performanceLevel }) }}</small></div><div class="state-actions"><button v-if="['offline', 'error', 'permission', 'revoked', 'expired', 'recovering'].includes(effectiveStatus)" class="secondary-button" type="button" @click="void b3.loadPhonetics()">{{ ui.t('b11.common.retry') }}</button><button v-if="b11.hasPending" class="secondary-button" type="button" @click="void b11.sync()">{{ ui.t('b11.common.sync') }}（{{ b11.pending.length }}）</button><select :value="b11.performanceLevel" aria-label="Performance level" @change="b11.setPerformance(($event.target as HTMLSelectElement).value as 'Ultra' | 'High' | 'Medium' | 'Performance')"><option>Ultra</option><option>High</option><option>Medium</option><option>Performance</option></select></div></section>
     <section v-if="b3.status === 'loading'" class="empty-panel" role="status">{{ ui.t('b11.state.loading') }}</section>
