@@ -268,14 +268,14 @@ async function advanceRoleplay(choiceCode?: string): Promise<void> {
 }
 </script>
 <template>
-  <section class="b3-page">
+  <section class="b3-page v2-page v2-page--b3speaking">
     <ExperienceHeader page="Speaking" icon="mic" title-id="speaking-title" />
     <p data-closed-practice role="status">跟读功能暂未开放，可以先做其他练习。</p>
     <a data-closed-back href="/today">回到可用学习</a>
     <div v-if="store.status === 'loading'" class="panel">
       正在读取 48 个音标条目…
     </div>
-    <div v-else class="grid">
+    <div v-else class="grid v2-b3speaking-main">
       <article class="panel">
         <div class="panel-head">
           <div>
@@ -431,6 +431,7 @@ async function advanceRoleplay(choiceCode?: string): Promise<void> {
         {{ shadowing.targetGapMs }}ms
       </p>
     </article>
+  <aside class="v2-b3speaking-rail" aria-label="练习提示"><h2>口语练习</h2><ol><li>先听示范，再开始录音。</li><li>录完可回放，满意后再提交。</li></ol></aside>
   </section>
 </template>
 <style scoped>
