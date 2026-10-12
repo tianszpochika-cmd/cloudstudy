@@ -34,6 +34,7 @@ function playAudio(): void {
 }
 onShow(async () => { if (await ensureMobilePageAccess('/pages/b2-vocabulary/b2-vocabulary')) load() })
 onUnmounted(() => engine.dispose())
+const vocabLabels: Record<string, string> = { REVIEW: "复习", NEW_ITEM: "新学", NEW: "新词", LEARNING: "学习中", MASTERED: "已掌握", CONSOLIDATED: "已巩固" }
 </script>
 
 <template>
@@ -44,7 +45,7 @@ onUnmounted(() => engine.dispose())
       <B10StatusPanel class="v2-vocab-progress" :status="store.status" :message="store.message" :queue-count="store.srsQueueCount" :performance-level="performanceLevel" @retry="load" @sync="store.syncSrs" @performance="setPerformance" />
 
       <view v-if="store.currentCard" class="yx-card b10-vocab-card v2-vocab-card">
-        <view class="b10-vocab-card__meta v2-vocab-meta"><text class="v2-vocab-source">{{ store.currentCard.sourceReason }}</text><text v-if="store.currentCard.masteryStatus" class="v2-vocab-mastery">{{ store.currentCard.masteryStatus }}</text></view>
+        <view class="b10-vocab-card__meta v2-vocab-meta"><text class="v2-vocab-source">{{ vocabLabels[store.currentCard.sourceReason] ?? store.currentCard.sourceReason }}</text><text v-if="store.currentCard.masteryStatus" class="v2-vocab-mastery">{{ vocabLabels[store.currentCard.masteryStatus] ?? store.currentCard.masteryStatus }}</text></view>
         <text class="b10-vocab-card__word v2-vocab-word">{{ store.currentCard.title }}</text>
         <text v-if="store.currentCard.phonetic" class="b10-vocab-card__phonetic v2-vocab-phonetic">{{ store.currentCard.phonetic }}</text>
         <button v-if="vocabPlayable(store.currentCard.audioUrl)" class="v2-vocab-play" type="button" data-vocab-play @click="playAudio">播放</button>
