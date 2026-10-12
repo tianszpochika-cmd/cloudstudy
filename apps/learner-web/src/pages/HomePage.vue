@@ -73,7 +73,7 @@ async function loadGuide(): Promise<void> {
 onMounted(() => { store.restore(); void store.loadHome(); void loadGuide() })
 </script>
 <template>
-  <section class="page-stack home-experience" aria-labelledby="home-title">
+  <section class="page-stack home-experience v2-home" aria-labelledby="home-title">
     <div class="home-greeting"><div><p class="experience-eyebrow"><AppIcon name="spark" :size="15" />A LITTLE, EVERY DAY</p><h1 id="home-title">{{ t('homeTitle') }}</h1><p>{{ t('homeDescription') }}</p></div><RouterLink v-if="!isRestricted" class="text-link" :to="{ name: 'onboarding' }">{{ t('setGoal') }}<AppIcon name="arrow" :size="16" /></RouterLink></div>
     <RouterLink v-if="guideVisible" class="onboarding-guide" :to="guideTo"><span class="onboarding-guide__copy"><span>{{ guideLabel }}</span><small v-if="guideSteps.length">剩余步骤：{{ guideSteps.join('、') }}</small></span><strong>{{ guideAction }}</strong></RouterLink>
     <p v-if="firstLearningCopy" class="first-learning-guide" role="status">{{ firstLearningCopy }}</p>
@@ -127,4 +127,22 @@ onMounted(() => { store.restore(); void store.loadHome(); void loadGuide() })
 .plan-banner{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 14px;border:1px solid var(--yx-color-border);border-radius:12px;background:var(--yx-color-surface-card);margin-bottom:12px}
 .plan-banner span{color:var(--yx-color-text-secondary);font-size:13px}
 .first-learning-guide,.plan-notice{margin:0 0 12px;padding:12px 14px;border:1px solid var(--yx-color-border);border-radius:12px;background:var(--yx-color-surface-card)}
+</style>
+<style>
+.home-experience.v2-home h1 { font-size: 28px; letter-spacing: -1px; color: var(--v2-ink); }
+.home-experience.v2-home .experience-eyebrow, .home-experience.v2-home .card-kicker { color: var(--v2-brand); letter-spacing: 1px; font-weight: 700; }
+.home-experience.v2-home .home-hero { background: var(--v2-grad-soft); color: var(--v2-ink); border: 1px solid var(--v2-line); box-shadow: var(--v2-shadow-pop); border-radius: var(--v2-radius-lg); }
+.home-experience.v2-home .home-hero h2 { color: var(--v2-ink); font-size: 30px; letter-spacing: -1px; }
+.home-experience.v2-home .home-hero p { color: var(--v2-mut); }
+.home-experience.v2-home .home-hero .hero-label { background: var(--v2-soft); color: var(--v2-brand); border-color: transparent; }
+.home-experience.v2-home .home-hero .button, .home-experience.v2-home .home-hero button { background: var(--v2-brand); color: var(--v2-inverse); border-radius: var(--v2-radius-md); }
+.home-experience.v2-home .home-hero .study-artwork { opacity: .55; }
+.home-experience.v2-home .experience-card { background: var(--v2-card); border: 1px solid var(--v2-line); border-radius: var(--v2-radius-lg); box-shadow: var(--v2-shadow); }
+.home-experience.v2-home .daily-task-list { border: 1px solid var(--v2-line); border-radius: var(--v2-radius-md); overflow: hidden; }
+.home-experience.v2-home .daily-task { border-radius: 0; border-bottom: 1px solid var(--v2-line); padding: 14px 16px; transition: background var(--v2-motion-fast); }
+.home-experience.v2-home .daily-task:last-child { border-bottom: 0; }
+.home-experience.v2-home .daily-task:hover:not(:disabled) { background: var(--v2-surface); }
+.home-experience.v2-home .daily-task--done { opacity: .6; }
+.home-experience.v2-home .text-link { color: var(--v2-brand); font-weight: 600; }
+.home-experience.v2-home .onboarding-guide { background: var(--v2-soft); border-color: var(--v2-line); }
 </style>
