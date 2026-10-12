@@ -4780,7 +4780,7 @@ const QA_URL = process.env.STATIC_DEMO_URL || 'http://127.0.0.1:18283/webDemo/mo
 
 // LAST_RUN_RESULT
 // {
-//   "at": "2026-10-12T08:32:55.671Z",
+//   "at": "2026-10-12T09:06:03.748Z",
 //   "url": "http://127.0.0.1:18283/webDemo/mobile/",
 //   "surface": "mobile",
 //   "viewport": 390,
@@ -4995,7 +4995,7 @@ const QA_URL = process.env.STATIC_DEMO_URL || 'http://127.0.0.1:18283/webDemo/mo
 //         "right": 2,
 //         "total": 2,
 //         "playbackAttempt": {
-//           "playing": false,
+//           "playing": true,
 //           "status": null
 //         },
 //         "audibilityVerified": false
@@ -5085,7 +5085,7 @@ const QA_URL = process.env.STATIC_DEMO_URL || 'http://127.0.0.1:18283/webDemo/mo
 //   ],
 //   "pageErrors": [],
 //   "externalRequests": [],
-//   "evidenceDir": "/workspace/cs/.git/codex-local-backups/mobile-qa-1791793975674-light",
+//   "evidenceDir": "/workspace/cs/.git/codex-local-backups/mobile-qa-1791795963750-light",
 //   "loadedScripts": [
 //     "../shared/data.js",
 //     "app.js",
