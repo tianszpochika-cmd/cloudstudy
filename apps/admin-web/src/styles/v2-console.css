@@ -632,3 +632,68 @@
   color: var(--v2-bad);
   border-color: var(--v2-bad-soft);
 }
+
+/* === page: governance closure desk (IT-7) === */
+.it7-closure {
+  background: var(--v2-card);
+  border: 1px solid var(--v2-line);
+  border-left: 4px solid var(--v2-warn);
+  border-radius: 16px;
+  padding: 18px 20px;
+  box-shadow: var(--v2-elev-1);
+  display: grid;
+  gap: 8px;
+  margin-top: 16px;
+}
+.it7-closure h3 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--v2-ink);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.it7-closure h3::after {
+  content: "只读";
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 2px 9px;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.4;
+  background: var(--v2-warn-soft);
+  color: var(--v2-warn);
+}
+.it7-closure p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--v2-mut);
+}
+.it7-closure p:first-of-type {
+  color: var(--v2-ink);
+}
+.it7-closure button {
+  justify-self: start;
+  height: 34px;
+  padding: 0 14px;
+  border-radius: var(--v2-radius-sm);
+  border: 1px solid var(--v2-line);
+  background: var(--v2-card);
+  color: var(--v2-ink);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--v2-motion-fast) var(--v2-ease);
+}
+.it7-closure button:hover {
+  border-color: var(--v2-brand);
+  color: var(--v2-brand);
+  background: var(--v2-soft);
+}
+.it7-closure button:focus-visible {
+  outline: 3px solid var(--v2-brand);
+  outline-offset: 2px;
+}
