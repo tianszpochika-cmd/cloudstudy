@@ -41,17 +41,17 @@ class It7ClosureStudioTest {
     @Test
     void dispositionWritesStayClosed() {
         String caseId = fileOne();
-        It7ClosureStudio.Result triage = studio.handle(staff(), "TRIAGE", Map.of("caseId", caseId));
+        It7ClosureStudio.Result triage = studio.handle(writer(), "TRIAGE", Map.of("caseId", caseId));
         assertThat(triage.error()).containsEntry("code", "DISPOSITION_NOT_ADMITTED").containsEntry("dispatched", false);
-        It7ClosureStudio.Result isolate = studio.handle(staff(), "ISOLATE", Map.of("caseId", caseId, "idempotencyKey", "iso-1"));
+        It7ClosureStudio.Result isolate = studio.handle(writer(), "ISOLATE", Map.of("caseId", caseId, "idempotencyKey", "iso-1"));
         assertThat(isolate.error()).containsEntry("unlockAvailable", false).containsEntry("sameAsLock", false);
-        assertThat(studio.handle(staff(), "ISOLATE", Map.of("caseId", caseId, "idempotencyKey", "iso-1")).error())
+        assertThat(studio.handle(writer(), "ISOLATE", Map.of("caseId", caseId, "idempotencyKey", "iso-1")).error())
                 .containsEntry("isolationWrites", 0);
         assertThat(studio.isolationWrites()).isZero();
-        It7ClosureStudio.Result escalate = studio.handle(staff(), "ESCALATE", Map.of("caseId", caseId));
+        It7ClosureStudio.Result escalate = studio.handle(writer(), "ESCALATE", Map.of("caseId", caseId));
         assertThat(escalate.error()).containsEntry("code", "RECEIVER_UNAVAILABLE").containsEntry("accepted", false)
                 .containsEntry("originalRetained", true);
-        It7ClosureStudio.Result close = studio.handle(staff(), "CLOSE", Map.of("caseId", caseId));
+        It7ClosureStudio.Result close = studio.handle(writer(), "CLOSE", Map.of("caseId", caseId));
         assertThat(close.error()).containsEntry("code", "CHAIN_INCOMPLETE").containsEntry("closed", false)
                 .containsEntry("claimsFullChain", false);
         assertThat(studio.handle(staff(), "CASES", Map.of()).data().get("items")).asList().hasSize(1);
@@ -190,6 +190,10 @@ class It7ClosureStudioTest {
 
     private static It7ClosureStudio.Actor staff() {
         return new It7ClosureStudio.Actor("staff-1", true, Set.of("admin.risk.read"));
+    }
+
+    private static It7ClosureStudio.Actor writer() {
+        return new It7ClosureStudio.Actor("staff-1", true, Set.of("admin.risk.read", "admin.risk.write"));
     }
 
     private static It7ClosureStudio.Actor learner() {

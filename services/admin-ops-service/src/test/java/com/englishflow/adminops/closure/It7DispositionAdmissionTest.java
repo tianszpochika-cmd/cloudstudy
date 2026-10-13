@@ -11,7 +11,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 class It7DispositionAdmissionTest {
 
     private static It7ClosureStudio.Actor staff() {
-        return new It7ClosureStudio.Actor("staff-1", true, Set.of("admin.risk.read"));
+        return new It7ClosureStudio.Actor("staff-1", true, Set.of("admin.risk.read", "admin.risk.write"));
+    }
+
+    private static It7ClosureStudio.Actor readOnly() {
+        return new It7ClosureStudio.Actor("viewer-1", true, Set.of("admin.risk.read"));
+    }
+
+    private static It7ClosureStudio.Actor moderator() {
+        return new It7ClosureStudio.Actor("mod-1", true, Set.of("admin.moderation.read", "admin.moderation.write"));
     }
 
     @Test
@@ -73,5 +81,35 @@ class It7DispositionAdmissionTest {
                 "caseId", caseId, "idempotencyKey", "close-early-1"));
         assertThat(closed.status()).isEqualTo(409);
         assertThat(closed.error()).containsEntry("code", "CHAIN_INCOMPLETE");
+    }
+
+    @Test
+    void readOnlyActorGets403OnEveryDispositionWhenAdmitted() {
+        It7ClosureStudio studio = new It7ClosureStudio(new MemoryClosureDeskStore(), true);
+        String caseId = String.valueOf(studio.handle(staff(), "FILE", Map.of(
+                "sourceRef", "src-ro", "title", "只读", "idempotencyKey", "file-ro")).data().get("caseId"));
+        for (String command : new String[] {"TRIAGE", "ISOLATE", "ESCALATE", "CLOSE"}) {
+            It7ClosureStudio.Result denied = studio.handle(readOnly(), command, Map.of("caseId", caseId));
+            assertThat(denied.status()).as(command).isEqualTo(403);
+            assertThat(denied.error()).containsEntry("code", "CLOSURE_WRITE_FORBIDDEN");
+        }
+        assertThat(studio.handle(staff(), "CASES", Map.of()).data().get("items").toString()).contains("FILED");
+        assertThat(studio.isolationWrites()).isZero();
+    }
+
+    @Test
+    void readOnlyActorGets403WhileFrozenToo() {
+        It7ClosureStudio studio = new It7ClosureStudio();
+        String caseId = String.valueOf(studio.handle(staff(), "FILE", Map.of(
+                "sourceRef", "src-ro2", "title", "只读2")).data().get("caseId"));
+        assertThat(studio.handle(readOnly(), "TRIAGE", Map.of("caseId", caseId)).status()).isEqualTo(403);
+    }
+
+    @Test
+    void moderationWritePermissionIsAccepted() {
+        It7ClosureStudio studio = new It7ClosureStudio(new MemoryClosureDeskStore(), true);
+        String caseId = String.valueOf(studio.handle(moderator(), "FILE", Map.of(
+                "sourceRef", "src-mod", "title", "审核")).data().get("caseId"));
+        assertThat(studio.handle(moderator(), "TRIAGE", Map.of("caseId", caseId)).status()).isEqualTo(200);
     }
 }

@@ -799,9 +799,14 @@ public class It7ClosureStudio {
                 "fileCreated", false));
     }
 
+    /** Disposition commands are writes: read permission alone must never mutate or even probe a case. */
     private Result requireGovernanceCase(Actor actor, Map<String, Object> input) {
         if (!governance(actor)) {
             return forbidden();
+        }
+        if (!governanceWrite(actor)) {
+            return Result.fail(403, "CLOSURE_WRITE_FORBIDDEN", "处置需要治理写权限（admin.risk.write 或 admin.moderation.write）",
+                    Map.of("dispatched", false));
         }
         String caseId = text(input.get("caseId"));
         if (caseId.isBlank() || cases.stream().noneMatch(item -> item.id().equals(caseId))) {
@@ -816,6 +821,10 @@ public class It7ClosureStudio {
 
     private boolean governance(Actor actor) {
         return actor.can("admin.risk.read") || actor.can("admin.moderation.read");
+    }
+
+    private boolean governanceWrite(Actor actor) {
+        return actor.can("admin.risk.write") || actor.can("admin.moderation.write");
     }
 
     private String latestExportState(String subject) {

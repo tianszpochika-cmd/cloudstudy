@@ -3,7 +3,7 @@ package com.englishflow.workflow.config;
 import com.englishflow.workflow.adapter.jdbc.WorkflowTables;
 import com.englishflow.workflow.adapter.http.SagaController;
 import com.englishflow.workflow.adapter.jdbc.JdbcJobLeaseStore;
-import com.englishflow.workflow.adapter.jdbc.JdbcRecoverySideEffect;
+import com.englishflow.workflow.adapter.http.AdminOpsRecoverySideEffect;
 import com.englishflow.workflow.adapter.jdbc.JdbcRecoveryStore;
 import com.englishflow.workflow.application.RecoverySideEffectPort;
 import com.englishflow.workflow.adapter.jdbc.JdbcSagaStore;
@@ -42,8 +42,10 @@ public class WorkflowWiringConfiguration {
     }
 
     @Bean
-    RecoverySideEffectPort recoverySideEffectPort(JdbcTemplate jdbc) {
-        return new JdbcRecoverySideEffect(jdbc);
+    RecoverySideEffectPort recoverySideEffectPort(JdbcTemplate jdbc,
+            @Value("${workflow.admin-ops.base-url:${ADMIN_OPS_SERVICE_BASE_URL:http://admin-ops-service:18097}}") String adminOpsBaseUrl) {
+        return new AdminOpsRecoverySideEffect(
+                AdminOpsRecoverySideEffect.httpTransport(java.time.Duration.ofSeconds(10)), adminOpsBaseUrl, jdbc);
     }
 
     @Bean

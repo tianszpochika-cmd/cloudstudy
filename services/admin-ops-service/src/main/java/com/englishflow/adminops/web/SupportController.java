@@ -116,6 +116,22 @@ public final class SupportController {
         return AdminOpsHttpSupport.envelope(ticketView(result.ticket()), request);
     }
 
+    /** Internal: executed by workflow-service manual recovery (TICKET/REOPEN) with the executor's token. */
+    @PostMapping("/tickets/{ticketId}/recovery-reopen")
+    public Map<String, Object> recoveryReopen(
+            @PathVariable String ticketId,
+            @RequestHeader(value = "Idempotency-Key", required = false) String idempotencyKey,
+            HttpServletRequest request) {
+        String recoveryId = idempotencyKey != null && idempotencyKey.startsWith("recovery-")
+                ? idempotencyKey.substring("recovery-".length()) : null;
+        SupportTicketResult result = service.recoveryReopen(requirePrincipal(), ticketId, recoveryId,
+                request == null ? null : request.getHeader("X-Trace-Id"));
+        Map<String, Object> view = ticketView(result.ticket());
+        view.put("replayed", result.replayed());
+        view.put("auditId", result.auditId());
+        return AdminOpsHttpSupport.envelope(view, request);
+    }
+
     private Map<String, Object> closureBoard(HttpServletRequest request) {
         if (closureStudio == null) {
             throw new AdminOpsException("CLOSURE_UNAVAILABLE", "closure desk is not available", 503, false);

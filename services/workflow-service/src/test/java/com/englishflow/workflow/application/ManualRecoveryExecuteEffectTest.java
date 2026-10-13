@@ -19,7 +19,7 @@ class ManualRecoveryExecuteEffectTest {
         FakeStore store = new FakeStore();
         AtomicReference<String> applied = new AtomicReference<>();
         ManualRecoveryService service = new ManualRecoveryService(store,
-                (recoveryId, type, id, action, executor) -> {
+                (recoveryId, type, id, action, executor, bearer) -> {
                     applied.set(type + "/" + action + ":" + id);
                     return "ok";
                 });
@@ -36,7 +36,7 @@ class ManualRecoveryExecuteEffectTest {
     void failedSideEffectMarksFailedAndDoesNotClaimExecuted() {
         FakeStore store = new FakeStore();
         ManualRecoveryService service = new ManualRecoveryService(store,
-                (recoveryId, type, id, action, executor) -> {
+                (recoveryId, type, id, action, executor, bearer) -> {
                     throw new ManualRecoveryRequest.RecoveryNotAllowed("ticket missing");
                 });
         var requested = service.request("ops-1", "TICKET", "missing", "REOPEN", "retry");
@@ -45,6 +45,57 @@ class ManualRecoveryExecuteEffectTest {
                 () -> service.execute(requested.recoveryId(), "ops-3"));
         assertEquals(ManualRecoveryRequest.Status.FAILED, store.byId.get(requested.recoveryId()).request().status());
         assertEquals("ticket missing", store.byId.get(requested.recoveryId()).request().failureMessage());
+    }
+
+    @Test
+    void uncertainOutcomeKeepsApprovedAndRetryMarksExecuted() {
+        FakeStore store = new FakeStore();
+        java.util.concurrent.atomic.AtomicInteger calls = new java.util.concurrent.atomic.AtomicInteger();
+        ManualRecoveryService service = new ManualRecoveryService(store,
+                (recoveryId, type, id, action, executor, bearer) -> {
+                    if (calls.incrementAndGet() == 1) {
+                        // owner applied it, but the response was lost
+                        throw new RecoverySideEffectPort.SideEffectUncertain("timeout");
+                    }
+                    return "admin-ops support_ticket -> IN_PROGRESS (replayed)";
+                });
+        var requested = service.request("ops-1", "TICKET", "t-1", "REOPEN", "stuck");
+        service.approve(requested.recoveryId(), "ops-2");
+        assertThrows(RecoverySideEffectPort.SideEffectUncertain.class,
+                () -> service.execute(requested.recoveryId(), "ops-3", "tok"));
+        assertEquals(ManualRecoveryRequest.Status.APPROVED, store.byId.get(requested.recoveryId()).request().status());
+        assertTrue(store.receipts.isEmpty());
+
+        var retried = service.execute(requested.recoveryId(), "ops-3", "tok");
+        assertEquals("EXECUTED", retried.status());
+        assertTrue(retried.effectDetail().contains("replayed"));
+        assertEquals(2, calls.get());
+    }
+
+    @Test
+    void executingAnExecutedRequestAgainIsANoOp() {
+        FakeStore store = new FakeStore();
+        java.util.concurrent.atomic.AtomicInteger calls = new java.util.concurrent.atomic.AtomicInteger();
+        ManualRecoveryService service = new ManualRecoveryService(store,
+                (recoveryId, type, id, action, executor, bearer) -> { calls.incrementAndGet(); return "ok"; });
+        var requested = service.request("ops-1", "TICKET", "t-2", "REOPEN", "stuck");
+        service.approve(requested.recoveryId(), "ops-2");
+        service.execute(requested.recoveryId(), "ops-3", "tok");
+        assertEquals("EXECUTED", service.execute(requested.recoveryId(), "ops-3", "tok").status());
+        assertEquals(1, calls.get());
+        assertEquals(1, store.receipts.size());
+    }
+
+    @Test
+    void bearerTokenIsForwardedToTheOwnerCall() {
+        FakeStore store = new FakeStore();
+        AtomicReference<String> seen = new AtomicReference<>();
+        ManualRecoveryService service = new ManualRecoveryService(store,
+                (recoveryId, type, id, action, executor, bearer) -> { seen.set(bearer); return "ok"; });
+        var requested = service.request("ops-1", "TICKET", "t-3", "REOPEN", "stuck");
+        service.approve(requested.recoveryId(), "ops-2");
+        service.execute(requested.recoveryId(), "ops-3", "jwt-abc");
+        assertEquals("jwt-abc", seen.get());
     }
 
     static final class FakeStore implements ManualRecoveryService.RecoveryStore {

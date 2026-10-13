@@ -207,6 +207,51 @@ public final class SupportTicketService {
         return result;
     }
 
+    /**
+     * Reopen requested by an approved workflow manual recovery. The recovery id is the
+     * idempotency key and the scope is tenant-wide (not per operator), so a retry by any
+     * executor replays the first outcome instead of failing on the already-reopened state.
+     * The two-person rule was enforced in workflow-service; this side still requires
+     * SUPPORT_TICKET_MANAGE and writes its own audit row.
+     */
+    public synchronized SupportTicketResult recoveryReopen(
+            AdminPrincipal operator, String ticketId, String recoveryId, String traceId) {
+        pep.requirePermission(operator, AdminPermission.SUPPORT_TICKET_MANAGE);
+        if (recoveryId == null || recoveryId.isBlank() || recoveryId.length() > 64) {
+            throw AdminOpsException.invalid("SUPPORT_RECOVERY_ID_REQUIRED", "recovery id is required");
+        }
+        String key = "recovery-" + recoveryId;
+        Ticket ticket = requireTicket(operator, ticketId);
+        pep.requireTenant(operator, ticket.tenantId);
+        String scope = operator.tenantId() + ":recovery:reopen:" + ticketId;
+        String fingerprint = "RECOVERY_REOPEN|" + ticketId;
+        IdempotencyLedger.Entry prior = idempotency.find(scope, key).orElse(null);
+        if (prior != null) {
+            return replay(prior, fingerprint);
+        }
+        validateTransition(ticket, SupportAction.REOPEN);
+        Instant now = clock.instant();
+        ticket.state = nextState(ticket.state, SupportAction.REOPEN);
+        ticket.assigneeSubjectId = operator.subjectId();
+        ticket.version++;
+        String effectiveTrace = safeTrace(traceId);
+        AuditRecord audit = auditTrail.append(new AuditEvent(
+                ticket.tenantId,
+                operator.subjectId(),
+                "SUPPORT_RECOVERY_REOPEN",
+                ticket.ticketId,
+                null,
+                effectiveTrace,
+                "recovery_" + recoveryId,
+                Map.of("state", ticket.state.name(), "recoveryId", recoveryId),
+                now));
+        ticket.lastAuditId = audit.auditId();
+        ticketStore.update(ticket.snapshot(), ticket.version - 1);
+        SupportTicketResult result = new SupportTicketResult(view(ticket, now), false, audit.auditId());
+        idempotency.put(scope, key, fingerprint, result);
+        return result;
+    }
+
     public synchronized List<AuditRecord> auditSnapshot(AdminPrincipal principal) {
         pep.requirePermission(principal, AdminPermission.AUDIT_READ);
         String tenantRef = ReferenceRedactor.tenant(principal.tenantId());

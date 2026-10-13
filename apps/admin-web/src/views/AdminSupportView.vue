@@ -178,7 +178,8 @@ const actionLabels: Record<string, string> = {
 
 function availableActions(row: Row | null): SupportTransitionAction[] {
   if (!row || row.actionable !== true) return [];
-  if (!session.can("support.ticket.manage") && !session.can("admin.support.read")) return [];
+  // P3-2: buttons only for operators who can actually transition tickets.
+  if (!session.can("support.ticket.manage")) return [];
   return actionsForState[String(row.state)] ?? [];
 }
 

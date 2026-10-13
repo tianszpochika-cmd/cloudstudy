@@ -30,7 +30,7 @@ class ManualRecoveryServiceTest {
         // Tests that are not about side effects still need an effect port; use a recording no-op
         // so EXECUTED is only claimed when the port returns.
         service = new ManualRecoveryService(store,
-                (recoveryId, type, id, action, executor) -> "test-effect:" + type + "/" + action);
+                (recoveryId, type, id, action, executor, bearer) -> "test-effect:" + type + "/" + action);
     }
 
     @Test

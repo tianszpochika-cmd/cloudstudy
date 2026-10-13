@@ -76,3 +76,12 @@ test('governance domain reflects open disposition copy', () => {
   assert.equal(mod.legacyDispositionRefusal({ dispositionOpen: true }), '')
   assert.match(mod.legacyDispositionRefusal({ dispositionOpen: false }), /处置写链没有打开/)
 })
+
+test('ticket actions require support.ticket.manage; governance writes require write permission', () => {
+  const support = fs.readFileSync(path.join(root, 'src/views/AdminSupportView.vue'), 'utf8')
+  assert.match(support, /if \(!session\.can\("support\.ticket\.manage"\)\) return \[\]/)
+  assert.doesNotMatch(support, /admin\.support\.read"\)\) return \[\]/)
+  const gov = fs.readFileSync(path.join(root, 'src/views/AdminB12GovernanceView.vue'), 'utf8')
+  assert.match(gov, /admin\.risk\.write/)
+  assert.match(gov, /没有治理写权限/)
+})

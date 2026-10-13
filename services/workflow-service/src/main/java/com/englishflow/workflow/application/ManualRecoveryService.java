@@ -20,7 +20,7 @@ public class ManualRecoveryService {
     private final RecoverySideEffectPort sideEffects;
 
     public ManualRecoveryService(RecoveryStore store) {
-        this(store, (recoveryId, type, id, action, executor) -> {
+        this(store, (recoveryId, type, id, action, executor, bearer) -> {
             throw new ManualRecoveryRequest.RecoveryNotAllowed(
                     "no executable recovery for " + type + "/" + action);
         });
@@ -54,30 +54,47 @@ public class ManualRecoveryService {
         return RecoveryView.of(stored.request(), stored.subjectType(), stored.subjectId(), stored.action(), stored.reason());
     }
 
-    /**
-     * Executes an approved request: first runs the concrete subject mutation, then marks EXECUTED.
-     * If the mutation fails, the request is marked FAILED and the error is rethrown so the API does
-     * not report success for a no-op.
-     */
+    /** Executes without a forwarded token (tests / non-HTTP callers); owner calls then stay uncertain. */
     public RecoveryView execute(String recoveryId, String executor) {
+        return execute(recoveryId, executor, null);
+    }
+
+    /**
+     * Executes an approved request: first runs the owner-service mutation, then marks EXECUTED.
+     *
+     * <ul>
+     *   <li>Already EXECUTED: returns the stored view; nothing runs twice.</li>
+     *   <li>Owner refused definitively: marked FAILED and the refusal is rethrown.</li>
+     *   <li>Outcome unknown: left APPROVED and rethrown. The owner call is idempotent on the
+     *       recovery id, so a retry that finds the mutation already applied marks EXECUTED.</li>
+     * </ul>
+     */
+    public RecoveryView execute(String recoveryId, String executor, String bearerToken) {
         StoredRecovery stored = load(recoveryId);
-        // Domain gate: must be APPROVED (throws if REQUESTED/terminal).
+        if (stored.request().status() == ManualRecoveryRequest.Status.EXECUTED) {
+            return RecoveryView.of(stored.request(), stored.subjectType(), stored.subjectId(),
+                    stored.action(), stored.reason());
+        }
         if (stored.request().status() != ManualRecoveryRequest.Status.APPROVED) {
             stored.request().execute(); // produces the precise refusal message
         }
+        String detail;
         try {
-            String detail = sideEffects.apply(recoveryId, stored.subjectType(), stored.subjectId(), stored.action(), executor);
-            stored.request().execute();
-            store.update(stored.request());
-            store.recordReceipt(stored.request(), executor);
-            return RecoveryView.of(stored.request(), stored.subjectType(), stored.subjectId(),
-                    stored.action(), stored.reason(), detail);
+            detail = sideEffects.apply(recoveryId, stored.subjectType(), stored.subjectId(), stored.action(),
+                    executor, bearerToken);
+        } catch (RecoverySideEffectPort.SideEffectUncertain uncertain) {
+            throw uncertain;
         } catch (RuntimeException error) {
             String message = error.getMessage() == null ? error.getClass().getSimpleName() : error.getMessage();
             stored.request().fail(message);
             store.update(stored.request());
             throw error;
         }
+        stored.request().execute();
+        store.update(stored.request());
+        store.recordReceipt(stored.request(), executor);
+        return RecoveryView.of(stored.request(), stored.subjectType(), stored.subjectId(),
+                stored.action(), stored.reason(), detail);
     }
 
     private StoredRecovery load(String recoveryId) {
