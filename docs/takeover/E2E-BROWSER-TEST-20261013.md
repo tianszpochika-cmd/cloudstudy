@@ -41,5 +41,7 @@
   - 同意失败路径始终写入 `lastError`；文案提示退出重登。
   - 同意步同时展示 `session.lastError`，并加强 v2 下 `.setup-error` 可见性。
 - **用户侧**：同意多半已保存。请 **退出登录再登录**，一般会从目标步或定级继续；不要反复盲点「继续」。
-- **状态**：fixed（待重新部署 learner-web 后用 cookie 擦除场景回测）
+- **状态**：fixed（已部署 `learner-web:5dd0daec`，bundle `index-Czsf7pgM.js`）
+- **回测**：擦除 refresh cookie 后再点继续 → 页面显示「必要同意已保存，但登录凭证未能更新。请退出并重新登录后再继续。」不再静默。
+
 
