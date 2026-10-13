@@ -29,7 +29,7 @@
 | 设置 `/settings/profile` | learner-web | pass | 「设置」 |
 | 消息 / 商城 / 报告分享深链 | learner-web | pending | |
 | 移动端全链路 | mobile | pass* | 见下方移动端表；主路径可走通 |
-| 管理端模块 | admin | blocked | 登录页 OK；缺授权管理员账号 |
+| 管理端模块 | admin | pass* | 14 个路由全部可进；修了 BUG-2/3、FIX-4，见下方管理端表 |
 
 ## 已知缺口（前端写死，不改）
 
@@ -38,11 +38,11 @@
 
 ## 阻塞（后端 / 基础设施）
 
-### BLOCK-1 内容目录 503
+### BLOCK-1 内容目录 503 → 已修（FIX-4）
 
-- `GET /api/v1/content/learner/catalog?contentLocale=en-US` → 503（nginx 多次命中，body ~136B）
-- content-service 容器 Up；未改后端。书架页仍可打开但目录数据不可用。
-- 处理：blocked，需查 content-service / gateway 路由与上游依赖。
+- 原现象：`GET /api/v1/content/learner/catalog` → 503；管理端 `/admin/content-commands` 同样 503 `CONTENT_FACT_CORRUPT`。
+- 之前日志里的 `ConnectException` 是 OTLP 指标上报（localhost:4318）噪音，与此无关。
+- 见 FIX-4。
 
 ## 缺陷与修复
 
@@ -97,11 +97,48 @@
 | 模块 | 结果 | 说明 |
 |---|---|---|
 | 登录页 | pass | 渲染正常，空提交有校验文案 |
-| 登录后业务 | blocked | 无演示账号；文案要求「已授权管理账号」。需你提供测试管理员凭据后继续 |
+| 登录 | fixed | BUG-2：登录 200 后 refresh 403，被踢回登录页 |
+| 工作台 `/dashboard` | pass | 指标为空，空态正常 |
+| 内容与双审 `/content` | fixed | FIX-4 后列表 200 |
+| 题目与练习 `/items` | pass* | 空态正常；控制台有 `GET /admin/content-commands/VOCAB-PHASE1` 404（服务器未种这条内容，数据缺口） |
+| 词汇管理 `/lexemes` | pass* | 同上 VOCAB-PHASE1 404，页面显示「暂无符合条件的记录」 |
+| 音标资料库 `/phonetics` | pass | |
+| 学员工作台 `/learners` | pass | |
+| 订单与退款 `/commerce` | pass | 0 单，空态正常 |
+| 客服工单 `/support` | pass* | 0 单；「处理功能暂不可用」是前端已知缺口 |
+| 审计记录 `/audit` | pass* | 0 条；「导出暂不可用」是已知缺口 |
+| 策略版本 `/permissions` | fixed | BUG-3：之前 401 把会话踢掉 |
+| 社群治理 `/governance`、`/risk` | pass | `/risk` 按设计并入治理页 |
+| 人工恢复 `/recovery` | pass | |
+| 发布与质量 `/release` | pass | |
+
+测试管理员：`e2e-20261013-admin`（凭据在服务器 `/root/e2e-20261013-admin.txt`，600）。走注册 API 建号，再改该行 `roles/permissions`，并通过 API 完成成人 Gate 与三项同意。
+
+### BUG-2 管理端登录后被踢回（refresh 403 `iam.auth.origin_untrusted`）
+
+- 原因：`IAM_TRUSTED_LEARNER_ORIGINS` 只有 learn/mobile，没有 `https://admin.clyunedev.com`。与 2026-10-11 `1de5c1d4` 同类。
+- 修复：服务器 env 加 admin 源（备份 `clyunedev.env.bak-*-admin-origin`），compose 默认值同步；只重建 iam-service。
+
+### BUG-3 策略版本页 401 `iam.jwt.access_profile_invalid`
+
+- 原因：`PolicyAccessAuthenticationVerifier.validPermission` 只允许 `[a-z0-9.-]`。真实管理员 token 一定带 `content:write`、`commerce:order:read` 这类冒号键，于是整份 token 判非法，前端当会话过期。
+- 修复：放宽为 `[a-z0-9._:-]`（`b9a7739f`），iam-service 重建部署。
+
+### FIX-4 DEMO-P5 种子数据乱码导致整个目录 503
+
+- 原因：4 条 `DEMO-P5-*` 内容（265101–265104）在服务器上经 latin1 客户端写入，中文成了双重编码（`å…³äºŽ`），但 `payload_hash` 是按正确文本算的。content-service 读到任一行 hash 不符就抛 `CONTENT_FACT_CORRUPT`，整个列表 503。纯英文的两条 hash 正常。
+- 修复：备份后对 4 行 `payload_json` 和 13 行 `b25_content_item.prompt` 做 latin1→utf8mb4 反转；36 行 hash 全部复核一致。种子脚本加 `SET NAMES utf8mb4`。
+- 复测：新学员 `GET /content/learner/catalog` 200，34 条。
+- 备份：`/srv/cloudstudy/backups/content-demo-p5-mojibake-20261013073634.sql.gz`。
+
+### RISK-1 token 体积接近 Tomcat 8KB 请求头上限
+
+- 管理员号带上注册时的全部学习者权限后 token 7.9KB，所有后端返回 Tomcat 400 `Request header is too large`。测试号已收窄为纯管理权限（4.4KB）。
+- 普通学员通过 Gate 后 token 约 5.3KB，余量不多。属于较大改动（token 精简或调大 `server.max-http-request-header-size`），未改，记录。
 
 ## 仍开着的事
 
-- BLOCK-1：`/content/learner/catalog` 503（书架数据）
 - 口语/写作 learner-web：页面开得开，含「暂未开放/暂不可用」已知缺口
 - b4-games 暗色模式、管理端无路由 demo 页：仍待你定
-- 管理端深测：缺账号
+- 服务器缺 `VOCAB-PHASE1` 内容（题目/词汇页 404，页面空态正常）
+- RISK-1：token 体积接近 8KB 请求头上限

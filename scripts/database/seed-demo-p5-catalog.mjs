@@ -32,7 +32,10 @@ const ITEMS = [
   { code: 'DEMO-P5-SENT-B1', kind: 'SENTENCE', title: 'Demo sentence train', level: 'B1', payload: { title: 'Demo sentence train', summary: 'Build one sentence at a time.', locale: 'en-US', targetLevel: 'B1', sentence: 'Study a little every day.', example: 'Study a little every day.', items: [{ text: 'Study a little every day.' }] } },
 ];
 
-const statements = ['START TRANSACTION;'];
+// SET NAMES keeps the SQL self-describing: on clyunedev it was replayed through a
+// latin1 client, which double-encoded the Chinese text while payload_hash stayed
+// correct, so content-service saw CONTENT_FACT_CORRUPT and the whole catalog 503'd.
+const statements = ['SET NAMES utf8mb4;', 'START TRANSACTION;'];
 // Namespaced delete-then-insert: deterministic re-runs. (ON DUPLICATE KEY
 // UPDATE was observed to silently keep stale payload_hash values on this
 // table through the batched docker-exec chain, so plain INSERTs are used.)
