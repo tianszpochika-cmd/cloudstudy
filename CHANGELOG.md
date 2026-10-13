@@ -1,5 +1,7 @@
 # Changelog
 
+- [UI-001-20261013] 学习网页端第二版登录页精审：修复窄屏品牌换行、点击区域、首错焦点/ARIA、旧必填提示、密码标签和busy操作、高对比色板及焦点边框。24组视口主题、受控IAM拒绝交互通过；范围仅UI，记录见`docs/takeover/ui-audit-20261013/learner-login/review.md`。
+
 - [LUNA-SIGNOFF-20261011] **IT-1…IT-7 与全链由 Luna 签收，`lunaStamp=true`。** 签收人 Grok Bot 测试项目练手（负责人指定，接替原 Luna）。rv3 合并 `7a6ac0a2`，残留为零。见 `docs/takeover/LUNA-SIGNOFF.md` 与 `evidence/redesign/2026-10-11/luna-signoff-7a6ac0a2/summary.json`。
 
 - [RV3-20261011] **装饰溢出、证据限额、hash 门、MinIO 只读、IT-5 外层口径和权威卡墙已关闭。**

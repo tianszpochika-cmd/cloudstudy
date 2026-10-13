@@ -5,7 +5,7 @@ import { useExperienceText } from '../platform/experience-ui'
 const t = useExperienceText()
 const showPassword = ref(false)
 import AuthLayout from '../layouts/AuthLayout.vue'
-import { computed, ref } from 'vue'
+import { computed, nextTick, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { authT } from '../auth/i18n'
 import { learnerAuthFailureCopy, learnerAuthFailureMarker, learnerLoginArrival } from '../auth/auth-failure-copy'
@@ -19,6 +19,19 @@ const password = ref('')
 const submitting = ref(false)
 const loginError = ref<string | null>(null)
 const failureKind = ref<'consent_withdrawn' | 'eligibility_insufficient' | 'credentials' | 'other' | null>(null)
+const identifierInput = ref<HTMLInputElement | null>(null)
+const passwordInput = ref<HTMLInputElement | null>(null)
+const validationAttempted = ref(false)
+const requiredError = ref(false)
+const identifierMissing = computed(() => validationAttempted.value && !identifier.value.trim())
+const passwordMissing = computed(() => validationAttempted.value && !password.value)
+watch([identifier, password], () => {
+  if (requiredError.value && identifier.value.trim() && password.value) {
+    requiredError.value = false
+    loginError.value = null
+    failureKind.value = null
+  }
+})
 const redirectTarget = computed(() => learnerReturnTo(route.query.redirect ?? session.peekReturnTo()))
 const arrival = computed(() => learnerLoginArrival(route.query.reason))
 const noticeKind = computed(() => {
@@ -47,9 +60,15 @@ async function submit(): Promise<void> {
   if (submitting.value) return
   loginError.value = null
   failureKind.value = null
+  requiredError.value = false
+  validationAttempted.value = true
   if (!identifier.value.trim() || !password.value) {
     failureKind.value = 'other'
     loginError.value = authT('login.required')
+    requiredError.value = true
+    await nextTick()
+    const firstInvalidInput = identifierMissing.value ? identifierInput.value : passwordInput.value
+    firstInvalidInput?.focus()
     return
   }
   submitting.value = true
@@ -85,32 +104,42 @@ async function submit(): Promise<void> {
       </div>
       <h1 id="login-title" class="v2-auth-title">{{ authT('login.title') }}</h1>
       <p class="lead v2-auth-lead">{{ authT('login.description') }}</p>
-      <form class="login-form v2-auth-fields" novalidate @submit.prevent="submit">
+      <form class="login-form v2-auth-fields" novalidate :aria-busy="submitting" @submit.prevent="submit">
         <label class="field v2-field">
           <span>{{ authT('login.identifier') }}</span>
           <input
+            ref="identifierInput"
             v-model="identifier"
             name="identifier"
             type="text"
             autocomplete="username"
-            inputmode="email"
+            autocapitalize="none"
+            :spellcheck="false"
+            required
+            :aria-invalid="identifierMissing || undefined"
+            :aria-describedby="identifierMissing ? 'login-status' : undefined"
             :placeholder="authT('login.identifierPlaceholder')"
             :disabled="submitting"
           >
         </label>
-        <label class="field v2-field">
-          <span>{{ authT('login.password') }}</span>
+        <div class="field v2-field">
+          <label for="login-password">{{ authT('login.password') }}</label>
           <div class="password-field"><input
+            id="login-password"
+            ref="passwordInput"
             v-model="password"
             name="password"
             :type="showPassword ? 'text' : 'password'"
             autocomplete="current-password"
+            required
+            :aria-invalid="passwordMissing || undefined"
+            :aria-describedby="passwordMissing ? 'login-status' : undefined"
             :placeholder="authT('login.passwordPlaceholder')"
             :disabled="submitting"
-          ><button type="button" class="icon-button" :aria-label="t(showPassword ? 'hidePassword' : 'showPassword')" :aria-pressed="showPassword" @click="showPassword = !showPassword"><AppIcon name="eye" :size="19" /></button></div>
-        </label>
+          ><button type="button" class="icon-button" :disabled="submitting" aria-controls="login-password" :aria-label="t(showPassword ? 'hidePassword' : 'showPassword')" :aria-pressed="showPassword" @click="showPassword = !showPassword"><AppIcon name="eye" :size="19" /></button></div>
+        </div>
         <div class="auth-links v2-auth-links"><RouterLink :to="{ name: 'register', query: { redirect: redirectTarget } }">{{ t('createAccount') }}</RouterLink><RouterLink v-if="!noticeKind" :to="{ name: 'reset-password', query: { redirect: redirectTarget } }">{{ t('forgot') }}</RouterLink></div>
-        <div v-if="loginError || submitting || noticeKind" class="login-status v2-auth-status" :class="{ 'login-status--error': loginError && !noticeKind }" :role="loginError && !noticeKind ? 'alert' : 'status'" aria-live="polite" :aria-busy="submitting">
+        <div v-if="loginError || submitting || noticeKind" id="login-status" class="login-status v2-auth-status" :class="{ 'login-status--error': loginError && !noticeKind }" :role="loginError && !noticeKind ? 'alert' : 'status'" :aria-busy="submitting">
           <span class="login-status__mark" aria-hidden="true">{{ loginError && !noticeKind ? '!' : '✦' }}</span>
           <div>
             <strong>{{ statusTitle }}</strong>

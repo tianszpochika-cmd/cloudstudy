@@ -80,3 +80,31 @@
   --v2-shadow-pop: 0 18px 60px #00000066;
   --v2-grad: linear-gradient(120deg, #46317d, #6549a1);
 }
+
+/* Use the shared high-contrast palette for the v2 compatibility aliases. */
+:root[data-theme="high-contrast"] {
+  color-scheme: dark;
+  --v2-bg: var(--yx-color-surface-page);
+  --v2-card: var(--yx-color-surface-card);
+  --v2-surface: var(--yx-color-surface-muted);
+  --v2-ink: var(--yx-color-text-primary);
+  --v2-mut: var(--yx-color-text-secondary);
+  --v2-brand: var(--yx-color-brand-primary);
+  --v2-brand2: var(--yx-color-brand-primary-hover);
+  --v2-soft: var(--yx-color-brand-primary-soft);
+  --v2-line: var(--yx-color-border);
+  --v2-ok: var(--yx-color-success);
+  --v2-ok-soft: var(--yx-color-success-soft);
+  --v2-bad: var(--yx-color-danger);
+  --v2-bad-soft: var(--yx-color-danger-soft);
+  --v2-warn: var(--yx-color-warning);
+  --v2-warn-soft: var(--yx-color-warning-soft);
+  --v2-info: var(--yx-color-focus);
+  --v2-inverse: var(--yx-color-surface-card);
+  --v2-side: var(--yx-color-surface-card);
+  --v2-side-ink: var(--yx-color-text-primary);
+  --v2-side-muted: var(--yx-color-text-secondary);
+  --v2-shadow: var(--yx-shadow-card);
+  --v2-shadow-pop: var(--yx-shadow-card);
+  --v2-grad: var(--yx-hero-gradient);
+}
