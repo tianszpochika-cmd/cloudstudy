@@ -117,3 +117,43 @@ onMounted(() => { void load() })
 .actions { display: flex; gap: 12px; }
 .button--ghost { border: 1px solid var(--yx-color-border); background: transparent; color: var(--yx-color-brand-primary); }
 </style>
+
+<style>
+/* Messages v2 页面级样式（只做样式）：对齐 webDemo 普通内容页卡片风格（主列 + 侧栏 / 卡片 / 标签）。
+ * 选择器全部以 .v2-page--messages 开头；颜色只用 --v2-* tokens，不写死色值以适配暗色。 */
+.v2-page--messages{background:var(--v2-bg);color:var(--v2-ink);font-family:var(--v2-font);display:grid;gap:var(--v2-space-5);align-items:start}
+.v2-page--messages .v2-messages-body{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:var(--v2-space-5);align-items:start;min-width:0}
+.v2-page--messages .v2-messages-main{display:grid;gap:var(--v2-space-5);min-width:0;align-content:start}
+.v2-page--messages .v2-messages-card{background:var(--v2-card);border:1px solid var(--v2-line);border-radius:var(--v2-radius-lg);box-shadow:var(--v2-shadow);padding:var(--v2-space-6);min-width:0}
+.v2-page--messages .v2-messages-rail{background:var(--v2-card);border:1px solid var(--v2-line);border-radius:var(--v2-radius-lg);box-shadow:var(--v2-shadow);padding:var(--v2-space-6);min-width:0}
+.v2-page--messages .v2-messages-card{display:grid;gap:var(--v2-space-4);align-content:start}
+.v2-page--messages .yx-section-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:var(--v2-space-4)}
+.v2-page--messages .yx-section-heading>div{display:grid;gap:var(--v2-space-1);min-width:0}
+.v2-page--messages .yx-kicker{margin:0;color:var(--v2-brand);font-size:var(--v2-text-xs);font-weight:800;letter-spacing:.12em}
+.v2-page--messages .v2-messages-card h3{margin:0;font-size:var(--v2-text-lg);color:var(--v2-ink);line-height:1.4}
+.v2-page--messages .yx-fact-tag{display:inline-flex;align-items:center;width:fit-content;max-width:100%;padding:var(--v2-space-1) var(--v2-space-3);border-radius:var(--v2-radius-pill);background:var(--v2-soft);color:var(--v2-mut);font-size:var(--v2-text-xs);line-height:1.6}
+.v2-page--messages .yx-msg-list{display:grid;gap:var(--v2-space-3);margin:0;padding:0;list-style:none}
+.v2-page--messages .yx-msg-list li{display:grid;gap:var(--v2-space-2);padding:var(--v2-space-4);background:var(--v2-surface);border:1px solid var(--v2-line);border-radius:var(--v2-radius-md);min-width:0}
+.v2-page--messages .yx-msg-list__unread{border-color:var(--v2-brand2)}
+.v2-page--messages .yx-msg-list li>div{display:flex;align-items:center;justify-content:space-between;gap:var(--v2-space-3)}
+.v2-page--messages .yx-msg-list strong{color:var(--v2-ink);font-size:var(--v2-text-sm);font-weight:700}
+.v2-page--messages .yx-msg-list .yx-fact-tag{background:var(--v2-card)}
+.v2-page--messages .yx-pill{display:inline-flex;align-items:center;padding:var(--v2-space-1) var(--v2-space-3);border-radius:var(--v2-radius-pill);font-size:var(--v2-text-xs);font-weight:700;border:1px solid var(--v2-line)}
+.v2-page--messages .yx-pill--muted{background:var(--v2-surface);color:var(--v2-mut)}
+.v2-page--messages .yx-pill--warning{background:var(--v2-warn-soft);color:var(--v2-warn)}
+.v2-page--messages .yx-msg-list p{margin:0;color:var(--v2-mut);font-size:var(--v2-text-sm);line-height:1.6}
+.v2-page--messages .button{min-height:40px;padding:0 var(--v2-space-4);border:1px solid var(--v2-brand);border-radius:var(--v2-radius-sm);background:var(--v2-brand);color:var(--v2-inverse);font-weight:750;cursor:pointer;justify-self:start;transition:background-color var(--v2-motion-fast)}
+.v2-page--messages .button--ghost{background:var(--v2-card);color:var(--v2-brand)}
+.v2-page--messages .button:hover:not(:disabled){background:var(--v2-brand2);border-color:var(--v2-brand2);color:var(--v2-inverse)}
+.v2-page--messages .button:disabled{opacity:.5;cursor:not-allowed}
+.v2-page--messages .settings-link{width:fit-content;color:var(--v2-brand);font-weight:700;text-decoration:none;font-size:var(--v2-text-sm)}
+.v2-page--messages .settings-link:hover{color:var(--v2-brand2);text-decoration:underline}
+.v2-page--messages .actions{display:flex;gap:var(--v2-space-3);flex-wrap:wrap}
+.v2-page--messages .v2-messages-rail{position:sticky;top:var(--v2-space-6);display:grid;align-content:start;gap:var(--v2-space-3)}
+.v2-page--messages .v2-messages-rail h2{margin:0;font-size:var(--v2-text-lg);color:var(--v2-ink)}
+.v2-page--messages .v2-messages-rail ol{margin:0;padding-left:var(--v2-space-5);display:grid;gap:var(--v2-space-2);color:var(--v2-mut);font-size:var(--v2-text-sm);line-height:1.7}
+.v2-page--messages .v2-sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+.v2-page--messages button:focus-visible,.v2-page--messages a:focus-visible{outline:2px solid var(--v2-brand);outline-offset:2px}
+@media(max-width:1190px){.v2-page--messages .v2-messages-body{grid-template-columns:minmax(0,1fr) 250px}}
+@media(max-width:900px){.v2-page--messages .v2-messages-body{grid-template-columns:1fr}.v2-page--messages .v2-messages-rail{position:static}}
+</style>
