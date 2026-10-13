@@ -2,7 +2,7 @@
 
 日期：2026-10-14（北京时间）。正式入口：`http://127.0.0.1:18183/#/pages/login/login`。
 
-作者结论：`PASS_UI_SCOPED_NOT_BUSINESS_ACCEPTANCE`；独立复审结论见 [independent-review.md](independent-review.md)。当前签收范围为 Mobile H5 登录页的排版、响应式、主题、表单语义及受控认证失败交互。提交、推送与远程收据由主 Agent 单独记录，本报告不宣称已推送或实时部署。
+作者结论：`PASS_UI_SCOPED_NOT_BUSINESS_ACCEPTANCE`；独立复审结论见 [independent-review.md](independent-review.md)。当前签收范围为 Mobile H5 登录页的排版、响应式、主题、表单语义及受控认证失败交互。提交、推送与远程收据由主 Agent 记录如下，不宣称实时部署。
 
 主Agent推送收据：源码、证据与本页记录提交 `c6208c0a00a4e6ea80b4479f8e20ab6bea4aa389` 已推送 `origin/dev-redesign`，随即 `ls-remote` 返回同一SHA。本收据不表示服务部署或真实后台业务重签。
 

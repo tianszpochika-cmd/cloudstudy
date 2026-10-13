@@ -1,7 +1,8 @@
 # V2 UI 逐页审查索引 — 2026-10-13
 
 > 分支：`dev-redesign`。本轮拉取后的源码观察基线：`4990dd29`；R1 原有签收基线：`7a6ac0a2`。时间口径：Asia/Shanghai。
-> 用户已明确改为全部正式页面简约重设计。LW-001/LW-002/LW-003分别推送`182e106b`/`60858fbc`/`5cd40e35`且远程SHA一致。2026-10-14额度已恢复后续做，MB-001推送`c6208c0a`且远程SHA一致；MB-002在审，其余PENDING。见[续做交接](ui-audit-20261013/PAUSE-HANDOFF.md)。旧70c2623f仅为前轮缺陷修复。
+> 用户已明确改为全部正式页面简约重设计。LW-001/LW-002/LW-003分别推送`182e106b`/`60858fbc`/`5cd40e35`且远程SHA一致。2026-10-14额度已恢复后续做，MB-001推送`c6208c0a`后发现快速编辑/提交的uni模型节流缺陷，已重新补审；MB-002在审，其余PENDING。见[续做交接](ui-audit-20261013/PAUSE-HANDOFF.md)。旧70c2623f仅为前轮缺陷修复。
+> **2026-10-14 04:08额度暂停**：首次90%停工，根回读92%；08:22复查额度后续做。MB-001补修26矩阵/即时输入已由作者通过，MB-002作者34矩阵通过，最终独立复签与逐页推送尚未收口，见[准确断点](ui-audit-20261013/PAUSE-20261014-0408.md)。
 
 ## 1. 进度与证据边界
 
@@ -130,7 +131,7 @@
 
 | 审查编号 | 真实路由 | 页面源文件 | 本页需展开的场景 | 当前状态 | 证据 / 提交 / 远程收据 |
 |---|---|---|---|---|---|
-| MB-001 | `#/pages/login/login` | [apps/mobile/src/pages/login/login.vue](../../apps/mobile/src/pages/login/login.vue) | 登录 | PUSHED_SCOPED | [报告](ui-audit-20261013/mobile-login/report.md)、[独立复审](ui-audit-20261013/mobile-login/independent-review.md)；c6208c0a远程SHA一致；旧失败原件保留 |
+| MB-001 | `#/pages/login/login` | [apps/mobile/src/pages/login/login.vue](../../apps/mobile/src/pages/login/login.vue) | 登录 | IN_REVIEW | [原范围报告](ui-audit-20261013/mobile-login/report.md)，c6208c0a远程SHA一致；后续复现快速清空密码仍提交旧值，跨端事件即时值补修/复验中；旧证据保留 |
 | MB-002 | `#/pages/register/register` | [apps/mobile/src/pages/register/register.vue](../../apps/mobile/src/pages/register/register.vue) | 注册 | IN_REVIEW | 正式页面全面重排；原生输入/确认错误/焦点/busy与返回专项 |
 | MB-003 | `#/pages/reset-password/reset-password` | [apps/mobile/src/pages/reset-password/reset-password.vue](../../apps/mobile/src/pages/reset-password/reset-password.vue) | 请求/确认两步、完成态 | PENDING | — |
 | MB-004 | `#/pages/onboarding/onboarding` | [apps/mobile/src/pages/onboarding/onboarding.vue](../../apps/mobile/src/pages/onboarding/onboarding.vue) | 成人门、同意、目标、定级四幕 | PENDING | — |
