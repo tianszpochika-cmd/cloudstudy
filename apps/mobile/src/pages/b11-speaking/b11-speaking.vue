@@ -95,7 +95,7 @@ async function retake(): Promise<void> { const scope = accountScope(); if (!isCu
 async function register(): Promise<void> { if (!store.recordingDraft) { store.setRecordingMessage('请先录音。'); return }; await store.registerRecordingDraft() }
 function rate(value: B11SelfRating): void { void store.saveSelfRating(value) }
 function completeShadowing(): void { if (!store.recordingDraft?.sourceSegmentId) return; void store.completeShadowing(store.recordingDraft.sourceSegmentId) }
-onMounted(() => { void load() })
+onMounted(() => { /* closed practice: no live load */ undefined })
 onUnmounted(() => { audio.value?.destroy() })
 </script>
 
@@ -103,7 +103,7 @@ onUnmounted(() => { audio.value?.destroy() })
   <view class="yx-page b11-page v2-b11speak-page" :class="themeClass" :style="experienceStyle" :data-motion="store.motionDisabled || store.performanceLevel === 'Performance' ? 'off' : experienceMotion">
     <MobilePageHeader page="b11-speaking" />
     <view class="v2-b11speak-body">
-    <view class="yx-card card v2-b11speak-card" data-closed-practice role="status"><view class="eyebrow v2-b11speak-eyebrow"><AppIcon name="lock" :size="14" /><text>口语</text></view><text class="v2-b11speak-title v2-b11speak-h2">跟读功能暂未开放，可以先做其他练习。</text><button type="button" class="btn v2-b11speak-btn" data-closed-back @click="getUniRuntime().navigateTo({ url: '/pages/today/today' })"><AppIcon name="back" :size="14" />回到可用学习</button></view>
+    <view class="yx-card card v2-b11speak-card" data-closed-practice role="status"><view class="eyebrow v2-b11speak-eyebrow"><AppIcon name="lock" :size="14" /><text>口语</text></view><text class="v2-b11speak-title v2-b11speak-h2">跟读练习<text class="yx-soon-badge" data-coming-soon>即将开放</text></text><text class="yx-soon-reason" data-closed-reason>跟读需要录音上传和发音评分服务，目前尚未接入，无法给出真实评分。</text><button type="button" class="btn v2-b11speak-btn" data-closed-back @click="getUniRuntime().navigateTo({ url: '/pages/today/today' })"><AppIcon name="back" :size="14" />回到可用学习</button></view>
 
     <B11StatusPanel class="v2-b11speak-status" :status="store.phoneticsStatus === 'error' || store.recordingStatus === 'error' ? 'error' : store.recordingStatus === 'offline' ? 'offline' : store.phoneticsStatus" :message="store.recordingMessage ?? store.phoneticsMessage" :queue-count="store.queueCount" :performance-level="store.performanceLevel" :motion-disabled="store.motionDisabled" @retry="load" @sync="sync" @performance="setPerformance" @motion="setMotion" />
 

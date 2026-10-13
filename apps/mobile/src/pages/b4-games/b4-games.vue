@@ -36,9 +36,9 @@ function gameStatusLabel(value: string): string { return ({ READY: '准备中', 
           <view v-for="game in b4.games" :key="game.gameCode" class="game-card game-card--disabled" :class="'card v2-games-card v2-games-row'">
             <text class="game-icon v2-games-icon">✦</text>
             <text class="game-title v2-games-name v2-games-h2">{{ gameLabel(game.gameCode) }}</text>
-            <text class="muted v2-games-d v2-games-tag">{{ game.enabled ? '玩法准备中' : '暂未开放' }}</text>
+            <text class="yx-soon-badge v2-games-tag" data-coming-soon>即将开放</text>
             <text v-if="game.maxMinutes" class="muted v2-games-d">每次最多 {{ game.maxMinutes }} 分钟</text>
-            <button tabindex="0" role="button" class="yx-button btn v2-games-btn v2-games-opt" type="button" disabled>暂未开放</button>
+            <text class="yx-soon-reason" data-closed-reason>{{ game.enabled ? '服务端已登记此玩法，但游戏关卡还在开发，暂时只能查看目录。' : '此玩法尚未上线，开放后会出现在这里。' }}</text>
           </view>
         </view>
         <text v-else class="empty-copy v2-games-fb v2-games-d">暂无可用游戏。</text>

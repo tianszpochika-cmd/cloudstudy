@@ -424,7 +424,7 @@ async function selectContentLocale(index: number): Promise<void> {
         <text v-if="localeError" class="error fb v2-settings-fb v2-settings-err" role="alert">{{ localeError }}</text>
         <text class="setting-note d v2-settings-d">恢复默认仅重置显示设置和画质；保存后同步账户。</text>
         <button tabindex="0" role="button" class="setting-option reset-defaults opt btn v2-settings-opt v2-settings-btn" :disabled="saving || localeSaving" @click="restoreDisplayDefaults">恢复显示默认</button>
-        <button tabindex="0" role="button" class="yx-button btn opt v2-settings-btn v2-settings-opt v2-settings-submit" :loading="saving" :disabled="saving || localeSaving || !preferenceDraftDirty" @click="save"><AppIcon name="check" :size="14" />{{ saving ? '保存中…' : '保存主题、对比度与动效' }}</button>
+        <button tabindex="0" role="button" class="yx-button btn opt v2-settings-btn v2-settings-opt v2-settings-submit" :loading="saving" :disabled="saving || localeSaving || !preferenceDraftDirty" @click="save"><AppIcon name="check" :size="14" />{{ saving ? '保存中…' : '保存主题、对比度与动效' }}</button><text v-if="!saving && !localeSaving && !preferenceDraftDirty" class="yx-soon-reason" data-disabled-reason>修改上面的主题、对比度或动效后即可保存。</text>
         <text v-if="saved" class="success fb v2-settings-fb v2-settings-ok" role="status">主题、对比度与动效已同步到账户。</text>
         <text v-if="saveError" class="error fb v2-settings-fb v2-settings-err" role="alert">{{ saveError }}</text>
         <view v-if="store.accountStatus === 'loading'" class="preference-state fb v2-settings-fb" role="status"><AppIcon name="refresh" :size="14" />正在读取账户偏好…</view>

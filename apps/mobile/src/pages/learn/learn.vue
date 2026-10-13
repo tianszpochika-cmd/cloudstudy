@@ -45,6 +45,26 @@ function completeReview(item: Parameters<typeof learning.complete>[0]): void {
   if (!item.completable || learning.busyItemId === item.queueItemId) return
   void learning.complete(item)
 }
+// A review is only counted after a server-verified answer, so non-completable rows
+// route to where that answer is produced instead of showing a dead button.
+function reviewActionLabel(item: MobileB18ReviewQueueItem): string {
+  if (item.completable) return '开始复习'
+  return item.source === 'NEW' ? '去学习' : '去练习'
+}
+function reviewReason(item: MobileB18ReviewQueueItem): string {
+  return item.source === 'NEW'
+    ? '新内容需先学一遍，学完后会自动进入复习。'
+    : '复习需要一次可核验的作答：完成练习后自动计入。'
+}
+function reviewAction(item: MobileB18ReviewQueueItem): void {
+  if (item.completable) { completeReview(item); return }
+  openUniPage(item.source === 'NEW' ? '/pages/b2-vocabulary/b2-vocabulary' : '/pages/practice/practice')
+}
+const historySummary = computed(() => {
+  const done = learning.history.filter((row) => row.disposition !== 'DEFERRED').length
+  const deferred = learning.history.length - done
+  return deferred ? `最近已完成 ${done} 项，延期 ${deferred} 项` : `最近已完成 ${done} 项复习`
+})
 function reviewLabel(item: MobileB18ReviewQueueItem): string {
   const source = { NEW: '新内容', REVIEW: '复习', MISTAKE: '错题', RETRY: '重练', UNKNOWN: '复习项' }[item.source]
   const stage = ({ NEW: '初学', LEARNING: '巩固中', REVIEW: '待复习', MASTERED: '已掌握' } as Record<string, string>)[item.state]
@@ -141,7 +161,7 @@ onShow(async () => { await session.restore(); if (!session.isAuthenticated) { ge
         <text class="d v2-learn-desc v2-learn-fb v2-learn-internal" data-stage-projection>{{ learning.projectionVersion || STAGE_PROJECTION }}</text>
         <text v-if="learning.queue[0]" class="d v2-learn-desc" data-stage>{{ stageLabel(learning.queue[0].state) }}</text>
         <text v-if="learning.queue.length === 0 && learning.state !== 'loading'" class="d v2-learn-desc v2-learn-fb" data-review-empty>{{ learning.emptyCopy || reviewEmpty(learning.state === 'error' || learning.state === 'offline', true, false).copy }}</text>
-        <text v-for="row in learning.history" :key="`${row.disposition}-${row.itemId}`" class="d v2-learn-desc v2-learn-row" data-review-history>{{ row.disposition === 'DEFERRED' ? '延期' : '已完成' }}</text>
+        <text v-if="learning.history.length" class="d v2-learn-desc" data-review-history>{{ historySummary }}</text>
         <text v-if="reviewFailureCopy(learning.lastError)" class="d v2-learn-desc v2-learn-fb" data-review-illegal>{{ reviewFailureCopy(learning.lastError) }}</text>
         <template v-else-if="reviewNotice">
           <text class="review-error d v2-learn-desc v2-learn-fb" role="alert">{{ reviewFailureCopy(learning.lastError) || reviewNotice }}</text>
@@ -149,7 +169,8 @@ onShow(async () => { await session.restore(); if (!session.isAuthenticated) { ge
         </template>
         <view v-for="item in reviewRows" :key="item.queueItemId" class="review-row v2-learn-row v2-learn-item">
           <view class="review-row__copy v2-learn-row__copy"><AppIcon name="clock" /><text class="v2-learn-stem">{{ reviewLabel(item) }}</text></view>
-          <button tabindex="0" role="button" class="review-button btn opt v2-learn-btn v2-learn-opt" type="button" :disabled="!item.completable || learning.busyItemId === item.queueItemId" :aria-disabled="!item.completable || learning.busyItemId === item.queueItemId" @click="completeReview(item)">{{ item.completable ? '开始复习' : '暂不可操作' }}</button>
+          <button tabindex="0" role="button" class="review-button btn opt v2-learn-btn v2-learn-opt" type="button" :disabled="learning.busyItemId === item.queueItemId" :aria-disabled="learning.busyItemId === item.queueItemId" @click="reviewAction(item)">{{ reviewActionLabel(item) }}</button>
+          <text v-if="!item.completable" class="d v2-learn-desc review-row__reason" data-review-reason>{{ reviewReason(item) }}</text>
         </view>
       </view>
     </view>

@@ -84,5 +84,11 @@ onBeforeUnmount(() => {
 </style>
 
 <style lang="scss">
+/* Consistent "coming soon" treatment: a visible badge plus a concrete reason.
+   A closed practice card replaces the page body, so the dead player/status UI after it is hidden. */
+.yx-soon-badge{display:inline-block;margin-left:12rpx;padding:2rpx 14rpx;border-radius:999rpx;background:var(--yx-warning-soft, rgba(245,158,11,.16));color:var(--yx-warning, #b45309);font-size:22rpx;font-weight:700;vertical-align:middle}
+.yx-soon-reason{display:block;margin-top:8rpx;color:var(--yx-text-secondary);font-size:24rpx;line-height:1.55}
+[data-closed-practice] ~ *{display:none !important}
+
 @import "./theme/v2-tokens.scss";
 </style>

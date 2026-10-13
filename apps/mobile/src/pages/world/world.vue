@@ -56,12 +56,12 @@ function choosePerformance(level: (typeof B4_PERFORMANCE_LEVELS)[number]): void 
 
     <view class="b4-metrics v2-world-stats v2-world-list">
       <view class="b4-metric card v2-world-card v2-world-stat v2-world-row"><text class="eyebrow v2-world-eyebrow">XP</text><text class="b4-metric__value v2-world-num v2-world-title">{{ b4.profile?.xp ?? '—' }}</text><text class="d v2-world-d">{{ b4.profile ? `Lv.${b4.profile.level} · ${b4.profile.rank}` : '暂未获取成长记录' }}</text></view>
-      <view class="b4-metric card v2-world-card v2-world-stat v2-world-row"><text class="eyebrow v2-world-eyebrow">STAR COIN</text><text class="b4-metric__value v2-world-num v2-world-title">{{ b4.profile?.coins ?? '—' }}</text><text class="d v2-world-d">可用星币</text></view>
+      <view class="b4-metric card v2-world-card v2-world-stat v2-world-row"><text class="eyebrow v2-world-eyebrow">星币</text><text class="b4-metric__value v2-world-num v2-world-title">{{ b4.profile?.coins ?? '—' }}</text><text class="d v2-world-d">可用星币</text></view>
       <view class="b4-metric card v2-world-card v2-world-stat v2-world-row"><text class="eyebrow v2-world-eyebrow">连续学习</text><text class="b4-metric__value v2-world-num v2-world-title">{{ b4.streak ? `${b4.streak.currentStreak} 天` : '—' }}</text><text class="d v2-world-d">{{ b4.streak ? stateLabel(b4.streak.status) : '暂无记录' }}</text></view>
     </view>
 
     <view class="yx-card galaxy-card card v2-world-card">
-      <view class="card-heading v2-world-head"><view class="v2-world-titles"><text class="card-kicker eyebrow v2-world-eyebrow">GALAXY MAP</text><view class="v2-world-h2"><AppIcon name="world" :size="20" /><text class="card-title v2-world-title">成长世界</text></view></view><text class="fact-tag tag v2-world-tag">成长进度</text></view>
+      <view class="card-heading v2-world-head"><view class="v2-world-titles"><text class="card-kicker eyebrow v2-world-eyebrow">星系地图</text><view class="v2-world-h2"><AppIcon name="world" :size="20" /><text class="card-title v2-world-title">成长世界</text></view></view><text class="fact-tag tag v2-world-tag">成长进度</text></view>
       <text class="muted d v2-world-d">每次练习，都为你的成长地图点亮一点星光。</text>
       <view class="galaxy-map v2-world-list"><view v-for="node in galaxyNodes" :key="node.code" class="galaxy-node card v2-world-row v2-world-node"><view class="galaxy-node__dot v2-world-dot"><AppIcon name="spark" :size="16" />✦</view><text class="v2-world-row-title">{{ node.title }}</text><text class="muted d v2-world-d">{{ node.description }}</text><text class="pending v2-world-tag v2-world-pending">{{ node.hasData ? `${stateLabel(node.status)} · ${node.progress}/${node.requiredProgress}（${node.progressPercent}%）` : '进度待确认' }}</text></view></view>
       <text v-if="b4.galaxy" class="muted d v2-world-d">总成长 XP：{{ b4.galaxy.totalXp }}</text>
@@ -70,7 +70,7 @@ function choosePerformance(level: (typeof B4_PERFORMANCE_LEVELS)[number]): void 
     </view>
 
     <view class="yx-card streak-card card v2-world-card">
-      <view class="card-heading v2-world-head"><view class="v2-world-titles"><text class="card-kicker eyebrow v2-world-eyebrow">STREAK CALENDAR</text><view class="v2-world-h2"><AppIcon name="calendar" :size="20" /><text class="card-title v2-world-title">连续学习日历</text></view></view><text class="streak-fire v2-world-dot">♨</text></view>
+      <view class="card-heading v2-world-head"><view class="v2-world-titles"><text class="card-kicker eyebrow v2-world-eyebrow">连续学习日历</text><view class="v2-world-h2"><AppIcon name="calendar" :size="20" /><text class="card-title v2-world-title">连续学习日历</text></view></view><text class="streak-fire v2-world-dot">♨</text></view>
       <template v-if="b4.streak"><text class="streak-number v2-world-num">{{ b4.streak.currentStreak }}<text> 天</text></text><text class="muted d v2-world-d">上次有效日：{{ b4.streak.lastValidDate ?? '暂无记录' }} · {{ b4.streak.timeZone }} · {{ stateLabel(b4.streak.status) }}</text><button v-if="['AT_RISK', 'BROKEN', 'FROZEN'].includes(b4.streak.status)" tabindex="0" role="button" class="yx-button yx-button--secondary btn v2-world-btn v2-world-opt" type="button" @click="b4.rescueStreak('CHALLENGE')">请求破冰挑战<AppIcon name="chev" :size="14" /></button></template>
       <text v-else class="empty-copy v2-world-empty v2-world-d">还没有连续学习记录，从今天开始积累吧。</text>
     </view>

@@ -88,7 +88,7 @@ function setA(): void { if (!accountScope()) return; store.setABPoint('A'); page
 function setB(): void { if (!accountScope()) return; store.setABPoint('B'); pageMessage.value = `B 点：${Math.round(store.mediaPositionMs / 1000)}s` }
 function selectClip(clipId: string): void { if (!accountScope()) return; store.selectLanguageClip(clipId); pageMessage.value = '已切换 Language Clip；播放地址仍需权益清单确认。' }
 
-onMounted(() => { void load() })
+onMounted(() => { /* closed practice: no live load */ undefined })
 onUnmounted(stopPlayback)
 </script>
 
@@ -96,7 +96,7 @@ onUnmounted(stopPlayback)
   <view class="yx-page b11-page v2-b11listen-page" :class="themeClass" :style="experienceStyle" :data-motion="store.motionDisabled || store.performanceLevel === 'Performance' ? 'off' : experienceMotion">
     <MobilePageHeader page="b11-listening" />
     <view class="v2-b11listen-body">
-    <view class="yx-card card v2-b11listen-card" data-closed-practice role="status"><view class="eyebrow v2-b11listen-eyebrow"><AppIcon name="lock" :size="14" /><text>听力</text></view><text class="v2-b11listen-title v2-b11listen-h2">听力功能暂未开放，可以先做其他练习。</text><button type="button" class="btn v2-b11listen-btn" data-closed-back @click="getUniRuntime().navigateTo({ url: '/pages/today/today' })"><AppIcon name="back" :size="14" />回到可用学习</button></view>
+    <view class="yx-card card v2-b11listen-card" data-closed-practice role="status"><view class="eyebrow v2-b11listen-eyebrow"><AppIcon name="lock" :size="14" /><text>听力</text></view><text class="v2-b11listen-title v2-b11listen-h2">听力练习<text class="yx-soon-badge" data-coming-soon>即将开放</text></text><text class="yx-soon-reason" data-closed-reason>音频素材尚未上传到媒体库，播放地址无法签发；素材上线后即可在这里播放并听写。</text><button type="button" class="btn v2-b11listen-btn" data-closed-back @click="getUniRuntime().navigateTo({ url: '/pages/today/today' })"><AppIcon name="back" :size="14" />回到可用学习</button></view>
 
     <B11StatusPanel class="v2-b11listen-status" :status="store.listeningStatus" :message="statusMessage" :queue-count="store.queueCount" :performance-level="store.performanceLevel" :motion-disabled="store.motionDisabled" @retry="load" @sync="sync" @performance="setPerformance" @motion="toggleMotion" />
 

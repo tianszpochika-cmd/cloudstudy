@@ -24,7 +24,7 @@ async function submit(): Promise<void> { if (!sessionId.value || !segment.value 
 function playAudio(): void { if (!audioSource.value) { message.value = '当前内容没有授权播放地址；未伪造音频播放。'; return } audio.value?.destroy(); const context = getUniRuntime().createInnerAudioContext?.(); if (!context) { message.value = '当前平台没有音频适配器；未伪造音频播放。'; return } audio.value = context; enableUniAudioPitchPreservation(context, () => { message.value = '当前平台未声明音高保持能力；速度控制仍可用，已记录降级。' }); context.src = audioSource.value; context.playbackRate = playbackRate.value; context.play() }
 function pauseAudio(): void { audio.value?.pause() }
 function changeRate(): void { if (audio.value) audio.value.playbackRate = playbackRate.value }
-onMounted(async () => { await session.restore(); if (!session.isAuthenticated) { getUniRuntime().navigateTo({ url: '/pages/login/login' }); return } void load() })
+onMounted(async () => { await session.restore(); if (!session.isAuthenticated) { getUniRuntime().navigateTo({ url: '/pages/login/login' }); return } /* closed practice: no live load */ undefined })
 onUnmounted(() => { audio.value?.destroy(); unsubscribe(); engine.dispose() })
 </script>
 
@@ -32,7 +32,7 @@ onUnmounted(() => { audio.value?.destroy(); unsubscribe(); engine.dispose() })
   <view class="yx-page" :style="experienceStyle" :data-motion="experienceMotion" :class="themeClass">
     <MobilePageHeader page="b3-listening" />
     <view class="v2-b3listen-body">
-      <view class="yx-card card v2-b3listen-card" data-closed-practice role="status"><view class="eyebrow v2-b3listen-eyebrow"><AppIcon name="lock" :size="14" /><text>听力</text></view><text class="v2-b3listen-title v2-b3listen-h2">听力功能暂未开放，可以先做其他练习。</text><button type="button" class="btn v2-b3listen-btn" data-closed-back @click="getUniRuntime().navigateTo({ url: '/pages/today/today' })"><AppIcon name="back" :size="14" />回到可用学习</button></view>
+      <view class="yx-card card v2-b3listen-card" data-closed-practice role="status"><view class="eyebrow v2-b3listen-eyebrow"><AppIcon name="lock" :size="14" /><text>听力</text></view><text class="v2-b3listen-title v2-b3listen-h2">听力练习<text class="yx-soon-badge" data-coming-soon>即将开放</text></text><text class="yx-soon-reason" data-closed-reason>音频素材尚未上传到媒体库，播放地址无法签发；素材上线后即可在这里播放并听写。</text><button type="button" class="btn v2-b3listen-btn" data-closed-back @click="getUniRuntime().navigateTo({ url: '/pages/today/today' })"><AppIcon name="back" :size="14" />回到可用学习</button></view>
 
       <B2StatusPanel class="v2-b3listen-status" :status="status" :message="message" :performance-level="performanceLevel" @retry="load" @performance="setPerformance" @sync="() => undefined" />
       <view v-if="material && segment" class="yx-card listening-card card v2-b3listen-card">
