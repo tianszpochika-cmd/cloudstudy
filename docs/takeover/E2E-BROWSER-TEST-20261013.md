@@ -167,3 +167,17 @@
 - BUG-S2：学员首页的引导只看 sessionStorage 标记，不看定级是否已完成。新会话里，即使定级已 COMPLETED，仍会显示「剩余步骤：定级」。
 - 写作（/writing）在 Phase 1 被 `CLOSED_NAV` 关闭，种子数据无法在学员端展示。听力音频没有真实媒体资产，manifest 返回 404，页面显示「授权已过期」；文本和字幕正常。
 - 人工恢复没有列表 API（GET /admin/recovery/recoveries 返回 404），30 条种子已入库，但页面只显示当前申请。/learners 需要检索后才会出数据。
+
+## 前端修复验证（2026-10-13 下午，ba346d44）
+
+### BUG-S1 策略页 `minimumDeviceTrust: null`
+- **修复**：`apps/admin-web/src/api/b8-policy.ts` 接受 `null`；`parsePolicyVersionPage` 跳过坏行而不是整页失败；展示为「设备可信度 未设置」。
+- **测试**：`apps/admin-web/tests/b8-policy-readonly.test.mjs`（null trust + 单行坏数据不拖垮整页）。
+- **验证**：API 创建 `SEED-20261013 null-trust display`（trust=null）；`/permissions` 渲染 31 条，展开后条件为「阶段 P1 · 设备可信度 未设置 · 租户匹配」。截图：`/workspace/e2e-seed/fix-admin-*.png`。
+
+### BUG-S2 首页「剩余步骤：定级」误显示
+- **修复**：`isPlacementSatisfied` 优先看服务端已有学习计划（`planQueue.planId` / `home.plan`），sessionStorage 仅作回退；计划未拉取完成时不闪定级引导。learner-web 与 mobile 同步。
+- **测试**：`apps/learner-web/tests/onboarding-resume.test.mjs`、`apps/mobile/tests/onboarding-resume-step.test.mjs`。
+- **验证**：新浏览器上下文登录 `e2e-20261013-learner` → `/home`，无「剩余步骤：定级」、无 onboarding-guide。截图：`/workspace/e2e-seed/fix-learner-home-fresh.png`。
+
+部署：仅重建 learner-web / admin-web / mobile-h5（tag ba346d44）。未改 contracts/、schema、nginx、证书。
