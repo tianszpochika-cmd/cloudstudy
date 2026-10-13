@@ -28,8 +28,8 @@
 | 帮助与反馈 `/support` | learner-web | pass | 「遇到问题，我们一起解决。」 |
 | 设置 `/settings/profile` | learner-web | pass | 「设置」 |
 | 消息 / 商城 / 报告分享深链 | learner-web | pending | |
-| 移动端全链路 | mobile | pending | |
-| 管理端模块 | admin | pending | |
+| 移动端全链路 | mobile | pass* | 见下方移动端表；主路径可走通 |
+| 管理端模块 | admin | blocked | 登录页 OK；缺授权管理员账号 |
 
 ## 已知缺口（前端写死，不改）
 
@@ -78,3 +78,30 @@
 | 平台 `/platform` | pass | 「让这里，用起来更舒服。」 |
 
 说明：硬刷新依赖 refresh cookie，E2E 中途多次硬跳会丢会话；侧栏 SPA / `$router.push` 更稳。
+
+
+## 移动端 mobile.clyunedev.com
+
+| 模块 | 结果 | 说明 |
+|---|---|---|
+| 注册 | pass | `uni-button`「注册并继续」→ onboarding |
+| 成人门 | pass | 需点 `uni-checkbox`（非原生 input）；`POST /iam/adult-gate` 200 |
+| 必要同意 | pass | 三项 consent PUT 200，refresh 200，进入目标步 |
+| 目标保存 | pass* | 点「保存并开始测评」出现「正在保存…」；随后进定级/首页链路 |
+| 定级入口 | pass | `#/pages/assessment/assessment` 可打开 |
+| 今日 / 课程 / 练习 | pass | today / learn / practice 可渲染 |
+| 我的 / 世界 / 设置 / 客服 | pass | profile / world / settings / support 可渲染；客服受控文案属产品策略 |
+
+## 管理端 admin.clyunedev.com
+
+| 模块 | 结果 | 说明 |
+|---|---|---|
+| 登录页 | pass | 渲染正常，空提交有校验文案 |
+| 登录后业务 | blocked | 无演示账号；文案要求「已授权管理账号」。需你提供测试管理员凭据后继续 |
+
+## 仍开着的事
+
+- BLOCK-1：`/content/learner/catalog` 503（书架数据）
+- 口语/写作 learner-web：页面开得开，含「暂未开放/暂不可用」已知缺口
+- b4-games 暗色模式、管理端无路由 demo 页：仍待你定
+- 管理端深测：缺账号
