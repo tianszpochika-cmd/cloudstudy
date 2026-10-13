@@ -43,7 +43,14 @@ async function call(method, path, { body, token, origin = 'https://learn.clyuned
   if (token) headers.authorization = 'Bearer ' + token;
   if (body !== undefined) headers['content-type'] = 'application/json';
   if (method !== 'GET') headers['idempotency-key'] = `${P}-${randomUUID()}`;
-  const r = await fetch(API + path, { method, headers, body: body === undefined ? undefined : JSON.stringify(body) });
+  let r;
+  for (let attempt = 0; ; attempt++) {
+    r = await fetch(API + path, { method, headers, body: body === undefined ? undefined : JSON.stringify(body) });
+    if (r.status !== 429 || attempt >= 10) break;
+    const wait = Math.min(90, Number(r.headers.get('retry-after')) || 15 * (attempt + 1));
+    await new Promise((res) => setTimeout(res, wait * 1000));
+  }
+  await new Promise((res) => setTimeout(res, 250));
   let json = null; try { json = await r.json(); } catch { /* empty */ }
   return { status: r.status, json, data: json?.data ?? json };
 }
@@ -235,26 +242,33 @@ function adminSql() {
 }
 
 // ---------- API seed ----------
-async function adminApi() {
+async function adminApi(topup = false) {
+  const have = (sqlText) => topup ? Number(sql(sqlText)) : 0;
+  const ADM = `(SELECT principal_id FROM iam_service.iam_account WHERE identifier = 'e2e-20261013-admin')`;
+  const doneWords = new Set(topup ? sql(`SELECT headword FROM content_service.lexeme WHERE created_by = ${ADM};`).split('\n').filter(Boolean) : []);
+  const itemsHave = have(`SELECT COUNT(*) FROM content_service.content_item WHERE created_by = ${ADM};`);
+  const riskHave = have(`SELECT COUNT(*) FROM admin_ops_service.risk_case WHERE JSON_CONTAINS(evidence_refs_json, '"${TAG}"') AND title <> 'probe';`);
+  const recHave = have(`SELECT COUNT(*) FROM workflow_service.manual_recovery_request WHERE subject_id LIKE '${P}-%' AND subject_id <> '${P}-probe';`);
+  const polHave = have(`SELECT COUNT(*) FROM iam_service.iam_policy_control_version WHERE JSON_UNQUOTE(JSON_EXTRACT(document_json, '$.name')) LIKE '${TAG} %策略%';`);
   const cred = readCred(ADMIN_FILE); const token = await login(cred.identifier, cred.password, 'https://admin.clyunedev.com');
   const A = (m, p, body) => call(m, p, { body, token, origin: 'https://admin.clyunedev.com' });
   let ok = 0; const fail = {};
   const tally = (k, r) => { if (r.status < 300) { add(k); ok++; } else fail[k] = `${r.status} ${JSON.stringify(r.json?.error ?? r.json).slice(0, 160)}`; return r; };
-  for (const w of VOCAB) {
+  for (const w of VOCAB) { if (doneWords.has(w[0])) continue;
     const r = tally('词条（管理端 VOCAB-PHASE1）', await A('POST', '/admin/content-commands', { command: 'LEXEME_UPSERT', contentCode: 'VOCAB-PHASE1', expectedStateVersion: 0, lexemeId: '', lexeme: { headword: w[0], language: 'en-US', lemma: w[0], pos: [w[1]], cefr: w[7], phoneticUS: w[2], phoneticUK: w[2], senses: [{ pos: w[1], meaningCn: w[3], meaningEn: w[4], examples: [{ en: w[5], cn: w[6], source: TAG }], usageNote: TAG }] } }));
     const d = r.data; if (d?.lexemeId && VOCAB.indexOf(w) % 3 === 0) await A('POST', '/admin/content-commands', { command: 'LEXEME_SUBMIT_REVIEW', contentCode: 'VOCAB-PHASE1', expectedStateVersion: d.lexemeStateVersion ?? 1, lexemeId: d.lexemeId, reasonCode: 'TENANT_ADMIN' });
   }
   const kinds = ['QUESTION', 'EXAMPLE', 'GRAMMAR_POINT', 'EXERCISE', 'PASSAGE'];
-  for (let i = 0; i < 40; i++) { const g = GRAMMAR[i]; const kind = kinds[i % 5];
+  for (let i = itemsHave; i < 40; i++) { const g = GRAMMAR[i]; const kind = kinds[i % 5];
     const fields = kind === 'QUESTION' ? { options: [g[4], g[4].replace(/\b(is|are|was|were|has|have)\b/, (m) => ({ is: 'are', are: 'is', was: 'were', were: 'was', has: 'have', have: 'has' })[m]), '以上都不对'], answerIndex: 0, tags: [TAG, g[0]] } : { tags: [TAG, g[0]] };
     const stem = kind === 'PASSAGE' ? READING[i % 30][3].map((x) => x[0]).join(' ') : kind === 'QUESTION' ? `选出语法正确的句子（${g[1]}）` : `${g[1]}：${g[4]}`;
     tally('题目与练习（管理端）', await A('POST', '/admin/content-commands', { command: 'ITEM_UPSERT', contentCode: 'VOCAB-PHASE1', expectedStateVersion: 0, itemId: '', item: { kind, stem, fields } })); }
   const rc = [['ACCOUNT_SECURITY', '同一账号 1 小时内 6 个城市登录'], ['DEVICE_ANOMALY', '单设备 24 小时注册 9 个账号'], ['PAYMENT_ANOMALY', '同卡 10 分钟内 5 次支付失败'], ['ACTIVATION_ABUSE', '激活码被批量尝试'], ['EXPORT_ANOMALY', '短时间内重复申请数据导出'], ['CONTENT_RIGHTS', '用户上传音频疑似侵权']];
-  for (let i = 0; i < 40; i++) { const [c, t] = rc[i % 6]; tally('风险案件', await A('POST', '/admin/ops/risk/cases', { category: c, severity: ['LOW', 'MEDIUM', 'HIGH', 'CRITICAL'][i % 4], title: `${t}（#${i + 1}）`, subjectRef: `${P}-user-${String(i % 25).padStart(2, '0')}`, evidenceRefs: [TAG, `${P}-evidence-${i + 1}`], note: '演示数据：用于治理页浏览' })); }
+  for (let i = riskHave; i < 40; i++) { const [c, t] = rc[i % 6]; tally('风险案件', await A('POST', '/admin/ops/risk/cases', { category: c, severity: ['LOW', 'MEDIUM', 'HIGH', 'CRITICAL'][i % 4], title: `${t}（#${i + 1}）`, subjectRef: `${P}-user-${String(i % 25).padStart(2, '0')}`, evidenceRefs: [TAG, `${P}-evidence-${i + 1}`], note: '演示数据：用于治理页浏览' })); }
   const rec = [['ORDER', 'RETRY', '支付回调超时，订单停在待支付'], ['LEARNING_PLAN', 'REPLAY', '学习计划重算失败，需重放事件'], ['NOTIFICATION', 'RETRY', '推送通道 502，消息未送达'], ['REFUND', 'RETRY', '退款回调签名校验失败后重试'], ['ENTITLEMENT', 'COMPENSATE', '支付成功但权益未发放']];
-  for (let i = 0; i < 30; i++) { const [st, ac, re] = rec[i % 5]; tally('人工恢复任务', await A('POST', '/admin/recovery/recoveries', { subjectType: st, subjectId: `${P}-${st.toLowerCase()}-${i + 1}`, action: ac, reason: `${re}（${TAG}）` })); }
+  for (let i = recHave; i < 30; i++) { const [st, ac, re] = rec[i % 5]; tally('人工恢复任务', await A('POST', '/admin/recovery/recoveries', { subjectType: st, subjectId: `${P}-${st.toLowerCase()}-${i + 1}`, action: ac, reason: `${re}（${TAG}）` })); }
   const pol = [['content-editor', ['admin.content.read', 'admin.content.write'], 'CONTENT_EDIT', 'CONTENT_PACK', '内容编辑'], ['content-reviewer', ['admin.content.read', 'admin.content.publish'], 'CONTENT_REVIEW', 'CONTENT_VERSION', '内容审核'], ['support-agent', ['admin.support.read', 'support.ticket.manage'], 'TICKET_REPLY', 'SUPPORT_TICKET', '客服处理'], ['risk-analyst', ['admin.risk.read', 'admin.risk.write'], 'RISK_TRIAGE', 'RISK_CASE', '风控分析'], ['finance-ops', ['admin.commerce.read', 'commerce.refund'], 'REFUND_APPROVE', 'ORDER', '财务退款']];
-  for (let i = 0; i < 30; i++) { const [role, perms, act, res, cn] = pol[i % 5];
+  for (let i = polHave; i < 30; i++) { const [role, perms, act, res, cn] = pol[i % 5];
     const r = tally('策略版本', await A('POST', '/iam/policy-versions', { changeReason: `${TAG} ${cn}策略第 ${Math.floor(i / 5) + 1} 版`, policyDocument: { name: `${TAG} ${cn}策略 v${Math.floor(i / 5) + 1}`, description: `${cn}角色的最小权限集（演示数据）`, roleBindings: [{ roleCode: role, permissions: perms, assignmentScope: 'SERVER_DERIVED_PLATFORM_TENANT' }], rules: [{ effect: 'ALLOW', requiredPermissions: [perms[1]], actions: [act], resourceTypes: [res], conditions: { phases: ['P1'], requiresAdultEligibility: false, requiredConsentPurposes: [], contentRights: [], ownerMatchRequired: false, tenantMatchRequired: true } }] } }));
     const pid = r.data?.policy?.policyVersionId; if (pid && i % 3 === 1) await A('POST', `/iam/policy-versions/${pid}/submit`, { expectedRevision: 1, submissionReason: `${TAG} 提交审批` }); }
   return fail;
@@ -289,4 +303,5 @@ async function data() {
 const phase = process.argv[2];
 if (phase === 'account') await account();
 else if (phase === 'data') await data();
-else { console.error('usage: seed-20261013.mjs account|data'); process.exit(2); }
+else if (phase === 'admin-api') { const f = await adminApi(true); console.log(JSON.stringify({ phase, added: counts, failures: f }, null, 1)); }
+else { console.error('usage: seed-20261013.mjs account|data|admin-api'); process.exit(2); }
