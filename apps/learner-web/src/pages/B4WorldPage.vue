@@ -105,7 +105,7 @@ function cleanupOfflineDownload(downloadId: string): void { void b4.cleanupOffli
         <button v-if="b4.queueCount" class="button button--secondary" type="button" @click="b4.syncOffline">同步队列</button>
         <label class="quality-select">性能
           <select :value="b4.performanceLevel" aria-label="世界画质" @change="choosePerformance(($event.target as HTMLSelectElement).value)">
-            <option v-for="level in B4_PERFORMANCE_LEVELS" :key="level" :value="level">{{ ({ Ultra: "极致", High: "高", Medium: "中", Performance: "流畅" } as Record<string, string>)[level] ?? level }}</option>
+            <option v-for="level in B4_PERFORMANCE_LEVELS" :key="level" :value="level">{{ ({ Ultra: "超高", High: "高", Medium: "均衡", Performance: "流畅" } as Record<string, string>)[level] ?? level }}</option>
           </select>
         </label>
       </div>

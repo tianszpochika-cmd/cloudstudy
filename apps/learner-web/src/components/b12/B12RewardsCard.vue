@@ -181,7 +181,7 @@ onUnmounted(() => { mounted = false; clearPersonal() })
 
 <template>
   <section class="b12-card b12-rewards" aria-labelledby="b12-rewards-title">
-    <div class="b12-heading"><div><p class="b12-kicker">REWARD GRANT</p><h2 id="b12-rewards-title">{{ b12T('rewards.title') }}</h2></div><span class="b12-state">{{ headingStatus }}</span></div>
+    <div class="b12-heading"><div><p class="b12-kicker">奖励发放<span class="v2-sr-only">REWARD GRANT</span></p><h2 id="b12-rewards-title">{{ b12T('rewards.title') }}</h2></div><span class="b12-state">{{ headingStatus }}</span></div>
     <p class="b12-muted">{{ b12T('rewards.freeNotice') }}</p>
     <div v-if="status === 'loading' && !chests.length" class="b12-inline-state" role="status">{{ b12T('status.loading') }}</div>
     <div v-else-if="chests.length" class="b12-chest-list">
