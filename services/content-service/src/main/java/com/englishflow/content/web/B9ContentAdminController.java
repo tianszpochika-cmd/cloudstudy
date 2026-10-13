@@ -260,7 +260,7 @@ public final class B9ContentAdminController {
                 checkLexemeVersion(contentCode, text(input.get("lexemeId")), input, actor);
                 LexemeCommandService.LexemeResult outcome = lexemes.upsert(
                         contentCode, record(input.get("lexeme")), text(input.get("lexemeId")),
-                        actor, key(key + ":lexeme:upsert"), context);
+                        expectedVersion(input), actor, key(key + ":lexeme:upsert"), context);
                 Map<String, Object> lexemeResult = new LinkedHashMap<>();
                 lexemeResult.put("commandId", commandId(key));
                 lexemeResult.put("command", command);
@@ -286,9 +286,9 @@ public final class B9ContentAdminController {
                 checkLexemeVersion(contentCode, lexemeId, input, actor);
                 ReviewDecision decision = reviewDecision(input.get("reviewDecision"));
                 LexemeCommandService.LexemeResult outcome = "LEXEME_REVIEW_FIRST".equals(command)
-                        ? lexemes.reviewFirst(contentCode, lexemeId, decision, actor,
+                        ? lexemes.reviewFirst(contentCode, lexemeId, decision, reviewNote(input), actor,
                                 key(key + ":lexeme:review:first"), context)
-                        : lexemes.reviewFinal(contentCode, lexemeId, decision, actor,
+                        : lexemes.reviewFinal(contentCode, lexemeId, decision, reviewNote(input), actor,
                                 key(key + ":lexeme:review:final"), context);
                 return lexemeAccepted(key, command, contentCode, outcome);
             }
@@ -328,7 +328,7 @@ public final class B9ContentAdminController {
                 checkItemVersion(contentCode, text(input.get("itemId")), input, actor);
                 ContentItemCommandService.ItemResult outcome = contentItems.upsert(
                         contentCode, record(input.get("item")), text(input.get("itemId")),
-                        actor, key(key + ":item:upsert"), context);
+                        expectedVersion(input), actor, key(key + ":item:upsert"), context);
                 Map<String, Object> itemResult = new LinkedHashMap<>();
                 itemResult.put("commandId", commandId(key));
                 itemResult.put("command", command);
@@ -354,9 +354,9 @@ public final class B9ContentAdminController {
                 checkItemVersion(contentCode, itemId, input, actor);
                 ReviewDecision decision = reviewDecision(input.get("reviewDecision"));
                 ContentItemCommandService.ItemResult outcome = "ITEM_REVIEW_FIRST".equals(command)
-                        ? contentItems.reviewFirst(contentCode, itemId, decision, actor,
+                        ? contentItems.reviewFirst(contentCode, itemId, decision, reviewNote(input), actor,
                                 key(key + ":item:review:first"), context)
-                        : contentItems.reviewFinal(contentCode, itemId, decision, actor,
+                        : contentItems.reviewFinal(contentCode, itemId, decision, reviewNote(input), actor,
                                 key(key + ":item:review:final"), context);
                 return itemAccepted(key, command, contentCode, outcome);
             }
@@ -794,7 +794,7 @@ public final class B9ContentAdminController {
                 lexeme.packCode(), lexeme.lexemeId(), actor);
         Map<String, Object> projection = new LinkedHashMap<>();
         projection.put("availability",
-                lexeme.availability() == LexemeAvailability.PUBLISHED ? "PUBLISHED" : "UNPUBLISHED");
+                lexeme.isLive() ? "PUBLISHED" : "UNPUBLISHED");
         projection.put("projectionVersion", Math.max(1, lexeme.contentVersion()));
         projection.put("contentEpoch", 1L);
         Map<String, Object> fields = lexeme.fields();
@@ -812,6 +812,9 @@ public final class B9ContentAdminController {
         record.put("pronunciations", pronunciations.stream().map(B9ContentAdminController::pronunciationView).toList());
         record.put("createdBy", lexeme.createdBy());
         record.put("updatedBy", lexeme.updatedBy());
+        record.put("firstReviewer", lexeme.firstReviewer());
+        record.put("finalReviewer", lexeme.finalReviewer());
+        record.put("reviewTrail", reviewTrail(lexeme.trail()));
         record.put("createdAt", lexeme.createdAt());
         record.put("updatedAt", lexeme.updatedAt());
         Map<String, Object> result = new LinkedHashMap<>();
@@ -991,13 +994,16 @@ public final class B9ContentAdminController {
     private static Map<String, Object> itemState(ContentItem item) {
         Map<String, Object> projection = new LinkedHashMap<>();
         projection.put("availability",
-                item.availability() == ItemAvailability.PUBLISHED ? "PUBLISHED" : "UNPUBLISHED");
+                item.isLive() ? "PUBLISHED" : "UNPUBLISHED");
         projection.put("projectionVersion", 1L);
         projection.put("contentEpoch", 1L);
         Map<String, Object> record = new LinkedHashMap<>();
         record.put("itemId", item.itemId());
         record.put("kind", item.kind());
         record.put("stem", item.stem());
+        record.put("firstReviewer", item.firstReviewer());
+        record.put("finalReviewer", item.finalReviewer());
+        record.put("reviewTrail", reviewTrail(item.trail()));
         record.put("packCode", item.packCode());
         record.put("availability", item.availability().name());
         record.put("stateVersion", item.stateVersion());
@@ -1209,6 +1215,28 @@ public final class B9ContentAdminController {
         // before the validator can return actionable findings.
         return text(draft.get("sourceCode")).isBlank() || text(draft.get("licenseCode")).isBlank()
                 ? null : rights(draft);
+    }
+
+    /** Contract expectedStateVersion as an optimistic-lock token; absent/non-numeric keeps legacy semantics. */
+    private static Long expectedVersion(Map<String, Object> input) {
+        Object expected = input.get("expectedStateVersion");
+        return expected instanceof Number number && number.longValue() >= 0 ? number.longValue() : null;
+    }
+
+    private static String reviewNote(Map<String, Object> input) {
+        Object note = input.get("reviewNote");
+        return note == null ? null : String.valueOf(note);
+    }
+
+    static Map<String, Object> reviewTrail(com.englishflow.content.domain.ReviewTrail trail) {
+        Map<String, Object> view = new LinkedHashMap<>();
+        view.put("submittedBy", trail.submittedBy());
+        view.put("lastDecision", trail.lastDecision());
+        view.put("lastNote", trail.lastNote());
+        view.put("lastReviewer", trail.lastReviewer());
+        view.put("lastReviewedAt", trail.lastReviewedAt() == null ? null : trail.lastReviewedAt().toString());
+        view.put("revisionOfLive", trail.revisionOfLive());
+        return view;
     }
 
     private static ReviewDecision reviewDecision(Object raw) {

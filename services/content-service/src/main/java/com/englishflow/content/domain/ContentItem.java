@@ -44,6 +44,7 @@ public final class ContentItem {
     private Map<String, Object> fields;
     private final Instant createdAt;
     private Instant updatedAt;
+    private ReviewTrail trail = ReviewTrail.EMPTY;
 
     public ContentItem(
             String itemId, String tenantId, String packCode, String kind, String stem,
@@ -150,9 +151,35 @@ public final class ContentItem {
         return updatedAt;
     }
 
+    public ReviewTrail trail() {
+        return trail;
+    }
+
+    /** Rehydrates persisted review bookkeeping; adapters call this right after construction. */
+    public ContentItem restoreTrail(ReviewTrail restored) {
+        this.trail = restored == null ? ReviewTrail.EMPTY : restored;
+        return this;
+    }
+
+    /** True when learners still see a published copy (PUBLISHED, or a revision draft of a live row). */
+    public boolean isLive() {
+        return availability == ItemAvailability.PUBLISHED || trail.revisionOfLive();
+    }
+
+    /**
+     * DRAFT rows are edited in place; editing an APPROVED/PUBLISHED row opens a
+     * revision (back to DRAFT, both reviews again). IN_REVIEW/ARCHIVED are frozen.
+     */
     public void applyUpsert(String stem, Map<String, Object> nextFields, String editor, Instant now) {
-        if (availability != ItemAvailability.DRAFT) {
-            throw ContentOperationException.conflict("ITEM_STATE_INVALID", "only a DRAFT item can be edited");
+        if (availability == ItemAvailability.APPROVED || availability == ItemAvailability.PUBLISHED) {
+            boolean live = availability == ItemAvailability.PUBLISHED || trail.revisionOfLive();
+            this.availability = ItemAvailability.DRAFT;
+            this.firstReviewer = null;
+            this.finalReviewer = null;
+            this.trail = trail.revision(live);
+        } else if (availability != ItemAvailability.DRAFT) {
+            throw ContentOperationException.conflict("ITEM_STATE_INVALID",
+                    "an item under review or archived cannot be edited");
         }
         this.stem = stem == null ? "" : stem;
         this.fields = Map.copyOf(nextFields);
@@ -164,6 +191,7 @@ public final class ContentItem {
     public void submit(String editor, Instant now) {
         requireTransition(availability.canSubmit(), "only a DRAFT item can be submitted");
         this.availability = ItemAvailability.IN_REVIEW;
+        this.trail = trail.submitted(editor);
         this.updatedBy = editor;
         this.updatedAt = now;
         this.stateVersion += 1;
@@ -174,7 +202,9 @@ public final class ContentItem {
         if (firstReviewer != null) {
             throw ContentOperationException.conflict("ITEM_REVIEW_DUPLICATE", "the FIRST review is already completed");
         }
+        trail.requireNotAuthor(reviewer, updatedBy, "ITEM");
         this.firstReviewer = reviewer;
+        this.trail = trail.decided("APPROVED_FIRST", null, reviewer, now);
         this.updatedBy = reviewer;
         this.updatedAt = now;
         this.stateVersion += 1;
@@ -190,8 +220,32 @@ public final class ContentItem {
             throw ContentOperationException.forbidden("ITEM_SELF_REVIEW_DENIED",
                     "the author of the first review cannot approve the final review");
         }
+        trail.requireNotAuthor(reviewer, updatedBy, "ITEM");
         this.finalReviewer = reviewer;
+        this.trail = trail.decided("APPROVED_FINAL", null, reviewer, now);
         this.availability = ItemAvailability.APPROVED;
+        this.updatedBy = reviewer;
+        this.updatedAt = now;
+        this.stateVersion += 1;
+    }
+
+    /** Sends an IN_REVIEW item back to its author with a reason; both reviews restart. */
+    public void reject(ReviewStage stage, ReviewDecision decision, String reviewer, String note, Instant now) {
+        requireTransition(availability.canReview(), "only an IN_REVIEW item can be rejected");
+        if (decision == ReviewDecision.APPROVED) {
+            throw ContentOperationException.badRequest("ITEM_REVIEW_DECISION_INVALID", "reject needs a non-APPROVED decision");
+        }
+        if (stage == ReviewStage.FINAL_REVIEW && firstReviewer == null) {
+            throw ContentOperationException.conflict("ITEM_REVIEW_ORDER_INVALID",
+                    "FINAL review requires a completed FIRST review");
+        }
+        trail.requireNotAuthor(reviewer, updatedBy, "ITEM");
+        String reason = ReviewTrail.requireRejectNote(note, "ITEM");
+        this.availability = ItemAvailability.DRAFT;
+        this.firstReviewer = null;
+        this.finalReviewer = null;
+        this.trail = trail.decided(decision.name() + "_" + (stage == ReviewStage.FIRST_REVIEW ? "FIRST" : "FINAL"),
+                reason, reviewer, now);
         this.updatedBy = reviewer;
         this.updatedAt = now;
         this.stateVersion += 1;
@@ -200,6 +254,7 @@ public final class ContentItem {
     public void publish(String publisher, Instant now) {
         requireTransition(availability.canPublish(), "only an APPROVED item can be published");
         this.availability = ItemAvailability.PUBLISHED;
+        this.trail = trail.revision(false);
         this.publisher = publisher;
         this.updatedBy = publisher;
         this.updatedAt = now;
@@ -207,6 +262,13 @@ public final class ContentItem {
     }
 
     public void unpublish(String publisher, Instant now) {
+        if (availability != ItemAvailability.PUBLISHED && trail.revisionOfLive()) {
+            this.trail = trail.revision(false);
+            this.updatedBy = publisher;
+            this.updatedAt = now;
+            this.stateVersion += 1;
+            return;
+        }
         requireTransition(availability.canUnpublish(), "only a PUBLISHED item can be unpublished");
         this.availability = ItemAvailability.APPROVED;
         this.updatedBy = publisher;
@@ -216,6 +278,10 @@ public final class ContentItem {
 
     public void archive(String actor, Instant now) {
         requireTransition(availability.canArchive(), "this item state cannot be archived");
+        if (trail.revisionOfLive()) {
+            throw ContentOperationException.conflict("ITEM_REVISION_LIVE",
+                    "this draft revises a live item; unpublish the live copy before archiving");
+        }
         this.availability = ItemAvailability.ARCHIVED;
         this.updatedBy = actor;
         this.updatedAt = now;

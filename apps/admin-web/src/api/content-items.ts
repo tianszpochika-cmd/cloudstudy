@@ -1,6 +1,7 @@
 import { adminClient, AdminApiError } from './client'
 import { adminT } from '../platform/admin-i18n'
 import { LEXEME_PACK } from './lexeme'
+import { readReviewTrail, toContentCommandError, type ReviewTrailView } from '../platform/content-review'
 
 /**
  * B2 row-level item + scheduled publish port.
@@ -21,6 +22,8 @@ export interface ContentItemRow {
   sourceCode: string | null
   licenseCode: string | null
   createdBy: string
+  updatedBy: string | null
+  reviewTrail: ReviewTrailView
 }
 
 export interface ScheduledTask {
@@ -70,6 +73,8 @@ function asItemRow(item: Row): ContentItemRow | null {
     sourceCode: typeof record.sourceCode === 'string' ? record.sourceCode : null,
     licenseCode: typeof record.licenseCode === 'string' ? record.licenseCode : null,
     createdBy: text(record.createdBy),
+    updatedBy: typeof record.updatedBy === 'string' ? record.updatedBy : null,
+    reviewTrail: readReviewTrail(record.reviewTrail),
   }
 }
 
@@ -88,8 +93,7 @@ async function sendCommand(body: Row): Promise<Row> {
     })
     return isRecord(response) && isRecord(response.data) ? response.data : {}
   } catch (error) {
-    if (error instanceof AdminApiError) throw new Error(error.message)
-    throw error instanceof Error ? error : new Error(adminT('apiContentItems.commandFailed'))
+    throw toContentCommandError(error, adminT('apiContentItems.commandFailed'))
   }
 }
 
@@ -115,11 +119,13 @@ export async function listItems(input: {
 export function upsertItem(
   packCode: string,
   item: { itemId?: string; kind: ItemKind; stem: string; fields?: Record<string, unknown> },
+  /** stateVersion of the row the editor opened (optimistic lock); omit when creating. */
+  baseStateVersion?: number,
 ): Promise<Row> {
   return sendCommand({
     command: 'ITEM_UPSERT',
     contentCode: packCode,
-    expectedStateVersion: 0,
+    expectedStateVersion: baseStateVersion ?? 0,
     itemId: item.itemId ?? '',
     item: { kind: item.kind, stem: item.stem, fields: item.fields ?? {} },
   })
@@ -138,13 +144,19 @@ export function itemLifecycle(
   })
 }
 
-export function itemReview(row: ContentItemRow, stage: 'FIRST' | 'FINAL'): Promise<Row> {
+export function itemReview(
+  row: ContentItemRow,
+  stage: 'FIRST' | 'FINAL',
+  decision: 'APPROVED' | 'REJECTED' | 'CHANGES_REQUESTED' = 'APPROVED',
+  reviewNote?: string,
+): Promise<Row> {
   return sendCommand({
     command: stage === 'FIRST' ? 'ITEM_REVIEW_FIRST' : 'ITEM_REVIEW_FINAL',
     contentCode: row.packCode,
     expectedStateVersion: row.stateVersion,
     itemId: row.itemId,
-    reviewDecision: 'APPROVED',
+    reviewDecision: decision,
+    ...(reviewNote ? { reviewNote } : {}),
   })
 }
 

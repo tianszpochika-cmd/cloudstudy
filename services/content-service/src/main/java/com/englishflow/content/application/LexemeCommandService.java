@@ -13,6 +13,7 @@ import com.englishflow.content.domain.Lexeme;
 import com.englishflow.content.domain.LexemeAvailability;
 import com.englishflow.content.domain.LexemePronunciation;
 import com.englishflow.content.domain.ReviewDecision;
+import com.englishflow.content.domain.ReviewStage;
 import com.englishflow.content.port.ContentIdempotencyPort;
 import com.englishflow.content.port.ContentOutboxPort;
 import com.englishflow.content.port.ContentRepository;
@@ -67,6 +68,24 @@ public final class LexemeCommandService {
             ContentActor actor,
             ContentIdempotencyKey key,
             ContentRequestContext context) {
+        return upsert(packCode, fields, lexemeId, null, actor, key, context);
+    }
+
+    /**
+     * Optimistic-lock aware upsert. {@code expectedStateVersion} = 0 means
+     * "create": hitting an existing headword is a 409 instead of a silent
+     * overwrite. A positive value must equal the row's current stateVersion,
+     * otherwise 409 LEXEME_VERSION_CONFLICT (someone else saved first).
+     * {@code null} keeps the legacy merge semantics for internal callers.
+     */
+    public LexemeResult upsert(
+            String packCode,
+            Map<String, Object> fields,
+            String lexemeId,
+            Long expectedStateVersion,
+            ContentActor actor,
+            ContentIdempotencyKey key,
+            ContentRequestContext context) {
         requireEditor(actor);
         Objects.requireNonNull(packCode, "packCode is required");
         // B4 language ribbon: blank/omitted input inherits en-US so pre-B4 payloads keep working.
@@ -94,10 +113,25 @@ public final class LexemeCommandService {
                         return new LexemeResult(created.lexemeId(), created.stateVersion(), created.availability());
                     }
                     assertExpectedPack(existing, packCode);
+                    if (expectedStateVersion != null) {
+                        if (expectedStateVersion == 0L) {
+                            throw ContentOperationException.conflict("LEXEME_DUPLICATE",
+                                    "a lexeme with this headword already exists in the pack; open it and edit instead");
+                        }
+                        if (expectedStateVersion != existing.stateVersion()) {
+                            throw ContentOperationException.conflict("LEXEME_VERSION_CONFLICT",
+                                    "stale stateVersion: expected " + expectedStateVersion
+                                            + " but current is " + existing.stateVersion());
+                        }
+                    }
+                    boolean openedRevision = existing.availability() != LexemeAvailability.DRAFT;
                     // Language is create-time identity (like headword): re-upserts keep the
                     // original ribbon instead of silently migrating the row across languages.
                     existing.applyUpsert(validated, actor.subjectId(), now);
                     lexemes.save(existing);
+                    if (openedRevision) {
+                        audit(existing, "content.lexeme.revision-opened.v1", actor, null, null, context, now);
+                    }
                     return new LexemeResult(existing.lexemeId(), existing.stateVersion(), existing.availability());
                 });
     }
@@ -109,50 +143,85 @@ public final class LexemeCommandService {
                 scope(actor, "lexeme.submit"), key, fingerprint(packCode, lexemeId),
                 () -> {
                     Lexeme lexeme = owned(packCode, lexemeId, actor);
-                    lexeme.submit(actor.subjectId(), clock.instant());
+                    Instant now = clock.instant();
+                    lexeme.submit(actor.subjectId(), now);
                     lexemes.save(lexeme);
+                    audit(lexeme, "content.lexeme.submitted.v1", actor, null, null, context, now);
                     return resultOf(lexeme);
                 });
     }
 
     public LexemeResult reviewFirst(String packCode, String lexemeId, ReviewDecision decision,
             ContentActor actor, ContentIdempotencyKey key, ContentRequestContext context) {
+        return reviewFirst(packCode, lexemeId, decision, null, actor, key, context);
+    }
+
+    public LexemeResult reviewFirst(String packCode, String lexemeId, ReviewDecision decision, String reviewNote,
+            ContentActor actor, ContentIdempotencyKey key, ContentRequestContext context) {
         if (!actor.canReviewFirst()) {
             throw ContentOperationException.forbidden("LEXEME_REVIEW_REQUIRED",
                     "first-review permission is required");
         }
         return idempotency.execute(
-                scope(actor, "lexeme.review-first"), key, fingerprint(packCode, lexemeId, decision),
-                () -> {
-                    Lexeme lexeme = owned(packCode, lexemeId, actor);
-                    if (decision != ReviewDecision.APPROVED) {
-                        throw ContentOperationException.badRequest("LEXEME_REVIEW_DECISION_INVALID",
-                                "FIRST review only accepts APPROVED; rework stays in DRAFT via upsert");
-                    }
-                    lexeme.reviewFirst(actor.subjectId(), clock.instant());
-                    lexemes.save(lexeme);
-                    return resultOf(lexeme);
-                });
+                scope(actor, "lexeme.review-first"), key, fingerprint(packCode, lexemeId, decision, reviewNote),
+                () -> decide(packCode, lexemeId, ReviewStage.FIRST_REVIEW, decision, reviewNote, actor, context));
     }
 
     public LexemeResult reviewFinal(String packCode, String lexemeId, ReviewDecision decision,
+            ContentActor actor, ContentIdempotencyKey key, ContentRequestContext context) {
+        return reviewFinal(packCode, lexemeId, decision, null, actor, key, context);
+    }
+
+    public LexemeResult reviewFinal(String packCode, String lexemeId, ReviewDecision decision, String reviewNote,
             ContentActor actor, ContentIdempotencyKey key, ContentRequestContext context) {
         if (!actor.canReviewFinal()) {
             throw ContentOperationException.forbidden("LEXEME_REVIEW_REQUIRED",
                     "final-review permission is required");
         }
         return idempotency.execute(
-                scope(actor, "lexeme.review-final"), key, fingerprint(packCode, lexemeId, decision),
-                () -> {
-                    Lexeme lexeme = owned(packCode, lexemeId, actor);
-                    if (decision != ReviewDecision.APPROVED) {
-                        throw ContentOperationException.badRequest("LEXEME_REVIEW_DECISION_INVALID",
-                                "FINAL review only accepts APPROVED; rework stays in DRAFT via upsert");
-                    }
-                    lexeme.reviewFinal(actor.subjectId(), clock.instant());
-                    lexemes.save(lexeme);
-                    return resultOf(lexeme);
-                });
+                scope(actor, "lexeme.review-final"), key, fingerprint(packCode, lexemeId, decision, reviewNote),
+                () -> decide(packCode, lexemeId, ReviewStage.FINAL_REVIEW, decision, reviewNote, actor, context));
+    }
+
+    private LexemeResult decide(String packCode, String lexemeId, ReviewStage stage, ReviewDecision decision,
+            String reviewNote, ContentActor actor, ContentRequestContext context) {
+        if (decision == null) {
+            throw ContentOperationException.badRequest("LEXEME_REVIEW_DECISION_INVALID", "reviewDecision is required");
+        }
+        Lexeme lexeme = owned(packCode, lexemeId, actor);
+        Instant now = clock.instant();
+        if (decision == ReviewDecision.APPROVED) {
+            if (stage == ReviewStage.FIRST_REVIEW) {
+                lexeme.reviewFirst(actor.subjectId(), now);
+            } else {
+                lexeme.reviewFinal(actor.subjectId(), now);
+            }
+            lexemes.save(lexeme);
+            audit(lexeme, "content.lexeme.review-approved.v1", actor, stage.name(), null, context, now);
+        } else {
+            lexeme.reject(stage, decision, actor.subjectId(), reviewNote, now);
+            lexemes.save(lexeme);
+            audit(lexeme, "content.lexeme.review-rejected.v1", actor, stage.name() + ":" + decision.name(),
+                    lexeme.trail().lastNote(), context, now);
+        }
+        return resultOf(lexeme);
+    }
+
+    /** Review audit fact: appended to the content Outbox (the service's durable event log). */
+    private void audit(Lexeme lexeme, String eventType, ContentActor actor, String decision, String note,
+            ContentRequestContext context, Instant now) {
+        outbox.appendAfterFact(ContentOutboxEvent.create(
+                "lexeme", lexeme.lexemeId(), eventType, actor.subjectId(),
+                lexeme.lexemeId() + ":" + eventType + ":" + lexeme.stateVersion(),
+                "{\"lexemeId\":" + ReviewAuditJson.quote(lexeme.lexemeId())
+                        + ",\"packCode\":" + ReviewAuditJson.quote(lexeme.packCode())
+                        + ",\"availability\":" + ReviewAuditJson.quote(lexeme.availability().name())
+                        + ",\"stateVersion\":" + lexeme.stateVersion()
+                        + ",\"actor\":" + ReviewAuditJson.quote(actor.subjectId())
+                        + ",\"decision\":" + ReviewAuditJson.quote(decision)
+                        + ",\"note\":" + ReviewAuditJson.quote(note)
+                        + ",\"revisionOfLive\":" + lexeme.trail().revisionOfLive() + "}",
+                context, now));
     }
 
     public LexemeResult publish(String packCode, String lexemeId, String reasonCode,
