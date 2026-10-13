@@ -1,49 +1,62 @@
 # E2E 浏览器实测记录 · 2026-10-13
 
-环境：`dev-redesign` → 德国服务器 learn / mobile / admin.clyunedev.com  
+环境：`dev-redesign` → learn / mobile / admin.clyunedev.com  
 测试账号前缀：`e2e-20261013-`（可整批清理）  
-工具：Playwright headless Chromium
+工具：Playwright headless Chromium  
+前端修复部署：`learner-web:5dd0daec`（bundle `index-Czsf7pgM.js`）
 
 ## 模块进度
 
 | 模块 | 端 | 结果 | 证据 / 说明 |
 |---|---|---|---|
-| 认证 / 引导：注册 | learner-web | pass | `e2e-20261013-m1-*` 注册 201 → `/onboarding` |
-| 认证 / 引导：成人门 | learner-web | pass | `POST /iam/adult-gate` 200，进入同意步 |
-| 认证 / 引导：必要同意「继续」 | learner-web | fixed | 正常路径 refresh 200 进目标步；cookie 失效时有明确报错（5dd0daec） |
-| 认证 / 引导：目标与时长 | learner-web | pass | 选 FOUNDATION + 5 分钟，`PUT /learner/targets` 200 → `/assessment` |
-| 认证 / 引导：定级入口 | learner-web | pass | 到达测评页「找到一个适合你的起点」 |
-| 首页 | learner-web | pending | |
-| 学习与复习 | learner-web | pending | |
-| 技能页 | learner-web | pending | |
-| 错题 / 消息 / 客服 / 设置 | learner-web | pending | |
-| 商城 / 社交 / 报告分享 | learner-web | pending | |
+| 认证 / 引导：注册 | learner-web | pass | `e2e-20261013-m*` 注册 201 → `/onboarding` |
+| 认证 / 引导：成人门 | learner-web | pass | `POST /iam/adult-gate` 200 |
+| 认证 / 引导：必要同意 | learner-web | fixed | 见 BUG-1；正常路径 refresh 200 进目标步 |
+| 认证 / 引导：目标与时长 | learner-web | pass | FOUNDATION + 15 分钟，`PUT /learner/targets` 200 → `/assessment` |
+| 定级测评：开场与作答 | learner-web | pass | `POST .../placement/sessions` 201；提交 1 题 responses 200，进入第 2 题 |
+| 定级测评：整卷跑完 | learner-web | pending | 脚本未答完 10 题；跳过入口存在 |
+| 首页 `/home` | learner-web | pass | SPA 导航到达「今天，也给自己一点进步。」无 pageerror；未完成定级时显示空计划属预期 |
+| 今日 `/today` | learner-web | pass | 「给今天，安排一点进步。」 |
+| 内容书架 `/courses` | learner-web | pass* | 页面渲染 OK；`GET /content/learner/catalog` **503** → 记 blocked |
+| 学习路径 `/learn` | learner-web | pass | 「从这里，接着往前走。」 |
+| 专项练习（侧栏分组） | learner-web | pending | 侧栏为折叠组，需展开后再点词汇/练习子项 |
+| 错题本 `/mistakes` | learner-web | pass | 「再遇见一次，就更熟悉一点。」 |
+| 学习报告 `/b2/report` | learner-web | pass | 「回头看看，你已经走了多远。」 |
+| 掌握进度 `/mastery` | learner-web | pass | 「学过的，现在记住了多少？」 |
+| 计划地图 `/plan-map` | learner-web | pass | 「按自己的节奏，一步一步来。」 |
+| 学习世界 `/world` | learner-web | pass | 「把进步，装进你的世界。」 |
+| 帮助与反馈 `/support` | learner-web | pass | 「遇到问题，我们一起解决。」 |
+| 设置 `/settings/profile` | learner-web | pass | 「设置」 |
+| 消息 / 商城 / 报告分享深链 | learner-web | pending | |
 | 移动端全链路 | mobile | pending | |
 | 管理端模块 | admin | pending | |
 
 ## 已知缺口（前端写死，不改）
 
 - 部分页面「暂未开放 / 暂不可用」：按产品规则记入缺口，不静默改 API。
+- 未完成定级时首页/今日显示「还没有学习计划」：产品预期，不是回归。
+
+## 阻塞（后端 / 基础设施）
+
+### BLOCK-1 内容目录 503
+
+- `GET /api/v1/content/learner/catalog?contentLocale=en-US` → 503（nginx 多次命中，body ~136B）
+- content-service 容器 Up；未改后端。书架页仍可打开但目录数据不可用。
+- 处理：blocked，需查 content-service / gateway 路由与上游依赖。
 
 ## 缺陷与修复
 
 ### BUG-1 引导「必要同意」点继续无响应（401 refresh）
 
 - **现象**：三份同意已勾选，点「继续」无跳转、无报错。控制台见 `POST /auth/token/refresh` 401。
-- **服务端日志（用户 11:50–11:52 CST）**：`PUT /iam/consents` ×3 均为 200；随后 `POST /auth/token/refresh` 401；**没有**后续 learner 写目标请求。同意已落库。
+- **服务端日志（用户 11:50–11:52 CST）**：`PUT /iam/consents` ×3 均为 200；随后 refresh 401；无后续写目标。同意已落库。
 - **根因**：
-  1. `signRequiredConsents` 在同意写入后强制 `refreshSilently()`，用新 JWT 带上学习权限。
-  2. refresh 失败时 `refreshSilently` **清空会话**。
-  3. `recordRequiredConsents` 的 `catch` 在 `!stillCurrent(owner)` 时直接 `return false`，**不写 lastError**。
-  4. 页面停在同意步且无提示；再点「继续」因会话已死仍无响应。
-  5. 与 muse 换皮无关（仅加了 CSS class）；换皮后更容易在已登录页上撞到失效 refresh cookie。
-- **复现**：headless 注册→过成人门→清掉 refresh cookie→提交同意 → refresh 401，`errors []`，标题仍为「完成必要同意」。
-- **修复**（本提交）：
-  - `refreshSilently({ clearOnFailure: false })` 供同意后刷新使用，失败时保留 access token。
-  - 同意失败路径始终写入 `lastError`；文案提示退出重登。
-  - 同意步同时展示 `session.lastError`，并加强 v2 下 `.setup-error` 可见性。
-- **用户侧**：同意多半已保存。请 **退出登录再登录**，一般会从目标步或定级继续；不要反复盲点「继续」。
-- **状态**：fixed（已部署 `learner-web:5dd0daec`，bundle `index-Czsf7pgM.js`）
-- **回测**：擦除 refresh cookie 后再点继续 → 页面显示「必要同意已保存，但登录凭证未能更新。请退出并重新登录后再继续。」不再静默。
-
+  1. `signRequiredConsents` 在同意写入后强制 `refreshSilently()`。
+  2. refresh 失败时清空会话。
+  3. `recordRequiredConsents` 的 `catch` 在 `!stillCurrent(owner)` 时不写 `lastError`。
+  4. 与 muse 换皮无关（仅 CSS class）。
+- **复现**：擦除 refresh cookie 后再提交同意 → 401，旧版 `errors []`。
+- **修复**：`5dd0daec` — `refreshSilently({ clearOnFailure: false })`；失败始终写 `lastError`；同意步展示 session 错误。
+- **回测**：同场景出现「必要同意已保存，但登录凭证未能更新。请退出并重新登录后再继续。」
+- **用户侧**：**退出再登录**（同意多半已在服务端）。
 
