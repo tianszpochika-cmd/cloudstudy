@@ -70,3 +70,19 @@
   - 公网 `/internal/v1/workflow/**`、`/internal/v1/admin-ops/**` 均 404。
 - 清理：先备份 `supgov-smoke-pre-cleanup-20261013103609.sql.gz`，执行 `scripts/seed/cleanup-supgov-smoke-20261013.sql`，残留 0；reviewer 临时恢复权限已收回。admin_audit_record 为哈希链只追加表，冒烟审计记录保留。
 - 遗留：网关未路由 `/tickets/{id}/transitions(/prepare)`，生产工单按钮会 404（见合同提案第 6 节，需网关+合同变更）；未知动作拒绝后请求停留 APPROVED 而非 FAILED（安全，但状态可读性待改进）。
+
+## 第二轮签收与部署记录（2026-10-13）
+
+- 合并：`feat/v2-support-governance` P1-1/P1-2/P2-2/P3-2 补测提交（`0bbad8cb`、`12a0fd64`、`b626d5a6`、`1b512a38`，只改测试与文档）→ `dev-redesign` @ `9d7e87a3`（`merge: feat/v2-support-governance P1-1/P1-2/P2-2/P3-2 test evidence — Luna signed off`，无冲突）；`packages/contracts` 与 nginx 证书无改动。
+- 测试（合并后）：admin-ops 全量 119/0 失败/2 跳过；workflow-service 全量 83/0/13；admin-web `b8-policy-write-actions.test.mjs` 6/6；vue-tsc 无错误输出。
+- 部署（37.120.160.36）：先备份 `supgov-r2-pre-deploy-20261013195204.sql.gz`；回滚镜像记录 `/srv/cloudstudy/running-before-9d7e87a3.txt`（三服务均为 `e61829ff`）。
+- 迁移：workflow V3 早已应用（`p1r_schema_history` V3 `0e0081e4…`，与 repo 文件 checksum 一致，无漂移）。`owner-migrator:e61829ff` 镜像是过期快照（workflow 缺 V3）导致全库 `--verify` 误报 content-service "future version"；用当前头重建 `owner-migrator:9d7e87a3` 后 `--verify` 通过（13 个外部 owner 历史与授权校验全过，无变更）。
+- 重建：仅 `admin-ops-service`、`workflow-service`、`admin-web`（镜像标签 `9d7e87a3`），api-gateway 等其它服务未动；`ADMINOPS_IT7_DISPOSITION_OPEN` 未设置（=false）。健康检查：workflow/admin-ops `actuator/health` 200，admin-web 首页 200，网关 200。
+- 冒烟 `SMOKE-SUPGOV-20261013` 18/18 通过（ticket `53b4f02d-…`，恢复单 `62336a56-…`）：
+  - 仅哈希建单 503（`SUPPORT_CONTENT_REFERENCE_UNAVAILABLE`）；校验附件建单 200（`VERIFIED_CONTENT_V1`）。注：首轮清理删掉了媒体授权行，冒烟前需先插入前置授权（platform/admin/`obj:SMOKE-SUPGOV-20261013-1`/v1），该行随清理一并删除。
+  - 真实 `TICKET/REOPEN` 恢复：admin 申请 201 → admin 自批 403 → reviewer（临时授予 `admin.recovery.read/command`）批准 200 → admin 执行 EXECUTED（"admin-ops support_ticket -> IN_PROGRESS"）→ 重复执行幂等 EXECUTED；工单回到 IN_PROGRESS；admin-ops 审计 `SUPPORT_RECOVERY_REOPEN` 1 条；`recovery_side_effect_log` APPLIED 1 条。
+  - 未知动作 `TICKET/DELETE` 执行被拒 403（请求停留 APPROVED，未产生副作用）。
+  - reviewer 无 `admin.recovery.request` 申请 403；策略页 reviewer 403 / admin 200；IT7 写开关 FROZEN、dispositionOpen=false。
+  - 公网 `/internal/v1/workflow/**`、`/internal/v1/admin-ops/**` 均 404。
+- 清理：先备份 `supgov-r2-smoke-pre-cleanup-20261013200600.sql.gz`，执行 `scripts/seed/cleanup-supgov-smoke-20261013.sql`，残留 `0 0 0 0`（工单/恢复单/媒体授权/ reviewer 恢复权限全部收回）。admin_audit_record 为哈希链只追加表，冒烟审计记录保留。
+- 遗留（同首轮）：网关未路由 `/tickets/{id}/transitions(/prepare)`；未知动作拒绝后请求停留 APPROVED。
