@@ -87,6 +87,20 @@ class ManualRecoveryExecuteEffectTest {
     }
 
     @Test
+    void executorMayBeTheRequesterBecauseTwoPersonControlIsAtApproval() {
+        FakeStore store = new FakeStore();
+        ManualRecoveryService service = new ManualRecoveryService(store,
+                (recoveryId, type, id, action, executor, bearer) -> "ok");
+        var requested = service.request("ops-1", "TICKET", "t-3", "REOPEN", "stuck");
+        service.approve(requested.recoveryId(), "ops-2");
+        var executed = service.execute(requested.recoveryId(), "ops-1", "jwt-requester");
+        assertEquals("EXECUTED", executed.status());
+        assertEquals("ops-1", store.receipts.get(requested.recoveryId()));
+        assertEquals("ops-1", store.byId.get(requested.recoveryId()).request().requestedBy());
+        assertEquals("ops-2", store.byId.get(requested.recoveryId()).request().approvedBy());
+    }
+
+    @Test
     void bearerTokenIsForwardedToTheOwnerCall() {
         FakeStore store = new FakeStore();
         AtomicReference<String> seen = new AtomicReference<>();

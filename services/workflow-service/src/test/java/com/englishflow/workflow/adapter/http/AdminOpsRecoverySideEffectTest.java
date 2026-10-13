@@ -58,7 +58,14 @@ class AdminOpsRecoverySideEffectTest {
         assertThrows(RecoverySideEffectPort.SideEffectUncertain.class,
                 () -> with(respond(503, "")).apply("r", "TICKET", "t", "REOPEN", "e", "jwt"));
         assertThrows(RecoverySideEffectPort.SideEffectUncertain.class,
+                () -> with(respond(429, "{\"code\":\"RATE_LIMITED\"}")).apply("r", "TICKET", "t", "REOPEN", "e", "jwt"));
+        assertThrows(RecoverySideEffectPort.SideEffectUncertain.class,
                 () -> with((uri, b, k) -> { throw new IOException("reset"); }).apply("r", "TICKET", "t", "REOPEN", "e", "jwt"));
+        assertThrows(RecoverySideEffectPort.SideEffectUncertain.class,
+                () -> with((uri, b, k) -> { throw new InterruptedException("cancelled"); })
+                        .apply("r", "TICKET", "t", "REOPEN", "e", "jwt"));
+        assertTrue(Thread.currentThread().isInterrupted(), "interruption must stay visible to the caller");
+        Thread.interrupted();
         assertThrows(RecoverySideEffectPort.SideEffectUncertain.class,
                 () -> with(respond(200, "")).apply("r", "TICKET", "t", "REOPEN", "e", null));
     }

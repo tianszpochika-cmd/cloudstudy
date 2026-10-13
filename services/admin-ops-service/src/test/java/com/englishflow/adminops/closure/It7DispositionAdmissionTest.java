@@ -102,7 +102,42 @@ class It7DispositionAdmissionTest {
         It7ClosureStudio studio = new It7ClosureStudio();
         String caseId = String.valueOf(studio.handle(staff(), "FILE", Map.of(
                 "sourceRef", "src-ro2", "title", "只读2")).data().get("caseId"));
-        assertThat(studio.handle(readOnly(), "TRIAGE", Map.of("caseId", caseId)).status()).isEqualTo(403);
+        for (String command : new String[] {"TRIAGE", "ISOLATE", "ESCALATE", "CLOSE"}) {
+            It7ClosureStudio.Result denied = studio.handle(readOnly(), command, Map.of("caseId", caseId));
+            assertThat(denied.status()).as(command).isEqualTo(403);
+            assertThat(denied.error()).as(command).containsEntry("code", "CLOSURE_WRITE_FORBIDDEN");
+        }
+        assertThat(studio.handle(staff(), "CASES", Map.of()).data().get("items").toString()).contains("FILED");
+        assertThat(studio.isolationWrites()).isZero();
+    }
+
+    @Test
+    void moderationReadOnlyActorGets403OnEveryDisposition() {
+        It7ClosureStudio.Actor moderationReader =
+                new It7ClosureStudio.Actor("mod-viewer-1", true, Set.of("admin.moderation.read"));
+        It7ClosureStudio studio = new It7ClosureStudio(new MemoryClosureDeskStore(), true);
+        String caseId = String.valueOf(studio.handle(staff(), "FILE", Map.of(
+                "sourceRef", "src-mod-ro", "title", "审核只读", "idempotencyKey", "file-mod-ro")).data().get("caseId"));
+        for (String command : new String[] {"TRIAGE", "ISOLATE", "ESCALATE", "CLOSE"}) {
+            It7ClosureStudio.Result denied = studio.handle(moderationReader, command, Map.of("caseId", caseId));
+            assertThat(denied.status()).as(command).isEqualTo(403);
+            assertThat(denied.error()).as(command).containsEntry("code", "CLOSURE_WRITE_FORBIDDEN");
+        }
+        assertThat(studio.isolationWrites()).isZero();
+    }
+
+    @Test
+    void anonymousActorGets401OnEveryDisposition() {
+        It7ClosureStudio studio = new It7ClosureStudio(new MemoryClosureDeskStore(), true);
+        String caseId = String.valueOf(studio.handle(staff(), "FILE", Map.of(
+                "sourceRef", "src-anon", "title", "匿名", "idempotencyKey", "file-anon")).data().get("caseId"));
+        for (String command : new String[] {"TRIAGE", "ISOLATE", "ESCALATE", "CLOSE"}) {
+            It7ClosureStudio.Result denied =
+                    studio.handle(It7ClosureStudio.Actor.anonymous(), command, Map.of("caseId", caseId));
+            assertThat(denied.status()).as(command).isEqualTo(401);
+            assertThat(denied.error()).as(command).containsEntry("code", "CLOSURE_UNAUTHENTICATED");
+        }
+        assertThat(studio.isolationWrites()).isZero();
     }
 
     @Test
