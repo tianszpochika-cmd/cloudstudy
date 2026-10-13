@@ -60,3 +60,22 @@ onMounted(async () => {
 h1 { margin: 0; font-size: 28px; }
 p { margin: 0; line-height: 1.6; }
 </style>
+
+<style>
+/* v2 ReportShare 页面级布局（无专属原型，用普通内容页卡片风格）。
+ * 选择器全部以 .v2-page--reportshare 开头；颜色只用 --v2-* tokens，不写死色值以适配暗色。 */
+.v2-page--reportshare{background:var(--v2-bg);color:var(--v2-ink);font-family:var(--v2-font);display:grid;gap:var(--v2-space-5);align-items:start}
+.v2-page--reportshare .v2-reportshare-body{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:var(--v2-space-5);align-items:start;min-width:0}
+.v2-page--reportshare .v2-reportshare-main{display:grid;gap:var(--v2-space-5);min-width:0;align-content:start}
+.v2-page--reportshare .v2-reportshare-title{margin:0;font-size:var(--v2-text-xl);color:var(--v2-ink);line-height:1.35}
+.v2-page--reportshare .v2-reportshare-card{background:var(--v2-card);border:1px solid var(--v2-line);border-radius:var(--v2-radius-lg);box-shadow:var(--v2-shadow);padding:var(--v2-space-6);min-width:0;display:grid;gap:var(--v2-space-4);align-content:start}
+.v2-page--reportshare .v2-reportshare-copy{margin:0;color:var(--v2-ink);font-size:var(--v2-text-md);line-height:1.7}
+.v2-page--reportshare .v2-reportshare-range{display:inline-flex;align-items:center;width:fit-content;max-width:100%;margin:0;padding:var(--v2-space-1) var(--v2-space-3);border-radius:var(--v2-radius-pill);background:var(--v2-soft);color:var(--v2-brand);font-size:var(--v2-text-xs);font-weight:700;line-height:1.6}
+.v2-page--reportshare .v2-reportshare-suggestion{margin:0;padding:var(--v2-space-4);background:var(--v2-surface);border:1px solid var(--v2-line);border-radius:var(--v2-radius-md);color:var(--v2-ink);font-size:var(--v2-text-sm);line-height:1.7}
+.v2-page--reportshare .v2-reportshare-note{margin:0;color:var(--v2-mut);font-size:var(--v2-text-sm);line-height:1.6}
+.v2-page--reportshare .v2-reportshare-rail{background:var(--v2-card);border:1px solid var(--v2-line);border-radius:var(--v2-radius-lg);box-shadow:var(--v2-shadow);padding:var(--v2-space-6);min-width:0;position:sticky;top:var(--v2-space-6);display:grid;align-content:start;gap:var(--v2-space-3)}
+.v2-page--reportshare .v2-reportshare-rail h2{margin:0;font-size:var(--v2-text-lg);color:var(--v2-ink)}
+.v2-page--reportshare .v2-reportshare-rail ol{margin:0;padding-left:var(--v2-space-5);display:grid;gap:var(--v2-space-2);color:var(--v2-mut);font-size:var(--v2-text-sm);line-height:1.7}
+@media(max-width:1190px){.v2-page--reportshare .v2-reportshare-body{grid-template-columns:minmax(0,1fr) 250px}}
+@media(max-width:900px){.v2-page--reportshare .v2-reportshare-body{grid-template-columns:1fr}.v2-page--reportshare .v2-reportshare-rail{position:static}}
+</style>
