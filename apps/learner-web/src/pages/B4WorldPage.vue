@@ -91,7 +91,7 @@ function cleanupOfflineDownload(downloadId: string): void { void b4.cleanupOffli
 </script>
 
 <template>
-  <section class="b4-page" :data-performance="b4.performanceLevel" :data-avatar-render="b4.effectiveAvatarRenderMode" aria-labelledby="b4-title">
+  <section class="b4-page v2-page v2-page--b4world" :data-performance="b4.performanceLevel" :data-avatar-render="b4.effectiveAvatarRenderMode" aria-labelledby="b4-title">
     <ExperienceHeader page="World" icon="globe" title-id="b4-title" hero><StudyArtwork compact /></ExperienceHeader>
 
     <section class="b4-status" :class="`b4-status--${b4.status}`" role="status" aria-live="polite">
@@ -123,7 +123,7 @@ function cleanupOfflineDownload(downloadId: string): void { void b4.cleanupOffli
         <article class="b4-metric"><span>通知</span><strong>{{ unreadCount }}</strong><small>{{ b4.notifications.length ? '未读通知' : '暂时没有新通知' }}</small></article>
       </section>
 
-      <section class="b4-grid b4-grid--world">
+      <section class="b4-grid b4-grid--world v2-b4world-main">
         <article class="b4-card b4-card--wide">
           <div class="b4-card__heading"><div><p class="card-kicker">GALAXY MAP</p><h2>成长世界</h2></div><span class="b4-fact-tag">我的学习足迹</span></div>
           <p class="b4-muted">每次练习，都在为你的学习世界添一点光。看看已经走过的路，再选一个方向继续。</p>
@@ -206,6 +206,7 @@ function cleanupOfflineDownload(downloadId: string): void { void b4.cleanupOffli
       <section class="b4-card"><div class="b4-card__heading"><div><p class="card-kicker">离线学习</p><h2>内容包</h2></div><span>{{ b4.online ? '在线' : '离线' }}</span></div><div v-if="b4.offlinePackages.length" class="b4-package-list"><article v-for="item in b4.offlinePackages" :key="item.packageId" class="b4-package"><div><strong>{{ item.packageCode }}</strong><small>{{ fileSize(item.sizeBytes) }} · {{ item.completedPartCount }}/{{ item.partCount }} 部分</small></div><span class="b4-package__state">{{ packageStatus(item.downloadState ?? item.state) }}</span><button v-if="item.state === 'PUBLISHED' && !item.downloadId" class="button button--secondary" type="button" @click="authorizePackage(item.packageId)">请求授权</button><button v-if="item.downloadId && ['AUTHORIZED', 'DOWNLOADING'].includes(item.downloadState ?? '')" class="button button--secondary" type="button" @click="updateOfflineDownload(item.downloadId, 'PAUSE')">暂停</button><button v-if="item.downloadId && item.downloadState === 'PAUSED'" class="button button--secondary" type="button" @click="updateOfflineDownload(item.downloadId, 'RESUME')">继续</button><button v-if="item.downloadId && item.downloadState !== 'ACTIVE_LOCAL'" class="button button--ghost" type="button" @click="cleanupOfflineDownload(item.downloadId)">清理</button></article></div><p v-else class="b4-inline-empty">暂无可下载的内容包。</p></section>
       <section class="b4-card"><div class="b4-card__heading"><div><p class="card-kicker">离线操作</p><h2>待同步</h2></div><span>{{ b4.queueCount }} 条</span></div><div v-if="b4.offlineRecords.length" class="b4-queue-list"><article v-for="item in b4.offlineRecords" :key="item.id"><strong>自习室互动</strong><span>{{ queueStatus(item.status) }}</span><small v-if="item.lastError">{{ item.lastError }}</small></article></div><p v-else class="b4-inline-empty">没有待同步操作。</p><button v-if="b4.queueCount" class="button button--primary" type="button" @click="b4.syncOffline">立即同步</button></section>
     </template>
+    <aside class="v2-b4world-rail" aria-label="练习提示"><h2>语言世界</h2><ol><li>选择一个场景开始练习。</li><li>完成后可回到列表继续。</li></ol></aside>
   </section>
 </template>
 
