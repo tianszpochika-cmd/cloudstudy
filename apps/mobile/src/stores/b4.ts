@@ -120,7 +120,7 @@ export const useB4Store = defineStore('b4', () => {
     const rejected = results.filter((result): result is PromiseRejectedResult => result.status === 'rejected')
     const denied = rejected.find((result) => result.reason instanceof MobileApiError && [401, 403].includes(result.reason.status))
     if (denied) { clearPersonalViews(); notificationStatus.value = 'error'; fail(denied.reason, '当前没有读取学习世界的权限。'); return }
-    if (rejected.length === results.length) { clearPersonalViews(); notificationStatus.value = 'error'; fail(rejected[0].reason, '学习世界暂时无法读取。'); return }
+    if (results.slice(0, 11).every((result) => result.status === 'rejected')) { clearPersonalViews(); notificationStatus.value = 'error'; fail(rejected[0].reason, '学习世界暂时无法读取。'); return }
     const value = (index: number, fallback: unknown): unknown => results[index]?.status === 'fulfilled' ? results[index].value : fallback
     const profileRaw = value(0, null)
     profile.value = parseProfile(profileRaw)
