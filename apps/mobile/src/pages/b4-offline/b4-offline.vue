@@ -60,7 +60,7 @@ function fileSize(bytes: number): string { return bytes >= 1048576 ? `${(bytes /
             <button tabindex="0" role="button" v-if="item.downloadId && item.downloadState !== 'ACTIVE_LOCAL'" class="small-button secondary btn opt v2-offline-btn v2-offline-opt" type="button" @click="b4.cleanupOfflineDownload(item.downloadId)">清理</button>
           </view>
         </view>
-        <text v-else class="empty-copy fb d v2-offline-fb v2-offline-d">暂无可下载的内容包。</text>
+        <text v-else class="empty-copy fb d v2-offline-fb v2-offline-d">离线内容包<text class="yx-soon-badge" data-coming-soon>即将开放</text><text class="yx-soon-reason" data-closed-reason>离线下载服务尚未上线，目前学习内容需联网读取。</text></text>
       </view>
       <view class="yx-card card v2-offline-card">
         <view class="heading v2-offline-head">

@@ -265,6 +265,8 @@ export const useB10LearningStore = defineStore('mobile-b10-learning', () => {
       practiceStatus.value = practice.value.exercises.length ? 'ready' : 'empty'; persist()
     } catch (error) {
       if (!stillCurrent(owner)) return
+      // 410 = this legacy fixed content version has no gradable items left; say so and point to the live entry.
+      if ((error as { status?: unknown } | null)?.status === 410) { practiceStatus.value = 'empty'; practiceMessage.value = '这个旧版练习入口的题组已下线，请从底部「练习」进入今天的练习。'; persist(); return }
       const info = b10ErrorInfo(error, '练习会话暂时无法创建。'); practiceStatus.value = info.kind; practiceMessage.value = info.message; persist()
     }
   }

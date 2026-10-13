@@ -112,7 +112,9 @@ export const useB4Store = defineStore('b4', () => {
     const results = await Promise.allSettled([
       getB4Profile(), getB4Streak(), listB4Quests(), getB4Season(), getB4AvatarProfile(),
       listB4AvatarItems(), listB4Loadouts(), getB4AvatarResources(), listB4Games(), listB4Rooms(),
-      listB4Notifications(), listB4OfflinePackages(),
+      // Offline packages are not built yet (client returns unavailable); that is a known
+      // coming-soon feature, not a failed read, so it must not raise the partial-failure banner.
+      listB4Notifications(), listB4OfflinePackages().catch(() => ({ items: [] })),
     ])
     if (!sameOwner(owner) || request !== worldRequest) return
     const rejected = results.filter((result): result is PromiseRejectedResult => result.status === 'rejected')
