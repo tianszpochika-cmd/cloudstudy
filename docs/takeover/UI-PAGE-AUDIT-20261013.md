@@ -130,7 +130,7 @@
 
 | 审查编号 | 真实路由 | 页面源文件 | 本页需展开的场景 | 当前状态 | 证据 / 提交 / 远程收据 |
 |---|---|---|---|---|---|
-| MB-001 | `#/pages/login/login` | [apps/mobile/src/pages/login/login.vue](../../apps/mobile/src/pages/login/login.vue) | 登录 | IN_REVIEW | 正式H5重设计与原生输入适配；依赖缓存复验中 |
+| MB-001 | `#/pages/login/login` | [apps/mobile/src/pages/login/login.vue](../../apps/mobile/src/pages/login/login.vue) | 登录 | IN_REVIEW | 24组渲染通过；空提交原生aria-invalid失败，额度暂停，未签/未推送 |
 | MB-002 | `#/pages/register/register` | [apps/mobile/src/pages/register/register.vue](../../apps/mobile/src/pages/register/register.vue) | 注册 | PENDING | — |
 | MB-003 | `#/pages/reset-password/reset-password` | [apps/mobile/src/pages/reset-password/reset-password.vue](../../apps/mobile/src/pages/reset-password/reset-password.vue) | 请求/确认两步、完成态 | PENDING | — |
 | MB-004 | `#/pages/onboarding/onboarding` | [apps/mobile/src/pages/onboarding/onboarding.vue](../../apps/mobile/src/pages/onboarding/onboarding.vue) | 成人门、同意、目标、定级四幕 | PENDING | — |

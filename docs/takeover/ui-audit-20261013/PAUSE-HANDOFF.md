@@ -28,6 +28,8 @@
 
 未签代码的额外Git外快照：`.git/codex-local-backups/ui-audit-20261013/pause-mobile/`，含文件及SHA256。只作恢复保险，不用于覆盖当前更晚的工作。原来的只读移动登录缺陷证据在`.git/codex-local-backups/ui-mobile-login-inspection/`。
 
+子Agent停工后的最新断点（取代上文缓存阻塞）：已确认只重启本轮自有旧服务；新服务**session25314**继续在18183，新PID未读取。缓存已刷新，24组宽度/语言/主题、真实标题、16px输入、44px目标、对比度与初次Tab焦点通过；完整交互脚本在`apps/mobile/tests/ui-login.e2e.cjs:130`失败，空提交后原生账号input的`aria-invalid`仍为`null`，预期`true`。下一周期先查H5桥接更新/异步时序，不把24矩阵或build当整页PASS。原始失败与记录在未提交的`docs/takeover/ui-audit-20261013/mobile-login/results.json`。Mobile代码/证据仍未签收、未推送。
+
 下一周期：先查额度与Git远程/差量，复验Mobile登录当前源码、整页文案/主题/输入/焦点/busy/中英/文字放大，再由根Agent独立Review，具名UI通过才更新文档并单独提交推送。随后按队列继续正式页面重设计，不只修bug、不只改静态Demo。
 
 ## 保护与未关闭项
