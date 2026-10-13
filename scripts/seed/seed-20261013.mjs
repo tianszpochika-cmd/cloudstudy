@@ -254,9 +254,10 @@ async function adminApi(topup = false) {
   const A = (m, p, body) => call(m, p, { body, token, origin: 'https://admin.clyunedev.com' });
   let ok = 0; const fail = {};
   const tally = (k, r) => { if (r.status < 300) { add(k); ok++; } else fail[k] = `${r.status} ${JSON.stringify(r.json?.error ?? r.json).slice(0, 160)}`; return r; };
-  for (const w of VOCAB) { if (doneWords.has(w[0])) continue;
+  const POSMAP = { noun: 'NOUN', verb: 'VERB', adjective: 'ADJ', adverb: 'ADV' };
+  for (const w0 of VOCAB) { if (doneWords.has(w0[0])) continue; const w = [...w0]; w[1] = POSMAP[w[1]] || w[1].toUpperCase();
     const r = tally('词条（管理端 VOCAB-PHASE1）', await A('POST', '/admin/content-commands', { command: 'LEXEME_UPSERT', contentCode: 'VOCAB-PHASE1', expectedStateVersion: 0, lexemeId: '', lexeme: { headword: w[0], language: 'en-US', lemma: w[0], pos: [w[1]], cefr: w[7], phoneticUS: w[2], phoneticUK: w[2], senses: [{ pos: w[1], meaningCn: w[3], meaningEn: w[4], examples: [{ en: w[5], cn: w[6], source: TAG }], usageNote: TAG }] } }));
-    const d = r.data; if (d?.lexemeId && VOCAB.indexOf(w) % 3 === 0) await A('POST', '/admin/content-commands', { command: 'LEXEME_SUBMIT_REVIEW', contentCode: 'VOCAB-PHASE1', expectedStateVersion: d.lexemeStateVersion ?? 1, lexemeId: d.lexemeId, reasonCode: 'TENANT_ADMIN' });
+    const d = r.data; if (d?.lexemeId && VOCAB.indexOf(w0) % 3 === 0) await A('POST', '/admin/content-commands', { command: 'LEXEME_SUBMIT_REVIEW', contentCode: 'VOCAB-PHASE1', expectedStateVersion: d.lexemeStateVersion ?? 1, lexemeId: d.lexemeId, reasonCode: 'TENANT_ADMIN' });
   }
   const kinds = ['QUESTION', 'EXAMPLE', 'GRAMMAR_POINT', 'EXERCISE', 'PASSAGE'];
   for (let i = itemsHave; i < 40; i++) { const g = GRAMMAR[i]; const kind = kinds[i % 5];
