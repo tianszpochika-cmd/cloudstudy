@@ -297,7 +297,7 @@ async function advanceRoleplay(choiceCode?: string): Promise<void> {
           </button>
         </div>
         <div v-if="minimalPairs.length" class="pairs">
-          <p class="eyebrow">MINIMAL PAIRS</p>
+          <p class="eyebrow">最小对立词</p>
           <span v-for="pair in minimalPairs" :key="pair.pairId"
             >{{ pair.leftWord }} ↔ {{ pair.rightWord }}</span
           >

@@ -16,7 +16,8 @@ const correctionAnswer = ref('')
 const selectedTemplateId = ref<number | null>(null)
 const draft = computed({ get: () => store.writingDraft, set: (value: string) => store.saveWritingDraft(value) })
 
-onMounted(() => { store.restore(); void store.loadWriting() })
+// Writing is closed (placeholder grading); do not load the live writing session.
+onMounted(() => { store.restore() })
 function retry(): void { void store.loadWriting() }
 function performance(level: B10PerformanceLevel): void { store.setPerformanceLevel(level) }
 function chooseTemplate(templateId: number): void {
@@ -36,7 +37,7 @@ function submitCorrection(): void { void store.submitCurrentProofreading(correct
     <ExperienceHeader class="v2-b3writing-head" page="Writing" icon="pen" title-id="writing-title" />
     <p data-closed-practice role="status" class="v2-b3writing-closed"><strong>写作练习</strong><span data-coming-soon style="display:inline-block;margin-left:8px;padding:1px 8px;border-radius:999px;background:rgba(245,158,11,.16);color:#d97706;font-size:12px;font-weight:700;vertical-align:middle">即将开放</span><span data-closed-reason style="display:block;margin-top:4px;opacity:.8">作文批改服务尚未接入，现在提交只能得到占位分数，不能作为真实反馈。</span></p>
     <a data-closed-back href="/today" class="v2-b3writing-back">回到可用学习</a>
-    <B10StatePanel class="v2-b3writing-state" v-if="store.writingStatus !== 'ready' || store.writingMessage" :status="store.writingStatus" :message="store.writingMessage" module-label="WRT / WRITING" :performance-level="store.performanceLevel" @retry="retry" @performance="performance" />
+    <B10StatePanel class="v2-b3writing-state" v-if="store.writingStatus !== 'ready' || store.writingMessage" :status="store.writingStatus" :message="store.writingMessage" module-label="写作" :performance-level="store.performanceLevel" @retry="retry" @performance="performance" />
     <div class="v2-b3writing-body"><div class="v2-b3writing-main">
     <section v-if="prompt" class="writing-layout v2-b3writing-layout">
       <article class="prompt-panel v2-b3writing-prompt"><p class="eyebrow v2-b3writing-meta">写作练习<span class="v2-sr-only">{{ prompt.promptType }} · {{ prompt.contentVersionId }}</span></p><h3>{{ prompt.title }}</h3><p>{{ prompt.taskText }}</p><div class="tags"><span v-for="target in prompt.targetStructure" :key="target">{{ target }}</span></div><h4>可用模板</h4><button v-for="template in store.writingTemplates" :key="template.templateId" class="template" :class="{ active: selectedTemplateId === template.templateId }" type="button" @click="chooseTemplate(template.templateId)"><strong>{{ template.title }}</strong><small>{{ template.structure.map((slot) => slot.label).join(' → ') }}</small></button><h4>主题材料</h4><p v-for="material in store.writingMaterials" :key="material.materialId" class="material">{{ material.title }}：{{ material.bodyText }}</p></article>

@@ -101,7 +101,7 @@ onMounted(() => { void load() })
           </div>
           <button class="primary-button" type="button" data-single-submit :disabled="!selectedKey || isLoading || submitting" @click="void submit()">
             {{ isLoading ? '正在记录…' : '提交答案' }}
-          </button>
+          </button><small v-if="!selectedKey && !isLoading && !submitting" class="disabled-reason" data-disabled-reason>先选择一个选项，再提交。</small>
         </section>
 
         <section v-else-if="isLoading" class="state-panel v2-practice-card" role="status" aria-live="polite">

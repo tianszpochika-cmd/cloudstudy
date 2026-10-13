@@ -86,7 +86,7 @@ onMounted(() => { void load() })
     />
     <template v-if="state === 'ready'">
       <section class="info-card v2-messages-card" aria-label="站内消息">
-        <div class="yx-section-heading"><div><p class="yx-kicker">站内消息<span class="v2-sr-only">INBOX</span></p><h3>站内消息</h3></div><span class="yx-fact-tag">{{ messages.filter((m) => !m.read).length }} 未读</span></div>
+        <div class="yx-section-heading"><div><p class="yx-kicker">站内消息<span class="v2-sr-only">收件箱</span></p><h3>站内消息</h3></div><span class="yx-fact-tag">{{ messages.filter((m) => !m.read).length }} 未读</span></div>
         <p v-if="!messages.length" class="yx-fact-tag">暂无消息。</p>
         <ul v-else class="yx-msg-list">
           <li v-for="msg in messages" :key="msg.messageId" :class="{ 'yx-msg-list__unread': !msg.read }">

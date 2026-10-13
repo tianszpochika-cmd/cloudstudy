@@ -164,7 +164,7 @@ onUnmounted(() => { mounted = false; clearPersonal() })
 
 <template>
   <section class="b12-extension b12-card" aria-labelledby="b12-leaderboard-title">
-    <div class="b12-heading"><div><p class="b12-kicker">LEADERBOARD · REPORT</p><h2 id="b12-leaderboard-title">{{ b12T('social.leaderboard') }}</h2></div><span class="b12-state">{{ b12T('social.privacy') }}</span></div>
+    <div class="b12-heading"><div><p class="b12-kicker">排行榜 · 报告</p><h2 id="b12-leaderboard-title">{{ b12T('social.leaderboard') }}</h2></div><span class="b12-state">{{ b12T('social.privacy') }}</span></div>
     <div v-if="b4.rooms.length" class="b12-room-tabs" role="tablist"><button v-for="room in b4.rooms" :key="room.roomId" type="button" :aria-selected="selectedRoomId === room.roomId" :class="{ active: selectedRoomId === room.roomId }" @click="loadLeaderboard(room.roomId)">{{ room.name }}</button></div>
     <div v-if="actionKey?.startsWith('leaderboard.')" class="b12-inline-state" role="status">{{ b12T('social.loadingLeaderboard') }}</div>
     <div v-else-if="leaderboard?.entries.length" class="b12-leaderboard" role="list"><article v-for="entry in leaderboard.entries" :key="`${entry.rank}-${entry.targetSeatIndex ?? 'global'}`" class="b12-entry" role="listitem"><div><strong>#{{ entry.rank }} · {{ entry.displayName ?? '匿名学员' }}</strong><small>{{ entry.displayMode }} · {{ b12T('social.focusSeconds') }} {{ formatSeconds(entry.qualifiedUnits * 60) }}</small></div><button v-if="canCreateSocialReport && !entry.isSelf && entry.targetSeatIndex" class="button button--ghost" type="button" :disabled="Boolean(actionKey) || !b4.online" @click="reportUser(entry)">{{ actionKey === `report.${selectedRoomId}.${entry.targetSeatIndex}` ? b12T('social.submittingReport') : b12T('social.report') }}</button><span v-else class="b12-self">{{ entry.isSelf ? b12T('social.noSelfReport') : b12T('social.privacy') }}</span></article></div>
@@ -174,7 +174,7 @@ onUnmounted(() => { mounted = false; clearPersonal() })
     <p v-if="status === 'permission'" class="b12-inline-state">{{ b12T('status.permission') }}</p><p v-else-if="status === 'offline'" class="b12-inline-state">{{ b12T('status.offline') }}</p><p v-else-if="status === 'recovery'" class="b12-inline-state">{{ b12T('status.recovery') }}</p><p v-else-if="lastError" class="b12-inline-state">{{ lastError }}</p>
   </section>
   <section class="b12-extension b12-card" aria-labelledby="b12-notification-preferences-title">
-    <div class="b12-heading"><div><p class="b12-kicker">NOTIFICATION CENTER</p><h2 id="b12-notification-preferences-title">{{ b12T('notifications.preferences') }}</h2></div><span class="b12-state">{{ b12T('notifications.loadedCount', { count: notificationCount }) }}</span></div>
+    <div class="b12-heading"><div><p class="b12-kicker">通知中心</p><h2 id="b12-notification-preferences-title">{{ b12T('notifications.preferences') }}</h2></div><span class="b12-state">{{ b12T('notifications.loadedCount', { count: notificationCount }) }}</span></div>
     <p class="b12-muted">{{ b12T('notifications.inAppOnly') }}</p><RouterLink class="b12-settings-link" to="/settings/notifications">{{ b12T('notifications.preferences') }}</RouterLink>
   </section>
 </template>

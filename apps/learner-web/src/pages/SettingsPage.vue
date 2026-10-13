@@ -86,7 +86,7 @@ async function refreshDevices(): Promise<void> { await b1.refreshDevices() }
       </div>
       <template v-else>
         <label>{{ et('settingsDailyGoal') }}<select v-model="quota" :disabled="saving" @change="saved = false"><option v-for="item in dailyQuotaOptions" :key="item" :value="item">{{ item }} {{ et('minutes') }}</option></select></label>
-        <button class="button button--primary" type="button" :disabled="saving || quota === b1.profile.dailyQuotaMinutes" @click="saveQuota">{{ saving ? et('settingsSaving') : et('settingsSaveGoal') }}</button>
+        <button class="button button--primary" type="button" :disabled="saving || quota === b1.profile.dailyQuotaMinutes" @click="saveQuota">{{ saving ? et('settingsSaving') : et('settingsSaveGoal') }}</button><small v-if="!saving && quota === b1.profile.dailyQuotaMinutes" class="disabled-reason" data-disabled-reason>调整每日目标后即可保存。</small>
         <p v-if="saved" class="success-text" role="status">{{ et('settingsGoalSaved') }}</p>
       </template>
       <p class="muted">{{ et('settingsNicknameUnavailable') }}</p>

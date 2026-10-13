@@ -66,7 +66,7 @@ function continueLearning(): void {
       <p v-if="planExplanation" class="plan-banner v2-today-banner" role="status">{{ planExplanation }}</p>
       <p v-if="firstLearningCopy" class="plan-banner v2-today-banner" role="status">{{ firstLearningCopy }}</p>
       <p v-if="store.planNotice" class="plan-banner v2-today-banner" role="status">{{ store.planNotice }}</p>
-      <div class="section-heading v2-today-heading"><div><p class="card-kicker">DAILY STREAM</p><h3>今日任务</h3></div><button class="button button--secondary" type="button" @click="continueLearning">{{ availableTask ? '继续学习' : '浏览课程' }}</button></div>
+      <div class="section-heading v2-today-heading"><div><p class="card-kicker">今日练习流</p><h3>今日任务</h3></div><button class="button button--secondary" type="button" @click="continueLearning">{{ availableTask ? '继续学习' : '浏览课程' }}</button></div>
       <StatePanel v-if="planEmpty" state="empty" :title="planEmpty.title" :description="planEmpty.description" :action-label="planEmpty.action" @action="openPlanEmpty(planEmpty)" />
       <StatePanel v-else-if="!tasks.length && !practice.length" state="empty" title="今天还没有安排任务" description="可以先从书架选择一节课。" />
       <div v-for="task in practice" :key="`practice-${task.id}`" class="task-row v2-today-card">
@@ -81,7 +81,7 @@ function continueLearning(): void {
             <span data-next-question>{{ practiceResult(task.id)?.nextQuestion }}</span>
           </p>
         </div>
-        <button class="button button--ghost" type="button" :disabled="!selections[task.id]" @click="submitPractice(task.id)">提交作答</button>
+        <button class="button button--ghost" type="button" :disabled="!selections[task.id]" @click="submitPractice(task.id)">提交作答</button><small v-if="!selections[task.id]" class="disabled-reason" data-disabled-reason>先选择一个答案，再提交。</small>
       </div>
       <div v-for="task in tasks" :key="task.id" class="task-row v2-today-card" :class="{ completed: task.completed }">
         <span class="task-icon">{{ task.kind === 'NEW' ? '＋' : task.kind === 'REVIEW' ? '↻' : '!' }}</span>

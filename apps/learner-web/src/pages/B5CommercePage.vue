@@ -111,7 +111,7 @@ onMounted(() => { void load() })
 
     <div class="commerce-grid v2-b5commerce-grid">
       <section class="commerce-panel commerce-panel--wide v2-b5commerce-card">
-        <div class="panel-heading"><div><p class="panel-kicker v2-b5commerce-kicker">选择学习方案<span class="v2-sr-only">PLANS</span></p><h3>选择学习方案</h3></div></div>
+        <div class="panel-heading"><div><p class="panel-kicker v2-b5commerce-kicker">选择学习方案<span class="v2-sr-only">学习方案</span></p><h3>选择学习方案</h3></div></div>
         <div v-if="loading" class="empty-copy">正在读取学习方案…</div>
         <p v-else-if="!plans.length" class="empty-copy">暂无可购买的学习方案。</p>
         <div v-else class="plan-grid">
@@ -126,14 +126,14 @@ onMounted(() => { void load() })
       </section>
 
       <section class="commerce-panel v2-b5commerce-card">
-        <div class="panel-heading"><div><p class="panel-kicker v2-b5commerce-kicker">我的权益<span class="v2-sr-only">ENTITLEMENTS</span></p><h3>我的权益</h3></div><span class="fact-tag">{{ activeEntitlements.length }} 项生效</span></div>
+        <div class="panel-heading"><div><p class="panel-kicker v2-b5commerce-kicker">我的权益<span class="v2-sr-only">已获权益</span></p><h3>我的权益</h3></div><span class="fact-tag">{{ activeEntitlements.length }} 项生效</span></div>
         <div v-if="activeEntitlements.length" class="fact-list"><div v-for="item in activeEntitlements" :key="item.sourceRef" class="fact-row"><span>学习权益</span><strong>使用中</strong><small v-if="item.expiresAt">有效至 {{ item.expiresAt.slice(0, 10) }}</small></div></div>
         <p v-else class="empty-copy">暂未开通学习权益。</p>
-        <div class="activation-box"><label for="activation-code">激活码兑换</label><div class="activation-box__row"><input id="activation-code" v-model="activationCode" placeholder="输入激活码" autocomplete="off"><button class="button button--secondary" type="button" :disabled="!activationCode.trim()" @click="redeem">兑换</button></div><small>兑换后可在上方查看已生效的学习权益。</small></div>
+        <div class="activation-box"><label for="activation-code">激活码兑换</label><div class="activation-box__row"><input id="activation-code" v-model="activationCode" placeholder="输入激活码" autocomplete="off"><button class="button button--secondary" type="button" :disabled="!activationCode.trim()" @click="redeem">兑换</button><small v-if="!activationCode.trim()" class="disabled-reason" data-disabled-reason>输入激活码后可兑换。</small></div><small>兑换后可在上方查看已生效的学习权益。</small></div>
       </section>
 
       <section class="commerce-panel commerce-panel--wide v2-b5commerce-card">
-        <div class="panel-heading"><div><p class="panel-kicker v2-b5commerce-kicker">我的订单<span class="v2-sr-only">ORDERS</span></p><h3>我的订单</h3></div></div>
+        <div class="panel-heading"><div><p class="panel-kicker v2-b5commerce-kicker">我的订单<span class="v2-sr-only">订单</span></p><h3>我的订单</h3></div></div>
         <div v-if="orders.length" class="order-list"><div v-for="order in orders" :key="order.orderId" class="order-row"><div><strong>订单 {{ order.orderId }}</strong><span>{{ formatMinorAmount(order.amountMinor, order.currency) }}</span></div><div class="order-row__right"><span class="status-pill">{{ orderStatusLabel[order.status] ?? '处理中' }}</span><button v-if="order.status === 'CREATED'" class="button button--ghost" type="button" @click="preparePayment(order)">恢复支付</button><button v-if="order.status === 'PAID'" class="button button--ghost" type="button" @click="askRefund(order)">申请退款</button></div></div></div>
         <p v-else class="empty-copy">还没有订单。</p>
         <div v-if="refundTarget" class="activation-box" role="dialog" aria-label="退款二次确认"><label>确认退款 {{ refundTarget.orderId }}？</label><small>服务端确认后订单进入退款流程，对应权益将被撤销；该操作不可撤销。</small><div class="activation-box__row"><button class="button button--primary" type="button" @click="confirmRefund">确认退款</button><button class="button button--secondary" type="button" @click="cancelRefund">取消</button></div></div>

@@ -34,9 +34,12 @@ const pageRows = [
   ['support', 'WE’RE HERE TO HELP', '有疑问，我们一起解决。', '选择问题类型，查看与跟进你的帮助请求。', '帮助中心', 'We’re here to help.', 'Choose a category and follow your support requests.', 'Help'],
 ] as const
 
+/** Chinese eyebrow per page; the English kicker in pageRows stays for en-US. */
+const ZH_KICKERS: Record<string, string> = {"home": "今日", "learn": "课程", "practice": "练习", "b2-practice": "练习室", "b2-vocabulary": "单词花园", "b3-grammar": "句子实验室", "b3-writing": "写作台", "b3-listening": "用心听", "b3-reading": "阅读角", "b3-speaking": "自信开口", "b11-listening": "听力室", "b11-reading": "阅读角", "b11-speaking": "找到你的声音", "world": "成长", "b4-games": "边玩边学", "b4-social": "一起专注", "b4-avatar": "形象", "b4-offline": "随身学", "b5-commerce": "学习权益", "b6-platform": "设备适配", "profile": "账号", "login": "登录", "register": "注册", "reset-password": "找回账号", "forbidden": "稍等确认", "onboarding": "开始", "assessment": "找到起点", "today": "今日", "b10-report": "看看你的进步", "settings": "舒适设置", "support": "我们来帮你"}
+
 function pages(english: boolean) {
   return Object.fromEntries(pageRows.map(([key, kicker, title, description, short, enTitle, enDescription, enShort]) =>
-    [key, { kicker, title: english ? enTitle : title, description: english ? enDescription : description, short: english ? enShort : short }]))
+    [key, { kicker: english ? kicker : (ZH_KICKERS[key] ?? kicker), title: english ? enTitle : title, description: english ? enDescription : description, short: english ? enShort : short }]))
 }
 export const mobileExperienceMessages: MessagesByLocale = {
   'zh-CN': { mobile: { brand: '语学星', morePractice: '更多练习与学习报告', resetSent: '申请已受理。若收到重置邮件，请按邮件指引操作。', resetComplete: '密码已重置。请返回登录，使用新密码继续学习。', back: '返回', settings: '设置', authTag: '为热爱学习的你', practiceHeading: '找到今天的练习灵感', practiceNote: '听 · 说 · 读 · 写', account: '账号登录', register: '创建账号', forgot: '忘记密码？', toLogin: '已有账号？去登录', show: '显示', hide: '隐藏', adultNote: '目前面向 18 岁及以上成人与大学生', profileLinks: '学习与服务', qualityUltra: '精致', qualityHigh: '舒适', qualityMedium: '轻量', qualityPerformance: '省资源', auth: {

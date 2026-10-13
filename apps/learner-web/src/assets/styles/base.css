@@ -285,3 +285,11 @@ input:focus, select:focus, textarea:focus { border-color: var(--yx-color-focus) 
   .section-heading { align-items: flex-start; gap: 12px; }
   .section-heading .button { min-height: 40px; padding-inline: 12px; }
 }
+
+/* Coming-soon closure: a closed practice notice replaces the page body. Everything after it
+   (dead players, "service unavailable" panels) is hidden except the way back. */
+[data-closed-practice] ~ :not([data-closed-back]) { display: none !important; }
+[data-closed-practice] { display: block; padding: 16px 18px; border: 1px solid var(--v2-border, rgba(127,127,127,.3)); border-radius: 14px; line-height: 1.6; }
+
+/* Visible reason next to a disabled action (not only a tooltip). */
+.disabled-reason { display: block; margin-top: 6px; font-size: 12px; opacity: .75; }

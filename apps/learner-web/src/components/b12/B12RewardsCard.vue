@@ -181,13 +181,13 @@ onUnmounted(() => { mounted = false; clearPersonal() })
 
 <template>
   <section class="b12-card b12-rewards" aria-labelledby="b12-rewards-title">
-    <div class="b12-heading"><div><p class="b12-kicker">奖励发放<span class="v2-sr-only">REWARD GRANT</span></p><h2 id="b12-rewards-title">{{ b12T('rewards.title') }}</h2></div><span class="b12-state">{{ headingStatus }}</span></div>
+    <div class="b12-heading"><div><p class="b12-kicker">奖励发放<span class="v2-sr-only">奖励发放</span></p><h2 id="b12-rewards-title">{{ b12T('rewards.title') }}</h2></div><span class="b12-state">{{ headingStatus }}</span></div>
     <p class="b12-muted">{{ b12T('rewards.freeNotice') }}</p>
     <div v-if="status === 'loading' && !chests.length" class="b12-inline-state" role="status">{{ b12T('status.loading') }}</div>
     <div v-else-if="chests.length" class="b12-chest-list">
       <article v-for="chest in chests" :key="chest.grantId" class="b12-chest">
         <div><strong>{{ chest.rewardCode }}</strong><small>{{ chest.status === 'CLAIMED' ? b12T('rewards.opened') : b12T('rewards.granted') }} · {{ chest.probabilityVersion }}</small></div>
-        <span class="b12-chest__kind">FREE</span>
+        <span class="b12-chest__kind">免费</span>
         <div class="b12-actions"><button class="button button--secondary" type="button" :disabled="Boolean(actionKey) || !online || !hasRewardReadPermission" @click="loadProbability(chest.grantId)">{{ actionKey === `probability.${chest.grantId}` ? b12T('status.loading') : b12T('rewards.probability') }}</button><button class="button button--primary" type="button" :disabled="chest.status !== 'GRANTED' || Boolean(actionKey) || !online || !hasRewardClaimPermission" @click="openChest(chest.grantId)">{{ actionKey === `claim.${chest.grantId}` ? b12T('rewards.opening') : chest.status === 'CLAIMED' ? b12T('rewards.opened') : b12T('rewards.open') }}</button></div>
       </article>
     </div>
