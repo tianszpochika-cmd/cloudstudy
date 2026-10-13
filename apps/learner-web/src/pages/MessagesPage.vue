@@ -73,8 +73,9 @@ onMounted(() => { void load() })
 </script>
 
 <template>
-  <section class="page-stack">
+  <section class="page-stack v2-page v2-page--messages">
     <ExperienceHeader page="Messages" icon="bell" />
+    <div class="v2-messages-body"><div class="v2-messages-main">
     <StatePanel
       v-if="state !== 'ready'"
       :state="state"
@@ -84,8 +85,8 @@ onMounted(() => { void load() })
       @action="load"
     />
     <template v-if="state === 'ready'">
-      <section class="info-card" aria-label="站内消息">
-        <div class="yx-section-heading"><div><p class="yx-kicker">INBOX</p><h3>站内消息</h3></div><span class="yx-fact-tag">{{ messages.filter((m) => !m.read).length }} 未读</span></div>
+      <section class="info-card v2-messages-card" aria-label="站内消息">
+        <div class="yx-section-heading"><div><p class="yx-kicker">站内消息<span class="v2-sr-only">INBOX</span></p><h3>站内消息</h3></div><span class="yx-fact-tag">{{ messages.filter((m) => !m.read).length }} 未读</span></div>
         <p v-if="!messages.length" class="yx-fact-tag">暂无消息。</p>
         <ul v-else class="yx-msg-list">
           <li v-for="msg in messages" :key="msg.messageId" :class="{ 'yx-msg-list__unread': !msg.read }">
@@ -102,6 +103,7 @@ onMounted(() => { void load() })
     <div class="actions">
       <button class="button button--primary" type="button" @click="today">回今日任务</button>
     </div>
+    </div><aside class="v2-messages-rail" aria-label="消息提示"><h2>消息提示</h2><ol><li>未读消息可逐条标为已读，也可全部标为已读。</li><li>通知设置入口在列表下方。</li><li>消息打不开可点重试，或回今日任务继续学习。</li></ol></aside></div>
   </section>
 </template>
 
