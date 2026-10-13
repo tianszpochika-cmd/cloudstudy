@@ -223,7 +223,11 @@ public final class ContentItem {
         if (firstReviewer != null) {
             throw ContentOperationException.conflict("ITEM_REVIEW_DUPLICATE", "the FIRST review is already completed");
         }
-        trail.requireNotAuthor(reviewer, updatedBy, "ITEM");
+        trail.requireNotAuthorAtFirstReview(reviewer, updatedBy, createdBy, "ITEM");
+        if (trail.submittedBy() == null) {
+            // Legacy row: pin the inferred submitter before updatedBy is overwritten (P2-1).
+            this.trail = trail.submitted(updatedBy);
+        }
         this.firstReviewer = reviewer;
         this.trail = trail.decided("APPROVED_FIRST", null, reviewer, now);
         this.updatedBy = reviewer;
@@ -241,7 +245,7 @@ public final class ContentItem {
             throw ContentOperationException.forbidden("ITEM_SELF_REVIEW_DENIED",
                     "the author of the first review cannot approve the final review");
         }
-        trail.requireNotAuthor(reviewer, updatedBy, "ITEM");
+        trail.requireNotAuthorAfterFirstReview(reviewer, createdBy, true, "ITEM");
         this.finalReviewer = reviewer;
         this.trail = trail.decided("APPROVED_FINAL", null, reviewer, now);
         this.availability = ItemAvailability.APPROVED;
@@ -260,7 +264,11 @@ public final class ContentItem {
             throw ContentOperationException.conflict("ITEM_REVIEW_ORDER_INVALID",
                     "FINAL review requires a completed FIRST review");
         }
-        trail.requireNotAuthor(reviewer, updatedBy, "ITEM");
+        if (firstReviewer == null) {
+            trail.requireNotAuthorAtFirstReview(reviewer, updatedBy, createdBy, "ITEM");
+        } else {
+            trail.requireNotAuthorAfterFirstReview(reviewer, createdBy, false, "ITEM");
+        }
         String reason = ReviewTrail.requireRejectNote(note, "ITEM");
         this.availability = ItemAvailability.DRAFT;
         this.firstReviewer = null;

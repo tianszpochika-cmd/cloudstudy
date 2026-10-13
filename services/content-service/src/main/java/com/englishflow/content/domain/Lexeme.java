@@ -248,7 +248,11 @@ public final class Lexeme {
             throw ContentOperationException.conflict("LEXEME_REVIEW_DUPLICATE",
                     "the FIRST review is already completed");
         }
-        trail.requireNotAuthor(reviewer, updatedBy, "LEXEME");
+        trail.requireNotAuthorAtFirstReview(reviewer, updatedBy, createdBy, "LEXEME");
+        if (trail.submittedBy() == null) {
+            // Legacy row: pin the inferred submitter before updatedBy is overwritten (P2-1).
+            this.trail = trail.submitted(updatedBy);
+        }
         this.firstReviewer = reviewer;
         this.trail = trail.decided("APPROVED_FIRST", null, reviewer, now);
         this.updatedBy = reviewer;
@@ -266,7 +270,7 @@ public final class Lexeme {
             throw ContentOperationException.forbidden("LEXEME_SELF_REVIEW_DENIED",
                     "the author of the first review cannot approve the final review");
         }
-        trail.requireNotAuthor(reviewer, updatedBy, "LEXEME");
+        trail.requireNotAuthorAfterFirstReview(reviewer, createdBy, true, "LEXEME");
         this.finalReviewer = reviewer;
         this.trail = trail.decided("APPROVED_FINAL", null, reviewer, now);
         this.availability = LexemeAvailability.APPROVED;
@@ -289,7 +293,11 @@ public final class Lexeme {
             throw ContentOperationException.conflict("LEXEME_REVIEW_ORDER_INVALID",
                     "FINAL review requires a completed FIRST review");
         }
-        trail.requireNotAuthor(reviewer, updatedBy, "LEXEME");
+        if (firstReviewer == null) {
+            trail.requireNotAuthorAtFirstReview(reviewer, updatedBy, createdBy, "LEXEME");
+        } else {
+            trail.requireNotAuthorAfterFirstReview(reviewer, createdBy, false, "LEXEME");
+        }
         String reason = ReviewTrail.requireRejectNote(note, "LEXEME");
         this.availability = LexemeAvailability.DRAFT;
         this.firstReviewer = null;
