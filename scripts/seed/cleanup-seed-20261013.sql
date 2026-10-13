@@ -6,6 +6,22 @@ SET @learner := (SELECT principal_id FROM iam_service.iam_account WHERE identifi
 SET @admin := (SELECT principal_id FROM iam_service.iam_account WHERE identifier = 'e2e-20261013-admin');
 START TRANSACTION;
 -- content (SQL seed)
+
+-- SMOKE-CONTENTOPS-20261013 leftovers from content-ops Luna close-out (phonetics E2E / dry-run probes).
+DELETE FROM content_service.content_outbox_event
+ WHERE payload_json LIKE '%SMOKE-CONTENTOPS-20261013%'
+    OR aggregate_id IN ('qi_da5aa156d90c','ew_dfd558db981b','ew_e17f16ed0217');
+DELETE FROM content_service.content_idempotency_record
+ WHERE idempotency_key LIKE '%SMOKE-CONTENTOPS-20261013%';
+DELETE FROM content_service.content_item
+ WHERE fields_json LIKE '%SMOKE-CONTENTOPS-20261013%'
+    OR stem LIKE '%SMOKE-CONTENTOPS-20261013%'
+    OR item_id IN ('qi_da5aa156d90c','ew_dfd558db981b','ew_e17f16ed0217');
+
+-- E2E reviewer pair created for dual-review phonetics publish (tagged SEED-20261013).
+-- Keep accounts by default; uncomment to remove:
+-- DELETE FROM iam_service.iam_account WHERE identifier IN ('e2e-20261013-reviewer','e2e-20261013-reviewer-l2');
+
 DELETE FROM content_service.b25_content_item WHERE item_id LIKE 'seed-20261013-%';
 DELETE FROM content_service.b25_content_unit WHERE unit_id LIKE 'seed-20261013-%';
 DELETE FROM content_service.b25_content_course WHERE content_code LIKE 'SEED-20261013-%';

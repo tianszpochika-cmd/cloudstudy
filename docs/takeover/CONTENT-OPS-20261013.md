@@ -239,3 +239,16 @@ admin-web（`AdminItemView.vue`、`api/content-items.ts`）：
 
 - 镜像：content-service 回到 `1de5c1d4`，admin-web 回到 `ba346d44`。
 - 数据：用上面的备份恢复。V31–V34 都是新增列或新增数据，旧镜像遇到新列可以正常运行。
+
+### 收尾（2026-10-13 下午）
+
+1. **审核员测试账号**（备份：`/srv/cloudstudy/backups/iam-reviewer-pre-20261013100440.sql.gz`）
+   - 主账号：`e2e-20261013-reviewer`（一审 + 发布），凭据 `/root/e2e-20261013-reviewer.txt`（600）。
+   - 附带：`e2e-20261013-reviewer-l2`（二审 + 发布）。双审要求「送审人 ≠ 一审人 ≠ 二审人」三方互异，仅一个审核账号无法走完发布链路，故同批打标 `SEED-20261013` 另建 L2。
+   - 建号方式：注册 API → 成人 Gate + 三项同意 → DB 写入 roles/permissions（用户已授权直接改库）。
+2. **音标条目端到端**：管理员新建并送审 → L1 一审通过 → L2 二审通过 → L2 发布。
+   - 条目 `ew_e17f16ed0217`（PHONETICS-FR / PHONEME `ɑ̃`）。
+   - 发布响应 `learnerProjection=PACK_NOT_PUBLISHED` ✓（包尚无正式发布版本，符合设计）。
+3. **冒烟数据清理**：已删除全部 `SMOKE-CONTENTOPS-20261013` 条目及相关 outbox/幂等回执（含上述 e2e 音标）。
+   - 清理前备份：`/srv/cloudstudy/backups/smoke-contentops-pre-cleanup-20261013100557.sql.gz`。
+   - `scripts/seed/cleanup-seed-20261013.sql` / `.sh` 已覆盖该标记；审核员账号默认保留（脚本内注释了删除语句）。

@@ -1,6 +1,6 @@
 #!/bin/sh
 # Usage (on the clyunedev server, repo root): sh scripts/seed/cleanup-seed-20261013.sh [--dry-run]
-# Takes a backup first, then runs cleanup-seed-20261013.sql. --dry-run runs it and rolls back.
+# Takes a backup first, then runs cleanup-seed-20261013.sql (SEED-20261013 + SMOKE-CONTENTOPS-20261013). --dry-run runs it and rolls back.
 set -eu
 C=${SEED_MYSQL_CONTAINER:-cloudstudy-clyunedev-mysql-1}
 DIR=$(dirname "$0")
