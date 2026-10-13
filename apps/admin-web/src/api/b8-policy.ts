@@ -28,10 +28,18 @@ function rule(value: unknown): boolean {
     && (value.conditions.phases === undefined || strings(value.conditions.phases))
     && (value.conditions.requiredConsentPurposes === undefined || strings(value.conditions.requiredConsentPurposes))
     && (value.conditions.contentRights === undefined || strings(value.conditions.contentRights))
-    && (value.conditions.minimumDeviceTrust === undefined || typeof value.conditions.minimumDeviceTrust === 'string')
-    && (value.conditions.requiresAdultEligibility === undefined || typeof value.conditions.requiresAdultEligibility === 'boolean')
-    && (value.conditions.ownerMatchRequired === undefined || typeof value.conditions.ownerMatchRequired === 'boolean')
-    && (value.conditions.tenantMatchRequired === undefined || typeof value.conditions.tenantMatchRequired === 'boolean')
+    && (value.conditions.minimumDeviceTrust === undefined
+      || value.conditions.minimumDeviceTrust === null
+      || typeof value.conditions.minimumDeviceTrust === 'string')
+    && (value.conditions.requiresAdultEligibility === undefined
+      || value.conditions.requiresAdultEligibility === null
+      || typeof value.conditions.requiresAdultEligibility === 'boolean')
+    && (value.conditions.ownerMatchRequired === undefined
+      || value.conditions.ownerMatchRequired === null
+      || typeof value.conditions.ownerMatchRequired === 'boolean')
+    && (value.conditions.tenantMatchRequired === undefined
+      || value.conditions.tenantMatchRequired === null
+      || typeof value.conditions.tenantMatchRequired === 'boolean')
 }
 
 function policyVersion(value: unknown): value is B8PolicyVersion {
@@ -53,10 +61,11 @@ function policyVersion(value: unknown): value is B8PolicyVersion {
 export function parsePolicyVersionPage(response: unknown): PolicyVersionPage {
   if (!record(response) || !record(response.data) || !record(response.meta)
     || !Array.isArray(response.data.items)
-    || !response.data.items.every(policyVersion)
     || typeof response.meta.hasMore !== 'boolean') {
     throw new Error('POLICY_RESPONSE_INVALID')
   }
+  // One malformed row must not blank the page. Keep null device-trust for 「未设置」 display.
+  const items = response.data.items.filter(policyVersion) as B8PolicyVersion[]
   const cursor = response.meta.nextCursor
   if (response.meta.hasMore && !response.data.items.length) {
     throw new Error('POLICY_RESPONSE_INVALID')
@@ -68,7 +77,7 @@ export function parsePolicyVersionPage(response: unknown): PolicyVersionPage {
     throw new Error('POLICY_RESPONSE_INVALID')
   }
   return {
-    items: response.data.items,
+    items,
     nextCursor: response.meta.hasMore ? cursor as string : null,
   }
 }

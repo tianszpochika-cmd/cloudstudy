@@ -35,7 +35,10 @@ function conditionText(rule: B8PolicyRule): string {
   if (conditions.phases?.length) parts.push(`${b8PolicyT('phase')} ${conditions.phases.join(', ')}`)
   if (conditions.requiresAdultEligibility) parts.push(`${b8PolicyT('adult')} 18+`)
   if (conditions.requiredConsentPurposes?.length) parts.push(conditions.requiredConsentPurposes.join(', '))
-  if (conditions.minimumDeviceTrust) parts.push(`${b8PolicyT('deviceTrust')} ${conditions.minimumDeviceTrust}`)
+  if ('minimumDeviceTrust' in conditions) {
+    const trust = conditions.minimumDeviceTrust
+    parts.push(`${b8PolicyT('deviceTrust')} ${typeof trust === 'string' && trust ? trust : b8PolicyT('deviceTrustUnset')}`)
+  }
   if (conditions.contentRights?.length) parts.push(`${b8PolicyT('rights')} ${conditions.contentRights.join(', ')}`)
   if (conditions.ownerMatchRequired) parts.push(b8PolicyT('ownerMatch'))
   if (conditions.tenantMatchRequired) parts.push(b8PolicyT('tenantMatch'))

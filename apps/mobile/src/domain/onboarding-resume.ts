@@ -69,11 +69,33 @@ export function onboardingProgressLabel(facts: OnboardingResumeFacts): string {
   return '目标已保存，下一步进入定级'
 }
 
-export function showOnboardingGuide(facts: OnboardingResumeFacts, placementEntryReached: boolean): boolean {
+/**
+ * Placement is done when the server already has a learning plan (or report-backed
+ * plan id), or when this browser session has already opened the assessment entry.
+ * Prefer server state; the session flag is only a graceful fallback for a brief
+ * window before home/plan hydrate.
+ */
+export function isPlacementSatisfied(input: {
+  placementEntryReached?: boolean
+  planId?: string | null
+  hasPlan?: boolean
+} = {}): boolean {
+  if (input.placementEntryReached) return true
+  if (input.hasPlan) return true
+  return Boolean(input.planId && String(input.planId).trim())
+}
+
+export function showOnboardingGuide(
+  facts: OnboardingResumeFacts,
+  placementDone: boolean,
+  options: { serverPlacementUnknown?: boolean } = {},
+): boolean {
   const step = selectOnboardingResumeStep(facts)
   if (step === 'rejected') return false
   if (step !== 'assessment') return true
-  return !placementEntryReached
+  // Avoid flashing 「剩余步骤：定级」 while home/plan is still loading.
+  if (options.serverPlacementUnknown && !placementDone) return false
+  return !placementDone
 }
 
 export function placementEntryStorageKey(subject: string): string {
@@ -186,11 +208,14 @@ export function prefillSavedTarget(target: {
   return { goal, quota }
 }
 
-export function onboardingRemainingStepLabels(facts: OnboardingResumeFacts): readonly string[] {
+export function onboardingRemainingStepLabels(
+  facts: OnboardingResumeFacts,
+  placementDone = false,
+): readonly string[] {
   const step = selectOnboardingResumeStep(facts)
   if (step === 'rejected') return []
   if (step === 'gate') return ['确认身份', '必要同意', '学习目标']
   if (step === 'consent') return ['必要同意', '学习目标']
   if (step === 'goal') return ['学习目标']
-  return ['定级']
+  return placementDone ? [] : ['定级']
 }

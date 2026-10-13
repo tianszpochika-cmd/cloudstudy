@@ -4,7 +4,7 @@ import { RouterLink, useRouter } from 'vue-router'
 import StatePanel from '../components/StatePanel.vue'
 import AppIcon, { type AppIconName } from '../components/AppIcon.vue'
 import StudyArtwork from '../components/StudyArtwork.vue'
-import { hasPlacementEntryReached, ONBOARDING_GUIDE_ACTION, onboardingProgressLabel, onboardingRemainingStepLabels, selectOnboardingResumeStep, showOnboardingGuide } from '../domain/onboarding-resume'
+import { hasPlacementEntryReached, isPlacementSatisfied, ONBOARDING_GUIDE_ACTION, onboardingProgressLabel, onboardingRemainingStepLabels, selectOnboardingResumeStep, showOnboardingGuide } from '../domain/onboarding-resume'
 import { emptyStateView, firstLearningGuideCopy, type EmptyStateView } from '../domain/plan-today'
 import { useLearnerContentStore } from '../stores/learner-content'
 import { useExperienceText } from '../platform/experience-ui'
@@ -19,13 +19,23 @@ const ui = useLearningUi()
 const isRestricted = computed(() => session.adultGate === 'REJECTED')
 const guideReady = ref(false)
 const guideAction = ONBOARDING_GUIDE_ACTION
+const placementDone = computed(() => isPlacementSatisfied({
+  placementEntryReached: hasPlacementEntryReached(typeof sessionStorage === 'undefined' ? null : sessionStorage, session.userId),
+  planId: store.planQueue?.planId ?? store.home?.plan?.planId ?? null,
+  hasPlan: Boolean(store.home?.plan),
+}))
+const serverPlacementUnknown = computed(() => {
+  const homePending = store.homeStatus === 'idle' || store.homeStatus === 'loading'
+  const planPending = store.planQueueStatus === 'idle' || store.planQueueStatus === 'loading'
+  return homePending || planPending
+})
 const guideVisible = computed(() => {
   const facts = store.onboardingResume
   if (!guideReady.value || !facts || isRestricted.value) return false
-  return showOnboardingGuide(facts, hasPlacementEntryReached(typeof sessionStorage === 'undefined' ? null : sessionStorage, session.userId))
+  return showOnboardingGuide(facts, placementDone.value, { serverPlacementUnknown: serverPlacementUnknown.value })
 })
 const guideLabel = computed(() => store.onboardingResume ? onboardingProgressLabel(store.onboardingResume) : '')
-const guideSteps = computed(() => store.onboardingResume ? onboardingRemainingStepLabels(store.onboardingResume) : [])
+const guideSteps = computed(() => store.onboardingResume ? onboardingRemainingStepLabels(store.onboardingResume, placementDone.value) : [])
 const guideTo = computed(() => store.onboardingResume && selectOnboardingResumeStep(store.onboardingResume) === 'assessment' ? { name: 'assessment' } : { name: 'onboarding' })
 async function logout(): Promise<void> { await session.logout(); await router.replace({ name: 'login' }) }
 const home = computed(() => ['ready', 'empty', 'unavailable'].includes(store.homeStatus) ? store.home : null)

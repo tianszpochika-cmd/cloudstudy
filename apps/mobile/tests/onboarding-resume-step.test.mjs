@@ -50,6 +50,9 @@ test('mobile resume step matches the web facts: gate, consent, target, then plac
   assert.equal(domain.showOnboardingGuide(saved, false), true)
   assert.equal(domain.showOnboardingGuide(saved, true), false)
   assert.equal(domain.showOnboardingGuide(facts({ adultGate: 'REQUIRED' }), false), true)
+  assert.equal(domain.isPlacementSatisfied({ planId: 'plan-1' }), true)
+  assert.equal(domain.showOnboardingGuide(saved, false, { serverPlacementUnknown: true }), false)
+  assert.deepEqual(domain.onboardingRemainingStepLabels(saved, true), [])
 })
 
 class MobileApiError extends Error {

@@ -59,6 +59,13 @@ test('resume step follows the adult gate, required consents and a saved target',
   assert.equal(domain.showOnboardingGuide(saved, true), false)
   assert.equal(domain.showOnboardingGuide(facts({ adultGate: 'REJECTED' }), false), false)
   assert.equal(domain.showOnboardingGuide(facts(), false), true)
+  assert.equal(domain.isPlacementSatisfied({ planId: 'plan-100012' }), true)
+  assert.equal(domain.isPlacementSatisfied({ hasPlan: true }), true)
+  assert.equal(domain.isPlacementSatisfied({ placementEntryReached: true }), true)
+  assert.equal(domain.isPlacementSatisfied({}), false)
+  assert.equal(domain.showOnboardingGuide(saved, false, { serverPlacementUnknown: true }), false)
+  assert.deepEqual(domain.onboardingRemainingStepLabels(saved, true), [])
+  assert.deepEqual(domain.onboardingRemainingStepLabels(saved, false), ['定级'])
   const storage = new Map()
   const session = { getItem: (key) => storage.get(key) ?? null, setItem: (key, value) => storage.set(key, String(value)) }
   assert.equal(domain.hasPlacementEntryReached(session, 'learner-a'), false)

@@ -9,7 +9,7 @@ import { onShow } from '@dcloudio/uni-app'
 import { openUniPage } from '../../platform/uni-runtime'
 import { ensureMobilePageAccess } from '../../auth/navigation'
 import type { MobileTask } from '../../domain/learner-content'
-import { hasPlacementEntryReached, ONBOARDING_GUIDE_ACTION, onboardingProgressLabel, onboardingRemainingStepLabels, selectOnboardingResumeStep, showOnboardingGuide } from '../../domain/onboarding-resume'
+import { hasPlacementEntryReached, isPlacementSatisfied, ONBOARDING_GUIDE_ACTION, onboardingProgressLabel, onboardingRemainingStepLabels, selectOnboardingResumeStep, showOnboardingGuide } from '../../domain/onboarding-resume'
 import { emptyStateView, firstLearningGuideCopy, isAccessibleContent, shelfSearchState, type EmptyStateView } from '../../domain/plan-today'
 import { learnerAuthoringActions, shelfNote } from '../../domain/content-release'
 import { useLearnerContentStore } from '../../stores/learner-content'
@@ -44,14 +44,25 @@ const planEmpty = computed((): EmptyStateView | null => {
 })
 const guideReady = ref(false)
 const guideAction = ONBOARDING_GUIDE_ACTION
+const placementDone = computed(() => {
+  const storage = typeof sessionStorage === 'undefined' ? null : sessionStorage
+  return isPlacementSatisfied({
+    placementEntryReached: hasPlacementEntryReached(storage, session.verifiedSubject),
+    planId: store.planQueue?.planId ?? null,
+  })
+})
+const serverPlacementUnknown = computed(() => {
+  const homePending = store.homeStatus === 'idle' || store.homeStatus === 'loading'
+  const planPending = store.planQueueStatus === 'idle' || store.planQueueStatus === 'loading'
+  return homePending || planPending
+})
 const guideVisible = computed(() => {
   const facts = store.onboardingResume
   if (!guideReady.value || !facts || session.adultGate === 'REJECTED') return false
-  const storage = typeof sessionStorage === 'undefined' ? null : sessionStorage
-  return showOnboardingGuide(facts, hasPlacementEntryReached(storage, session.verifiedSubject))
+  return showOnboardingGuide(facts, placementDone.value, { serverPlacementUnknown: serverPlacementUnknown.value })
 })
 const guideLabel = computed(() => store.onboardingResume ? onboardingProgressLabel(store.onboardingResume) : '')
-const guideSteps = computed(() => store.onboardingResume ? onboardingRemainingStepLabels(store.onboardingResume) : [])
+const guideSteps = computed(() => store.onboardingResume ? onboardingRemainingStepLabels(store.onboardingResume, placementDone.value) : [])
 const guidePath = computed(() => store.onboardingResume && selectOnboardingResumeStep(store.onboardingResume) === 'assessment' ? '/pages/assessment/assessment' : '/pages/onboarding/onboarding')
 async function loadGuide(): Promise<void> {
   guideReady.value = false

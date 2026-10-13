@@ -48,10 +48,36 @@ test('read adapter uses the contracted Gateway path and cursor, rejecting malfor
     '/iam/policy-versions?pageSize=50',
     '/iam/policy-versions?pageSize=50&cursor=next%2F2',
   ])
+  // A single malformed row is skipped; the page stays usable (empty here).
   response = envelope([{ ...policy('bad'), document: { name: 'Bad', roleBindings: [{}], rules: [] } }])
-  await assert.rejects(api.listB8PolicyVersions(), /POLICY_RESPONSE_INVALID/)
+  assert.deepEqual((await api.listB8PolicyVersions()).items, [])
+  // Cursor/meta contract is still enforced for the envelope itself.
   response = { data: { items: [policy('bad')] }, meta: { hasMore: true, nextCursor: null } }
   await assert.rejects(api.listB8PolicyVersions(), /POLICY_RESPONSE_INVALID/)
+})
+
+
+test('null minimumDeviceTrust is accepted and one bad row does not blank the page', async () => {
+  const withNullTrust = policy('null-trust')
+  withNullTrust.document.rules[0].conditions = {
+    phases: ['P1'],
+    minimumDeviceTrust: null,
+    requiresAdultEligibility: false,
+  }
+  const broken = { ...policy('broken'), document: { name: 'Broken', roleBindings: [{}], rules: [] } }
+  const good = policy('good')
+  const api = load('src/api/b8-policy.ts', {
+    './client': { adminClient: { request: async () => envelope([withNullTrust, broken, good]) } },
+  })
+  const page = await api.listB8PolicyVersions()
+  assert.deepEqual(page.items.map((item) => item.policyVersionId), ['null-trust', 'good'])
+  assert.equal(page.items[0].document.rules[0].conditions.minimumDeviceTrust, null)
+
+  const view = fs.readFileSync(path.join(root, 'src/views/AdminPermissionsView.vue'), 'utf8')
+  assert.match(view, /deviceTrustUnset/)
+  assert.match(view, /'minimumDeviceTrust' in conditions/)
+  const i18n = fs.readFileSync(path.join(root, 'src/platform/b8-policy-i18n.ts'), 'utf8')
+  assert.match(i18n, /deviceTrustUnset: '未设置'/)
 })
 
 function harness() {
