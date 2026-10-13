@@ -1,0 +1,17 @@
+{
+  "scope": "BEFORE_UI_OBSERVATION_ONLY",
+  "source": "PasswordResetPage.vue before this change",
+  "states": [
+    {
+      "case": "validation-carries-to-other-step",
+      "requestError": "!\n检查填写内容\n\n请输入账号。",
+      "confirmStatus": "!\n检查填写内容\n\n请输入账号。",
+      "accountFocused": false
+    },
+    {
+      "case": "pending-switch-enabled",
+      "confirmFieldsVisible": true,
+      "submitDisabled": true
+    }
+  ]
+}

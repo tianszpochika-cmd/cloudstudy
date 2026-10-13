@@ -29,3 +29,5 @@
 原图与源哈希：[report.json](report.json)、`before-390.png`、本目录最新运行截图。重放：`node apps/learner-web/tests/ui-register.e2e.cjs`，默认输出Git外；本次按用户要求显式归档本目录。
 
 未测：真实注册成功链、真实限流/锁定、跨浏览器、原生读屏、真机与软键盘。没有真实IAM写入或生产变更，不能升级为业务完成。
+
+推送收据：源码/证据提交`60858fbcf827e264c63044644382b8b375dc398d`已推送`origin/dev-redesign`，`ls-remote`核对相同SHA。

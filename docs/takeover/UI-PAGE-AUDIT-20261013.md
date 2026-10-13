@@ -1,7 +1,7 @@
 # V2 UI 逐页审查索引 — 2026-10-13
 
 > 分支：`dev-redesign`。本轮拉取后的源码观察基线：`4990dd29`；R1 原有签收基线：`7a6ac0a2`。时间口径：Asia/Shanghai。
-> 用户已明确改为全部正式页面简约重设计。LW-001新设计已推送`182e106b`并核对远程SHA；LW-002已复验，等待推送收据；LW-003进入在审，其余PENDING。旧70c2623f仅为前轮缺陷修复。
+> 用户已明确改为全部正式页面简约重设计。LW-001新设计已推送`182e106b`、LW-002已推送`60858fbc`且远程SHA一致；LW-003已复验待推送，MB-001在审，其余PENDING。旧70c2623f仅为前轮缺陷修复。
 
 ## 1. 进度与证据边界
 
@@ -58,8 +58,8 @@
 | 审查编号 | 真实路由 | 页面源文件 | 本页需展开的场景 | 当前状态 | 证据 / 提交 / 远程收据 |
 |---|---|---|---|---|---|
 | LW-001 | `/login` | [apps/learner-web/src/pages/LoginPage.vue](../../apps/learner-web/src/pages/LoginPage.vue) | 登录：空提交、密码显示、错误、等待、链接与键盘 | PUSHED_SCOPED | [重设计记录](ui-audit-20261013/learner-login-redesign/review.md)，182e106b远程SHA一致；70c2623f旧范围保留 |
-| LW-002 | `/register` | [apps/learner-web/src/pages/RegisterPage.vue](../../apps/learner-web/src/pages/RegisterPage.vue) | 注册：密码规则、确认密码、错误定位 | UI_VERIFIED | [重设计记录](ui-audit-20261013/learner-register/review.md)，24组矩阵/中英文文本放大/独立复审 |
-| LW-003 | `/reset-password` | [apps/learner-web/src/pages/PasswordResetPage.vue](../../apps/learner-web/src/pages/PasswordResetPage.vue) | 请求/确认两步、切步清错、等待与完成 | IN_REVIEW | — |
+| LW-002 | `/register` | [apps/learner-web/src/pages/RegisterPage.vue](../../apps/learner-web/src/pages/RegisterPage.vue) | 注册：密码规则、确认密码、错误定位 | PUSHED_SCOPED | [重设计记录](ui-audit-20261013/learner-register/review.md)，60858fbc远程SHA一致 |
+| LW-003 | `/reset-password` | [apps/learner-web/src/pages/PasswordResetPage.vue](../../apps/learner-web/src/pages/PasswordResetPage.vue) | 请求/确认两步、切步清错、等待与完成 | UI_VERIFIED | [本页报告](ui-audit-20261013/learner-reset/report.md)，64组矩阵/根Agent独立复验 |
 | LW-004 | `/onboarding` | [apps/learner-web/src/pages/OnboardingPage.vue](../../apps/learner-web/src/pages/OnboardingPage.vue) | 成人门、三项同意、目标/时长、保存后定级四幕 | PENDING | — |
 | LW-005 | `/forbidden` | [apps/learner-web/src/pages/ForbiddenPage.vue](../../apps/learner-web/src/pages/ForbiddenPage.vue) | 限制说明、可用出口与退出 | PENDING | — |
 | LW-006 | `/assessment` | [apps/learner-web/src/pages/AssessmentPage.vue](../../apps/learner-web/src/pages/AssessmentPage.vue) | 开场、选项、保存回执、反馈、报告与重测 | PENDING | — |
@@ -130,7 +130,7 @@
 
 | 审查编号 | 真实路由 | 页面源文件 | 本页需展开的场景 | 当前状态 | 证据 / 提交 / 远程收据 |
 |---|---|---|---|---|---|
-| MB-001 | `#/pages/login/login` | [apps/mobile/src/pages/login/login.vue](../../apps/mobile/src/pages/login/login.vue) | 登录 | PENDING | — |
+| MB-001 | `#/pages/login/login` | [apps/mobile/src/pages/login/login.vue](../../apps/mobile/src/pages/login/login.vue) | 登录 | IN_REVIEW | 正式H5重设计与原生输入适配；依赖缓存复验中 |
 | MB-002 | `#/pages/register/register` | [apps/mobile/src/pages/register/register.vue](../../apps/mobile/src/pages/register/register.vue) | 注册 | PENDING | — |
 | MB-003 | `#/pages/reset-password/reset-password` | [apps/mobile/src/pages/reset-password/reset-password.vue](../../apps/mobile/src/pages/reset-password/reset-password.vue) | 请求/确认两步、完成态 | PENDING | — |
 | MB-004 | `#/pages/onboarding/onboarding` | [apps/mobile/src/pages/onboarding/onboarding.vue](../../apps/mobile/src/pages/onboarding/onboarding.vue) | 成人门、同意、目标、定级四幕 | PENDING | — |

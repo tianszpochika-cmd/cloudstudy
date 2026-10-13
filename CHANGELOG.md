@@ -1,5 +1,7 @@
 # Changelog
 
+- [LW-003-REDESIGN-20261013] 正式找回密码页简约重排：请求/设置两步独立标题，取消默认状态大框，单主按钮和文本换步/返回出口；逐字段错误/焦点、切步清理、pending防切/防重，保留IAM反枚举语义。64组浏览器矩阵、根Agent复验、typecheck和认证专项通过，见`docs/takeover/ui-audit-20261013/learner-reset/report.md`。
+
 - [LW-002-REDESIGN-20261013] 正式注册页全面重排：移除默认“等待注册”大框，简化标题/说明/密码规则，调整主动作和登录出口，统一字体/图标/点击区；逐字段校验、焦点、独立密码显示与busy防重。24组浏览器矩阵及中英文文本放大通过，详见`docs/takeover/ui-audit-20261013/learner-register/review.md`。
 
 - [LW-001-REDESIGN-20261013] 按用户要求重新设计正式登录页：开放单列表单，移除装饰侧栏/艺术字/外框，简化提示与标题，重排找回密码和注册出口，统一字号/按钮比例。24组浏览器复验与独立视觉复审通过；设计参照及正式截图见`docs/takeover/ui-audit-20261013/learner-login-redesign/`。认证流程保持。

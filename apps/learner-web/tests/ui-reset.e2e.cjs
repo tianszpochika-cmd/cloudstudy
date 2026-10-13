@@ -1,0 +1,161 @@
+// UI acceptance only: all IAM requests are intercepted; no real account is reset.
+const { chromium } = require('playwright');
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
+const crypto = require('node:crypto');
+const ROOT = path.resolve(__dirname, '../../..');
+const BASE = 'http://127.0.0.1:18180';
+const OUT = path.resolve(ROOT, process.env.UI_AUDIT_OUTPUT || '.git/codex-local-backups/reset-ui-' + Date.now());
+fs.mkdirSync(path.join(OUT, 'screenshots'), { recursive: true });
+const report = { at: new Date().toISOString(), scope: 'PASSWORD_RESET_UI_ONLY_SYNTHETIC_IAM_REJECTION', matrix: [], checks: [], pageErrors: [], consoleErrors: [] };
+report.sourceHashes = Object.fromEntries([
+  'apps/learner-web/src/pages/PasswordResetPage.vue', 'apps/learner-web/src/layouts/AuthLayout.vue',
+  'packages/i18n/src/learner-base.ts', 'apps/learner-web/tests/ui-reset.e2e.cjs',
+].map(file => [file, crypto.createHash('sha256').update(fs.readFileSync(path.join(ROOT, file))).digest('hex')]));
+let browser;
+(async () => {
+  browser = await chromium.launch();
+  const context = await browser.newContext({ viewport: { width: 390, height: 844 }, reducedMotion: 'reduce' });
+  const page = await context.newPage();
+  page.on('pageerror', error => report.pageErrors.push(error.message));
+  page.on('console', message => { if (message.type() === 'error') report.consoleErrors.push(message.text()); });
+  const counts = { request: 0, confirm: 0 };
+  let hold = false, pendingResponse, requestStatus = 503;
+  await context.route('**/api/v1/auth/**', async route => {
+    const pathname = new URL(route.request().url()).pathname;
+    const operation = pathname.endsWith('/password-reset/request') ? 'request' : pathname.endsWith('/password-reset/confirm') ? 'confirm' : null;
+    const preflight = route.request().method() === 'OPTIONS';
+    if (operation && !preflight) {
+      counts[operation]++;
+      if (hold) await new Promise(resolve => { pendingResponse = resolve; });
+    }
+    await route.fulfill({ status: preflight ? 204 : operation === 'request' ? requestStatus : operation === 'confirm' ? 400 : 401,
+      headers: { 'access-control-allow-origin': BASE, 'access-control-allow-credentials': 'true', 'access-control-allow-headers': 'content-type,idempotency-key,authorization', 'access-control-allow-methods': 'POST,OPTIONS' },
+      contentType: 'application/json', body: preflight ? '' : JSON.stringify({ code: operation === 'request' ? requestStatus === 429 ? 'RATE_LIMITED' : 'RESET_REQUEST_UNAVAILABLE' : operation === 'confirm' ? 'iam.password_reset.invalid' : 'iam.credentials.invalid' }) });
+  });
+  for (const width of [320, 390, 768, 1280]) for (const theme of ['light', 'dark', 'high-contrast', 'system']) for (const locale of ['zh-CN', 'en-US']) for (const step of ['request', 'confirm']) {
+    await page.setViewportSize({ width, height: 844 });
+    await page.goto(`${BASE}/reset-password?theme=${theme}&uiLocale=${locale}`);
+    await page.locator('#reset-title').waitFor();
+    if (step === 'confirm') await page.locator('#reset-step-switch').click();
+    assert.equal(await page.locator('h1').count(), 1);
+    assert.equal(await page.locator('#reset-status').count(), 0);
+    assert.equal(await page.locator('vite-error-overlay').count(), 0);
+    assert.equal(await page.locator('input').count(), step === 'request' ? 1 : 3);
+    const facts = await page.evaluate(() => ({ overflow: document.documentElement.scrollWidth > innerWidth + 1, resolvedTheme: document.documentElement.dataset.theme,
+      title: document.title, heading: document.querySelector('h1').textContent, inputFont: getComputedStyle(document.querySelector('input')).fontSize,
+      primaryBottom: document.querySelector('button[type=submit]').getBoundingClientRect().bottom }));
+    assert.equal(facts.overflow, false);
+    assert.equal(facts.inputFont, '16px');
+    assert.ok(facts.title.includes('语学星'));
+    assert.equal(facts.heading, locale === 'zh-CN' ? step === 'request' ? '找回密码' : '设置新密码' : step === 'request' ? 'Reset your password' : 'Set a new password');
+    assert.ok(!/auth\.passwordReset\./.test(await page.locator('.auth-content').innerText()));
+    const targets = await page.locator('#reset-step-switch,.reset-exit a,.password-field button').evaluateAll(elements => elements.map(element => ({ height: element.getBoundingClientRect().height, width: element.getBoundingClientRect().width })));
+    assert.ok(targets.every(target => target.height >= 44 && target.width >= 44));
+    report.matrix.push({ width, theme, locale, step, ...facts, targets, status: 'PASS' });
+    if (locale === 'zh-CN' && ((width === 390 && theme !== 'system') || (width === 1280 && theme === 'light'))) await page.screenshot({ path: path.join(OUT, 'screenshots', `reset-${step}-${width}-${theme}.png`), fullPage: true });
+  }
+  const submit = () => page.locator('button[type=submit]').click();
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto(`${BASE}/reset-password?theme=light&uiLocale=zh-CN&redirect=%2Ftoday`);
+  await submit();
+  assert.equal(await page.evaluate(() => document.activeElement.name), 'identifier');
+  assert.equal(await page.locator('#reset-identifier-error').innerText(), '请输入账号。');
+  assert.equal(await page.getByRole('textbox', { name: '账号', exact: true }).count(), 1);
+  assert.equal(counts.request, 0);
+  await page.locator('#reset-step-switch').click();
+  assert.equal(await page.locator('input[aria-invalid=true]').count(), 0);
+  assert.equal(await page.locator('#reset-status').count(), 0);
+  await submit();
+  assert.equal(await page.locator('input[aria-invalid=true]').count(), 3);
+  assert.equal(await page.locator('#reset-token-error').innerText(), '请输入重置口令。');
+  assert.equal(await page.locator('#reset-password-error').innerText(), '请输入新密码。');
+  await page.locator('[name=identifier]').fill('ui-reset-synthetic'); await submit();
+  assert.equal(await page.evaluate(() => document.activeElement.name), 'token');
+  await page.locator('[name=token]').fill('synthetic-invalid-code'); await submit();
+  assert.equal(await page.evaluate(() => document.activeElement.name), 'newPassword');
+  await page.locator('[name=newPassword]').fill('short'); await submit();
+  assert.equal(await page.locator('#reset-password-error').innerText(), '新密码至少 12 位。');
+  assert.equal(await page.locator('[name=newPassword]').getAttribute('aria-describedby'), 'reset-password-error');
+  await page.screenshot({ path: path.join(OUT, 'screenshots', 'reset-confirm-short-390.png'), fullPage: true });
+  await page.locator('[name=newPassword]').fill('SyntheticOnly123');
+  assert.equal(await page.locator('input[aria-invalid=true]').count(), 0);
+  assert.equal(await page.evaluate(() => document.activeElement.name), 'newPassword');
+  assert.equal(counts.confirm, 0);
+  report.checks.push('Required fields and minimum password length focus the correct input; errors resolve without moving focus or sending a request');
+  await page.getByRole('button', { name: '显示密码', exact: true }).click();
+  assert.equal(await page.locator('[name=newPassword]').getAttribute('type'), 'text');
+  assert.equal(await page.locator('.password-field button').getAttribute('aria-controls'), 'reset-password');
+  await page.keyboard.press('Enter');
+  assert.equal(await page.locator('[name=newPassword]').getAttribute('type'), 'password');
+  report.checks.push('New password has a labelled 44px visibility toggle with keyboard activation');
+  hold = true;
+  await page.locator('form').evaluate(form => { for (let i = 0; i < 2; i++) form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true })); });
+  await page.locator('form[aria-busy=true]').waitFor();
+  await page.waitForFunction(() => document.querySelector('button[type=submit]').disabled);
+  assert.equal(await page.locator('input:disabled').count(), 3);
+  assert.equal(await page.locator('#reset-step-switch').isDisabled(), true);
+  assert.equal(await page.locator('.password-field button').isDisabled(), true);
+  await page.locator('#reset-step-switch').dispatchEvent('click');
+  assert.equal(await page.locator('[name=token]').count(), 1);
+  await page.waitForTimeout(50); assert.equal(counts.confirm, 1);
+  pendingResponse(); await page.locator('form[aria-busy=false]').waitFor();
+  assert.ok((await page.getByRole('alert').innerText()).includes('无效或已过期'));
+  assert.equal(await page.locator('input[aria-invalid=true]').count(), 0);
+  await page.locator('[name=identifier]').fill('ui-reset-edited');
+  assert.equal(await page.getByRole('alert').count(), 1);
+  await page.screenshot({ path: path.join(OUT, 'screenshots', 'reset-confirm-invalid-code-390.png'), fullPage: true });
+  report.checks.push('Pending confirmation locks inputs, visibility and step changes; same-tick duplicate submits issue one request; invalid token stays a neutral service error');
+  await page.locator('#reset-step-switch').click();
+  assert.equal(await page.locator('#reset-status').count(), 0);
+  assert.equal(await page.locator('[name=identifier]').inputValue(), 'ui-reset-edited');
+  await page.locator('#reset-step-switch').click();
+  assert.equal(await page.locator('[name=token]').inputValue(), '');
+  assert.equal(await page.locator('[name=newPassword]').inputValue(), '');
+  assert.equal(await page.evaluate(() => document.activeElement.name), 'token');
+  await page.locator('#reset-step-switch').click();
+  await submit(); await page.locator('form[aria-busy=true]').waitFor();
+  assert.equal(await page.locator('#reset-step-switch').isDisabled(), true);
+  await page.locator('#reset-step-switch').dispatchEvent('click');
+  assert.equal(await page.locator('[name=token]').count(), 0);
+  pendingResponse(); await page.locator('form[aria-busy=false]').waitFor();
+  const receipt = await page.getByRole('status').innerText();
+  assert.equal(receipt, '如果该账号可接收重置通知，我们会发送操作说明。');
+  await page.screenshot({ path: path.join(OUT, 'screenshots', 'reset-request-neutral-receipt-390.png'), fullPage: true });
+  await page.locator('[name=identifier]').fill('another-ui-reset-synthetic');
+  assert.equal(await page.locator('#reset-status').count(), 0);
+  await submit(); await page.locator('form[aria-busy=true]').waitFor(); pendingResponse(); await page.locator('form[aria-busy=false]').waitFor();
+  assert.equal(await page.getByRole('status').innerText(), receipt);
+  requestStatus = 429;
+  await submit(); await page.locator('form[aria-busy=true]').waitFor(); pendingResponse(); await page.locator('form[aria-busy=false]').waitFor();
+  assert.ok((await page.getByRole('alert').innerText()).includes('过于频繁'));
+  report.checks.push('Request fixture 503 preserves existing conditional anti-enumeration receipt for different synthetic identifiers; 429 explains waiting; editing clears an obsolete receipt');
+  await page.locator('#reset-step-switch').click();
+  assert.equal(await page.getByRole('alert').count(), 0);
+  await page.getByRole('link', { name: '返回登录', exact: true }).click();
+  assert.equal(new URL(page.url()).searchParams.get('redirect'), '/today');
+  await page.locator('#login-title').waitFor();
+  await page.goto(`${BASE}/reset-password?token=synthetic-invalid-deep-link&uiLocale=en-US&theme=dark`);
+  await page.locator('[name=token]').waitFor();
+  assert.equal(await page.locator('#reset-title').innerText(), 'Set a new password');
+  assert.equal(await page.locator('[name=token]').inputValue(), 'synthetic-invalid-deep-link');
+  await page.screenshot({ path: path.join(OUT, 'screenshots', 'reset-confirm-390-english.png'), fullPage: true });
+  report.checks.push('Switching clears old errors/challenge/password, retains account, and focuses the next field; token deep links still open confirmation; login exit retains safe return route');
+  await page.locator('body *').evaluateAll(elements => { const sizes = elements.map(element => parseFloat(getComputedStyle(element).fontSize)); elements.forEach((element, index) => { element.style.fontSize = `${sizes[index] * 2}px`; }); });
+  assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth + 1), false);
+  await page.locator('button[type=submit]').scrollIntoViewIfNeeded();
+  await page.screenshot({ path: path.join(OUT, 'screenshots', 'reset-confirm-390-english-text-200.png'), fullPage: true });
+  report.checks.push('English with simulated 200% text sizing remains scrollable without horizontal overflow; this is not native browser zoom');
+  assert.deepEqual(report.pageErrors, []);
+  const expected = /(?:400 \(Bad Request\)|401 \(Unauthorized\)|429 \(Too Many Requests\)|503 \(Service Unavailable\))/;
+  report.expectedConsoleErrors = report.consoleErrors.filter(error => expected.test(error));
+  assert.deepEqual(report.consoleErrors.filter(error => !expected.test(error)), []);
+  report.requests = counts;
+  report.status = 'PASS';
+  await context.close();
+})().catch(error => { report.status = 'FAIL'; report.failure = error.stack; process.exitCode = 1; }).finally(async () => {
+  fs.writeFileSync(path.join(OUT, 'report.json'), JSON.stringify(report, null, 2) + '\n');
+  console.log(JSON.stringify({ status: report.status, combinations: report.matrix.length, checks: report.checks, failure: report.failure, out: OUT }));
+  await browser?.close();
+});
