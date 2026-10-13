@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import MobileFeatureGrid from '../../components/MobileFeatureGrid.vue'
+import AppIcon from '../../components/AppIcon.vue'
 import MobilePageHeader from '../../components/MobilePageHeader.vue'
 import { useMobileExperience } from '../../platform/experience'
 const { experienceStyle, experienceMotion } = useMobileExperience()
@@ -84,7 +84,7 @@ function openPlanEmpty(view: EmptyStateView): void {
 <template>
   <view class="yx-page" :style="experienceStyle" :data-motion="experienceMotion">
 
-    <MobilePageHeader page="home" />
+    <MobilePageHeader page="home" compact />
 
     <view v-if="guideVisible" class="onboarding-guide"><view class="onboarding-guide__copy"><text>{{ guideLabel }}</text><text v-if="guideSteps.length" class="onboarding-guide__steps">剩余步骤：{{ guideSteps.join('、') }}</text></view><button tabindex="0" role="button" class="yx-button" type="button" @click="open(guidePath)">{{ guideAction }}</button></view>
     <view v-if="firstLearningCopy" class="first-learning-guide" role="status"><text>{{ firstLearningCopy }}</text></view>
@@ -97,34 +97,60 @@ function openPlanEmpty(view: EmptyStateView): void {
       <text class="state-description">{{ store.lastError || '请稍后重试。' }}</text>
       <button tabindex="0" role="button" class="yx-button" type="button" @click="store.loadHome()">重试</button>
     </view>
-    <view v-else-if="store.home" class="yx-card">
-      <template v-if="hasConfirmedProgress">
-        <view class="progress-row"><text>今日进度</text><text class="progress">{{ store.progress }}%</text></view>
-        <view class="progress-track"><view class="progress-value" :style="{ width: `${store.progress}%` }"></view></view>
-      </template>
-      <view v-if="planEmpty" class="empty"><text>{{ planEmpty.title }}</text><text>{{ planEmpty.description }}</text><button tabindex="0" role="button" class="yx-button yx-button--secondary" type="button" @click="openPlanEmpty(planEmpty)">{{ planEmpty.action }}</button></view>
-      <view :hidden="planEmpty !== null" v-if="!store.home.tasks.length" class="empty"><text>今天还没有安排任务。</text><text v-if="store.home.content.some((item) => item.availability === 'PUBLISHED')">可从下方选择课程。</text></view>
-      <view v-for="task in store.home.tasks" :key="task.id" class="task-row">
-        <view class="task-copy"><text class="task-title">{{ task.title }}</text><text class="task-description">{{ task.description }}<text v-if="task.minutes > 0"> · {{ task.minutes }} 分钟</text></text><text v-if="task.status === 'UNAVAILABLE'" class="task-warning">{{ task.unavailableReason || '内容暂不可用' }}</text></view>
-        <button tabindex="0" role="button" class="task-button" :disabled="(task.status !== 'AVAILABLE' && task.status !== 'IN_PROGRESS') || !task.contentCode" @click="openTask(task)">{{ task.status === 'COMPLETED' ? '已完成' : task.status === 'LOCKED' ? '未解锁' : !task.contentCode || task.status === 'UNAVAILABLE' ? '暂不可用' : task.status === 'IN_PROGRESS' ? '继续课程' : '查看课程' }}</button>
+    <view v-else-if="store.home" class="v2-home-body">
+      <view class="v2-home-greet"><text class="v2-home-greet-kicker">一点积累，走得更远</text><text class="v2-home-greet-title">你好，继续今天的学习</text></view>
+      <view class="v2-home-hero">
+        <view class="v2-home-eyebrow"><AppIcon name="home" :size="14" /><text>今日学习<text v-if="store.home.targetMinutes > 0"> · 目标 {{ store.home.targetMinutes }} 分钟</text></text></view>
+        <text class="v2-home-hi">继续推进</text>
+        <text v-if="store.home.tasks.length" class="v2-home-sub">今日共 {{ store.home.tasks.length }} 个任务</text>
+        <template v-if="hasConfirmedProgress">
+          <view class="progress-row"><text>今日进度</text><text class="progress">{{ store.progress }}%</text></view>
+          <view class="progress-track"><view class="progress-value" :style="{ width: `${store.progress}%` }"></view></view>
+        </template>
+        <button tabindex="0" role="button" class="yx-button yx-button--secondary v2-home-continue" :disabled="!canContinueCourse" @click="continueCourse"><AppIcon name="learn" :size="16" />继续课程<AppIcon name="chev" :size="14" /></button>
       </view>
-      <view class="content-list">
-        <text class="content-list__title">课程内容</text>
-        <text v-if="releaseNote" data-release-note>{{ releaseNote }}</text>
-        <input v-model="courseQuery" class="course-search" type="search" aria-label="搜索课程" placeholder="搜索课程" />
-        <text v-if="shelf === 'catalog-empty'" class="content-description">书架里还没有可学习的内容。</text>
-        <text v-else-if="shelf === 'no-matches'" class="content-description">没有匹配的课程。</text>
-        <text v-else-if="shelf === 'error'" class="content-description">课程暂时没能加载。</text>
-        <button tabindex="0" role="button" v-for="item in visibleContent" :key="item.contentCode" class="content-row" @click="open(`/pages/learn/learn?contentCode=${encodeURIComponent(item.contentCode)}`)">
-          <text class="content-title">{{ item.title }}</text>
-          <text class="content-description">{{ item.summary || '暂无简介' }}</text>
-        </button>
+      <view class="v2-home-kpis">
+        <view class="v2-home-kpi"><text class="v2-home-kpi-value">{{ store.home.tasks.length }}</text><text class="v2-home-kpi-label">今日任务</text></view>
+        <view class="v2-home-kpi"><text class="v2-home-kpi-value">{{ store.home.content.length }}</text><text class="v2-home-kpi-label">课程内容</text></view>
+        <view v-if="hasConfirmedProgress" class="v2-home-kpi"><text class="v2-home-kpi-value">{{ store.progress }}%</text><text class="v2-home-kpi-label">今日进度</text></view>
       </view>
-      <text v-if="store.home.contentStatus === 'UNAVAILABLE'" class="task-warning" role="alert">课程列表暂不可用。</text>
+
+      <view class="yx-card v2-home-card">
+        <text class="v2-home-eyebrow">今日</text>
+        <text class="v2-home-card-title">今日任务（{{ store.home.tasks.length }}）</text>
+        <view v-if="planEmpty" class="empty"><text>{{ planEmpty.title }}</text><text>{{ planEmpty.description }}</text><button tabindex="0" role="button" class="yx-button yx-button--secondary" type="button" @click="openPlanEmpty(planEmpty)">{{ planEmpty.action }}</button></view>
+        <view :hidden="planEmpty !== null" v-if="!store.home.tasks.length" class="empty"><text>今天还没有安排任务。</text><text v-if="store.home.content.some((item) => item.availability === 'PUBLISHED')">可从下方选择课程。</text></view>
+        <view v-for="task in store.home.tasks" :key="task.id" class="task-row">
+          <view class="task-copy"><text class="task-title">{{ task.title }}</text><text class="task-description">{{ task.description }}<text v-if="task.minutes > 0"> · {{ task.minutes }} 分钟</text></text><text v-if="task.status === 'UNAVAILABLE'" class="task-warning">{{ task.unavailableReason || '内容暂不可用' }}</text></view>
+          <button tabindex="0" role="button" class="task-button" :disabled="(task.status !== 'AVAILABLE' && task.status !== 'IN_PROGRESS') || !task.contentCode" @click="openTask(task)">{{ task.status === 'COMPLETED' ? '已完成' : task.status === 'LOCKED' ? '未解锁' : !task.contentCode || task.status === 'UNAVAILABLE' ? '暂不可用' : task.status === 'IN_PROGRESS' ? '继续课程' : '查看课程' }}</button>
+        </view>
+      </view>
+
+      <view class="yx-card v2-home-card">
+        <text class="v2-home-eyebrow">补救</text>
+        <text class="v2-home-card-title">错题本</text>
+        <text class="v2-home-card-desc">答错的题目会收进错题本，随时回来补救。</text>
+        <button tabindex="0" role="button" class="yx-button yx-button--secondary v2-home-card-action" @click="open('/pages/b10-report/b10-report')"><AppIcon name="learn" :size="16" />进错题本<AppIcon name="chev" :size="14" /></button>
+      </view>
+
+      <view class="yx-card v2-home-card">
+        <view class="content-list">
+          <text class="content-list__title">课程内容</text>
+          <text v-if="releaseNote" data-release-note>{{ releaseNote }}</text>
+          <input v-model="courseQuery" class="course-search" type="search" aria-label="搜索课程" placeholder="搜索课程" />
+          <text v-if="shelf === 'catalog-empty'" class="content-description">书架里还没有可学习的内容。</text>
+          <text v-else-if="shelf === 'no-matches'" class="content-description">没有匹配的课程。</text>
+          <text v-else-if="shelf === 'error'" class="content-description">课程暂时没能加载。</text>
+          <button tabindex="0" role="button" v-for="item in visibleContent" :key="item.contentCode" class="content-row" @click="open(`/pages/learn/learn?contentCode=${encodeURIComponent(item.contentCode)}`)">
+            <text class="content-title">{{ item.title }}</text>
+            <text class="content-description">{{ item.summary || '暂无简介' }}</text>
+          </button>
+        </view>
+        <text v-if="store.home.contentStatus === 'UNAVAILABLE'" class="task-warning" role="alert">课程列表暂不可用。</text>
+      </view>
     </view>
 
-    <MobileFeatureGrid compact />
-    <view class="entry-grid"><button tabindex="0" role="button" class="yx-button yx-button--secondary" @click="open('/pages/onboarding/onboarding')">修改目标</button><button tabindex="0" role="button" class="yx-button" @click="open('/pages/assessment/assessment')">进入测评</button><button tabindex="0" role="button" class="yx-button yx-button--secondary" @click="open('/pages/today/today')">今日任务</button><button tabindex="0" role="button" class="yx-button yx-button--secondary" :disabled="!canContinueCourse" @click="continueCourse">继续课程</button></view>
+    <view class="entry-grid"><button tabindex="0" role="button" class="yx-button yx-button--secondary" @click="open('/pages/onboarding/onboarding')">修改目标</button><button tabindex="0" role="button" class="yx-button" @click="open('/pages/assessment/assessment')">进入测评</button></view>
 
     <view v-if="!session.isAuthenticated" class="yx-status"><text>登录后，继续查看你的学习进度。</text><button tabindex="0" role="button" class="login-button" @click="open('/pages/login/login')">登录后继续</button></view>
   </view>
@@ -142,4 +168,29 @@ function openPlanEmpty(view: EmptyStateView): void {
 .course-search { box-sizing: border-box; width: 100%; max-width: 100%; min-width: 0; margin: 8rpx 0; padding: 12rpx 14rpx; border: 1rpx solid var(--yx-border); border-radius: 12rpx; color: var(--yx-text-primary); background: var(--yx-surface-card); }
 .first-learning-guide, .plan-banner { margin-top: 12rpx; padding: 14rpx 16rpx; border: 1rpx solid var(--yx-border); border-radius: 12rpx; color: var(--yx-text-secondary); font-size: 24rpx; }.entry-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14rpx; margin-top: 20rpx; }.yx-button--secondary { color: var(--yx-brand); background: var(--yx-surface-card); }.state-title,.state-description{display:block}.state-title{font-weight:700}.state-description{margin-top:12rpx;color:var(--yx-text-secondary);font-size:23rpx}.first-day { display: grid; gap: 8rpx; margin-top: 20rpx; color: var(--yx-text-tertiary); font-size: 21rpx; }.yx-status { display: grid; gap: 12rpx; margin-top: 22rpx; color: var(--yx-text-secondary); font-size: 22rpx; }
 @media (max-width: 420px) { .task-row { flex-wrap: wrap; }.task-copy { flex-basis: 100%; }.task-button { margin-left: auto; } }
+/* v2 首页换皮：对齐 webDemo mobile/styles.css 与 refine.css（.hero/.kpis/.kpi/.prog/.card/.eyebrow/.btn.sm）。
+ * hero 用 var(--v2-grad) 渐变，白字不用 var(--v2-inverse)（暗色不可用），仅此一处用 #fff；
+ * 其余颜色/底/边框/阴影/字体一律取 var(--v2-*)。 */
+.v2-home-body { display: flex; flex-direction: column; gap: var(--v2-space-4); font-family: var(--v2-font); }
+.v2-home-greet { margin: var(--v2-space-4) 0; display: grid; gap: var(--v2-space-1); font-family: var(--v2-font); }
+.v2-home-greet-kicker { display: block; color: var(--v2-brand); font-size: var(--v2-text-sm); line-height: 1.7; }
+.v2-home-greet-title { display: block; color: var(--v2-ink); font-size: var(--v2-text-xl); font-weight: 800; letter-spacing: -.04em; line-height: 1.3; }
+.v2-home-hero { padding: var(--v2-space-5); border: 0; border-radius: var(--v2-radius-lg); background: var(--v2-grad); color: #fff; box-shadow: var(--v2-shadow); font-family: var(--v2-font); }
+.v2-home-eyebrow { display: flex; align-items: center; gap: var(--v2-space-2); margin: 0 0 var(--v2-space-2); color: var(--v2-mut); font-family: var(--v2-font); font-size: var(--v2-text-xs); font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+.v2-home-hero .v2-home-eyebrow, .v2-home-hero .v2-home-hi, .v2-home-hero .v2-home-sub, .v2-home-hero .progress-row, .v2-home-hero .progress { color: #fff; }
+.v2-home-hi { display: block; margin: var(--v2-space-2) 0 0; font-size: var(--v2-text-xl); font-weight: 800; letter-spacing: -.04em; line-height: 1.3; }
+.v2-home-sub { display: block; margin-top: var(--v2-space-1); font-size: var(--v2-text-sm); line-height: 1.7; }
+.v2-home-kpis { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--v2-space-3); margin-top: var(--v2-space-4); }
+.v2-home-kpi { padding: var(--v2-space-4) var(--v2-space-2); border: 1px solid var(--v2-line); border-radius: var(--v2-radius-md); background: var(--v2-card); text-align: center; }
+.v2-home-kpi-value { display: block; color: var(--v2-brand); font-size: var(--v2-text-lg); font-weight: 800; line-height: 1.2; }
+.v2-home-kpi-label { display: block; margin-top: var(--v2-space-1); color: var(--v2-mut); font-size: var(--v2-text-xs); line-height: 1.35; }
+.v2-home-hero .progress-track { background: color-mix(in srgb, var(--v2-card) 35%, transparent); border-radius: var(--v2-radius-pill); overflow: hidden; }
+.v2-home-hero .progress-value { background: #fff; border-radius: inherit; }
+.v2-home-continue, .v2-home-card-action { box-sizing: border-box; min-height: var(--v2-space-12); margin-top: var(--v2-space-4); padding: var(--v2-space-3) var(--v2-space-4); border: 1px solid transparent; border-radius: var(--v2-radius-md); background: var(--v2-soft); color: var(--v2-brand); font-family: var(--v2-font); font-size: var(--v2-text-sm); font-weight: 700; line-height: 1.5; white-space: nowrap; }
+.v2-home-continue:active, .v2-home-card-action:active { transform: scale(.97); }
+.v2-home-continue:focus-visible, .v2-home-card-action:focus-visible { box-shadow: var(--v2-focus); outline: none; }
+.v2-home-continue:disabled { background: var(--v2-surface); color: var(--v2-mut); border: 1px dashed var(--v2-line); box-shadow: none; }
+.v2-home-card { padding: var(--v2-space-5); border: 1px solid var(--v2-line); border-radius: var(--v2-radius-lg); background: var(--v2-card); box-shadow: var(--v2-shadow); font-family: var(--v2-font); }
+.v2-home-card-title { display: block; margin: var(--v2-space-1) 0 0; color: var(--v2-ink); font-family: var(--v2-font); font-size: var(--v2-text-lg); font-weight: 700; line-height: 1.45; }
+.v2-home-card-desc { display: block; margin-top: var(--v2-space-2); color: var(--v2-mut); font-family: var(--v2-font); font-size: var(--v2-text-sm); line-height: 1.7; }
 </style>

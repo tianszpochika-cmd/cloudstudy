@@ -243,22 +243,22 @@ async function cancel(): Promise<void> {
     <view class="yx-card yx-onboarding-card">
       <text v-if="session.adultGate === 'REJECTED'" class="flow-note" role="status">正在打开无权限页。</text>
 
-      <view v-else-if="step === 'gate'" class="yx-onboarding-step">
-        <text class="section-kicker">确认成人身份</text>
-        <text class="section-title">确认成人身份</text>
-        <text class="section-description">只收集出生年份，用来判断是否已满 18 岁。现有成人门不需要月和日，所以不收集完整生日。成人门还没通过时，停在这一步。</text>
-        <text class="flow-note">如果没有通过，仍可前往账号设置、帮助与反馈或退出登录。这里不提供再试一次，也不提供改年份。</text>
-        <label class="birth-year"><text>出生年份</text><input v-model.number="birthYear" type="number" inputmode="numeric" min="1900" :max="birthYearMax" placeholder="例如 1995" aria-label="出生年份" /></label>
-        <label class="consent"><checkbox :checked="ageConfirmed" @click="ageConfirmed = !ageConfirmed" /><text>我确认自己已满 18 周岁</text></label>
+      <view v-else-if="step === 'gate'" class="yx-onboarding-step v2-gate-step">
+        <text class="section-kicker v2-gate-kicker">确认成人身份</text>
+        <text class="section-title v2-gate-title">确认成人身份</text>
+        <text class="section-description v2-gate-desc">只收集出生年份，用来判断是否已满 18 岁。现有成人门不需要月和日，所以不收集完整生日。成人门还没通过时，停在这一步。</text>
+        <text class="flow-note v2-gate-status">如果没有通过，仍可前往账号设置、帮助与反馈或退出登录。这里不提供再试一次，也不提供改年份。</text>
+        <label class="birth-year v2-gate-field"><text>出生年份</text><input class="v2-gate-input" v-model.number="birthYear" type="number" inputmode="numeric" min="1900" :max="birthYearMax" placeholder="例如 1995" aria-label="出生年份" /></label>
+        <label class="consent v2-gate-confirm"><checkbox :checked="ageConfirmed" @click="ageConfirmed = !ageConfirmed" /><text>我确认自己已满 18 周岁</text></label>
       </view>
 
-      <view v-else-if="step === 'consent'" class="yx-onboarding-step">
-        <text class="section-kicker">必要同意</text>
-        <text class="section-title">完成必要同意</text>
-        <text class="section-description">账号条款、隐私说明和成人学习资格要逐项看见。开始时不勾选，也不默认全选。</text>
-        <label v-for="item in requiredConsentItems" :key="item.purpose" class="consent">
+      <view v-else-if="step === 'consent'" class="yx-onboarding-step v2-consent-step">
+        <text class="section-kicker v2-consent-kicker">必要同意</text>
+        <text class="section-title v2-consent-title">完成必要同意</text>
+        <text class="section-description v2-consent-desc">账号条款、隐私说明和成人学习资格要逐项看见。开始时不勾选，也不默认全选。</text>
+        <label v-for="item in requiredConsentItems" :key="item.purpose" class="consent v2-consent-item">
           <checkbox :checked="consentChecked[item.purpose]" @click="toggleConsent(item.purpose)" />
-          <view class="consent-copy">
+          <view class="consent-copy v2-consent-copy">
             <text>{{ item.label }}</text>
             <text>用途码 {{ item.purpose }}</text>
             <text>必要</text>
@@ -329,4 +329,19 @@ async function cancel(): Promise<void> {
 .onboarding-actions .yx-button { margin-top: 0; }
 .yx-flow-cancel { display: block; margin: 20rpx auto 0; border: 0; color: var(--yx-text-tertiary); background: transparent; font-size: 23rpx; }
 @media (min-width: 700px) { .yx-onboarding { max-width: 760rpx; margin: 0 auto; } }
+/* v2 gate + consent：对齐 webDemo shared/components.css（.card h2/.d/.lb/input/.fb）与 mobile/refine.css（checkbox 行） */
+.v2-gate-step, .v2-consent-step { display: flex; flex-direction: column; }
+.v2-gate-kicker, .v2-consent-kicker { color: var(--v2-brand); font-family: var(--v2-font); font-size: var(--v2-text-xs); font-weight: 700; }
+.v2-gate-title, .v2-consent-title { display: block; margin-top: var(--v2-space-3); color: var(--v2-ink); font-family: var(--v2-font); font-size: var(--v2-text-lg); font-weight: 700; line-height: 1.35; }
+.v2-gate-desc, .v2-consent-desc { display: block; margin-top: var(--v2-space-2); color: var(--v2-mut); font-family: var(--v2-font); font-size: var(--v2-text-sm); line-height: 1.7; }
+.v2-gate-status { display: block; margin-top: var(--v2-space-3); padding: var(--v2-space-3) var(--v2-space-4); border-radius: var(--v2-radius-md); background: var(--v2-warn-soft); color: var(--v2-warn); font-family: var(--v2-font); font-size: var(--v2-text-sm); line-height: 1.6; }
+.v2-gate-field { display: block; margin-top: var(--v2-space-4); color: var(--v2-ink); font-family: var(--v2-font); font-size: var(--v2-text-sm); font-weight: 650; }
+.v2-gate-input { box-sizing: border-box; width: 100%; min-height: var(--v2-space-12); margin-top: var(--v2-space-2); padding: var(--v2-space-3); border: 1px solid var(--v2-line); border-radius: var(--v2-radius-md); background: var(--v2-card); color: var(--v2-ink); font-family: var(--v2-font); font-size: var(--v2-text-md); line-height: 1.5; }
+.v2-gate-input::placeholder { color: var(--v2-mut); }
+.v2-gate-input:focus, .v2-gate-input:focus-visible { border-color: var(--v2-brand); box-shadow: var(--v2-focus); outline: none; }
+.v2-gate-confirm, .v2-consent-item { display: flex; align-items: flex-start; gap: var(--v2-space-3); margin-top: var(--v2-space-3); padding: var(--v2-space-3) var(--v2-space-4); border: 1px solid var(--v2-line); border-radius: var(--v2-radius-md); background: var(--v2-surface); color: var(--v2-ink); font-family: var(--v2-font); font-size: var(--v2-text-sm); font-weight: 500; line-height: 1.5; cursor: pointer; }
+.v2-gate-confirm:hover, .v2-consent-item:hover { border-color: var(--v2-brand); }
+.v2-gate-confirm:has(:checked), .v2-consent-item:has(:checked) { border-color: var(--v2-brand); background: var(--v2-soft); }
+.v2-gate-confirm checkbox, .v2-consent-item checkbox, .v2-gate-confirm input[type="checkbox"], .v2-consent-item input[type="checkbox"] { flex: none; width: var(--v2-space-5); height: var(--v2-space-5); margin-top: var(--v2-space-1); accent-color: var(--v2-brand); }
+.v2-consent-copy { display: flex; flex-direction: column; gap: var(--v2-space-1); color: var(--v2-mut); font-family: var(--v2-font); font-size: var(--v2-text-sm); line-height: 1.6; }
 </style>

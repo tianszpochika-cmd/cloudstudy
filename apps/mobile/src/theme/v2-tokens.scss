@@ -1,0 +1,86 @@
+/* 移动端 v2 design tokens —— 照抄自 docs/06-design/v2-980plus/redesign/mockups/webDemo/shared/tokens.css，
+ * :root 与 :root[data-theme=dark] 的全部变量统一加 --v2- 前缀（含 var() 引用同步改名）。
+ * 选择器改为 :root, page 与 :root[data-theme=dark], .yx-theme-dark, .b10-theme--dark（App.vue 实际使用的暗色类名）。 */
+:root,
+page {
+  color-scheme: light;
+  --v2-bg: #f5f5fa;
+  --v2-card: #ffffff;
+  --v2-surface: #f0f1f7;
+  --v2-ink: #222337;
+  --v2-mut: #606277;
+  --v2-brand: #5935b8;
+  --v2-brand2: #7555cb;
+  --v2-soft: #eee9fb;
+  --v2-line: #dcdeea;
+  --v2-ok: #19714d;
+  --v2-ok-soft: #e7f5ed;
+  --v2-bad: #ac303d;
+  --v2-bad-soft: #fcebef;
+  --v2-warn: #80520c;
+  --v2-warn-soft: #fff3d9;
+  --v2-info: #215d9c;
+  --v2-inverse: #fff;
+  --v2-side: #242039;
+  --v2-side-ink: #f4f1ff;
+  --v2-side-muted: #c3bddb;
+  --v2-shadow: 0 8px 28px #2420390a;
+  --v2-shadow-pop: 0 18px 60px #16122a29;
+  --v2-font: Inter, "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+  --v2-text-xs: 12px;
+  --v2-text-sm: 14px;
+  --v2-text-md: 16px;
+  --v2-text-lg: 20px;
+  --v2-text-xl: 28px;
+  --v2-text-2xl: 36px;
+  --v2-space-1: 4px;
+  --v2-space-2: 8px;
+  --v2-space-3: 12px;
+  --v2-space-4: 16px;
+  --v2-space-5: 20px;
+  --v2-space-6: 24px;
+  --v2-space-8: 32px;
+  --v2-space-12: 48px;
+  --v2-radius-sm: 8px;
+  --v2-radius-md: 12px;
+  --v2-radius-lg: 20px;
+  --v2-radius-pill: 999px;
+  --v2-motion-fast: 120ms;
+  --v2-motion-base: 200ms;
+  --v2-motion-slow: 320ms;
+  --v2-focus: 0 0 0 3px var(--v2-card), 0 0 0 6px var(--v2-brand);
+  --v2-grad: linear-gradient(120deg, #49319a, #6c4dbb);
+  --v2-grad-deep: var(--v2-grad);
+  --v2-grad-soft: linear-gradient(120deg, var(--v2-soft), var(--v2-surface));
+  --v2-r: var(--v2-radius-lg);
+  --v2-r-sm: var(--v2-radius-md);
+}
+
+:root[data-theme="dark"],
+.yx-theme-dark,
+.b10-theme--dark {
+  color-scheme: dark;
+  --v2-bg: #15151f;
+  --v2-card: #20202d;
+  --v2-surface: #2b2b3b;
+  --v2-ink: #f1eff9;
+  --v2-mut: #bab8cf;
+  --v2-brand: #bcabff;
+  --v2-brand2: #9f87f0;
+  --v2-soft: #363049;
+  --v2-line: #444355;
+  --v2-ok: #87d6af;
+  --v2-ok-soft: #193b2e;
+  --v2-bad: #ffadb8;
+  --v2-bad-soft: #44272d;
+  --v2-warn: #f4cc7c;
+  --v2-warn-soft: #40341d;
+  --v2-info: #98c8ff;
+  --v2-inverse: #211b35;
+  --v2-side: #191723;
+  --v2-side-ink: #f4f1ff;
+  --v2-side-muted: #c3bddb;
+  --v2-shadow: 0 8px 28px #00000026;
+  --v2-shadow-pop: 0 18px 60px #00000066;
+  --v2-grad: linear-gradient(120deg, #46317d, #6549a1);
+}
