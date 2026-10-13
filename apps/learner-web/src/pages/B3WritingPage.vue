@@ -34,7 +34,7 @@ function submitCorrection(): void { void store.submitCurrentProofreading(correct
 <template>
   <section class="b10-page v2-page v2-page--b3writing" :data-performance="store.performanceLevel" aria-labelledby="writing-title">
     <ExperienceHeader class="v2-b3writing-head" page="Writing" icon="pen" title-id="writing-title" />
-    <p data-closed-practice role="status" class="v2-b3writing-closed">写作功能暂未开放，可以先做其他练习。</p>
+    <p data-closed-practice role="status" class="v2-b3writing-closed"><strong>写作练习</strong><span data-coming-soon style="display:inline-block;margin-left:8px;padding:1px 8px;border-radius:999px;background:rgba(245,158,11,.16);color:#d97706;font-size:12px;font-weight:700;vertical-align:middle">即将开放</span><span data-closed-reason style="display:block;margin-top:4px;opacity:.8">作文批改服务尚未接入，现在提交只能得到占位分数，不能作为真实反馈。</span></p>
     <a data-closed-back href="/today" class="v2-b3writing-back">回到可用学习</a>
     <B10StatePanel class="v2-b3writing-state" v-if="store.writingStatus !== 'ready' || store.writingMessage" :status="store.writingStatus" :message="store.writingMessage" module-label="WRT / WRITING" :performance-level="store.performanceLevel" @retry="retry" @performance="performance" />
     <div class="v2-b3writing-body"><div class="v2-b3writing-main">

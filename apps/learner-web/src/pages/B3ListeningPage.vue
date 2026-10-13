@@ -66,7 +66,7 @@ async function savePosition(): Promise<void> { if (!audio.value || !store.listen
   <section class="b3-page v2-page v2-page--b3listening">
     <ExperienceHeader class="v2-b3listening-head" page="Listening" icon="headphones" title-id="listening-title" />
     <div class="v2-b3listening-body"><div class="v2-b3listening-main">
-    <p data-closed-practice role="status" class="v2-b3listening-closed">听力功能暂未开放，可以先做其他练习。</p>
+    <p data-closed-practice role="status" class="v2-b3listening-closed"><strong>听力练习</strong><span data-coming-soon style="display:inline-block;margin-left:8px;padding:1px 8px;border-radius:999px;background:rgba(245,158,11,.16);color:#d97706;font-size:12px;font-weight:700;vertical-align:middle">即将开放</span><span data-closed-reason style="display:block;margin-top:4px;opacity:.8">音频素材尚未上传到媒体库，播放地址无法签发；素材上线后即可在这里播放并听写。</span></p>
     <a data-closed-back href="/today" class="v2-b3listening-back">回到可用学习</a>
     <div v-if="store.status === 'loading'" class="panel v2-b3listening-state">正在读取听力素材…</div>
     <div v-else-if="store.status === 'error' || store.status === 'offline'" class="panel error v2-b3listening-state">{{ store.message }}<button type="button" @click="store.loadListening">重新读取</button></div>

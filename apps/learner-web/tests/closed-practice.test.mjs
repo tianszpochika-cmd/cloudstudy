@@ -24,9 +24,9 @@ for (const [name, api] of [['web', web], ['mobile', mobile]]) {
     assert.equal(api.vocabPlayable(null), false)
     assert.equal(api.vocabPlayable('  '), false)
     assert.equal(api.vocabPlayable('https://cdn.example/a.mp3'), true)
-    assert.equal(api.closedPracticeCopy('listening'), '听力功能暂未开放，可以先做其他练习')
-    assert.equal(api.closedPracticeCopy('speaking'), '跟读功能暂未开放，可以先做其他练习')
-    assert.equal(api.closedPracticeCopy('writing'), '写作功能暂未开放，可以先做其他练习')
+    assert.equal(api.closedPracticeCopy('listening'), '听力练习即将开放：音频素材尚未上传到媒体库，播放地址无法签发；素材上线后即可在这里播放并听写')
+    assert.equal(api.closedPracticeCopy('speaking'), '跟读练习即将开放：跟读需要录音上传和发音评分服务，目前尚未接入，无法给出真实评分')
+    assert.equal(api.closedPracticeCopy('writing'), '写作练习即将开放：作文批改服务尚未接入，现在提交只能得到占位分数，不能作为真实反馈')
   })
 }
 
@@ -58,7 +58,8 @@ test('main navigation drops closed skills and old pages explain how to leave', (
     const source = readFileSync(resolve(path), 'utf8')
     assert.match(source, /data-closed-practice/)
     assert.match(source, /data-closed-back/)
-    assert.match(source, /暂未开放/)
+    assert.match(source, /data-coming-soon[^>]*>即将开放</)
+    assert.match(source, /data-closed-reason/)
   }
   const listening = readFileSync(resolve('apps/learner-web/src/pages/B3ListeningPage.vue'), 'utf8')
   assert.match(listening, /class="waveform"/)
