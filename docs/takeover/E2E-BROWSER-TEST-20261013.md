@@ -8,9 +8,11 @@
 
 | 模块 | 端 | 结果 | 证据 / 说明 |
 |---|---|---|---|
-| 认证 / 引导：注册 | learner-web | pass | 注册 201，进入 `/onboarding` |
-| 认证 / 引导：成人门 | learner-web | pass | `POST /iam/adult-gate` 200 |
-| 认证 / 引导：必要同意「继续」 | learner-web | fixed | 见下方根因；修复后应显示明确错误或进入目标步 |
+| 认证 / 引导：注册 | learner-web | pass | `e2e-20261013-m1-*` 注册 201 → `/onboarding` |
+| 认证 / 引导：成人门 | learner-web | pass | `POST /iam/adult-gate` 200，进入同意步 |
+| 认证 / 引导：必要同意「继续」 | learner-web | fixed | 正常路径 refresh 200 进目标步；cookie 失效时有明确报错（5dd0daec） |
+| 认证 / 引导：目标与时长 | learner-web | pass | 选 FOUNDATION + 5 分钟，`PUT /learner/targets` 200 → `/assessment` |
+| 认证 / 引导：定级入口 | learner-web | pass | 到达测评页「找到一个适合你的起点」 |
 | 首页 | learner-web | pending | |
 | 学习与复习 | learner-web | pending | |
 | 技能页 | learner-web | pending | |
