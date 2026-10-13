@@ -116,7 +116,10 @@ public final class PolicyAccessAuthenticationVerifier {
     }
 
     private static boolean validPermission(String value) {
-        return value != null && value.matches("[a-z][a-z0-9.-]{2,127}");
+        // Staff tokens legitimately mix dotted and colon-form keys (content:write,
+        // commerce:order:read). Rejecting ':' or '_' made every real admin token an
+        // "invalid access profile" and logged the operator out of the policy console.
+        return value != null && value.matches("[a-z][a-z0-9._:-]{2,127}");
     }
 
     private IamPolicyException revoked() {
