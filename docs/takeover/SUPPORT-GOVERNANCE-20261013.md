@@ -51,3 +51,17 @@
 ## 已知缺口：工单流转未经网关开放
 
 网关只路由 `GET/POST /api/v1/admin/ops/tickets` 与 `GET /api/v1/admin/ops/tickets/{id}`，**没有** `/transitions` 与 `/transitions/prepare`。管理端工单按钮因此在线上会得到 404。补路由需要改网关路由表和 `p1r-gateway-boundary` 契约片段（契约只能提案）并重建 api-gateway，不在本次部署范围内。提案见契约文档第 5 节。
+
+## Luna 签收记录（2026-10-13）
+
+- 合并：`feat/v2-support-governance` → `dev-redesign` @ `e61829ff`；`packages/contracts` 无改动。
+- 测试：admin-ops 110/0 失败/2 跳过（基线 93/0/2）；workflow-service 70/0/13（基线 58/0/13）；vue-tsc 通过；admin-web node 56 项中 3 项为既有 admin-audit 基线失败，无新增。
+- 部署（37.120.160.36）：先备份 `supgov-pre-deploy-20261013102944.sql.gz`；`mysql-migrate` 应用 workflow V3（preflight/apply/verify 全通过）；仅重建 admin-ops、workflow-service、admin-web；api-gateway 未动；`ADMINOPS_IT7_DISPOSITION_OPEN` 未设置（=false）。回滚镜像记录：`/srv/cloudstudy/running-before-e61829ff.txt`。
+- 冒烟 `SMOKE-SUPGOV-20261013`（脚本 `scripts/seed/smoke-supgov-20261013.mjs`）18/18 通过：
+  - 仅哈希建单 503；校验附件建单 200（VERIFIED_CONTENT_V1）。
+  - 真实 `TICKET/REOPEN` 恢复：admin 申请 201 → admin 自批 403 → reviewer 批准 → admin 执行 EXECUTED（“admin-ops support_ticket -> IN_PROGRESS”）→ 重复执行幂等 EXECUTED；工单回到 IN_PROGRESS；admin-ops 审计 `SUPPORT_RECOVERY_REOPEN` 1 条；`recovery_side_effect_log` APPLIED 1 条。
+  - 未知动作 `TICKET/DELETE` 执行被拒 403（请求停留 APPROVED，未产生副作用）。
+  - reviewer 无 `admin.recovery.request` 申请 403；策略页 reviewer 403 / admin 200；IT7 写开关 FROZEN、dispositionOpen=false。
+  - 公网 `/internal/v1/workflow/**`、`/internal/v1/admin-ops/**` 均 404。
+- 清理：先备份 `supgov-smoke-pre-cleanup-20261013103609.sql.gz`，执行 `scripts/seed/cleanup-supgov-smoke-20261013.sql`，残留 0；reviewer 临时恢复权限已收回。admin_audit_record 为哈希链只追加表，冒烟审计记录保留。
+- 遗留：网关未路由 `/tickets/{id}/transitions(/prepare)`，生产工单按钮会 404（见合同提案第 6 节，需网关+合同变更）；未知动作拒绝后请求停留 APPROVED 而非 FAILED（安全，但状态可读性待改进）。
