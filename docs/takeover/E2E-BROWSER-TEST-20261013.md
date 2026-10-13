@@ -142,3 +142,28 @@
 - b4-games 暗色模式、管理端无路由 demo 页：仍待你定
 - 服务器缺 `VOCAB-PHASE1` 内容（题目/词汇页 404，页面空态正常）
 - RISK-1：token 体积接近 8KB 请求头上限
+
+## 种子数据 SEED-20261013 与 favicon（2026-10-13 下午）
+
+### 种子
+- 脚本：`scripts/seed/seed-20261013.mjs`（`account` | `data` | `admin-api` 补齐），数据：`scripts/seed/seed-20261013-data.mjs`（真实中英文内容）。
+- 清理：`sh scripts/seed/cleanup-seed-20261013.sh [--dry-run]`，会先自动备份，再执行 `cleanup-seed-20261013.sql`。dry-run 已验证（ROLLBACK）。审计链（admin_audit_record / audit_fact）不删；账号不删。
+- 写入方式：有 API 的走 API，包括词条、题目、风险案件、人工恢复、策略版本、报告分享、6 笔 API 订单。其余用 SQL（utf8mb4），所有 hash 都按 canonical 方式计算，并统一打上 `SEED-20261013` / `seed-20261013-*` / id 段 2610130000+ 的标记。
+- 学员账号 `e2e-20261013-learner`（凭据在 `/root/e2e-20261013-learner.txt`，600 权限）：已完成成年确认、三项同意、目标（四六级 · 15 分钟）和定级 10/10 COMPLETED，学习计划 plan-100012 已生成。
+
+### 浏览器验证（Playwright，截图在 box `/workspace/e2e-seed/`）
+- 学员端有数据：课程、阅读、听力（30）、语法、错题（40）、掌握度（53）、消息（80）、权益、世界（XP 880 / Lv4）、计划地图、报告。
+- 管理端有数据：工作台（42 指标）、词汇（50）、题目（40）、客服（40）、治理举报（30）、订单（36）、策略版本（30）、审计。
+- favicon：learn / admin / mobile 三端的 svg、32、180、apple-touch 均返回 200，图片尺寸正确；标题已更新。
+
+### 过程中修正的种子问题
+- coin_ledger 只接受正数结算（`LEDGER_INVARIANT` 会导致 /world 返回 409）。已改为全部正数并重算余额。
+- b3 体验数据需要绑定 `content_b3_item_binding`，且必须指向已发布、权利信息完整的版本。已改为绑定 2610130001。
+- 管理端订单读取的是事件投影 `admin_projection`(COMMERCE)，已为种子订单补写投影。
+- 词条的 pos 必须使用受控词表值（NOUN / VERB / ADJ / ADV）。
+
+### 发现的问题（未修，需要决定）
+- BUG-S1：策略文档省略 `minimumDeviceTrust` 时，服务端返回 `null`，而 admin-web 的 `parsePolicyVersionPage` 只接受 undefined 或 string。结果是只要有一条这样的策略，整页就显示「策略版本暂不可用」。种子已改为显式传入 `REGISTERED` 来规避；前端或服务端仍需要修。
+- BUG-S2：学员首页的引导只看 sessionStorage 标记，不看定级是否已完成。新会话里，即使定级已 COMPLETED，仍会显示「剩余步骤：定级」。
+- 写作（/writing）在 Phase 1 被 `CLOSED_NAV` 关闭，种子数据无法在学员端展示。听力音频没有真实媒体资产，manifest 返回 404，页面显示「授权已过期」；文本和字幕正常。
+- 人工恢复没有列表 API（GET /admin/recovery/recoveries 返回 404），30 条种子已入库，但页面只显示当前申请。/learners 需要检索后才会出数据。
