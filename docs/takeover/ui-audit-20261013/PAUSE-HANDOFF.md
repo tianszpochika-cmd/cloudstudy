@@ -1,0 +1,37 @@
+# UI 重设计额度暂停交接
+
+2026-10-13北京时间23:51。任务未完成；因用户指定的Plus五小时额度保护暂停。工具实读`usedPercent=90`、剩余10%，`resetsAt=1791919005`，即2026-10-14 03:16:45 +08:00。续做heartbeat ID `ui` 已调整到北京时间03:18；届时必须再查实际额度，未恢复不开展工作，不使用重置券。
+
+## 已签本轮UI范围并推送
+
+| 页 | 源码/证据提交 | 运行验证 | 远程收据 |
+|---|---|---|---|
+| Web 登录 | `182e106b34adb6d2aab3f2020583a74826e158f4` | 24视口主题、负向IAM交互、独立视觉复审 | ls-remote一致 |
+| Web 注册 | `60858fbcf827e264c63044644382b8b375dc398d` | 24组合、中英/文字放大、字段校验/焦点/密码显示/等待、独立复审 | ls-remote一致 |
+| Web 找回密码 | `5cd40e358a25839049acbc689dd3a36a69fee368` | 两步骤64组合、负向IAM/切步/重复提交；根Agent独立重跑/目检 | ls-remote一致 |
+
+以上只签真实前端页面的UI与受控fixture交互，未重签真实后台成功链。前轮缺陷修复`70c2623f`不是全面重设计范围；历史记录保留。本轮设计方向见[DESIGN-DIRECTION](DESIGN-DIRECTION.md)，逐页全量队列见[索引](../UI-PAGE-AUDIT-20261013.md)。其余页面仍未完成。
+
+## 第一接续点：Mobile 登录 MB-001
+
+正式源码在审且**尚未提交/签收**：
+
+- `apps/mobile/src/pages/login/login.vue`
+- `apps/mobile/src/theme/v2-tokens.scss`（高对比兼容桥接影响其它页，后续逐页复验）
+- `apps/mobile/src/theme/v2-icons.ts`（复用图标体系增加eye）
+- `packages/i18n/src/mobile-experience.ts`（七个中英文简约登录文案key）
+- `apps/mobile/tests/ui-login.e2e.cjs`及当前未签报告目录（若已有）
+
+已知实现/证据：开放单列表单、H5原生输入的label/autocomplete/aria与uni focus适配、16px输入、44×44眼睛、语义高对比。子Agent报告typecheck与H5 build通过、IAM/handoff专项5/5通过；真实H5原生输入属性已生效。最后浏览器整页未通过：18183缓存旧共享i18n预构建模块，显示裸key；根Agent刚补的文案/eye已在源码，仍须重新确认真实页面加载新版模块，不能凭构建升为PASS。
+
+原先自有Mobile服务session63951/PID25648，根Agent已授权只在核对归属后重启本轮自己的服务以刷新模块；实际新PID/session须读取子Agent最新报告或监听状态。不要据旧PID停进程，不触碰共享服务。Web自有服务session14281，18180；续做前复查实际监听。所有端口仍按固定分配，不递增。
+
+未签代码的额外Git外快照：`.git/codex-local-backups/ui-audit-20261013/pause-mobile/`，含文件及SHA256。只作恢复保险，不用于覆盖当前更晚的工作。原来的只读移动登录缺陷证据在`.git/codex-local-backups/ui-mobile-login-inspection/`。
+
+下一周期：先查额度与Git远程/差量，复验Mobile登录当前源码、整页文案/主题/输入/焦点/busy/中英/文字放大，再由根Agent独立Review，具名UI通过才更新文档并单独提交推送。随后按队列继续正式页面重设计，不只修bug、不只改静态Demo。
+
+## 保护与未关闭项
+
+本轮开始时70项预存差量没有路径冲突，安全fast-forward到`4990dd29`；暂停时对原有已记录文件SHA256复核，变动0。禁止reset/clean/覆盖或把这些历史差量混入本轮提交。
+
+Web全量Node回归239/240，已有`content-release`只读策略断言与最新管理策略写入能力冲突；三个领域文件/测试与拉取基线无本轮差量。不得称全套通过，不擅改业务契约。真实后台/邮件/原生读屏/真机软键盘、部分跨浏览器检查未测。已提交每页报告保留当时源哈希，后续共享变化需新回归收据，不能覆盖旧证据冒充同一快照。

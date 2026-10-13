@@ -2,6 +2,8 @@
 
 日期：2026-10-13。状态：**UI_SCOPE_PASS / PUSH_PENDING**。根Agent已独立读源码、查看两步骤真实截图并重跑64组矩阵与具名交互，复验PASS；待逐页提交推送。本记录不代表全部 UI 重设计完成，也不代替真实 IAM 重置与邮件送达验收。
 
+推送收据：`5cd40e358a25839049acbc689dd3a36a69fee368`已推送`origin/dev-redesign`，`ls-remote`核对相同SHA，状态现为**PUSHED_SCOPED**。
+
 ## 范围与追溯
 
 - 正式入口：`http://127.0.0.1:18180/reset-password`；申请与设置新密码是同一路由的两个步骤。
