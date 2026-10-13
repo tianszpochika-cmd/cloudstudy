@@ -54,3 +54,24 @@ async function logout(): Promise<void> {
     </div>
   </AuthLayout>
 </template>
+
+<style>
+/* v2 Forbidden 无权限页面级布局（只做样式）：无此页专用原型，对齐 webDemo learner-web 普通内容页主列+侧栏两栏卡片与标签风格。
+ * 选择器全部以 .v2-page--forbidden 开头；颜色只用 --v2-* tokens，不写死色值以适配暗色。 */
+.v2-page--forbidden{background:var(--v2-bg);color:var(--v2-ink);font-family:var(--v2-font);min-width:0}
+.v2-page--forbidden .v2-forbidden-layout{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:var(--v2-space-5);align-items:start;min-width:0;width:100%}
+.v2-page--forbidden .v2-forbidden-main{display:grid;gap:var(--v2-space-5);align-content:start;min-width:0}
+.v2-page--forbidden .v2-forbidden-card{width:100%;max-width:none;background:var(--v2-card);border:1px solid var(--v2-line);border-radius:var(--v2-radius-lg);box-shadow:var(--v2-shadow);padding:var(--v2-space-8);min-width:0;display:grid;gap:var(--v2-space-4);align-content:start}
+.v2-page--forbidden .v2-forbidden-title{margin:0;color:var(--v2-ink);font-size:var(--v2-text-xl);line-height:1.4;letter-spacing:-1px}
+.v2-page--forbidden .v2-forbidden-lead{margin:0;color:var(--v2-mut);font-size:var(--v2-text-md);line-height:1.8}
+.v2-page--forbidden .v2-forbidden-reason{margin:0;background:var(--v2-warn-soft);color:var(--v2-warn);border:1px solid var(--v2-line);border-radius:var(--v2-radius-md);padding:var(--v2-space-3) var(--v2-space-4);font-size:var(--v2-text-sm);line-height:1.7}
+.v2-page--forbidden .v2-forbidden-actions{display:flex;flex-wrap:wrap;gap:var(--v2-space-3);margin-top:var(--v2-space-2)}
+.v2-page--forbidden .v2-forbidden-side{background:var(--v2-card);border:1px solid var(--v2-line);border-radius:var(--v2-radius-lg);box-shadow:var(--v2-shadow);padding:var(--v2-space-6);min-width:0;display:grid;gap:var(--v2-space-3);align-content:start}
+.v2-page--forbidden .v2-forbidden-side-title{margin:0;color:var(--v2-ink);font-size:var(--v2-text-lg);line-height:1.4}
+.v2-page--forbidden .v2-forbidden-tips{margin:0;padding-left:var(--v2-space-5);display:grid;gap:var(--v2-space-2);color:var(--v2-mut);font-size:var(--v2-text-sm);line-height:1.7}
+.v2-page--forbidden .v2-forbidden-tips li::marker{color:var(--v2-brand)}
+.v2-page--forbidden a:focus-visible{outline:2px solid var(--v2-brand);outline-offset:2px}
+.v2-page--forbidden button:focus-visible{outline:2px solid var(--v2-brand);outline-offset:2px}
+@media (max-width:1190px){.v2-page--forbidden .v2-forbidden-layout{grid-template-columns:minmax(0,1fr) 250px}.v2-page--forbidden .v2-forbidden-card{padding:var(--v2-space-6)}.v2-page--forbidden .v2-forbidden-side{padding:var(--v2-space-5)}}
+@media (max-width:900px){.v2-page--forbidden .v2-forbidden-layout{grid-template-columns:1fr}.v2-page--forbidden .v2-forbidden-actions{display:grid;grid-template-columns:1fr}}
+</style>
