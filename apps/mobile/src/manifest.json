@@ -14,7 +14,7 @@
     "screenOrientation": ["portrait-primary", "landscape-primary"]
   },
   "h5": {
-    "title": "语学星",
+    "title": "语学星 · 英语学习",
     "router": {
       "mode": "hash"
     }
