@@ -112,3 +112,77 @@ async function saveShadowing(): Promise<void> { if (!shadowing.value || !selecte
 .rating--disabled{color:var(--yx-color-text-tertiary)}.rating--disabled button{cursor:not-allowed;opacity:.52}
 .state-panel--expired{border-color:var(--yx-color-danger)}
 </style>
+
+<style>
+/* B11Speaking v2 页面级样式（只做样式）：对齐 webDemo“专项练习会话（左主练习卡 + 右侧提示栏）”原型。
+ * 选择器全部以 .v2-page--b11speaking 开头；颜色只用 --v2-* tokens，不写死色值以适配暗色。 */
+.v2-page--b11speaking.v2-page{background:var(--v2-bg);color:var(--v2-ink);font-family:var(--v2-font);display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:var(--v2-space-5);align-items:start}
+.v2-page--b11speaking .experience-heading{grid-column:1/-1;min-width:0}
+.v2-page--b11speaking .state-panel{grid-column:1/-1;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--v2-space-4);padding:var(--v2-space-4) var(--v2-space-5);background:var(--v2-card);border:1px solid var(--v2-line);border-radius:var(--v2-radius-lg);box-shadow:var(--v2-shadow);min-width:0}
+.v2-page--b11speaking .state-panel--offline,.v2-page--b11speaking .state-panel--error,.v2-page--b11speaking .state-panel--permission,.v2-page--b11speaking .state-panel--revoked,.v2-page--b11speaking .state-panel--expired,.v2-page--b11speaking .state-panel--recovering{border-color:var(--v2-bad)}
+.v2-page--b11speaking .state-copy{display:grid;gap:var(--v2-space-1);min-width:240px}
+.v2-page--b11speaking .state-copy strong{color:var(--v2-ink)}
+.v2-page--b11speaking .state-panel .state-copy span{color:var(--v2-mut);line-height:1.5}
+.v2-page--b11speaking .state-copy small{color:var(--v2-mut);font-size:var(--v2-text-xs)}
+.v2-page--b11speaking .state-actions{display:flex;flex-wrap:wrap;align-items:center;gap:var(--v2-space-2)}
+.v2-page--b11speaking .empty-panel{grid-column:1;display:grid;gap:var(--v2-space-2);align-content:start;background:var(--v2-card);border:1px solid var(--v2-line);border-radius:var(--v2-radius-lg);box-shadow:var(--v2-shadow);padding:var(--v2-space-6);min-width:0}
+.v2-page--b11speaking .empty-panel strong{color:var(--v2-ink)}
+.v2-page--b11speaking .empty-panel p{margin:0;color:var(--v2-mut);line-height:1.6}
+.v2-page--b11speaking .v2-b11speaking-main{grid-column:1;display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:var(--v2-space-5);align-items:start;min-width:0}
+.v2-page--b11speaking .phonetics-panel,.v2-page--b11speaking .recorder-panel,.v2-page--b11speaking .shadowing-panel,.v2-page--b11speaking .v2-b11speaking-rail{background:var(--v2-card);border:1px solid var(--v2-line);border-radius:var(--v2-radius-lg);box-shadow:var(--v2-shadow);padding:var(--v2-space-6);min-width:0}
+.v2-page--b11speaking .phonetics-panel,.v2-page--b11speaking .recorder-panel,.v2-page--b11speaking .shadowing-panel{display:grid;gap:var(--v2-space-4);align-content:start}
+.v2-page--b11speaking .shadowing-panel{grid-column:1}
+.v2-page--b11speaking .panel-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:var(--v2-space-3)}
+.v2-page--b11speaking .panel-heading>div{min-width:0}
+.v2-page--b11speaking .panel-heading h3{margin:var(--v2-space-1) 0 0;font-size:var(--v2-text-lg);color:var(--v2-ink);line-height:1.4}
+.v2-page--b11speaking .eyebrow{margin:0;color:var(--v2-brand);font-size:var(--v2-text-xs);font-weight:800;letter-spacing:.12em}
+.v2-page--b11speaking .state-chip{padding:var(--v2-space-2) var(--v2-space-3);border:1px solid var(--v2-line);border-radius:var(--v2-radius-pill);background:var(--v2-soft);color:var(--v2-brand);font-size:var(--v2-text-xs);font-weight:700;white-space:nowrap}
+.v2-page--b11speaking .phonemes{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:var(--v2-space-2)}
+.v2-page--b11speaking .phonemes button{min-width:0;display:grid;gap:var(--v2-space-1);padding:var(--v2-space-3);border:1px solid var(--v2-line);border-radius:var(--v2-radius-md);background:var(--v2-surface);color:var(--v2-ink);cursor:pointer}
+.v2-page--b11speaking .phonemes button:hover{border-color:var(--v2-brand);background:var(--v2-soft)}
+.v2-page--b11speaking .phonemes button.active{border-color:var(--v2-brand);background:var(--v2-soft)}
+.v2-page--b11speaking .phonemes strong{font-size:var(--v2-text-lg);color:var(--v2-brand)}
+.v2-page--b11speaking .phonemes small{overflow-wrap:anywhere;color:var(--v2-mut);font-size:var(--v2-text-xs)}
+.v2-page--b11speaking .mouth-fallback{display:grid;gap:var(--v2-space-2);padding:var(--v2-space-4);border-radius:var(--v2-radius-md);background:var(--v2-soft)}
+.v2-page--b11speaking .mouth-fallback strong{font-size:var(--v2-text-lg);color:var(--v2-ink)}
+.v2-page--b11speaking .mouth-fallback span,.v2-page--b11speaking .mouth-fallback small{color:var(--v2-mut);line-height:1.6}
+.v2-page--b11speaking .mouth-fallback small{font-size:var(--v2-text-xs)}
+.v2-page--b11speaking .demo-audio{display:grid;gap:var(--v2-space-2);padding:var(--v2-space-3);border:1px solid var(--v2-line);border-radius:var(--v2-radius-md);background:var(--v2-surface)}
+.v2-page--b11speaking .demo-audio span{color:var(--v2-mut);font-size:var(--v2-text-sm);line-height:1.5}
+.v2-page--b11speaking .demo-audio-player{width:100%;max-width:100%}
+.v2-page--b11speaking .pairs{display:flex;flex-wrap:wrap;gap:var(--v2-space-2)}
+.v2-page--b11speaking .pairs .eyebrow{width:100%}
+.v2-page--b11speaking .pairs span{padding:var(--v2-space-1) var(--v2-space-2);border-radius:var(--v2-radius-pill);background:var(--v2-soft);color:var(--v2-brand);font-size:var(--v2-text-sm)}
+.v2-page--b11speaking .privacy-note{margin:0;color:var(--v2-mut);font-size:var(--v2-text-sm);line-height:1.6}
+.v2-page--b11speaking .message{margin:0;color:var(--v2-mut);font-size:var(--v2-text-sm);line-height:1.6}
+.v2-page--b11speaking .permission-banner{display:grid;gap:var(--v2-space-1);padding:var(--v2-space-3);border:1px solid var(--v2-line);border-radius:var(--v2-radius-md);background:var(--v2-surface)}
+.v2-page--b11speaking .permission-banner strong{color:var(--v2-ink);font-size:var(--v2-text-sm)}
+.v2-page--b11speaking .permission-banner span{color:var(--v2-mut);font-size:var(--v2-text-sm);line-height:1.5}
+.v2-page--b11speaking .permission-banner--denied{border-color:var(--v2-bad);background:var(--v2-bad-soft)}
+.v2-page--b11speaking .permission-banner--granted{border-color:var(--v2-ok);background:var(--v2-ok-soft)}
+.v2-page--b11speaking .actions,.v2-page--b11speaking .rating{display:flex;flex-wrap:wrap;gap:var(--v2-space-2);align-items:center}
+.v2-page--b11speaking .primary-button,.v2-page--b11speaking .secondary-button,.v2-page--b11speaking .danger-button,.v2-page--b11speaking .rating button{min-height:40px;padding:0 var(--v2-space-3);border-radius:var(--v2-radius-sm);font-weight:750;cursor:pointer}
+.v2-page--b11speaking .primary-button{border:0;background:var(--v2-brand);color:var(--v2-inverse)}
+.v2-page--b11speaking .primary-button:hover:not(:disabled){background:var(--v2-brand2)}
+.v2-page--b11speaking .secondary-button,.v2-page--b11speaking .rating button{border:1px solid var(--v2-line);background:var(--v2-soft);color:var(--v2-brand)}
+.v2-page--b11speaking .secondary-button:hover:not(:disabled),.v2-page--b11speaking .rating button:hover:not(:disabled){border-color:var(--v2-brand)}
+.v2-page--b11speaking .danger-button{border:0;background:var(--v2-bad);color:var(--v2-inverse)}
+.v2-page--b11speaking .primary-button:disabled,.v2-page--b11speaking .secondary-button:disabled,.v2-page--b11speaking .danger-button:disabled,.v2-page--b11speaking .rating button:disabled{opacity:.5;cursor:not-allowed}
+.v2-page--b11speaking .playback{width:100%}
+.v2-page--b11speaking .recording-meta{display:grid;gap:var(--v2-space-1);padding:var(--v2-space-4);border-radius:var(--v2-radius-md);background:var(--v2-soft);word-break:break-word}
+.v2-page--b11speaking .recording-meta strong{color:var(--v2-ink)}
+.v2-page--b11speaking .recording-meta span,.v2-page--b11speaking .recording-meta small{color:var(--v2-mut);font-size:var(--v2-text-sm)}
+.v2-page--b11speaking .rating{padding-top:var(--v2-space-2);border-top:1px solid var(--v2-line)}
+.v2-page--b11speaking .rating>span{width:100%;color:var(--v2-mut);font-size:var(--v2-text-sm)}
+.v2-page--b11speaking .rating--disabled{color:var(--v2-mut)}
+.v2-page--b11speaking .progress{height:6px;border-radius:var(--v2-radius-pill);background:var(--v2-surface);overflow:hidden}
+.v2-page--b11speaking .progress span{display:block;height:100%;background:var(--v2-brand)}
+.v2-page--b11speaking .state-actions select{min-height:38px;padding:0 var(--v2-space-2);border:1px solid var(--v2-line);border-radius:var(--v2-radius-sm);background:var(--v2-bg);color:var(--v2-ink);font-size:var(--v2-text-sm)}
+.v2-page--b11speaking .v2-b11speaking-rail{grid-column:2;grid-row:2 / -1;position:sticky;top:var(--v2-space-6);display:grid;align-content:start;gap:var(--v2-space-3)}
+.v2-page--b11speaking:has(.state-panel) .v2-b11speaking-rail{grid-row:3 / -1}
+.v2-page--b11speaking .v2-b11speaking-rail h2{margin:0;font-size:var(--v2-text-lg);color:var(--v2-ink)}
+.v2-page--b11speaking .v2-b11speaking-rail ol{margin:0;padding-left:var(--v2-space-5);display:grid;gap:var(--v2-space-2);color:var(--v2-mut);font-size:var(--v2-text-sm);line-height:1.7}
+.v2-page--b11speaking button:focus-visible,.v2-page--b11speaking a:focus-visible,.v2-page--b11speaking select:focus-visible,.v2-page--b11speaking audio:focus-visible{outline:2px solid var(--v2-brand);outline-offset:2px}
+@media(max-width:1190px){.v2-page--b11speaking.v2-page{grid-template-columns:minmax(0,1fr) 250px}.v2-page--b11speaking .v2-b11speaking-main{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.v2-page--b11speaking .phonemes{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(max-width:900px){.v2-page--b11speaking.v2-page{grid-template-columns:1fr}.v2-page--b11speaking .empty-panel,.v2-page--b11speaking .v2-b11speaking-main,.v2-page--b11speaking .shadowing-panel{grid-column:1}.v2-page--b11speaking .v2-b11speaking-main{grid-template-columns:1fr}.v2-page--b11speaking .v2-b11speaking-rail{grid-column:1;grid-row:auto;position:static}.v2-page--b11speaking .panel-heading{flex-direction:column;align-items:flex-start}}
+</style>
