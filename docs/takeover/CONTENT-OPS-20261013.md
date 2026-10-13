@@ -176,3 +176,66 @@ admin-web（`AdminItemView.vue`、`api/content-items.ts`）：
 - 已知缺口：
   - 现有 48 个英文音素和 37 个法文音素是迁移写入的遗留行，没有对应的条目，所以不能在后台直接编辑，只能新建条目替代。是否回填为条目需要另行决定，本轮没有自动造数据。
   - 维护后的音素要让学员看到，需要先给 PHONETICS / PHONETICS-FR 建立并正式发布一个内容包版本（走内容工作台）。
+
+---
+
+## Luna 签收与上线记录（2026-10-13）
+
+### 签收结论：附条件签收 → 条件已满足，已合并、已部署
+
+审阅范围：`acc8080b`、`2aa108c7`、`ccca58d8`，以及签收条件补丁 `fae4c74f`。`packages/contracts` 没有改动，契约变化只以提案形式写在本文档里。
+
+签收时附带的条件及完成情况：
+
+1. **遗留音素转为可编辑条目：V34 `V34__backfill_legacy_phonetics_items.sql`**
+   - 把 `b3_content_experience` 里遗留的 PHONETICS / PHONETICS-FR 音素（PHONEME）和最小对立对（MINIMAL_PAIR）幂等写入 `content_item`，状态一律为 DRAFT。
+   - 条目编号为 `legacy-phoneme-{key}` / `legacy-pair-{key}`。来源和授权一律填受控码 `SOURCE-PLATFORM-PHONETICS` / `LICENSE-INTERNAL-REF`。
+   - 写入时去掉占位版本 `contentVersionId: 301`。最小对保留原来的 `pairId`、`leftPhonemeId`、`rightPhonemeId`，另加 `leftItemId`、`rightItemId` 指向新条目编号；每条都带 `legacyExperienceId`。
+   - PHONETICS / PHONETICS-FR 的内容包定义只在缺失时创建，不带任何版本，`current_published_version_id` 为 NULL。
+   - 这一步不发布、不写学员投影；V23 已下线的遗留行保持原状。
+   - 学员要看到这些音素，必须在内容工作台为 PHONETICS / PHONETICS-FR 建立并正式发布一个内容包版本（填齐版权、授权证据和渠道，走双审），再对每个条目双审并发布。在此之前，投影一律返回 `PACK_NOT_PUBLISHED`。
+2. **P2-1：迁移前已在审核中、却没有送审人记录（`submitted_by` 为空）的行，作者不能参与审核**
+   - 条目的创建人始终不能审核。
+   - 一审时先把推断出的送审人（当时的最后编辑人）固定下来，再写入一审人，避免这个信息被一审人覆盖。
+   - 如果迁移前一审已经完成、无法确定作者，二审「通过」一律返回 409 `*_REVIEW_AUTHOR_UNKNOWN`；「退回」仍然允许，退回后重新送审时会记录送审人。
+   - 新增测试 `LegacyReviewAuthorTest`（3 个）。
+3. **P3：内容包自审的错误码保持不变（未改）**
+   - 内容包自审仍返回 409 `FOUR_EYES_REQUIRED`，与单词、条目返回的 403 `*_SELF_APPROVAL_DENIED` 不一致。
+   - 不改的原因：`ContentVersionStateMachineTest`、`ContentCommandServiceLifecycleTest`、`ContentRevisionWorkbenchJdbcTest` 都把 409 固定为预期结果。管理端已把两种错误码翻译成同一句中文提示。
+
+### 测试
+
+- content-service 全量：286 个测试，0 失败，4 个跳过。跳过的都是需要 MySQL 的集成测试。
+- 在临时 MySQL 8.4 容器上加 `-Dcontent.migration.integration=true` 单独运行 `ContentFlywayMigrationTest`、`ReviewTrailJdbcRoundTripTest`、`LegacyPhoneticsBackfillMigrationTest`，全部通过。最后一个覆盖：只写 DRAFT、不含 301、不写投影、两个包都未发布、IPA 符号（utf8mb4）完好、重复执行 V34 结果不变、已编辑的行不被覆盖。
+- admin-web：50 个测试中 47 过、3 失败，与基线相同（都是 admin-audit 的既有失败）。
+
+### 合并与部署
+
+- 合并：`feat/v2-content-ops` 以 `3e77e636` 合入 `dev-redesign`，已推送。
+- 备份：`/srv/cloudstudy/backups/content-ops-pre-v31-20261013095757.sql.gz`，包含 content_service 库的 `lexeme`、`content_item`、`b3_content_experience`、`content_definition`、`content_version`、`p1r_schema_history`、`p1r_migration_guard` 七张表。
+  - 迁移记录在 `p1r_schema_history`，这个库没有 `flyway_schema_history`。
+  - 迁移前 `content_review_note` 还不存在，所以不在备份里。
+- 迁移：容器内设置了 `CONTENT_FLYWAY_ENABLED=false`，服务启动时不跑迁移，所以改用归属迁移器 `mysql-migrate`。
+  - 预检确认只有 content_service 有待执行的 V31–V34（iam 走自己的 Flyway，不在归属迁移器管理范围内）。
+  - 先停 content-service，再执行 `--apply`：V31、V32、V33、V34 依次成功，13 个归属库的迁移记录和运行时权限校验通过。没有使用 deploy-full.sh。
+- 只重建了 content-service 和 admin-web 两个容器，镜像标签都是 `3e77e636`，启动后均为 healthy。
+- V34 写入结果：PHONETICS 有 48 个音素和 9 个最小对，PHONETICS-FR 有 37 个音素和 4 个最小对，共 98 条，全部为 DRAFT。两个包的 `current_published_version_id` 都是 NULL；`b3-phonetics-item-*` 行为 0；PHONETICS 下没有任何 PUBLISHED 遗留行。
+
+### 线上冒烟（使用 e2e 管理员账号）
+
+| 项 | 结果 |
+|---|---|
+| 退回不填原因 | 400 `CONTENT_REJECT_REASON_REQUIRED` ✓ |
+| 自审 | 403 `ITEM_SELF_APPROVAL_DENIED` ✓ |
+| 用过期版本保存 | 409 `ITEM_VERSION_CONFLICT` ✓ |
+| 批量导入 dryRun | 200：READY/CREATE、SKIPPED/DUPLICATE_IN_BATCH、INVALID/ITEM_KIND_INVALID ✓ |
+| 音标维护列表 | PHONETICS 57 条、PHONETICS-FR 41 条遗留条目，全部是可编辑的 DRAFT ✓ |
+| 学员目录 | 37 行，`learnerVisible` 全部为 false ✓ |
+| 投影 | 包未发布时返回 `PACK_NOT_PUBLISHED`：MySQL 集成测试已验证，线上两个包的发布版本均为 NULL。线上 API 只验证了归档时 `learnerProjection=WITHDRAWN`；要在线上看到 PACK_NOT_PUBLISHED，需要第二个审核账号把条目审到 APPROVED 再发布 |
+
+冒烟留下的数据（标记 `SMOKE-CONTENTOPS-20261013`）：`qi_da5aa156d90c`（VOCAB-PHASE1，审核中）、`ew_dfd558db981b`（PHONETICS-FR，已归档）。
+
+### 回滚办法
+
+- 镜像：content-service 回到 `1de5c1d4`，admin-web 回到 `ba346d44`。
+- 数据：用上面的备份恢复。V31–V34 都是新增列或新增数据，旧镜像遇到新列可以正常运行。
