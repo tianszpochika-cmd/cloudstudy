@@ -42,12 +42,16 @@ onMounted(async () => {
 </script>
 
 <template>
-  <main class="share" :data-share-status="status">
-    <h1>分享的学习报告</h1>
-    <p data-period-copy>{{ copy }}</p>
-    <p v-if="status === 'ACTIVE'">{{ range }}</p>
-    <p v-if="suggestion" data-suggestion>建议：{{ suggestion }}</p>
-    <p>这是只读分享，不包含登录信息。</p>
+  <main class="share v2-page v2-page--reportshare" :data-share-status="status">
+    <h1 class="v2-reportshare-title">分享的学习报告</h1>
+    <div class="v2-reportshare-body"><div class="v2-reportshare-main">
+    <div class="v2-reportshare-card">
+    <p data-period-copy class="v2-reportshare-copy">{{ copy }}</p>
+    <p v-if="status === 'ACTIVE'" class="v2-reportshare-range">{{ range }}</p>
+    <p v-if="suggestion" data-suggestion class="v2-reportshare-suggestion">建议：{{ suggestion }}</p>
+    <p class="v2-reportshare-note">这是只读分享，不包含登录信息。</p>
+    </div>
+    </div><aside class="v2-reportshare-rail" aria-label="分享说明"><h2>分享说明</h2><ol><li>只读查看，不包含登录信息。</li><li>撤销或过期的分享会说明原因。</li><li>有效分享显示统计区间与建议。</li></ol></aside></div>
   </main>
 </template>
 
