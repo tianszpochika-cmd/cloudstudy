@@ -766,8 +766,10 @@ async function signRequiredConsents(clientEventId: string): Promise<void> {
     import('../stores/pinia'),
   ])
   const session = useSessionStore(pinia)
-  if (!await session.refreshSilently()) {
-    throw new Error('必要同意已提交，但会话还没有更新。请重试。本页还没提交的内容，离开后不会保留。')
+  // Consents are already on the server. A refresh failure must not wipe the
+  // session first or the onboarding page swallows the error and "继续" looks dead.
+  if (!await session.refreshSilently({ clearOnFailure: false })) {
+    throw new Error('必要同意已保存，但登录凭证未能更新。请退出并重新登录后再继续。')
   }
 }
 

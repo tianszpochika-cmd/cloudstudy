@@ -968,7 +968,12 @@ export const useLearnerContentStore = defineStore('learner-content', () => {
       await loadOnboardingResume(true)
       return true
     } catch (error) {
-      if (!stillCurrent(owner)) return false
+      // Always surface the failure. If refresh cleared the session, stillCurrent
+      // is false and the old early-return left the consent step looking inert.
+      if (!stillCurrent(owner)) {
+        lastError.value = '必要同意已保存，但登录状态已失效。请退出并重新登录后再继续。'
+        return false
+      }
       lastError.value = messageFor(error, '必要同意尚未保存。本页还没提交的内容，离开后不会保留。')
       return false
     }

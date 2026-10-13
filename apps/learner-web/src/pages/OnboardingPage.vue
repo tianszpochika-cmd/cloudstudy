@@ -255,6 +255,7 @@ async function cancel(): Promise<void> {
           <p class="policy-note">本页还没提交的内容只留在这一页，离开后不会保留。</p>
           <p v-if="resumeError" class="setup-error" role="alert">{{ resumeError }}</p>
           <p v-if="store.lastError" class="setup-error" role="alert">{{ userFacingError(store.lastError, '必要同意尚未保存。本页还没提交的内容，离开后不会保留。') }}</p>
+          <p v-if="session.lastError" class="setup-error" role="alert">{{ userFacingError(session.lastError, '登录凭证未能更新，请退出后重新登录。') }}</p>
           <div class="setup-actions">
             <button class="button button--ghost" type="button" :disabled="saving" @click="back">上一步</button>
             <button class="button button--primary" type="submit" :disabled="saving || !canContinue">{{ primaryLabel }}</button>
@@ -388,5 +389,6 @@ async function cancel(): Promise<void> {
 .public-page.v2-onboard .v2-onboard-card :is(.choice, .quota, .tag).selected { border-color: var(--v2-brand); background: var(--v2-soft); color: var(--v2-brand); }
 .public-page.v2-onboard .v2-onboard-card .button--primary { background: var(--v2-brand); color: var(--v2-inverse); border-radius: var(--v2-radius-md); }
 .public-page.v2-onboard .v2-onboard-cancel { grid-area: cancel; justify-self: start; color: var(--v2-mut); background: transparent; border: 0; }
+.public-page.v2-onboard .setup-error { color: var(--v2-danger, #b42318); background: color-mix(in srgb, var(--v2-danger, #b42318) 8%, transparent); border: 1px solid color-mix(in srgb, var(--v2-danger, #b42318) 25%, transparent); border-radius: var(--v2-radius-md); padding: 10px 12px; margin-top: 16px; }
 @media (max-width: 900px) { .public-page.v2-onboard { padding: 20px 16px; } .public-page.v2-onboard .v2-onboard-flow { grid-template-columns: 1fr; grid-template-areas: "aside" "card" "cancel"; } .public-page.v2-onboard .v2-onboard-flow > *, .public-page.v2-onboard .v2-onboard-aside { grid-column: 1; position: static; } }
 </style>

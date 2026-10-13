@@ -309,7 +309,8 @@ export const useSessionStore = defineStore('session', () => {
     }
   }
 
-  async function refreshSilently(): Promise<boolean> {
+  async function refreshSilently(options: { clearOnFailure?: boolean } = {}): Promise<boolean> {
+    const clearOnFailure = options.clearOnFailure !== false
     if (refreshPromise) return refreshPromise
     refreshPromise = (async () => {
       if (!accessToken.value && !hasSessionHint()) return false
@@ -328,10 +329,18 @@ export const useSessionStore = defineStore('session', () => {
         return true
       } catch (error) {
         if (generation !== authEpoch.value) return false
-        clear()
-        status.value = 'unauthenticated'
-        authErrorCode.value = 'SESSION_EXPIRED'
         lastError.value = error instanceof Error ? error.message : 'SESSION_EXPIRED'
+        authErrorCode.value = 'SESSION_EXPIRED'
+        if (clearOnFailure) {
+          clear()
+          status.value = 'unauthenticated'
+        } else if (accessToken.value) {
+          // Keep the still-valid access token so onboarding can show the error
+          // instead of looking like a dead "继续" button after consents already saved.
+          status.value = 'authenticated'
+        } else {
+          status.value = 'unauthenticated'
+        }
         return false
       } finally {
         refreshPromise = null
