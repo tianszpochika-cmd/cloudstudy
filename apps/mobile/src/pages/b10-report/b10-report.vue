@@ -45,7 +45,7 @@ const emptyLabel = computed(() => {
 function open(path: string): void { openUniPage(path) }
 onShow(async () => { await session.restore(); if (!session.isAuthenticated) { getUniRuntime().navigateTo({ url: '/pages/login/login' }); return } load() })
 onUnmounted(() => engine.dispose())
-const reportLabels: Record<string, string> = { PENDING_RETRY: "待补救", DELAY_VERIFY_D1: "待次日验证", DELAY_VERIFY_D7: "待七日验证", MASTERED: "已掌握", REOPENED: "重新打开", NEW: "新错题", LEARNING: "巩固中", CONSOLIDATED: "已巩固", READY: "已生成", PARTIAL: "部分生成", GENERATING: "生成中", FAILED: "生成失败" }
+const reportLabels: Record<string, string> = { PENDING_RETRY: "待补救", DELAY_VERIFY_D1: "待次日验证", DELAY_VERIFY_D7: "待七日验证", MASTERED: closureLabel("MASTERED"), REOPENED: "重新打开", NEW: "新错题", LEARNING: "巩固中", CONSOLIDATED: "已巩固", READY: "已生成", PARTIAL: "部分生成", GENERATING: "生成中", FAILED: "生成失败" }
 </script>
 
 <template>
