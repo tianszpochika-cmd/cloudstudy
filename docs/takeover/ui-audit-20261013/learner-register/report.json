@@ -1,0 +1,556 @@
+{
+  "at": "2026-10-13T15:27:36.803Z",
+  "scope": "REGISTER_UI_ONLY_SYNTHETIC_IAM_REJECTION",
+  "matrix": [
+    {
+      "width": 320,
+      "theme": "light",
+      "overflow": false,
+      "title": "语学星 · 英语学习",
+      "inputFont": "16px",
+      "targets": [
+        {
+          "h": 44,
+          "w": 44
+        },
+        {
+          "h": 44,
+          "w": 44
+        },
+        {
+          "h": 44,
+          "w": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 320,
+      "theme": "dark",
+      "overflow": false,
+      "title": "语学星 · 英语学习",
+      "inputFont": "16px",
+      "targets": [
+        {
+          "h": 44,
+          "w": 44
+        },
+        {
+          "h": 44,
+          "w": 44
+        },
+        {
+          "h": 44,
+          "w": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 320,
+      "theme": "high-contrast",
+      "overflow": false,
+      "title": "语学星 · 英语学习",
+      "inputFont": "16px",
+      "targets": [
+        {
+          "h": 44,
+          "w": 44
+        },
+        {
+          "h": 44,
+          "w": 44
+        },
+        {
+          "h": 44,
+          "w": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 320,
+      "theme": "light",
+      "overflow": false,
+      "title": "语学星 · 英语学习",
+      "inputFont": "16px",
+      "targets": [
+        {
+          "h": 44,
+          "w": 44
+        },
+        {
+          "h": 44,
+          "w": 44
+        },
+        {
+          "h": 44,
+          "w": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "overflow": false,
+      "title": "语学星 · 英语学习",
+      "inputFont": "16px",
+      "targets": [
+        {
+          "h": 44,
+          "w": 44
+        },
+        {
+          "h": 44,
+          "w": 44
+        },
+        {
+          "h": 44,
+          "w": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "overflow": false,
+      "title": "语学星 · 英语学习",
+      "inputFont": "16px",
+      "targets": [
+        {
+          "h": 44,
+          "w": 44
+        },
+        {
+          "h": 44,
+          "w": 44
+        },
+        {
+          "h": 44,
+          "w": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 390,
+      "theme": "high-contrast",
+      "overflow": false,
+      "title": "语学星 · 英语学习",
+      "inputFont": "16px",
+      "targets": [
+        {
+          "h": 44,
+          "w": 44
+        },
+        {
+          "h": 44,
+          "w": 44
+        },
+        {
+          "h": 44,
+          "w": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "overflow": false,
+      "title": "语学星 · 英语学习",
+      "inputFont": "16px",
+      "targets": [
+        {
+          "h": 44,
+          "w": 44
+        },
+        {
+          "h": 44,
+          "w": 44
+        },
+        {
+          "h": 44,
+          "w": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 768,
+      "theme": "light",
+      "overflow": false,
+      "title": "语学星 · 英语学习",
+      "inputFont": "16px",
+      "targets": [
+        {
+          "h": 44,
+          "w": 44
+        },
+        {
+          "h": 44,
+          "w": 44
+        },
+        {
+          "h": 44,
+          "w": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 768,
+      "theme": "dark",
+      "overflow": false,
+      "title": "语学星 · 英语学习",
+      "inputFont": "16px",
+      "targets": [
+        {
+          "h": 44,
+          "w": 44
+        },
+        {
+          "h": 44,
+          "w": 44
+        },
+        {
+          "h": 44,
+          "w": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 768,
+      "theme": "high-contrast",
+      "overflow": false,
+      "title": "语学星 · 英语学习",
+      "inputFont": "16px",
+      "targets": [
+        {
+          "h": 44,
+          "w": 44
+        },
+        {
+          "h": 44,
+          "w": 44
+        },
+        {
+          "h": 44,
+          "w": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 768,
+      "theme": "light",
+      "overflow": false,
+      "title": "语学星 · 英语学习",
+      "inputFont": "16px",
+      "targets": [
+        {
+          "h": 44,
+          "w": 44
+        },
+        {
+          "h": 44,
+          "w": 44
+        },
+        {
+          "h": 44,
+          "w": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 900,
+      "theme": "light",
+      "overflow": false,
+      "title": "语学星 · 英语学习",
+      "inputFont": "16px",
+      "targets": [
+        {
+          "h": 44,
+          "w": 44
+        },
+        {
+          "h": 44,
+          "w": 44
+        },
+        {
+          "h": 44,
+          "w": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 900,
+      "theme": "dark",
+      "overflow": false,
+      "title": "语学星 · 英语学习",
+      "inputFont": "16px",
+      "targets": [
+        {
+          "h": 44,
+          "w": 44
+        },
+        {
+          "h": 44,
+          "w": 44
+        },
+        {
+          "h": 44,
+          "w": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 900,
+      "theme": "high-contrast",
+      "overflow": false,
+      "title": "语学星 · 英语学习",
+      "inputFont": "16px",
+      "targets": [
+        {
+          "h": 44,
+          "w": 44
+        },
+        {
+          "h": 44,
+          "w": 44
+        },
+        {
+          "h": 44,
+          "w": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 900,
+      "theme": "light",
+      "overflow": false,
+      "title": "语学星 · 英语学习",
+      "inputFont": "16px",
+      "targets": [
+        {
+          "h": 44,
+          "w": 44
+        },
+        {
+          "h": 44,
+          "w": 44
+        },
+        {
+          "h": 44,
+          "w": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 1280,
+      "theme": "light",
+      "overflow": false,
+      "title": "语学星 · 英语学习",
+      "inputFont": "16px",
+      "targets": [
+        {
+          "h": 44,
+          "w": 44
+        },
+        {
+          "h": 44,
+          "w": 44
+        },
+        {
+          "h": 44,
+          "w": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 1280,
+      "theme": "dark",
+      "overflow": false,
+      "title": "语学星 · 英语学习",
+      "inputFont": "16px",
+      "targets": [
+        {
+          "h": 44,
+          "w": 44
+        },
+        {
+          "h": 44,
+          "w": 44
+        },
+        {
+          "h": 44,
+          "w": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 1280,
+      "theme": "high-contrast",
+      "overflow": false,
+      "title": "语学星 · 英语学习",
+      "inputFont": "16px",
+      "targets": [
+        {
+          "h": 44,
+          "w": 44
+        },
+        {
+          "h": 44,
+          "w": 44
+        },
+        {
+          "h": 44,
+          "w": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 1280,
+      "theme": "light",
+      "overflow": false,
+      "title": "语学星 · 英语学习",
+      "inputFont": "16px",
+      "targets": [
+        {
+          "h": 44,
+          "w": 44
+        },
+        {
+          "h": 44,
+          "w": 44
+        },
+        {
+          "h": 44,
+          "w": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "overflow": false,
+      "title": "语学星 · 英语学习",
+      "inputFont": "16px",
+      "targets": [
+        {
+          "h": 44,
+          "w": 44
+        },
+        {
+          "h": 44,
+          "w": 44
+        },
+        {
+          "h": 44,
+          "w": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "overflow": false,
+      "title": "语学星 · 英语学习",
+      "inputFont": "16px",
+      "targets": [
+        {
+          "h": 44,
+          "w": 44
+        },
+        {
+          "h": 44,
+          "w": 44
+        },
+        {
+          "h": 44,
+          "w": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 1440,
+      "theme": "high-contrast",
+      "overflow": false,
+      "title": "语学星 · 英语学习",
+      "inputFont": "16px",
+      "targets": [
+        {
+          "h": 44,
+          "w": 44
+        },
+        {
+          "h": 44,
+          "w": 44
+        },
+        {
+          "h": 44,
+          "w": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "overflow": false,
+      "title": "语学星 · 英语学习",
+      "inputFont": "16px",
+      "targets": [
+        {
+          "h": 44,
+          "w": 44
+        },
+        {
+          "h": 44,
+          "w": 44
+        },
+        {
+          "h": 44,
+          "w": 44
+        }
+      ],
+      "status": "PASS"
+    }
+  ],
+  "checks": [
+    "Required, short password, empty confirmation and mismatch identify/focus the right field, clear when fixed, send no request",
+    "Both password toggles have independent labels, controlled fields and keyboard interaction",
+    "Pending locks inputs/toggles and duplicate submission; 409 stays neutral, 429 explains waiting; server errors survive edits",
+    "Single login exit retains return route; password reset remains reachable from login",
+    "English and simulated 200% text enlargement at 390 remain readable and scrollable; not native zoom"
+  ],
+  "pageErrors": [],
+  "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 429 (Too Many Requests)"
+  ],
+  "sourceHashes": {
+    "apps/learner-web/src/pages/RegisterPage.vue": "f6ce38b3690a33a67b7a1fc6b8a48790eeac55a9bbc0d1b42985113a0aaa984a",
+    "apps/learner-web/src/layouts/AuthLayout.vue": "2a409dbcb5be1c39ee64718f7fbf325fcd7ae178ab0e2a6e9fb2977e45e251c6",
+    "packages/i18n/src/learner-base.ts": "684545446c40984279353e48797e0a5ffcdaf64d58922a733fad6370ec6e40bf"
+  },
+  "expectedConsoleErrors": [
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 429 (Too Many Requests)"
+  ],
+  "status": "PASS"
+}

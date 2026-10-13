@@ -27,3 +27,5 @@
 - Browser plugin不在可用技能列表，使用仓库现有Playwright Chromium。没有真实IAM成功登录/生产写入证据；真机、Safari/Firefox、原生读屏未测。
 
 源哈希和实测数据：[report.json](report.json)。可重放`node apps/learner-web/tests/ui-login.e2e.cjs`，默认生成Git外记录；本次按用户要求显式保存此目录。
+
+推送收据：`182e106b34adb6d2aab3f2020583a74826e158f4`已推送`origin/dev-redesign`，`ls-remote`核对相同SHA。
