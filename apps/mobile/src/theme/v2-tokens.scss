@@ -1,5 +1,6 @@
 /* 移动端 v2 design tokens —— 照抄自 docs/06-design/v2-980plus/redesign/mockups/webDemo/shared/tokens.css，
  * :root 与 :root[data-theme=dark] 的全部变量统一加 --v2- 前缀（含 var() 引用同步改名）。
+ * 暗色块同时覆盖 page（uni 编译为 uni-page-body），否则 page 上的浅色变量会盖掉继承的暗色值。
  * 选择器改为 :root, page 与 :root[data-theme=dark], .yx-theme-dark, .b10-theme--dark（App.vue 实际使用的暗色类名）。 */
 :root,
 page {
@@ -57,8 +58,11 @@ page {
 }
 
 :root[data-theme="dark"],
+:root[data-theme="dark"] page,
 .yx-theme-dark,
-.b10-theme--dark {
+.yx-theme-dark page,
+.b10-theme--dark,
+.b10-theme--dark page {
   color-scheme: dark;
   --v2-bg: #15151f;
   --v2-card: #20202d;
