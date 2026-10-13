@@ -197,3 +197,12 @@
   - /lexemes：未登录时 404 卡片居中，宽 660px；已登录时在 AppShell 内正常横排。
   - /forbidden 同样正常。
 - **部署**：只重建了 learner-web。
+
+## 可用性收尾（2026-10-13 傍晚，至 92174796 / 2ba46350）
+详见 `FEATURE-AVAILABILITY-20261013.md`。要点：
+- 赛季数据：先备份，再把 40 条 SEED-20261013 season_fact 改到 SEASON_2026_Q4；移动端成长页显示「2026 年第四季度赛季 · 850 赛季点」，XP 880。
+- 听力：已生成 12 条 TTS，但写入需要 media:write、播放需要 IAM_MEDIA_LEARNER_CONTENT_RIGHTS，生产环境两者都是 fail-closed，所以保持即将开放。
+- 跟读：线上服务没有录音或评分接口，保持即将开放。写作批改是占位分，保持即将开放。
+- 网页端听力/跟读/写作改为干净的关闭页；禁用按钮都有可见原因；三端眉题中文化。
+- 测试 240 已修复（报告页 MASTERED 改用 closureLabel）。
+- admin-web 修复已推送但未部署（依赖并行分支 V31–V34 的后端）。
