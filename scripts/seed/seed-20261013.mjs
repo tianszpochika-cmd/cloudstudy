@@ -14,6 +14,8 @@ import { contentPayloadHash } from '../database/local-real-10x-fixture.mjs';
 import { VOCAB, GRAMMAR, READING, LISTENING, WRITING, COURSES } from './seed-20261013-data.mjs';
 
 const TAG = 'SEED-20261013';
+// b3 experiences are bound to the first seeded (published, rights-complete) content version.
+const B3_VERSION = 2610130001; const B3_CODE = 'SEED-20261013-CET4-CORE-1';
 const P = 'seed-20261013';
 const API = process.env.SEED_API || 'https://api.clyunedev.com/api/v1';
 const MYSQL_CONTAINER = process.env.SEED_MYSQL_CONTAINER || 'cloudstudy-clyunedev-mysql-1';
@@ -121,7 +123,7 @@ function contentSql() {
 }
 
 function b3Sql() {
-  const s = []; const exp = (domain, type, key, payload) => s.push(`INSERT INTO content_service.b3_content_experience (experience_id, tenant_id, domain_code, resource_type, resource_key, content_version_id, availability, payload_json) VALUES (${q(`${P}-${domain}-${type}-${key}`.slice(0, 96))}, 'platform', ${q(domain)}, ${q(type)}, ${q(String(key))}, 301, 'PUBLISHED', ${j({ ...payload, contentVersionId: 301 })});`);
+  const s = []; const exp = (domain, type, key, payload) => s.push(`INSERT INTO content_service.b3_content_experience (experience_id, tenant_id, domain_code, resource_type, resource_key, content_version_id, availability, payload_json) VALUES (${q(`${P}-${domain}-${type}-${key}`.slice(0, 96))}, 'platform', ${q(domain)}, ${q(type)}, ${q(String(key))}, ${B3_VERSION}, 'PUBLISHED', ${j({ ...payload, contentVersionId: B3_VERSION })});`, `INSERT INTO content_service.content_b3_item_binding (tenant_id, b3_domain, b3_resource_type, b3_resource_key, b3_experience_id, content_code, content_version_id, question_item_id, status) VALUES ('platform', ${q(domain)}, ${q(type)}, ${q(String(key))}, ${q(`${P}-${domain}-${type}-${key}`.slice(0, 96))}, ${q(B3_CODE)}, ${B3_VERSION}, ${q(String(key))}, 'ACTIVE');`);
   GRAMMAR.forEach((g, i) => {
     const gp = 810001 + i; const ex = 820001 + i;
     exp('GRAMMAR', 'GRAMMAR_POINT', gp, { code: g[0], title: g[1], trapTags: [g[6]], cefrLevel: g[5], meaningCn: g[3], ruleFormula: g[2], grammarPointId: gp });
@@ -193,7 +195,7 @@ function learnerSql(SUB) {
   add('客服工单', 40);
   // gamification (xp 40, coin 40, rewards 30, season 40)
   let xb = 0; let cb = 0;
-  for (let i = 0; i < 40; i++) { const xd = 10 + (i % 6) * 5; xb += xd; const cd = i % 7 === 6 ? -30 : 5 + (i % 4) * 5; cb = Math.max(0, cb + cd);
+  for (let i = 0; i < 40; i++) { const xd = 10 + (i % 6) * 5; xb += xd; const cd = 5 + (i % 4) * 5; cb += cd; // coin ledger accepts positive settlements only
     s.push(`INSERT INTO gamification_service.xp_ledger (ledger_id, subject_id, tenant_id, source_event_id, delta, balance_after, created_at) VALUES ('${randomUUID()}', ${q(SUB)}, 'platform', '${randomUUID()}', ${xd}, ${xb}, ${ago((40 - i) * 12)});`);
     s.push(`INSERT INTO gamification_service.coin_ledger (ledger_id, subject_id, tenant_id, source_event_id, delta, balance_after, created_at) VALUES ('${randomUUID()}', ${q(SUB)}, 'platform', '${randomUUID()}', ${cd}, ${cb}, ${ago((40 - i) * 12)});`);
     s.push(`INSERT INTO gamification_service.gamification_season_fact (season_id, event_id, subject_id, points, rule_version, occurred_at, recorded_at) VALUES ('season-2026-autumn', ${q(`${P}-season-${i}`)}, ${q(i < 20 ? SUB : other(i))}, ${15 + (i * 7) % 60}, 'season-v1', ${ago(i * 10)}, ${ago(i * 10)});`); }

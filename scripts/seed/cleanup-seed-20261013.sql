@@ -12,6 +12,7 @@ DELETE FROM content_service.b25_content_course WHERE content_code LIKE 'SEED-202
 DELETE FROM content_service.content_version WHERE content_id LIKE 'seed-20261013-%';
 DELETE FROM content_service.content_definition WHERE content_id LIKE 'seed-20261013-%';
 DELETE FROM content_service.b25_content_vocabulary WHERE vocabulary_id LIKE 'seed-20261013-%';
+DELETE FROM content_service.content_b3_item_binding WHERE b3_experience_id LIKE 'seed-20261013-%';
 DELETE FROM content_service.b3_content_experience WHERE experience_id LIKE 'seed-20261013-%';
 -- content (admin API seed: lexemes and items authored by the e2e admin in VOCAB-PHASE1)
 DELETE FROM content_service.lexeme_pronunciation WHERE lexeme_id IN (SELECT lexeme_id FROM content_service.lexeme WHERE created_by = @admin);
