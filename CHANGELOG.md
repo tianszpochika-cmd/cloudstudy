@@ -1,5 +1,7 @@
 # Changelog
 
+- [LW-001-REDESIGN-20261013] 按用户要求重新设计正式登录页：开放单列表单，移除装饰侧栏/艺术字/外框，简化提示与标题，重排找回密码和注册出口，统一字号/按钮比例。24组浏览器复验与独立视觉复审通过；设计参照及正式截图见`docs/takeover/ui-audit-20261013/learner-login-redesign/`。认证流程保持。
+
 - [UI-001-20261013] 学习网页端第二版登录页精审：修复窄屏品牌换行、点击区域、首错焦点/ARIA、旧必填提示、密码标签和busy操作、高对比色板及焦点边框。24组视口主题、受控IAM拒绝交互通过；范围仅UI，记录见`docs/takeover/ui-audit-20261013/learner-login/review.md`。
 
 - [LUNA-SIGNOFF-20261011] **IT-1…IT-7 与全链由 Luna 签收，`lunaStamp=true`。** 签收人 Grok Bot 测试项目练手（负责人指定，接替原 Luna）。rv3 合并 `7a6ac0a2`，残留为零。见 `docs/takeover/LUNA-SIGNOFF.md` 与 `evidence/redesign/2026-10-11/luna-signoff-7a6ac0a2/summary.json`。

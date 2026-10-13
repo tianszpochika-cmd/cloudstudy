@@ -1,7 +1,7 @@
 # V2 UI 逐页审查索引 — 2026-10-13
 
 > 分支：`dev-redesign`。本轮拉取后的源码观察基线：`4990dd29`；R1 原有签收基线：`7a6ac0a2`。时间口径：Asia/Shanghai。
-> LW-001 / learner-web /login 已复验并推送70c2623f，远程SHA核对一致。下一页LW-002 /register进入IN_REVIEW；其余PENDING。
+> 用户已明确改为全部正式页面简约重设计。LW-001已按新要求完成重排复验，等待新推送收据；LW-002在审，其余PENDING。旧70c2623f仅为前轮缺陷修复。
 
 ## 1. 进度与证据边界
 
@@ -25,6 +25,8 @@
 一个页面的别名、设置分区、对话框和状态不是新增业务能力，但必须有具名复验记录。共享样式改动后，重验受影响的已审页；同源文件的另一入口不自动完成。未路由的学习端 WelcomePage、AdultGatePage、B3ListeningPage/B3ReadingPage/B3SpeakingPage、B11SyncPage 等历史文件不混入正式页面数量。静态原型只作视觉对照。
 
 ## 3. 每页必查与交付规则
+
+当前完整设计方向见[DESIGN-DIRECTION](ui-audit-20261013/DESIGN-DIRECTION.md)。每页必须重新评估布局、提示文字、按钮位置、字体/艺术字、配色/图标与交互舒适度，不能仅修bug即放行。
 
 每页报告至少记录以下维度；不适用项明确写 N/A 与理由，未执行项写 NOT_RUN 与具体边界：
 
@@ -55,7 +57,7 @@
 
 | 审查编号 | 真实路由 | 页面源文件 | 本页需展开的场景 | 当前状态 | 证据 / 提交 / 远程收据 |
 |---|---|---|---|---|---|
-| LW-001 | `/login` | [apps/learner-web/src/pages/LoginPage.vue](../../apps/learner-web/src/pages/LoginPage.vue) | 登录：空提交、密码显示、错误、等待、链接与键盘 | PUSHED_SCOPED | [本页记录](ui-audit-20261013/learner-login/review.md)；70c2623f，远程SHA已核对 |
+| LW-001 | `/login` | [apps/learner-web/src/pages/LoginPage.vue](../../apps/learner-web/src/pages/LoginPage.vue) | 登录：空提交、密码显示、错误、等待、链接与键盘 | UI_VERIFIED | [重设计记录](ui-audit-20261013/learner-login-redesign/review.md)，等待推送；70c2623f旧范围保留 |
 | LW-002 | `/register` | [apps/learner-web/src/pages/RegisterPage.vue](../../apps/learner-web/src/pages/RegisterPage.vue) | 注册：密码规则、确认密码、错误定位 | IN_REVIEW | — |
 | LW-003 | `/reset-password` | [apps/learner-web/src/pages/PasswordResetPage.vue](../../apps/learner-web/src/pages/PasswordResetPage.vue) | 请求/确认两步、切步清错、等待与完成 | PENDING | — |
 | LW-004 | `/onboarding` | [apps/learner-web/src/pages/OnboardingPage.vue](../../apps/learner-web/src/pages/OnboardingPage.vue) | 成人门、三项同意、目标/时长、保存后定级四幕 | PENDING | — |

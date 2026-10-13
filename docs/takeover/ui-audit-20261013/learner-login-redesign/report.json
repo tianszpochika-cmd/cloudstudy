@@ -1,0 +1,701 @@
+{
+  "scope": "LOGIN_UI_ONLY_SYNTHETIC_IAM_REJECTION",
+  "at": "2026-10-13T15:25:08.208Z",
+  "matrix": [
+    {
+      "width": 320,
+      "requestedTheme": "light",
+      "overflow": false,
+      "brandHeight": 44,
+      "whiteSpace": "nowrap",
+      "theme": "light",
+      "card": "rgba(0, 0, 0, 0)",
+      "targets": [
+        {
+          "name": "语学星",
+          "h": 44
+        },
+        {
+          "name": "显示密码",
+          "h": 44
+        },
+        {
+          "name": "忘记密码",
+          "h": 44
+        },
+        {
+          "name": "创建账号",
+          "h": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 320,
+      "requestedTheme": "dark",
+      "overflow": false,
+      "brandHeight": 44,
+      "whiteSpace": "nowrap",
+      "theme": "dark",
+      "card": "rgba(0, 0, 0, 0)",
+      "targets": [
+        {
+          "name": "语学星",
+          "h": 44
+        },
+        {
+          "name": "显示密码",
+          "h": 44
+        },
+        {
+          "name": "忘记密码",
+          "h": 44
+        },
+        {
+          "name": "创建账号",
+          "h": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 320,
+      "requestedTheme": "high-contrast",
+      "overflow": false,
+      "brandHeight": 44,
+      "whiteSpace": "nowrap",
+      "theme": "high-contrast",
+      "card": "rgba(0, 0, 0, 0)",
+      "targets": [
+        {
+          "name": "语学星",
+          "h": 44
+        },
+        {
+          "name": "显示密码",
+          "h": 44
+        },
+        {
+          "name": "忘记密码",
+          "h": 44
+        },
+        {
+          "name": "创建账号",
+          "h": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 320,
+      "requestedTheme": "system",
+      "overflow": false,
+      "brandHeight": 44,
+      "whiteSpace": "nowrap",
+      "theme": "light",
+      "card": "rgba(0, 0, 0, 0)",
+      "targets": [
+        {
+          "name": "语学星",
+          "h": 44
+        },
+        {
+          "name": "显示密码",
+          "h": 44
+        },
+        {
+          "name": "忘记密码",
+          "h": 44
+        },
+        {
+          "name": "创建账号",
+          "h": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 390,
+      "requestedTheme": "light",
+      "overflow": false,
+      "brandHeight": 44,
+      "whiteSpace": "nowrap",
+      "theme": "light",
+      "card": "rgba(0, 0, 0, 0)",
+      "targets": [
+        {
+          "name": "语学星",
+          "h": 44
+        },
+        {
+          "name": "显示密码",
+          "h": 44
+        },
+        {
+          "name": "忘记密码",
+          "h": 44
+        },
+        {
+          "name": "创建账号",
+          "h": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 390,
+      "requestedTheme": "dark",
+      "overflow": false,
+      "brandHeight": 44,
+      "whiteSpace": "nowrap",
+      "theme": "dark",
+      "card": "rgba(0, 0, 0, 0)",
+      "targets": [
+        {
+          "name": "语学星",
+          "h": 44
+        },
+        {
+          "name": "显示密码",
+          "h": 44
+        },
+        {
+          "name": "忘记密码",
+          "h": 44
+        },
+        {
+          "name": "创建账号",
+          "h": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 390,
+      "requestedTheme": "high-contrast",
+      "overflow": false,
+      "brandHeight": 44,
+      "whiteSpace": "nowrap",
+      "theme": "high-contrast",
+      "card": "rgba(0, 0, 0, 0)",
+      "targets": [
+        {
+          "name": "语学星",
+          "h": 44
+        },
+        {
+          "name": "显示密码",
+          "h": 44
+        },
+        {
+          "name": "忘记密码",
+          "h": 44
+        },
+        {
+          "name": "创建账号",
+          "h": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 390,
+      "requestedTheme": "system",
+      "overflow": false,
+      "brandHeight": 44,
+      "whiteSpace": "nowrap",
+      "theme": "light",
+      "card": "rgba(0, 0, 0, 0)",
+      "targets": [
+        {
+          "name": "语学星",
+          "h": 44
+        },
+        {
+          "name": "显示密码",
+          "h": 44
+        },
+        {
+          "name": "忘记密码",
+          "h": 44
+        },
+        {
+          "name": "创建账号",
+          "h": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 768,
+      "requestedTheme": "light",
+      "overflow": false,
+      "brandHeight": 44,
+      "whiteSpace": "nowrap",
+      "theme": "light",
+      "card": "rgba(0, 0, 0, 0)",
+      "targets": [
+        {
+          "name": "语学星",
+          "h": 44
+        },
+        {
+          "name": "显示密码",
+          "h": 44
+        },
+        {
+          "name": "忘记密码",
+          "h": 44
+        },
+        {
+          "name": "创建账号",
+          "h": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 768,
+      "requestedTheme": "dark",
+      "overflow": false,
+      "brandHeight": 44,
+      "whiteSpace": "nowrap",
+      "theme": "dark",
+      "card": "rgba(0, 0, 0, 0)",
+      "targets": [
+        {
+          "name": "语学星",
+          "h": 44
+        },
+        {
+          "name": "显示密码",
+          "h": 44
+        },
+        {
+          "name": "忘记密码",
+          "h": 44
+        },
+        {
+          "name": "创建账号",
+          "h": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 768,
+      "requestedTheme": "high-contrast",
+      "overflow": false,
+      "brandHeight": 44,
+      "whiteSpace": "nowrap",
+      "theme": "high-contrast",
+      "card": "rgba(0, 0, 0, 0)",
+      "targets": [
+        {
+          "name": "语学星",
+          "h": 44
+        },
+        {
+          "name": "显示密码",
+          "h": 44
+        },
+        {
+          "name": "忘记密码",
+          "h": 44
+        },
+        {
+          "name": "创建账号",
+          "h": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 768,
+      "requestedTheme": "system",
+      "overflow": false,
+      "brandHeight": 44,
+      "whiteSpace": "nowrap",
+      "theme": "light",
+      "card": "rgba(0, 0, 0, 0)",
+      "targets": [
+        {
+          "name": "语学星",
+          "h": 44
+        },
+        {
+          "name": "显示密码",
+          "h": 44
+        },
+        {
+          "name": "忘记密码",
+          "h": 44
+        },
+        {
+          "name": "创建账号",
+          "h": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 900,
+      "requestedTheme": "light",
+      "overflow": false,
+      "brandHeight": 44,
+      "whiteSpace": "nowrap",
+      "theme": "light",
+      "card": "rgba(0, 0, 0, 0)",
+      "targets": [
+        {
+          "name": "语学星",
+          "h": 44
+        },
+        {
+          "name": "显示密码",
+          "h": 44
+        },
+        {
+          "name": "忘记密码",
+          "h": 44
+        },
+        {
+          "name": "创建账号",
+          "h": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 900,
+      "requestedTheme": "dark",
+      "overflow": false,
+      "brandHeight": 44,
+      "whiteSpace": "nowrap",
+      "theme": "dark",
+      "card": "rgba(0, 0, 0, 0)",
+      "targets": [
+        {
+          "name": "语学星",
+          "h": 44
+        },
+        {
+          "name": "显示密码",
+          "h": 44
+        },
+        {
+          "name": "忘记密码",
+          "h": 44
+        },
+        {
+          "name": "创建账号",
+          "h": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 900,
+      "requestedTheme": "high-contrast",
+      "overflow": false,
+      "brandHeight": 44,
+      "whiteSpace": "nowrap",
+      "theme": "high-contrast",
+      "card": "rgba(0, 0, 0, 0)",
+      "targets": [
+        {
+          "name": "语学星",
+          "h": 44
+        },
+        {
+          "name": "显示密码",
+          "h": 44
+        },
+        {
+          "name": "忘记密码",
+          "h": 44
+        },
+        {
+          "name": "创建账号",
+          "h": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 900,
+      "requestedTheme": "system",
+      "overflow": false,
+      "brandHeight": 44,
+      "whiteSpace": "nowrap",
+      "theme": "light",
+      "card": "rgba(0, 0, 0, 0)",
+      "targets": [
+        {
+          "name": "语学星",
+          "h": 44
+        },
+        {
+          "name": "显示密码",
+          "h": 44
+        },
+        {
+          "name": "忘记密码",
+          "h": 44
+        },
+        {
+          "name": "创建账号",
+          "h": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 1280,
+      "requestedTheme": "light",
+      "overflow": false,
+      "brandHeight": 44,
+      "whiteSpace": "nowrap",
+      "theme": "light",
+      "card": "rgba(0, 0, 0, 0)",
+      "targets": [
+        {
+          "name": "语学星",
+          "h": 44
+        },
+        {
+          "name": "显示密码",
+          "h": 44
+        },
+        {
+          "name": "忘记密码",
+          "h": 44
+        },
+        {
+          "name": "创建账号",
+          "h": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 1280,
+      "requestedTheme": "dark",
+      "overflow": false,
+      "brandHeight": 44,
+      "whiteSpace": "nowrap",
+      "theme": "dark",
+      "card": "rgba(0, 0, 0, 0)",
+      "targets": [
+        {
+          "name": "语学星",
+          "h": 44
+        },
+        {
+          "name": "显示密码",
+          "h": 44
+        },
+        {
+          "name": "忘记密码",
+          "h": 44
+        },
+        {
+          "name": "创建账号",
+          "h": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 1280,
+      "requestedTheme": "high-contrast",
+      "overflow": false,
+      "brandHeight": 44,
+      "whiteSpace": "nowrap",
+      "theme": "high-contrast",
+      "card": "rgba(0, 0, 0, 0)",
+      "targets": [
+        {
+          "name": "语学星",
+          "h": 44
+        },
+        {
+          "name": "显示密码",
+          "h": 44
+        },
+        {
+          "name": "忘记密码",
+          "h": 44
+        },
+        {
+          "name": "创建账号",
+          "h": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 1280,
+      "requestedTheme": "system",
+      "overflow": false,
+      "brandHeight": 44,
+      "whiteSpace": "nowrap",
+      "theme": "light",
+      "card": "rgba(0, 0, 0, 0)",
+      "targets": [
+        {
+          "name": "语学星",
+          "h": 44
+        },
+        {
+          "name": "显示密码",
+          "h": 44
+        },
+        {
+          "name": "忘记密码",
+          "h": 44
+        },
+        {
+          "name": "创建账号",
+          "h": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 1440,
+      "requestedTheme": "light",
+      "overflow": false,
+      "brandHeight": 44,
+      "whiteSpace": "nowrap",
+      "theme": "light",
+      "card": "rgba(0, 0, 0, 0)",
+      "targets": [
+        {
+          "name": "语学星",
+          "h": 44
+        },
+        {
+          "name": "显示密码",
+          "h": 44
+        },
+        {
+          "name": "忘记密码",
+          "h": 44
+        },
+        {
+          "name": "创建账号",
+          "h": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 1440,
+      "requestedTheme": "dark",
+      "overflow": false,
+      "brandHeight": 44,
+      "whiteSpace": "nowrap",
+      "theme": "dark",
+      "card": "rgba(0, 0, 0, 0)",
+      "targets": [
+        {
+          "name": "语学星",
+          "h": 44
+        },
+        {
+          "name": "显示密码",
+          "h": 44
+        },
+        {
+          "name": "忘记密码",
+          "h": 44
+        },
+        {
+          "name": "创建账号",
+          "h": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 1440,
+      "requestedTheme": "high-contrast",
+      "overflow": false,
+      "brandHeight": 44,
+      "whiteSpace": "nowrap",
+      "theme": "high-contrast",
+      "card": "rgba(0, 0, 0, 0)",
+      "targets": [
+        {
+          "name": "语学星",
+          "h": 44
+        },
+        {
+          "name": "显示密码",
+          "h": 44
+        },
+        {
+          "name": "忘记密码",
+          "h": 44
+        },
+        {
+          "name": "创建账号",
+          "h": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 1440,
+      "requestedTheme": "system",
+      "overflow": false,
+      "brandHeight": 44,
+      "whiteSpace": "nowrap",
+      "theme": "light",
+      "card": "rgba(0, 0, 0, 0)",
+      "targets": [
+        {
+          "name": "语学星",
+          "h": 44
+        },
+        {
+          "name": "显示密码",
+          "h": 44
+        },
+        {
+          "name": "忘记密码",
+          "h": 44
+        },
+        {
+          "name": "创建账号",
+          "h": 44
+        }
+      ],
+      "status": "PASS"
+    }
+  ],
+  "checks": [
+    "System theme responds to live dark/light preference changes",
+    "Empty submit identifies both fields, focuses account, announces error, sends no request",
+    "Password remains correctly labelled; keyboard toggle works without submitting",
+    "Pending blocks duplicate submission and toggles; rejection is visible and allows retry",
+    "Register/reset exits preserve return route; shared layout renders both pages",
+    "Simulated 200% text enlargement at 390: no horizontal overflow and submit scrolls into view (not native browser zoom)"
+  ],
+  "pageErrors": [],
+  "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+  ],
+  "sourceHashes": {
+    "apps/learner-web/src/pages/LoginPage.vue": "3df18ec508ff58e9533a2005297ae22ca580362afd0b954582a1543b7d870d14",
+    "apps/learner-web/src/layouts/AuthLayout.vue": "2a409dbcb5be1c39ee64718f7fbf325fcd7ae178ab0e2a6e9fb2977e45e251c6",
+    "apps/learner-web/src/theme/v2-tokens.scss": "4829f28728878d8946f89aba575a4a74e66c8ab04eabb34d5fadb95a629df7c7",
+    "packages/i18n/src/learner-base.ts": "684545446c40984279353e48797e0a5ffcdaf64d58922a733fad6370ec6e40bf",
+    "packages/i18n/src/learner-experience.ts": "1778d1e1a83a208089ea824a933c4644b64609c07290a8e828da7afbc71bb0b4"
+  },
+  "expectedConsoleErrors": [
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+  ],
+  "status": "PASS"
+}
