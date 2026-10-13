@@ -19,26 +19,40 @@ onUnmounted(unsubscribe)
 </script>
 
 <template>
-  <section class="display-page" aria-labelledby="b6-platform-title">
+  <section class="display-page v2-page v2-page--b6platform" aria-labelledby="b6-platform-title">
     <ExperienceHeader page="Platform" icon="monitor" title-id="b6-platform-title" />
-    <article class="display-card">
+    <div class="v2-b6platform-layout">
+      <div class="v2-b6platform-main">
+    <article class="display-card v2-b6platform-card">
       <div><h2>{{ t('displayTitle') }}</h2><p>{{ t('displayHint') }}</p></div>
       <LearningPreferences />
     </article>
-    <article class="display-card display-motion">
+    <article class="display-card display-motion v2-b6platform-card">
       <div><h2>{{ t('motionTitle') }}</h2><p>{{ t('motionHint') }}</p></div>
       <label class="privacy-toggle"><input type="checkbox" :checked="!motionDisabled" @change="engine.setMotionDisabled(!($event.target as HTMLInputElement).checked)" /> {{ t('motionEnabled') }}</label>
     </article>
-    <article class="display-card">
+    <article class="display-card v2-b6platform-card">
       <div><h2>{{ t('qualityTitle') }}</h2><p>{{ t('qualityHint') }}</p></div>
       <div class="quality-options">
         <button v-for="level in levels" :key="level" type="button" class="quality-option" :aria-pressed="performanceLevel === level" @click="engine.setLevel(level, 'manual')">
           <span class="quality-option__title"><strong>{{ t('quality' + level) }}</strong><AppIcon v-if="performanceLevel === level" name="check" :size="18" /></span>
-          <small>{{ level }}</small><p>{{ t('quality' + level + 'Hint') }}</p>
+          <small><span class="v2-sr-only">{{ level }}</span><span>{{ level === 'Ultra' ? '超高' : level === 'High' ? '高' : level === 'Medium' ? '均衡' : '流畅' }}</span></small><p>{{ t('quality' + level + 'Hint') }}</p>
         </button>
       </div>
     </article>
-    <article class="display-card display-help"><AppIcon name="headphones" :size="30" /><div><h2>{{ t('deviceHelpTitle') }}</h2><p>{{ t('deviceHelpHint') }}</p><RouterLink class="button button--secondary" :to="{ name: 'support' }">{{ t('support') }} <AppIcon name="arrow" :size="16" /></RouterLink></div></article>
+      </div>
+      <div class="v2-b6platform-side">
+    <article class="display-card display-help v2-b6platform-card"><AppIcon name="headphones" :size="30" /><div><h2>{{ t('deviceHelpTitle') }}</h2><p>{{ t('deviceHelpHint') }}</p><RouterLink class="button button--secondary" :to="{ name: 'support' }">{{ t('support') }} <AppIcon name="arrow" :size="16" /></RouterLink></div></article>
+        <div class="v2-b6platform-tips">
+          <h2 class="v2-b6platform-tips-title">温馨提示</h2>
+          <ul class="v2-b6platform-tips-list">
+            <li>动效开关即时生效，可按偏好调整</li>
+            <li>画质选项可随时切换对比效果</li>
+            <li>遇到设备问题，可前往客服寻求帮助</li>
+          </ul>
+        </div>
+      </div>
+    </div>
   </section>
 </template>
 
