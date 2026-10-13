@@ -70,3 +70,10 @@ admin-ops:
   command-confirmation-ttl: ${ADMIN_OPS_COMMAND_CONFIRMATION_TTL:5m}
   support-default-sla: ${ADMIN_OPS_SUPPORT_DEFAULT_SLA:48h}
   audit-cursor-key: ${ADMIN_OPS_AUDIT_CURSOR_KEY:}
+
+# IT-7 governance disposition write chain. Default false keeps the desk frozen
+# (Chinese unavailable reasons on the admin UI). Flip only after Luna sign-off.
+adminops:
+  it7:
+    disposition-open: ${ADMINOPS_IT7_DISPOSITION_OPEN:false}
+

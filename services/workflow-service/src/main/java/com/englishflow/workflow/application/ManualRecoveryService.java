@@ -17,9 +17,18 @@ import java.util.UUID;
 public class ManualRecoveryService {
 
     private final RecoveryStore store;
+    private final RecoverySideEffectPort sideEffects;
 
     public ManualRecoveryService(RecoveryStore store) {
+        this(store, (recoveryId, type, id, action, executor) -> {
+            throw new ManualRecoveryRequest.RecoveryNotAllowed(
+                    "no executable recovery for " + type + "/" + action);
+        });
+    }
+
+    public ManualRecoveryService(RecoveryStore store, RecoverySideEffectPort sideEffects) {
         this.store = store;
+        this.sideEffects = sideEffects;
     }
 
     /** Asks for a recovery, naming the requester taken from the verified token. */
@@ -45,15 +54,30 @@ public class ManualRecoveryService {
         return RecoveryView.of(stored.request(), stored.subjectType(), stored.subjectId(), stored.action(), stored.reason());
     }
 
-    /** Executes an approved request. Refused unless it was approved first. */
+    /**
+     * Executes an approved request: first runs the concrete subject mutation, then marks EXECUTED.
+     * If the mutation fails, the request is marked FAILED and the error is rethrown so the API does
+     * not report success for a no-op.
+     */
     public RecoveryView execute(String recoveryId, String executor) {
         StoredRecovery stored = load(recoveryId);
-        stored.request().execute();
-        store.update(stored.request());
-        // The receipt names the executor as well as the two people who decided, so the trail survives the
-        // request row being archived.
-        store.recordReceipt(stored.request(), executor);
-        return RecoveryView.of(stored.request(), stored.subjectType(), stored.subjectId(), stored.action(), stored.reason());
+        // Domain gate: must be APPROVED (throws if REQUESTED/terminal).
+        if (stored.request().status() != ManualRecoveryRequest.Status.APPROVED) {
+            stored.request().execute(); // produces the precise refusal message
+        }
+        try {
+            String detail = sideEffects.apply(recoveryId, stored.subjectType(), stored.subjectId(), stored.action(), executor);
+            stored.request().execute();
+            store.update(stored.request());
+            store.recordReceipt(stored.request(), executor);
+            return RecoveryView.of(stored.request(), stored.subjectType(), stored.subjectId(),
+                    stored.action(), stored.reason(), detail);
+        } catch (RuntimeException error) {
+            String message = error.getMessage() == null ? error.getClass().getSimpleName() : error.getMessage();
+            stored.request().fail(message);
+            store.update(stored.request());
+            throw error;
+        }
     }
 
     private StoredRecovery load(String recoveryId) {
@@ -64,12 +88,18 @@ public class ManualRecoveryService {
     /** What a caller sees. */
     public record RecoveryView(String recoveryId, String status, String requestedBy, String approvedBy,
                                String subjectType, String subjectId, String action, String reason,
-                               String failureMessage) {
+                               String failureMessage, String effectDetail) {
 
         static RecoveryView of(ManualRecoveryRequest request, String subjectType, String subjectId,
                                String action, String reason) {
+            return of(request, subjectType, subjectId, action, reason, null);
+        }
+
+        static RecoveryView of(ManualRecoveryRequest request, String subjectType, String subjectId,
+                               String action, String reason, String effectDetail) {
             return new RecoveryView(request.recoveryId(), request.status().name(), request.requestedBy(),
-                    request.approvedBy(), subjectType, subjectId, action, reason, request.failureMessage());
+                    request.approvedBy(), subjectType, subjectId, action, reason, request.failureMessage(),
+                    effectDetail);
         }
 
         public Map<String, Object> toMap() {
@@ -83,6 +113,9 @@ public class ManualRecoveryService {
             map.put("action", action);
             map.put("reason", reason);
             map.put("failureMessage", failureMessage);
+            if (effectDetail != null) {
+                map.put("effectDetail", effectDetail);
+            }
             return map;
         }
     }

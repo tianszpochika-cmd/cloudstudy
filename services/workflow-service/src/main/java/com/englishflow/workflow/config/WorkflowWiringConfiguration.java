@@ -3,7 +3,9 @@ package com.englishflow.workflow.config;
 import com.englishflow.workflow.adapter.jdbc.WorkflowTables;
 import com.englishflow.workflow.adapter.http.SagaController;
 import com.englishflow.workflow.adapter.jdbc.JdbcJobLeaseStore;
+import com.englishflow.workflow.adapter.jdbc.JdbcRecoverySideEffect;
 import com.englishflow.workflow.adapter.jdbc.JdbcRecoveryStore;
+import com.englishflow.workflow.application.RecoverySideEffectPort;
 import com.englishflow.workflow.adapter.jdbc.JdbcSagaStore;
 import com.englishflow.workflow.adapter.jdbc.JdbcWorkflowOutbox;
 import com.englishflow.workflow.application.CompensationTransport;
@@ -40,8 +42,14 @@ public class WorkflowWiringConfiguration {
     }
 
     @Bean
-    ManualRecoveryService manualRecoveryService(ManualRecoveryService.RecoveryStore store) {
-        return new ManualRecoveryService(store);
+    RecoverySideEffectPort recoverySideEffectPort(JdbcTemplate jdbc) {
+        return new JdbcRecoverySideEffect(jdbc);
+    }
+
+    @Bean
+    ManualRecoveryService manualRecoveryService(ManualRecoveryService.RecoveryStore store,
+            RecoverySideEffectPort sideEffects) {
+        return new ManualRecoveryService(store, sideEffects);
     }
 
     @Bean

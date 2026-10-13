@@ -53,11 +53,17 @@ export function dashboardMetric(state: DashboardState, value: number | null): { 
   return { state: 'READY', value, text: '已读取' }
 }
 
-export function permissionPage(): { readOnly: true; writeActions: string[]; copy: string } {
+export function permissionPage(): {
+  readOnly: boolean
+  writeActions: string[]
+  copy: string
+  writeCopy: string
+} {
   return {
-    readOnly: true,
-    writeActions: [],
-    copy: '这一页只读。没有通过、驳回或发布按钮。没有权限时回到有权页面，不会要求重新登录来绕过。',
+    readOnly: false,
+    writeActions: ['submit', 'approve', 'activate'],
+    copy: '策略版本可查看。有 iam.policy.submit / approve / activate 权限时，可以送审、审批或激活；没有权限时回到有权页面，不会要求重新登录来绕过。',
+    writeCopy: '权限变更必须走草稿 → 送审 → 他人审批 → 激活。作者不能审批自己的版本。',
   }
 }
 
