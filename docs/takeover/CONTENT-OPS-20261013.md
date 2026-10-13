@@ -68,3 +68,79 @@ IN_REVIEW / ARCHIVED --编辑--> 409 *_STATE_INVALID
 - 新增 `ReviewTrailJdbcRoundTripTest`（真实 MySQL，需 `-Dcontent.migration.integration=true`）：V31 列读写往返。
 - content-service 全量：283 run，0 失败，3 跳过（按设计需 MySQL 的集成测试；用临时 MySQL 8.4 单独开启后 Flyway 迁移测试与 V31 往返测试均通过）。
 - admin-web：`vue-tsc --noEmit` 0 错误；`node --test tests/*.test.mjs` 47 过 3 失败，与改动前基线完全相同（admin-audit 的 3 个既有失败）。
+
+---
+
+## 能力 1：内容修订稿 + 打开原稿完整回填（并补齐内容包层面的 2/3/4）
+
+### 服务端
+
+- 管理端详情 `GET /admin/content-commands/{contentCode}` 新增 `editorDraft`：最新版本的
+  版本号、状态、作者、类型、标题、校验值、来源/版权编码、申报渠道、授权证据引用、学习许可、完整 payload、
+  当前已发布版本号；以及 `lastRejection`（最近一次退回的版本、审核阶段、决定、原因、审核人、时间）。
+  **这两个字段不在现有契约里，见下方「契约提案」。**
+- 修订稿：已发布/已批准内容执行 `SAVE_DRAFT`（targetVersionNumber=最新版本）即生成新的 DRAFT 版本，
+  已发布指针不变（学员继续看旧版），重新双审后发布即替换。服务端原本就支持，本次补测试。
+- 新增保护：最新版本 `IN_REVIEW` 时 `SAVE_DRAFT` → 409 `CONTENT_IN_REVIEW`（以前会在审核中的版本之上再叠一个草稿，审核对象被悄悄换掉）。
+- 退回原因：`REVIEW_FIRST/REVIEW_FINAL` 的 `REJECTED/CHANGES_REQUESTED` 必须带 `reviewNote`（1–500 字），
+  否则 400 `CONTENT_REJECT_REASON_REQUIRED`；原因写入新表 `content_review_note`，供作者在工作台看到。
+- 作者不能审自己的版本：服务端已有（409 `FOUR_EYES_REQUIRED`），工作台已有置灰提示；本次补了回归测试。
+- 乐观锁：`SAVE_DRAFT` 已有 `expectedStateVersion` 校验（409 `VERSION_CONFLICT`），本次补回归测试和前端提示。
+
+### 数据库迁移（仅新增）
+
+- `V32__content_review_note.sql`：新表 `content_review_note`（退回原因记录）。MySQL 8.4 临时库验证通过。
+
+### 管理端（内容工作台）
+
+- 在内容库点「编辑」：表单自动载入该版本原稿（标题、类型、校验值、来源/版权、渠道、证据、学习许可、JSON 配置），
+  不再是空表单；说明行显示「第 N 版，作者 X」。
+- 已发布/已批准的内容出现「基于此版本创建修订稿」按钮：确认后表单可编辑，保存生成新草稿版本，提示「线上版本不变」。
+- 审核中的内容：说明行提示「需审核员先退回」，保存被拒时弹窗解释原因。
+- 被退回的草稿：编辑页顶部红色提示「第 N 版被一级/二级审核退回（审核人）：原因」。
+- 审核任务「退回」改为必填原因的输入框。
+- 保存遇到 409（被他人修改 / 审核中）：弹窗「重新载入最新版本 / 留在当前页面」。
+
+### 测试
+
+- 新增 `ContentRevisionWorkbenchJdbcTest`（6 个，H2）：原稿回填字段齐全、已发布内容生成修订稿且发布指针不变、
+  审核中禁止保存、过期保存 409、退回缺原因 400 且原因可读回、作者不能审自己的版本。
+- `ReviewTrailJdbcRoundTripTest` 增加 `content_review_note` 在 MySQL 上的读写。
+- content-service 全量 289 run / 0 失败 / 3 跳过（MySQL 集成，单独开启通过）。
+- admin-web：vue-tsc 0 错误；node 测试 47 过 3 失败（与基线相同）。
+
+### 契约提案（未改 packages/contracts，待评审）
+
+`B9AdminContentState`（`additionalProperties: false`）增加两个只读可选字段：
+
+```json
+"editorDraft": {
+  "type": "object", "readOnly": true,
+  "description": "最新版本的可编辑事实，仅管理端详情返回，用于工作台回填与修订稿",
+  "properties": {
+    "contentVersionId": {"$ref": "#/components/schemas/B9ContentVersionId"},
+    "versionNumber": {"type": "integer", "minimum": 1},
+    "status": {"type": "string", "enum": ["DRAFT","IN_REVIEW","APPROVED","PUBLISHED","ARCHIVED"]},
+    "editor": {"type": "string"}, "contentType": {"$ref": "#/components/schemas/B9ContentType"},
+    "title": {"type": "string"}, "contentHash": {"type": "string"}, "releaseNote": {"type": "string"},
+    "sourceCode": {"type": "string"}, "licenseCode": {"type": "string"},
+    "permittedChannels": {"type": "array", "items": {"type": "string"}},
+    "authorizationEvidenceRef": {"type": ["string","null"]}, "allowsLearning": {"type": "boolean"},
+    "payload": {"type": "object"}, "publishedVersionNumber": {"type": ["integer","null"]}
+  }
+},
+"lastRejection": {
+  "type": "object", "readOnly": true,
+  "properties": {
+    "contentVersionId": {"type": "integer"}, "versionNumber": {"type": "integer"},
+    "reviewStage": {"type": "string", "enum": ["FIRST_REVIEW","FINAL_REVIEW"]},
+    "decision": {"type": "string", "enum": ["REJECTED","CHANGES_REQUESTED"]},
+    "note": {"type": "string", "maxLength": 512}, "reviewer": {"type": "string"},
+    "decidedAt": {"$ref": "#/components/schemas/B9DateTime"}
+  }
+}
+```
+
+同一提案还包括能力 2 加在 `lexeme` / `item` 记录里的 `reviewTrail`、`firstReviewer`、`finalReviewer`，
+以及命令错误码 `*_SELF_APPROVAL_DENIED`、`*_REJECT_REASON_REQUIRED`、`*_REVISION_LIVE`、`CONTENT_IN_REVIEW`、
+`CONTENT_REJECT_REASON_REQUIRED`。请求体没有新增字段（`reviewNote`、`expectedStateVersion` 契约里本来就有）。

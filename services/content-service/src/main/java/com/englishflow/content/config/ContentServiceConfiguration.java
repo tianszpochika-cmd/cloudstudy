@@ -275,6 +275,12 @@ public class ContentServiceConfiguration {
     }
 
     @Bean
+    @ConditionalOnProperty(prefix = "content.persistence", name = "mode", havingValue = "jdbc")
+    com.englishflow.content.adapter.jdbc.JdbcContentReviewNotes contentReviewNotes(JdbcTemplate contentJdbcTemplate) {
+        return new com.englishflow.content.adapter.jdbc.JdbcContentReviewNotes(contentJdbcTemplate);
+    }
+
+    @Bean
     LexemeCommandService lexemeCommandService(
             ContentRepository repository,
             LexemeRepository lexemeRepository,

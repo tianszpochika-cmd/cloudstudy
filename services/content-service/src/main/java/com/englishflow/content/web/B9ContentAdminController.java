@@ -86,6 +86,13 @@ public final class B9ContentAdminController {
     private final ValidationReportStore reports;
     private ContentReleaseStudio releaseStudio = new ContentReleaseStudio();
 
+    private com.englishflow.content.adapter.jdbc.JdbcContentReviewNotes reviewNotes;
+
+    @Autowired(required = false)
+    void setReviewNotes(com.englishflow.content.adapter.jdbc.JdbcContentReviewNotes reviewNotes) {
+        this.reviewNotes = reviewNotes;
+    }
+
     @Autowired
     void setReleaseStudio(ContentReleaseStudio releaseStudio) {
         if (releaseStudio != null) {
@@ -151,7 +158,13 @@ public final class B9ContentAdminController {
         requireAdminRead(actor);
         ContentDefinition content = repository.findByCode(contentCode)
                 .orElseThrow(() -> ContentOperationException.notFound("CONTENT_NOT_FOUND", "content does not exist"));
-        return ResponseEntity.ok(envelope(withScheduledTasks(state(content, actor), contentCode, actor), headers));
+        Map<String, Object> detail = new LinkedHashMap<>(withScheduledTasks(state(content, actor), contentCode, actor));
+        content.versions().stream().reduce((left, right) -> right)
+                .ifPresent(latest -> detail.put("editorDraft", editorDraft(content, latest)));
+        if (reviewNotes != null) {
+            reviewNotes.latest(contentCode).ifPresent(note -> detail.put("lastRejection", note));
+        }
+        return ResponseEntity.ok(envelope(detail, headers));
     }
 
     @PostMapping
@@ -214,11 +227,17 @@ public final class B9ContentAdminController {
                 ContentVersion version = targetVersion(content, input);
                 ReviewStage stage = "REVIEW_FIRST".equals(command) ? ReviewStage.FIRST_REVIEW : ReviewStage.FINAL_REVIEW;
                 ReviewDecision decision = reviewDecision(input.get("reviewDecision"));
+                String rejectNote = decision == ReviewDecision.APPROVED ? null
+                        : com.englishflow.content.domain.ReviewTrail.requireRejectNote(reviewNote(input), "CONTENT");
                 versionSnapshot = commands.review(
                         new ContentCommandService.ReviewCommand(
                                 content.contentId(), version.versionId(), stage, decision,
                                 textOr(input.get("reasonCode"), "B31_REVIEW"), textOr(input.get("reviewNote"), "")),
                         actor, key(key + ":review:" + stage.name()), context);
+                if (rejectNote != null && reviewNotes != null) {
+                    reviewNotes.record(contentCode, version.versionId().value(), version.versionNumber(),
+                            stage.name(), decision.name(), rejectNote, actor.subjectId(), Instant.now());
+                }
             }
             case "PUBLISH" -> {
                 requirePublisher(actor);
@@ -459,6 +478,12 @@ public final class B9ContentAdminController {
                     } else {
                         ContentDefinition current = ownedForUpdate(contentCode, actor);
                         requireExpectedRevision(input, current.stateVersion());
+                        current.versions().stream().reduce((left, right) -> right)
+                                .filter(latest -> latest.status() == com.englishflow.content.domain.ContentVersionStatus.IN_REVIEW)
+                                .ifPresent(latest -> {
+                                    throw ContentOperationException.conflict("CONTENT_IN_REVIEW",
+                                            "the latest version is under review; wait for the decision or ask a reviewer to reject it");
+                                });
                         Object target = input.get("targetVersionNumber");
                         if (target != null) {
                             int latestNumber = current.versions().stream()
@@ -1381,6 +1406,34 @@ public final class B9ContentAdminController {
         return version.proposal().isComplete()
                 && rights.sourceCode() != null && !rights.sourceCode().isBlank()
                 && rights.licenseCode() != null && !rights.licenseCode().isBlank();
+    }
+
+    /**
+     * Content-ops R2 workbench backfill (contract proposal, see CONTENT-OPS-20261013.md):
+     * the latest version's editable facts so opening a draft or starting a
+     * revision shows the stored content instead of an empty form. Admin read
+     * only; the evidence reference is the editor's own dossier pointer.
+     */
+    private static Map<String, Object> editorDraft(ContentDefinition content, ContentVersion version) {
+        Map<String, Object> draft = new LinkedHashMap<>();
+        draft.put("contentVersionId", version.versionId().value());
+        draft.put("versionNumber", version.versionNumber());
+        draft.put("status", version.status().name());
+        draft.put("editor", version.editor());
+        draft.put("contentType", content.kind().name());
+        draft.put("title", content.title());
+        draft.put("contentHash", version.contentHash());
+        draft.put("releaseNote", version.releaseNote());
+        draft.put("sourceCode", version.rights().map(ContentRights::sourceCode).orElse(""));
+        draft.put("licenseCode", version.rights().map(ContentRights::licenseCode).orElse(""));
+        RightsProposal proposal = version.proposal();
+        draft.put("permittedChannels", proposal == null ? List.of() : proposal.channelList());
+        draft.put("authorizationEvidenceRef", proposal == null ? null : proposal.proposedEvidenceRef());
+        draft.put("allowsLearning", proposal != null && proposal.proposedAllowsLearning());
+        draft.put("payload", version.payload().raw());
+        draft.put("publishedVersionNumber", content.currentPublishedVersion()
+                .map(ContentVersion::versionNumber).orElse(null));
+        return draft;
     }
 
     private static Map<String, Object> versionView(ContentVersion version) {

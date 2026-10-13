@@ -1,6 +1,7 @@
 package com.englishflow.content.migration;
 
 import com.englishflow.content.adapter.jdbc.JdbcContentItemRepository;
+import com.englishflow.content.adapter.jdbc.JdbcContentReviewNotes;
 import com.englishflow.content.adapter.jdbc.JdbcLexemeRepository;
 import com.englishflow.content.domain.ContentItem;
 import com.englishflow.content.domain.Lexeme;
@@ -67,6 +68,14 @@ class ReviewTrailJdbcRoundTripTest {
             assertTrue(loadedItem.trail().revisionOfLive());
             assertTrue(loadedItem.isLive());
             assertEquals("editor-1", loadedItem.trail().submittedBy());
+
+            JdbcContentReviewNotes notes = new JdbcContentReviewNotes(jdbc);
+            notes.record("pack-a", 25001L, 1, "FIRST_REVIEW", "REJECTED", "旧原因", "reviewer-1", now.minusSeconds(60));
+            notes.record("pack-a", 25002L, 2, "FINAL_REVIEW", "CHANGES_REQUESTED", "新原因", "reviewer-2", now);
+            Map<String, Object> latest = notes.latest("pack-a").orElseThrow();
+            assertEquals("新原因", latest.get("note"));
+            assertEquals(2, latest.get("versionNumber"));
+            assertTrue(notes.latest("pack-missing").isEmpty());
         } finally {
             admin.execute("DROP DATABASE IF EXISTS " + schema);
         }

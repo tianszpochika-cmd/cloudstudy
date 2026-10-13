@@ -8,6 +8,7 @@ import { ElMessage, ElMessageBox } from "element-plus";
 import {
   ContentCommandError,
   contentServiceCommandAdapter,
+  type ContentEditorDraft,
 } from "../api/content-service-command-adapter";
 import {
   type ContentSnapshot,
@@ -55,6 +56,10 @@ const stateVersion = ref("");
 const rollbackTargetVersion = ref("");
 const rollbackReason = ref("");
 const dirty = ref(false);
+/** Content-ops R2: stored facts of the opened version, and "editing a published/approved version" mode. */
+const editorDraft = ref<ContentEditorDraft | null>(null);
+const backfillError = ref<string | null>(null);
+const revisionMode = ref(false);
 useUnsavedChanges(dirty);
 const busyAction = ref<string | null>(null);
 const lastError = ref<ContentCommandError | null>(null);
@@ -92,7 +97,23 @@ const canEditSelected = computed(
     !selectedVersionMissing.value &&
     (!selectedStatus.value ||
       selectedStatus.value === "DRAFT" ||
-      selectedStatus.value === "REJECTED"),
+      selectedStatus.value === "REJECTED" ||
+      (revisionMode.value &&
+        (selectedStatus.value === "PUBLISHED" ||
+          selectedStatus.value === "APPROVED"))),
+);
+const canStartRevision = computed(
+  () =>
+    canWrite.value &&
+    Boolean(selectedContentId.value) &&
+    !selectedVersionMissing.value &&
+    !revisionMode.value &&
+    (selectedStatus.value === "PUBLISHED" || selectedStatus.value === "APPROVED"),
+);
+const showRejection = computed(
+  () =>
+    Boolean(editorDraft.value?.lastRejection) &&
+    editorDraft.value?.status === "DRAFT",
 );
 const canValidateSelected = computed(
   () => canWrite.value && Boolean(selectedContentId.value) && !selectedVersionMissing.value,
@@ -215,6 +236,51 @@ async function verifySelectedReviewReadiness(content: ContentSnapshot): Promise<
   }
 }
 
+/** Shows the stored payload exactly as saved so a re-save round-trips the same items. */
+function editablePayload(payload: Record<string, unknown> | null): string {
+  if (!payload) return "{}";
+  const view: Record<string, unknown> = {};
+  for (const key of ["summary", "contentLocale", "targetLevel", "items"]) {
+    if (payload[key] !== undefined) view[key] = payload[key];
+  }
+  return JSON.stringify(Object.keys(view).length ? view : payload, null, 2);
+}
+
+async function backfill(content: ContentSnapshot): Promise<void> {
+  editorDraft.value = null;
+  backfillError.value = null;
+  try {
+    const draft = await contentServiceCommandAdapter.getEditorDraft(content.contentId);
+    if (selectedContentId.value !== content.contentId || dirty.value) return;
+    editorDraft.value = draft;
+    if (draft.contentType) contentType.value = draft.contentType;
+    if (draft.title) title.value = draft.title;
+    contentHash.value = draft.contentHash ?? "";
+    sourceCode.value = draft.sourceCode ?? "";
+    licenseCode.value = draft.licenseCode ?? "";
+    authorizationEvidenceRef.value = draft.authorizationEvidenceRef ?? "";
+    permittedChannels.value = [...draft.permittedChannels];
+    allowsLearning.value = draft.allowsLearning;
+    payloadText.value = editablePayload(draft.payload);
+    dirty.value = false;
+  } catch (error) {
+    backfillError.value =
+      error instanceof Error ? error.message : "原稿读取失败，请刷新后重试。";
+  }
+}
+
+async function startRevision(): Promise<void> {
+  if (!canStartRevision.value) return;
+  if (
+    !(await confirmAction(
+      "基于当前版本创建修订稿？保存后会生成一个新的草稿版本，需要重新送审；学员在新版本发布前仍看到当前已发布的版本。",
+    ))
+  )
+    return;
+  revisionMode.value = true;
+  ElMessage.info("已进入修订模式：表单已载入当前版本内容，修改后点「保存草稿」生成修订稿。");
+}
+
 async function selectContent(content: ContentSnapshot): Promise<void> {
   if (!(await confirmDiscard(dirty.value))) return;
   payloadText.value = "{}";
@@ -226,11 +292,12 @@ async function selectContent(content: ContentSnapshot): Promise<void> {
   allowsLearning.value = false;
   rollbackReason.value = "";
   rollbackTargetVersion.value = "";
+  revisionMode.value = false;
   applyContent(content);
   activeTab.value = "editor";
   lastError.value = null;
   viewState.value = "ready";
-  await verifySelectedReviewReadiness(content);
+  await Promise.all([backfill(content), verifySelectedReviewReadiness(content)]);
 }
 
 function handleError(error: unknown): void {
@@ -351,9 +418,38 @@ async function saveDraft(): Promise<void> {
     lastRequestId.value = receipt.requestId;
     if (receipt.content) applyContent(receipt.content);
     dirty.value = false;
-    ElMessage.success("草稿已保存并收到服务端版本确认。");
+    ElMessage.success(
+      revisionMode.value
+        ? "修订稿已保存为新的草稿版本；送审并发布前，学员仍看到原已发布版本。"
+        : "草稿已保存并收到服务端版本确认。",
+    );
+    revisionMode.value = false;
     await loadProjection();
+    if (selectedContent.value) await backfill(selectedContent.value);
   });
+  const failure = lastError.value as ContentCommandError | null;
+  if (failure && (failure.code === "VERSION_CONFLICT" || failure.code === "CONTENT_IN_REVIEW")) {
+    await explainSaveConflict(failure.code);
+  }
+}
+
+async function explainSaveConflict(code: string): Promise<void> {
+  const message =
+    code === "CONTENT_IN_REVIEW"
+      ? "最新版本正在审核中，不能再保存新草稿。请等待审核结果；如需修改，请审核员先退回。"
+      : "保存失败：这条内容在你打开之后已被其他人修改。重新载入会放弃你未保存的修改；也可以先复制你的 JSON 再重新载入对比。";
+  try {
+    await ElMessageBox.confirm(message, "无法保存", {
+      type: "warning",
+      confirmButtonText: "重新载入最新版本",
+      cancelButtonText: "留在当前页面",
+    });
+  } catch {
+    return;
+  }
+  dirty.value = false;
+  await loadProjection();
+  if (selectedContent.value) await selectContent(selectedContent.value);
 }
 
 async function validateDraft(): Promise<void> {
@@ -394,18 +490,32 @@ async function decide(
     viewState.value = isSelfReview(task) ? "permission" : "recovery";
     return;
   }
+  let reviewNote: string | undefined;
   try {
-    await ElMessageBox.confirm(
-      decision === "APPROVED"
-        ? "确认通过当前审核节点？发布仍需一级和二级审核均完成。"
-        : "确认退回当前内容版本？",
-      task.stage === "FINAL" ? "二级审核确认" : "一级审核确认",
-      {
-        type: decision === "APPROVED" ? "info" : "warning",
-        confirmButtonText: "确认",
-        cancelButtonText: "取消",
-      },
-    );
+    if (decision === "APPROVED") {
+      await ElMessageBox.confirm(
+        "确认通过当前审核节点？发布仍需一级和二级审核均完成。",
+        task.stage === "FINAL" ? "二级审核确认" : "一级审核确认",
+        { type: "info", confirmButtonText: "确认", cancelButtonText: "取消" },
+      );
+    } else {
+      const result = await ElMessageBox.prompt(
+        "退回给作者修改。请写清楚需要改什么，作者打开草稿时会看到这段说明。",
+        task.stage === "FINAL" ? "二级审核退回" : "一级审核退回",
+        {
+          type: "warning",
+          confirmButtonText: "退回",
+          cancelButtonText: "取消",
+          inputType: "textarea",
+          inputPlaceholder: "例如：第 3 题答案解析缺失；第 2 段与原文不符",
+          inputValidator: (value: string) =>
+            (value?.trim().length ?? 0) > 0 && value.trim().length <= 500
+              ? true
+              : "请填写 1 到 500 字的退回原因",
+        },
+      );
+      reviewNote = (result as { value: string }).value.trim();
+    }
   } catch {
     return;
   }
@@ -414,6 +524,7 @@ async function decide(
       task.reviewTaskId,
       task.stage,
       decision,
+      reviewNote,
     );
     lastRequestId.value = receipt.requestId;
     ElMessage.success("审核命令已提交并保留审计关联。");
@@ -472,6 +583,8 @@ async function newDraft(): Promise<void> {
   sourceCode.value = "";
   licenseCode.value = "";
   payloadText.value = "{}";
+  editorDraft.value = null;
+  revisionMode.value = false;
   versionId.value = "";
   stateVersion.value = "";
   rollbackTargetVersion.value = "";
@@ -699,6 +812,23 @@ onMounted(() => {
                   /></el-form-item
                 ></el-col>
               </el-row>
+              <el-alert
+                v-if="showRejection && editorDraft?.lastRejection"
+                type="error"
+                show-icon
+                :closable="false"
+                class="content-command-note"
+                :title="`第 ${editorDraft.lastRejection.versionNumber ?? '?'} 版被${editorDraft.lastRejection.reviewStage === 'FINAL_REVIEW' ? '二级' : '一级'}审核退回（${editorDraft.lastRejection.reviewer}）`"
+                :description="`${editorDraft.lastRejection.note}。修改后保存草稿会生成新版本，再重新提交双审。`"
+              />
+              <el-alert
+                v-if="backfillError"
+                type="warning"
+                show-icon
+                :closable="false"
+                class="content-command-note"
+                :title="`原稿载入失败：${backfillError}`"
+              />
               <el-form-item label="内容配置（JSON）"
                 ><el-input
                   v-model="payloadText"
@@ -714,6 +844,13 @@ onMounted(() => {
                   :disabled="!canWrite || !!busyAction || !!selectedContentId"
                   @click="createDraft"
                   >创建草稿</el-button
+                ><el-button
+                  v-if="canStartRevision"
+                  type="warning"
+                  plain
+                  :disabled="!!busyAction"
+                  @click="startRevision"
+                  >基于此版本创建修订稿</el-button
                 ><el-button
                   :loading="isBusy('save')"
                   :disabled="
@@ -749,7 +886,13 @@ onMounted(() => {
                 v-else-if="selectedContent"
                 type="info"
                 class="content-command-note"
-                >当前版本：{{ contentStatusLabel(selectedContent) }}。编辑前请核对原稿。</el-text
+                >当前版本：{{ contentStatusLabel(selectedContent)
+                }}<template v-if="editorDraft?.versionNumber">（第 {{ editorDraft.versionNumber }} 版，作者 {{ editorDraft.editor || "—" }}）</template
+                >。表单已载入该版本原稿<template v-if="revisionMode">；你正在编辑修订稿，保存后生成新版本，线上版本不变</template
+                ><template v-else-if="selectedStatus === 'PUBLISHED' || selectedStatus === 'APPROVED'"
+                  >；已发布/已批准的版本不能直接改，请点「基于此版本创建修订稿」</template
+                ><template v-else-if="selectedStatus === 'IN_REVIEW'">；审核中不能修改，需审核员先退回</template
+                >。</el-text
               ><el-text v-else type="info" class="content-command-note"
                 >请先填写内容并创建草稿。</el-text
               >

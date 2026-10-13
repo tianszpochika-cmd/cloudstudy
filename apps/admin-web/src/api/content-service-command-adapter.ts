@@ -21,6 +21,23 @@ import {
  * with an optimistic state version; no page code knows content-service tables or
  * fabricates actor/tenant/role facts.
  */
+export interface ContentEditorDraft {
+  versionNumber: number | null
+  status: string | null
+  editor: string | null
+  contentType: string | null
+  title: string | null
+  contentHash: string | null
+  sourceCode: string | null
+  licenseCode: string | null
+  permittedChannels: string[]
+  authorizationEvidenceRef: string | null
+  allowsLearning: boolean
+  payload: Record<string, unknown> | null
+  publishedVersionNumber: number | null
+  lastRejection: { versionNumber: number | null; reviewStage: string; decision: string; note: string; reviewer: string; decidedAt: string | null } | null
+}
+
 export interface ContentServiceCommandPort {
   readonly target: 'content-service'
   getWorkspaceProjection(): Promise<ContentWorkspaceProjection>
@@ -29,7 +46,9 @@ export interface ContentServiceCommandPort {
   validateDraft(contentId: string): Promise<ContentCommandReceipt>
   verifyReviewSubmissionReady(contentId: string): Promise<boolean>
   submitReview(contentId: string): Promise<ContentCommandReceipt>
-  decideReview(taskId: string, stage: ReviewStage, decision: ReviewDecision): Promise<ContentCommandReceipt>
+  decideReview(taskId: string, stage: ReviewStage, decision: ReviewDecision, reviewNote?: string): Promise<ContentCommandReceipt>
+  /** Content-ops R2: stored facts of the latest version + latest rejection reason, for workbench backfill. */
+  getEditorDraft(contentId: string): Promise<ContentEditorDraft>
   publish(contentId: string): Promise<ContentCommandReceipt>
   rollback(contentId: string, command: ContentRollbackCommand): Promise<ContentCommandReceipt>
 }
@@ -243,7 +262,8 @@ function draftInput(command: ContentDraftCommand): RecordValue {
   return {
     contentType: contentType(command.contentType),
     title: command.title.trim(),
-    contentLocale: 'en-US',
+    contentLocale: /^[a-z]{2,3}(-[A-Z][a-z]{3})?(-[A-Z]{2})?$/.test(text(payload.contentLocale)) ? text(payload.contentLocale) : 'en-US',
+    ...(text(payload.summary) ? { summary: text(payload.summary).slice(0, 2048) } : {}),
     targetLevel: ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'].includes(text(payload.targetLevel)) ? text(payload.targetLevel) : 'A1',
     sourceCode: command.sourceCode.trim(),
     licenseCode: command.licenseCode.trim(),
@@ -365,10 +385,41 @@ export function createContentServiceCommandAdapter(options: { readonly client: A
       }
       return command({ command: 'SUBMIT_REVIEW', contentCode: contentId, expectedStateVersion: integer(state.stateVersion, 1) }, `content-submit-${contentId}`)
     },
-    async decideReview(taskId, stage, decision) {
+    async decideReview(taskId, stage, decision, reviewNote) {
       const context = reviewContexts.get(taskId)
       if (!context) throw new ContentCommandError(adminT('apiCommandAdapter.reviewTaskStale'), { code: 'REVIEW_TASK_STALE', status: 409, retryable: true })
-      return command({ command: stage === 'FINAL' ? 'REVIEW_FINAL' : 'REVIEW_FIRST', contentCode: context.contentCode, expectedStateVersion: context.expectedStateVersion, reviewDecision: decision }, `review-${taskId}`)
+      return command({ command: stage === 'FINAL' ? 'REVIEW_FINAL' : 'REVIEW_FIRST', contentCode: context.contentCode, expectedStateVersion: context.expectedStateVersion, reviewDecision: decision, ...(reviewNote?.trim() ? { reviewNote: reviewNote.trim() } : {}) }, `review-${taskId}`)
+    },
+    async getEditorDraft(contentId) {
+      const response = await request(`${COMMAND_PATH}/${encodeURIComponent(contentId)}`, 'GET', undefined, 'content-state-read')
+      const state = unwrap(response)
+      const draft = isRecord(state.editorDraft) ? state.editorDraft : {}
+      const rejection = isRecord(state.lastRejection) ? state.lastRejection : null
+      const num = (value: unknown): number | null => (typeof value === 'number' && Number.isFinite(value) ? value : null)
+      const str = (value: unknown): string | null => (typeof value === 'string' && value.trim() ? value : null)
+      return {
+        versionNumber: num(draft.versionNumber),
+        status: str(draft.status),
+        editor: str(draft.editor),
+        contentType: str(draft.contentType),
+        title: str(draft.title),
+        contentHash: str(draft.contentHash),
+        sourceCode: str(draft.sourceCode),
+        licenseCode: str(draft.licenseCode),
+        permittedChannels: list(draft.permittedChannels).filter((value): value is string => typeof value === 'string'),
+        authorizationEvidenceRef: str(draft.authorizationEvidenceRef),
+        allowsLearning: draft.allowsLearning === true,
+        payload: isRecord(draft.payload) ? draft.payload : null,
+        publishedVersionNumber: num(draft.publishedVersionNumber),
+        lastRejection: rejection ? {
+          versionNumber: num(rejection.versionNumber),
+          reviewStage: text(rejection.reviewStage),
+          decision: text(rejection.decision),
+          note: text(rejection.note),
+          reviewer: text(rejection.reviewer),
+          decidedAt: str(rejection.decidedAt),
+        } : null,
+      }
     },
     async publish(contentId) {
       const state = stateFor(contentId)
