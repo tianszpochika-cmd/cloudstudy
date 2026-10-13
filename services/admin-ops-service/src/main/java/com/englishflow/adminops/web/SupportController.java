@@ -5,6 +5,7 @@ import com.englishflow.adminops.domain.AdminPrincipal;
 import com.englishflow.adminops.domain.AdminOpsException;
 import com.englishflow.adminops.security.AdminOpsAuthenticationToken;
 import com.englishflow.adminops.support.SupportAction;
+import com.englishflow.adminops.support.SupportTicketResult;
 import com.englishflow.adminops.support.SupportTicketService;
 import com.englishflow.adminops.support.SupportTicketView;
 import jakarta.servlet.http.HttpServletRequest;
@@ -44,9 +45,14 @@ public final class SupportController {
             @RequestBody B13SupportTicketCreateRequest body,
             @RequestHeader(value = "Idempotency-Key", required = false) String idempotencyKey,
             HttpServletRequest request) {
-        // The legacy payload has only a hash of the learner's description. Accepting it would
-        // report success while support staff have no issue text to read or answer.
-        throw workflowUnavailable();
+        // Hash-only tickets stay refuse-closed: staff would otherwise "succeed" with nothing to read.
+        // Create is admitted only when at least one verified media-service attachment is present.
+        if (body == null || body.toDraft().attachments().isEmpty()) {
+            throw workflowUnavailable();
+        }
+        SupportTicketResult result = service.create(requirePrincipal(), body.toDraft(), idempotencyKey,
+                request == null ? null : request.getHeader("X-Trace-Id"));
+        return AdminOpsHttpSupport.envelope(ticketView(result.ticket()), request);
     }
 
     @GetMapping("/tickets")
@@ -90,7 +96,10 @@ public final class SupportController {
             @PathVariable String ticketId,
             @RequestBody SupportAction action,
             HttpServletRequest request) {
-        throw workflowUnavailable();
+        SupportTicketView ticket = service.get(requirePrincipal(), ticketId);
+        requireVerifiedContent(ticket);
+        return AdminOpsHttpSupport.envelope(
+                service.prepareTransition(requirePrincipal(), ticketId, action), request);
     }
 
     @PostMapping("/tickets/{ticketId}/transitions")
@@ -100,7 +109,27 @@ public final class SupportController {
             @RequestHeader(value = "Idempotency-Key", required = false) String idempotencyKey,
             @RequestHeader(value = "X-Confirmation-Token", required = false) String confirmationToken,
             HttpServletRequest request) {
-        throw workflowUnavailable();
+        SupportTicketView ticket = service.get(requirePrincipal(), ticketId);
+        requireVerifiedContent(ticket);
+        SupportTicketResult result = service.transition(requirePrincipal(), ticketId, action, idempotencyKey,
+                confirmationToken, request == null ? null : request.getHeader("X-Trace-Id"));
+        return AdminOpsHttpSupport.envelope(ticketView(result.ticket()), request);
+    }
+
+    /** Internal: executed by workflow-service manual recovery (TICKET/REOPEN) with the executor's token. */
+    @PostMapping("/tickets/{ticketId}/recovery-reopen")
+    public Map<String, Object> recoveryReopen(
+            @PathVariable String ticketId,
+            @RequestHeader(value = "Idempotency-Key", required = false) String idempotencyKey,
+            HttpServletRequest request) {
+        String recoveryId = idempotencyKey != null && idempotencyKey.startsWith("recovery-")
+                ? idempotencyKey.substring("recovery-".length()) : null;
+        SupportTicketResult result = service.recoveryReopen(requirePrincipal(), ticketId, recoveryId,
+                request == null ? null : request.getHeader("X-Trace-Id"));
+        Map<String, Object> view = ticketView(result.ticket());
+        view.put("replayed", result.replayed());
+        view.put("auditId", result.auditId());
+        return AdminOpsHttpSupport.envelope(view, request);
     }
 
     private Map<String, Object> closureBoard(HttpServletRequest request) {
@@ -134,16 +163,40 @@ public final class SupportController {
     }
 
     private static Map<String, Object> ticketView(SupportTicketView ticket) {
+        boolean verified = hasVerifiedContent(ticket);
         Map<String, Object> view = new LinkedHashMap<>();
         view.put("ticketId", ticket.ticketId());
         view.put("categoryCode", ticket.category().name());
         view.put("state", ticket.state().name());
         view.put("priority", ticket.priority().name());
         view.put("slaDueAt", ticket.slaDueAt());
-        view.put("redactionVersion", "legacy.metadata.v1");
+        view.put("redactionVersion", verified ? "media.ref.v1" : "legacy.metadata.v1");
         view.put("slaState", ticket.slaStatus().name());
-        view.put("workflowVersion", "LEGACY_HASH_ONLY");
-        view.put("actionable", false);
+        view.put("workflowVersion", verified ? "VERIFIED_CONTENT_V1" : "LEGACY_HASH_ONLY");
+        view.put("actionable", verified);
+        view.put("attachmentCount", ticket.attachments().size());
+        view.put("version", ticket.version());
+        if (!verified) {
+            view.put("unavailableReason", "历史工单只有正文指纹、没有可核验的媒体附件，客服看不到问题内容，因此不能分派、回复或关闭。请新建带附件引用的工单。");
+        }
         return view;
+    }
+
+    private static void requireVerifiedContent(SupportTicketView ticket) {
+        if (!hasVerifiedContent(ticket)) {
+            throw workflowUnavailable();
+        }
+    }
+
+    private static boolean hasVerifiedContent(SupportTicketView ticket) {
+        return ticket != null && ticket.attachments() != null && !ticket.attachments().isEmpty();
+    }
+
+    private static AdminPrincipal requirePrincipal() {
+        AdminPrincipal current = principal();
+        if (current == null) {
+            throw new AdminOpsException("ADMIN_UNAUTHENTICATED", "authentication is required", 401, false);
+        }
+        return current;
     }
 }

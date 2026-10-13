@@ -12,10 +12,12 @@ import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 /**
- * IT-7 closure desk. Disposition writes stay frozen. Hash-only tickets are traces,
+ * IT-7 closure desk. Disposition writes stay frozen until
+ * {@code adminops.it7.disposition-open=true}. Hash-only tickets are traces,
  * not a claim that support understood the problem. On the local-real profile the desk
  * writes one owner-schema snapshot and a new process reads that snapshot back.
  * It does not replace the older risk service.
@@ -24,6 +26,8 @@ import org.springframework.stereotype.Component;
 public class It7ClosureStudio {
 
     public static final String WRITE_SWITCH = "FROZEN";
+    public static final String WRITE_SWITCH_OPEN = "OPEN";
+
     private static final Set<String> COMPENSATION = Set.of("RETRY_EXPORT", "REVOKE_SESSION");
     private static final Set<String> OUTBOX = Set.of(
             "closure.case.filed", "closure.export.queued", "closure.deletion.accepted");
@@ -33,6 +37,8 @@ public class It7ClosureStudio {
 
     private final Object guard = new Object();
     private final ClosureDeskStore store;
+    /** When true, TRIAGE/ISOLATE/ESCALATE/CLOSE mutate cases. Default false keeps IT-7 frozen. */
+    private final boolean dispositionAdmitted;
     private final List<Case> cases = new ArrayList<>();
     private final List<Trace> traces = new ArrayList<>();
     private final List<ExportJob> exports = new ArrayList<>();
@@ -45,17 +51,31 @@ public class It7ClosureStudio {
     private int isolationWrites;
 
     public It7ClosureStudio() {
-        this(new MemoryClosureDeskStore());
+        this(new MemoryClosureDeskStore(), false);
     }
 
     @Autowired
-    public It7ClosureStudio(ObjectProvider<ClosureDeskStore> stores) {
-        this(stores.getIfAvailable(MemoryClosureDeskStore::new));
+    public It7ClosureStudio(ObjectProvider<ClosureDeskStore> stores,
+            @Value("${adminops.it7.disposition-open:false}") boolean dispositionOpen) {
+        this(stores.getIfAvailable(MemoryClosureDeskStore::new), dispositionOpen);
     }
 
     public It7ClosureStudio(ClosureDeskStore store) {
+        this(store, false);
+    }
+
+    public It7ClosureStudio(ClosureDeskStore store, boolean dispositionAdmitted) {
         this.store = store == null ? new MemoryClosureDeskStore() : store;
+        this.dispositionAdmitted = dispositionAdmitted;
         hydrate();
+    }
+
+    public boolean dispositionAdmitted() {
+        return dispositionAdmitted;
+    }
+
+    private String writeSwitch() {
+        return dispositionAdmitted ? WRITE_SWITCH_OPEN : WRITE_SWITCH;
     }
 
     public int caseCount() {
@@ -102,7 +122,11 @@ public class It7ClosureStudio {
         }
         cases.clear();
         for (ClosureDeskState.CaseRow row : state.cases()) {
-            cases.add(new Case(row.id(), row.owner(), row.sourceRef(), row.title(), row.updatedAt()));
+            String status = row.status() == null || row.status().isBlank() ? "FILED" : row.status();
+            String disposition = row.disposition() == null || row.disposition().isBlank()
+                    ? "NOT_STARTED" : row.disposition();
+            cases.add(new Case(row.id(), row.owner(), row.sourceRef(), row.title(), row.updatedAt(),
+                    status, disposition));
         }
         traces.clear();
         for (ClosureDeskState.TraceRow row : state.traces()) {
@@ -146,7 +170,8 @@ public class It7ClosureStudio {
         }
         store.save(new ClosureDeskState(
                 cases.stream().map(item -> new ClosureDeskState.CaseRow(
-                        item.id(), item.owner(), item.sourceRef(), item.title(), item.updatedAt())).toList(),
+                        item.id(), item.owner(), item.sourceRef(), item.title(), item.updatedAt(),
+                        item.status(), item.disposition())).toList(),
                 traces.stream().map(item -> new ClosureDeskState.TraceRow(
                         item.id(), item.owner(), item.bodyHash())).toList(),
                 exports.stream().map(item -> new ClosureDeskState.ExportRow(
@@ -169,10 +194,10 @@ public class It7ClosureStudio {
             case "BOARD" -> board(actor);
             case "LOCK_READ" -> lockRead(actor);
             case "FILE" -> file(actor, input);
-            case "TRIAGE" -> refuseDisposition(actor, input, "DISPOSITION_NOT_ADMITTED", "分诊写链还没准入", false);
+            case "TRIAGE" -> triage(actor, input);
             case "ISOLATE" -> isolate(actor, input);
             case "ESCALATE" -> escalate(actor, input);
-            case "CLOSE" -> refuseDisposition(actor, input, "CHAIN_INCOMPLETE", "关闭所需的步骤原文还没补齐", true);
+            case "CLOSE" -> closeCase(actor, input);
             case "CASES" -> cases(actor, input);
             case "RISK_ROUTE" -> riskRoute(actor);
             case "REPORTS" -> reports(actor);
@@ -199,11 +224,17 @@ public class It7ClosureStudio {
     private Result board(Actor actor) {
         Map<String, Object> data = new LinkedHashMap<>();
         data.put("surface", "IT7");
-        data.put("writeSwitch", WRITE_SWITCH);
-        data.put("dispositionOpen", false);
-        data.put("lockCopy", "写入开关未开启。可以查看锁定理由、影响和恢复条件，这次不会锁定账号或内容。");
-        data.put("impact", "不会改变账号或内容的可用状态");
-        data.put("recovery", "恢复条件要等处置写链准入后才能执行");
+        data.put("writeSwitch", writeSwitch());
+        data.put("dispositionOpen", dispositionAdmitted);
+        data.put("lockCopy", dispositionAdmitted
+                ? "处置写链已准入。分诊、隔离、升级与关闭会改变案件状态；锁定仍不会直接改账号。"
+                : "写入开关未开启。可以查看锁定理由、影响和恢复条件，这次不会锁定账号或内容。");
+        data.put("impact", dispositionAdmitted
+                ? "会更新案件状态与处置标记，不会直接锁定学员账号"
+                : "不会改变账号或内容的可用状态");
+        data.put("recovery", dispositionAdmitted
+                ? "隔离后可通过升级或关闭推进；账号解锁仍走恢复台人工流程"
+                : "恢复条件要等处置写链准入后才能执行");
         data.put("ticketCopy", "受控正文尚未批准。这里不能提交一份客服能够理解并闭环处理的工单。只有摘要的记录会标成信息不足。");
         data.put("closedLoop", false);
         data.put("understandable", false);
@@ -237,8 +268,8 @@ public class It7ClosureStudio {
             data.put("cases", cases.stream().map(this::caseView).toList());
             data.put("independentRiskRoute", false);
             data.put("riskRedirect", "/governance");
-            data.put("reportsReadOnly", true);
-            data.put("dispositionButtons", false);
+            data.put("reportsReadOnly", !dispositionAdmitted);
+            data.put("dispositionButtons", dispositionAdmitted);
             data.put("reports", maskedReports());
         }
         if (actor.can("admin.audit.read")) {
@@ -255,11 +286,15 @@ public class It7ClosureStudio {
             return forbidden();
         }
         Map<String, Object> data = new LinkedHashMap<>();
-        data.put("writeSwitch", WRITE_SWITCH);
+        data.put("writeSwitch", writeSwitch());
         data.put("executed", false);
-        data.put("reason", "处置写链未准入，锁定没有执行");
+        data.put("reason", dispositionAdmitted
+                ? "本页不执行账号锁定；请用分诊/隔离命令推进案件"
+                : "处置写链未准入，锁定没有执行");
         data.put("impact", "账号和内容都保持原状态");
-        data.put("recovery", "恢复条件可读，但现在不能靠这个页面解锁");
+        data.put("recovery", dispositionAdmitted
+                ? "账号解锁请走恢复台人工双人流程"
+                : "恢复条件可读，但现在不能靠这个页面解锁");
         return Result.ok(data);
     }
 
@@ -278,7 +313,7 @@ public class It7ClosureStudio {
         if (title.isBlank()) {
             title = "有来源的档案";
         }
-        Case filed = new Case("case-" + UUID.randomUUID(), actor.subject(), source, title, Instant.now().toString());
+        Case filed = new Case("case-" + UUID.randomUUID(), actor.subject(), source, title, Instant.now().toString(), "FILED", "NOT_STARTED");
         cases.add(filed);
         audits.add(new AuditRow("audit-" + UUID.randomUUID(), "CASE_FILED", mask(source), Instant.now().toString()));
         Map<String, Object> data = caseView(filed);
@@ -287,18 +322,62 @@ public class It7ClosureStudio {
         return Result.ok(data);
     }
 
+    private Result triage(Actor actor, Map<String, Object> input) {
+        Result denied = requireGovernanceCase(actor, input);
+        if (denied != null) {
+            return denied;
+        }
+        if (!dispositionAdmitted) {
+            return refuseDisposition(actor, input, "DISPOSITION_NOT_ADMITTED", "分诊写链还没准入", false);
+        }
+        Case item = requireCase(input);
+        if (item == null) {
+            return Result.fail(404, "CASE_NOT_FOUND", "案件不存在", Map.of());
+        }
+        if ("CLOSED".equals(item.status())) {
+            return Result.fail(409, "CASE_CLOSED", "已关闭的案件不能再分诊", Map.of("status", item.status()));
+        }
+        item.setStatus("TRIAGED");
+        item.setDisposition("IN_TRIAGE");
+        item.touch();
+        audits.add(new AuditRow("audit-" + UUID.randomUUID(), "CASE_TRIAGED", mask(item.id()), Instant.now().toString()));
+        Map<String, Object> data = caseView(item);
+        data.put("dispatched", true);
+        data.put("assigned", true);
+        data.put("statusUnchanged", false);
+        return Result.ok(data);
+    }
+
     private Result isolate(Actor actor, Map<String, Object> input) {
         Result denied = requireGovernanceCase(actor, input);
         if (denied != null) {
             return denied;
         }
-        Map<String, Object> extra = new LinkedHashMap<>();
-        extra.put("effect", "ISOLATION");
-        extra.put("sameAsLock", false);
-        extra.put("unlockAvailable", false);
-        extra.put("isolationWrites", isolationWrites);
-        extra.put("dispatched", false);
-        return Result.fail(409, "DISPOSITION_NOT_ADMITTED", "隔离还没准入，也不能在页面上直接解除", extra);
+        if (!dispositionAdmitted) {
+            Map<String, Object> extra = new LinkedHashMap<>();
+            extra.put("effect", "ISOLATION");
+            extra.put("sameAsLock", false);
+            extra.put("unlockAvailable", false);
+            extra.put("isolationWrites", isolationWrites);
+            extra.put("dispatched", false);
+            return Result.fail(409, "DISPOSITION_NOT_ADMITTED", "隔离还没准入，也不能在页面上直接解除", extra);
+        }
+        Case item = requireCase(input);
+        if (item == null) {
+            return Result.fail(404, "CASE_NOT_FOUND", "案件不存在", Map.of());
+        }
+        isolationWrites++;
+        item.setStatus("ISOLATED");
+        item.setDisposition("CONTAINED");
+        item.touch();
+        audits.add(new AuditRow("audit-" + UUID.randomUUID(), "CASE_ISOLATED", mask(item.id()), Instant.now().toString()));
+        Map<String, Object> data = caseView(item);
+        data.put("effect", "ISOLATION");
+        data.put("sameAsLock", false);
+        data.put("unlockAvailable", false);
+        data.put("isolationWrites", isolationWrites);
+        data.put("dispatched", true);
+        return Result.ok(data);
     }
 
     private Result escalate(Actor actor, Map<String, Object> input) {
@@ -306,13 +385,71 @@ public class It7ClosureStudio {
         if (denied != null) {
             return denied;
         }
-        boolean receiver = truthy(input.get("receiverAvailable"));
-        String code = receiver ? "DISPOSITION_NOT_ADMITTED" : "RECEIVER_UNAVAILABLE";
-        String message = receiver ? "处置写链还没准入" : "接收方不可用，不能显示成已经接单";
-        return Result.fail(409, code, message, Map.of(
-                "accepted", false,
-                "originalRetained", true,
-                "dispatched", false));
+        if (!dispositionAdmitted) {
+            boolean receiver = truthy(input.get("receiverAvailable"));
+            String code = receiver ? "DISPOSITION_NOT_ADMITTED" : "RECEIVER_UNAVAILABLE";
+            String message = receiver ? "处置写链还没准入" : "接收方不可用，不能显示成已经接单";
+            return Result.fail(409, code, message, Map.of(
+                    "accepted", false,
+                    "originalRetained", true,
+                    "dispatched", false));
+        }
+        Case item = requireCase(input);
+        if (item == null) {
+            return Result.fail(404, "CASE_NOT_FOUND", "案件不存在", Map.of());
+        }
+        item.setStatus("ESCALATED");
+        item.setDisposition("HANDED_OFF");
+        item.touch();
+        audits.add(new AuditRow("audit-" + UUID.randomUUID(), "CASE_ESCALATED", mask(item.id()), Instant.now().toString()));
+        Map<String, Object> data = caseView(item);
+        data.put("accepted", true);
+        data.put("originalRetained", true);
+        data.put("dispatched", true);
+        return Result.ok(data);
+    }
+
+    private Result closeCase(Actor actor, Map<String, Object> input) {
+        Result denied = requireGovernanceCase(actor, input);
+        if (denied != null) {
+            return denied;
+        }
+        if (!dispositionAdmitted) {
+            return refuseDisposition(actor, input, "CHAIN_INCOMPLETE", "关闭所需的步骤原文还没补齐", true);
+        }
+        Case item = requireCase(input);
+        if (item == null) {
+            return Result.fail(404, "CASE_NOT_FOUND", "案件不存在", Map.of());
+        }
+        if ("FILED".equals(item.status())) {
+            return Result.fail(409, "CHAIN_INCOMPLETE", "建档后需先分诊或隔离再关闭", Map.of(
+                    "dispatched", false, "closed", false, "claimsFullChain", false));
+        }
+        item.setStatus("CLOSED");
+        item.setDisposition("DONE");
+        item.touch();
+        audits.add(new AuditRow("audit-" + UUID.randomUUID(), "CASE_CLOSED", mask(item.id()), Instant.now().toString()));
+        Map<String, Object> data = caseView(item);
+        data.put("dispatched", true);
+        data.put("closed", true);
+        data.put("claimsFullChain", true);
+        return Result.ok(data);
+    }
+
+    private Case requireCase(Map<String, Object> input) {
+        String id = text(input.get("caseId"));
+        if (id.isBlank()) {
+            id = text(input.get("id"));
+        }
+        if (id.isBlank()) {
+            return null;
+        }
+        for (Case item : cases) {
+            if (item.id().equals(id)) {
+                return item;
+            }
+        }
+        return null;
     }
 
     private Result refuseDisposition(Actor actor, Map<String, Object> input, String code, String message, boolean close) {
@@ -369,8 +506,8 @@ public class It7ClosureStudio {
         Map<String, Object> data = new LinkedHashMap<>();
         data.put("items", maskedReports());
         data.put("nextCursor", null);
-        data.put("readOnly", true);
-        data.put("dispositionButtons", false);
+        data.put("readOnly", !dispositionAdmitted);
+        data.put("dispositionButtons", dispositionAdmitted);
         data.put("masked", true);
         return Result.ok(data);
     }
@@ -662,9 +799,14 @@ public class It7ClosureStudio {
                 "fileCreated", false));
     }
 
+    /** Disposition commands are writes: read permission alone must never mutate or even probe a case. */
     private Result requireGovernanceCase(Actor actor, Map<String, Object> input) {
         if (!governance(actor)) {
             return forbidden();
+        }
+        if (!governanceWrite(actor)) {
+            return Result.fail(403, "CLOSURE_WRITE_FORBIDDEN", "处置需要治理写权限（admin.risk.write 或 admin.moderation.write）",
+                    Map.of("dispatched", false));
         }
         String caseId = text(input.get("caseId"));
         if (caseId.isBlank() || cases.stream().noneMatch(item -> item.id().equals(caseId))) {
@@ -679,6 +821,10 @@ public class It7ClosureStudio {
 
     private boolean governance(Actor actor) {
         return actor.can("admin.risk.read") || actor.can("admin.moderation.read");
+    }
+
+    private boolean governanceWrite(Actor actor) {
+        return actor.can("admin.risk.write") || actor.can("admin.moderation.write");
     }
 
     private String latestExportState(String subject) {
@@ -834,14 +980,37 @@ public class It7ClosureStudio {
         }
     }
 
-    private record Case(String id, String owner, String sourceRef, String title, String updatedAt) {
-        private String status() {
-            return "FILED";
+    private static final class Case {
+        private final String id;
+        private final String owner;
+        private final String sourceRef;
+        private final String title;
+        private String updatedAt;
+        private String status;
+        private String disposition;
+
+        private Case(String id, String owner, String sourceRef, String title, String updatedAt,
+                String status, String disposition) {
+            this.id = id;
+            this.owner = owner;
+            this.sourceRef = sourceRef;
+            this.title = title;
+            this.updatedAt = updatedAt;
+            this.status = status == null ? "FILED" : status;
+            this.disposition = disposition == null ? "NOT_STARTED" : disposition;
         }
 
-        private String disposition() {
-            return "NOT_STARTED";
-        }
+        private String id() { return id; }
+        private String owner() { return owner; }
+        private String sourceRef() { return sourceRef; }
+        private String title() { return title; }
+        private String updatedAt() { return updatedAt; }
+        private String status() { return status; }
+        private String disposition() { return disposition; }
+
+        private void setStatus(String status) { this.status = status; }
+        private void setDisposition(String disposition) { this.disposition = disposition; }
+        private void touch() { this.updatedAt = Instant.now().toString(); }
     }
 
     private record Trace(String id, String owner, String bodyHash) {

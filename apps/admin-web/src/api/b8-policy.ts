@@ -87,3 +87,43 @@ export async function listB8PolicyVersions(cursor?: string): Promise<PolicyVersi
   const response = await adminClient.request<B8PolicyVersionListEnvelope>(path)
   return parsePolicyVersionPage(response)
 }
+
+function idem(op: string): string {
+  return `policy-${op}-${Date.now()}-${Math.random().toString(16).slice(2)}`
+}
+
+/** Contract-compatible create. Document shape matches existing list items. */
+export async function createB8PolicyVersion(input: {
+  policyDocument: B8PolicyVersion['document']
+  changeReason: string
+}): Promise<unknown> {
+  return adminClient.request(POLICY_VERSIONS_PATH, {
+    method: 'POST',
+    body: input,
+    headers: { 'Idempotency-Key': idem('create') },
+  })
+}
+
+export async function submitB8PolicyVersion(policyVersionId: string, expectedRevision: number, submissionReason: string): Promise<unknown> {
+  return adminClient.request(`${POLICY_VERSIONS_PATH}/${encodeURIComponent(policyVersionId)}/submit`, {
+    method: 'POST',
+    body: { expectedRevision, submissionReason },
+    headers: { 'Idempotency-Key': idem('submit') },
+  })
+}
+
+export async function approveB8PolicyVersion(policyVersionId: string, expectedRevision: number, approvalNote: string): Promise<unknown> {
+  return adminClient.request(`${POLICY_VERSIONS_PATH}/${encodeURIComponent(policyVersionId)}/approvals`, {
+    method: 'POST',
+    body: { expectedRevision, approvalNote },
+    headers: { 'Idempotency-Key': idem('approve') },
+  })
+}
+
+export async function activateB8PolicyVersion(policyVersionId: string, expectedRevision: number, activationReason: string): Promise<unknown> {
+  return adminClient.request(`${POLICY_VERSIONS_PATH}/${encodeURIComponent(policyVersionId)}/activate`, {
+    method: 'POST',
+    body: { expectedRevision, activationReason },
+    headers: { 'Idempotency-Key': idem('activate') },
+  })
+}

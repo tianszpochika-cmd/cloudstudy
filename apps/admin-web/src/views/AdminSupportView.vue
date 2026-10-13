@@ -4,7 +4,14 @@ import { ui } from "../platform/experience";
 import AdminPageIntro from "../components/AdminPageIntro.vue";
 import { onMounted, ref } from "vue";
 import { AdminApiError } from "../api/client";
-import { getB18SupportTicket, listB18SupportTickets } from "../api/b18-operations";
+import { ElMessage, ElMessageBox } from "element-plus";
+import {
+  getB18SupportTicket,
+  listB18SupportTickets,
+  prepareSupportTransition,
+  transitionSupportTicket,
+  type SupportTransitionAction,
+} from "../api/b18-operations";
 import { useAdminStore } from "../stores/admin";
 import { adminI18n } from "../platform/v2-foundation";
 
@@ -148,6 +155,71 @@ async function load(): Promise<void> {
   }
 }
 
+
+const actionBusy = ref(false);
+
+const actionsForState: Record<string, SupportTransitionAction[]> = {
+  OPEN: ["ACKNOWLEDGE", "START"],
+  ACKNOWLEDGED: ["START", "WAIT_CUSTOMER"],
+  IN_PROGRESS: ["WAIT_CUSTOMER", "RESOLVE"],
+  WAITING_CUSTOMER: ["START", "RESOLVE"],
+  RESOLVED: ["CLOSE", "REOPEN"],
+  CLOSED: ["REOPEN"],
+};
+
+const actionLabels: Record<string, string> = {
+  ACKNOWLEDGE: "受理",
+  START: "开始处理",
+  WAIT_CUSTOMER: "待用户补充",
+  RESOLVE: "标记已解决",
+  CLOSE: "关闭",
+  REOPEN: "重开",
+};
+
+function availableActions(row: Row | null): SupportTransitionAction[] {
+  if (!row || row.actionable !== true) return [];
+  // P3-2: buttons only for operators who can actually transition tickets.
+  if (!session.can("support.ticket.manage")) return [];
+  return actionsForState[String(row.state)] ?? [];
+}
+
+async function act(action: SupportTransitionAction): Promise<void> {
+  if (!detail.value || actionBusy.value) return;
+  const ticketId = String(detail.value.ticketId ?? "");
+  if (!ticketId) return;
+  if (!session.can("support.ticket.manage")) {
+    ElMessage.error("当前会话没有工单处理权限（support.ticket.manage）。");
+    return;
+  }
+  actionBusy.value = true;
+  try {
+    let token: string | undefined;
+    if (action === "RESOLVE" || action === "CLOSE") {
+      await ElMessageBox.confirm(
+        `确认对工单 ${ticketId} 执行「${actionLabels[action]}」？此操作需要二次确认。`,
+        "确认操作",
+        { type: "warning" },
+      );
+      const prepared = await prepareSupportTransition(ticketId, action);
+      token = prepared.token;
+      if (!token) throw new Error("未拿到确认令牌，请刷新后重试。");
+    }
+    await transitionSupportTicket(ticketId, action, token);
+    ElMessage.success(`已${actionLabels[action] ?? action}`);
+    await load();
+    await openDetail({ ticketId });
+  } catch (error) {
+    if (error === "cancel") return;
+    const message = error instanceof AdminApiError
+      ? (error.message || `操作失败（${error.status}）`)
+      : error instanceof Error ? error.message : "操作失败";
+    ElMessage.error(message);
+    if (error instanceof AdminApiError && error.status === 409) state.value = "recovery";
+  } finally {
+    actionBusy.value = false;
+  }
+}
+
 onMounted(() => {
   void load();
 });
@@ -183,8 +255,8 @@ onMounted(() => {
       show-icon
     />
     <el-alert
-      title="即将开放：工单处理（分派/回复/关闭）尚未接入，历史工单当前仅供查看。"
-      type="warning"
+      title="带可核验媒体附件的工单可以受理、处理与关闭；只有正文指纹、没有附件的历史工单仍只能查看。"
+      type="info"
       :closable="false"
       show-icon
     />
@@ -224,6 +296,14 @@ onMounted(() => {
         <el-table-column label="时效" width="120">
           <template #default="scope">{{ label(scope.row.slaState, slaStates) }}</template>
         </el-table-column>
+        <el-table-column label="可处理" width="120">
+          <template #default="scope">
+            <el-tag v-if="scope.row.actionable === true" type="success" effect="plain">可处理</el-tag>
+            <el-tooltip v-else :content="String(scope.row.unavailableReason || '历史工单缺少可核验附件，不能处理。')" placement="top">
+              <el-tag type="info" effect="plain">仅查看</el-tag>
+            </el-tooltip>
+          </template>
+        </el-table-column>
       </el-table>
       <el-empty
         v-else-if="state === 'ready' || state === 'empty'"
@@ -253,7 +333,18 @@ onMounted(() => {
           <div class="detail-row"><dt>时效</dt><dd>{{ label(detail.slaState, slaStates) }}</dd></div>
           <div class="detail-row"><dt>截止时间</dt><dd>{{ dateLabel(detail.slaDueAt) }}</dd></div>
         </dl>
-        <p>此历史工单仅保存脱敏元数据，问题内容不可查看。</p>
+        <p v-if="detail.actionable !== true">{{ detail.unavailableReason || "此历史工单仅保存脱敏元数据，问题内容不可查看，因此不能处理。" }}</p>
+        <p v-else>已核验附件 {{ detail.attachmentCount ?? "若干" }} 个。可按状态推进工单。</p>
+        <div v-if="availableActions(detail).length" class="support-actions">
+          <el-button
+            v-for="action in availableActions(detail)"
+            :key="action"
+            :loading="actionBusy"
+            type="primary"
+            plain
+            @click="act(action)"
+          >{{ actionLabels[action] }}</el-button>
+        </div>
       </div>
     </el-dialog>
     </div>
@@ -266,4 +357,5 @@ onMounted(() => {
 .support-detail dt { color: var(--admin-muted); }
 .support-detail dd { margin: 0; overflow-wrap: anywhere; }
 .support-detail p { margin: 18px 0 0; color: var(--admin-muted); font-size: 13px; }
+.support-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
 </style>

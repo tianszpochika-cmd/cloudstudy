@@ -5,6 +5,7 @@ import { createClientId } from '../platform/client-id'
 
 export interface RecoveryView {
   recoveryId: string
+  effectDetail?: string | null
   status: string | null
   requestedBy: string | null
   approvedBy: string | null
@@ -39,6 +40,7 @@ function viewOf(value: unknown): RecoveryView | null {
     subjectType: typeof source.subjectType === 'string' ? source.subjectType : null,
     subjectId: typeof source.subjectId === 'string' ? source.subjectId : null,
     action: typeof source.action === 'string' ? source.action : null,
+    effectDetail: typeof source.effectDetail === 'string' ? source.effectDetail : null,
   }
 }
 

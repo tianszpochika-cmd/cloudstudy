@@ -28,4 +28,14 @@ public class RecoveryExceptionHandler {
         detail.setProperty("code", "RECOVERY_NOT_ALLOWED");
         return detail;
     }
+
+    /** Owner outcome unknown: the request stays APPROVED and the same execute can be retried. */
+    @ExceptionHandler(com.englishflow.workflow.application.RecoverySideEffectPort.SideEffectUncertain.class)
+    public ProblemDetail onUncertain(com.englishflow.workflow.application.RecoverySideEffectPort.SideEffectUncertain error) {
+        ProblemDetail detail = ProblemDetail.forStatusAndDetail(HttpStatus.SERVICE_UNAVAILABLE, error.getMessage());
+        detail.setTitle("recovery side effect outcome unknown");
+        detail.setProperty("code", "RECOVERY_EFFECT_UNCERTAIN");
+        detail.setProperty("retryable", true);
+        return detail;
+    }
 }

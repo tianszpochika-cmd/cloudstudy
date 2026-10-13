@@ -212,6 +212,10 @@ onMounted(() => {
             <dt>批准人</dt>
             <dd>{{ text(current.approvedBy) }}</dd>
           </div>
+          <div v-if="current.effectDetail" class="detail-row">
+            <dt>执行结果</dt>
+            <dd>{{ text(current.effectDetail) }}</dd>
+          </div>
         </dl>
         <div class="recovery-actions"><el-space v-if="current">
           <el-button

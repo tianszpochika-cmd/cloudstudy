@@ -1,0 +1,53 @@
+# 支持 / 治理 / 恢复 / 权限变更（backend group 2）— 2026-10-13
+
+分支：`feat/v2-support-governance`（独立 worktree `cloudstudy-support-gov`）。**未部署**，待 Luna 签收。
+
+## 范围
+
+1. **客服工单**：带可核验媒体附件的工单可创建与状态流转；仅正文指纹的历史工单继续 fail-closed（503），界面给出中文不可用原因。
+2. **治理处置**：分诊 / 隔离 / 升级 / 关闭一律要求 `admin.risk.write` 或 `admin.moderation.write`，只有读权限返回 403 `CLOSURE_WRITE_FORBIDDEN`（冻结与打开两种状态都一样）；界面无写权限时不露按钮并给中文原因。IT-7 处置写链默认仍冻结；配置 `adminops.it7.disposition-open=true`（或环境变量 `ADMINOPS_IT7_DISPOSITION_OPEN`）后，分诊 / 隔离 / 升级 / 关闭会真正改案件状态。
+3. **人工恢复**：`execute` 先跑白名单副作用再标 `EXECUTED`；当前只支持 `TICKET/REOPEN`。
+   - workflow-service **不再直接写 admin-ops 的库**：通过 admin-ops 内部命令 `POST /internal/v1/admin-ops/tickets/{id}/recovery-reopen` 执行，转发执行人的 JWT，`Idempotency-Key = recovery-{recoveryId}`；admin-ops 自己校验 `support.ticket.manage`、校验状态并写审计（`SUPPORT_RECOVERY_REOPEN`）。
+   - 幂等范围是「租户 + 工单」而不是执行人，所以任何执行人重试同一个恢复单都会重放第一次的结果。
+   - 结果分三类：成功 → `EXECUTED`；admin-ops 明确拒绝（4xx）→ `FAILED`；结果未知（超时、5xx、连不上）→ 保持 `APPROVED`，返回 503 `RECOVERY_EFFECT_UNCERTAIN`，可直接重试，重试时副作用被重放即标 `EXECUTED`。已 `EXECUTED` 的再执行是空操作。
+   - workflow 只写自己库里的 `recovery_side_effect_log`（APPLIED / FAILED / UNCERTAIN）。
+   - 执行人除 `admin.recovery.command` 外还需要 `support.ticket.manage`。
+4. **权限变更**：管理端「身份与权限」页在具备 `iam.policy.submit|approve|activate` 时露出送审 / 审批 / 激活按钮；无权限时按钮禁用并显示中文原因。后端 IAM 控制面本已存在，本轮只接线 UI。
+
+## 迁移（仅新增）
+
+- `services/workflow-service/.../V3__recovery_side_effect_log.sql`：新表 `recovery_side_effect_log`。
+
+## 契约提案（未改 `packages/contracts`）
+
+见同目录 `SUPPORT-GOVERNANCE-CONTRACT-PROPOSALS-20261013.md`。
+
+## 测试
+
+- workflow-service：`ManualRecoveryServiceTest`、`ManualRecoveryExecuteEffectTest`
+- admin-ops：`SupportControllerFailClosedTest`、`SupportVerifiedContentWorkflowTest`、`It7DispositionAdmissionTest`（既有 IT7 frozen 用例保持通过）
+- admin-web：`b8-policy-write-actions.test.mjs` 等
+
+## UI 验收步骤（签收后、部署前可在本地跑）
+
+1. 客服：用带媒体附件引用的工单走 ACKNOWLEDGE → START → RESOLVE（二次确认）→ CLOSE；对无附件历史工单确认「仅查看」与中文原因。
+2. 恢复台：双人申请 → 批准 → 执行 `TICKET/REOPEN`，详情出现「执行结果」；未知 action 应失败且不标 EXECUTED。
+3. 治理：默认 disposition 按钮不可用、中文拒绝文案；仅在配置打开后可推进案件。
+4. 权限：会话缺 `iam.policy.*` 时按钮灰掉并有中文提示；有权限时可送审 / 他人审批 / 激活。
+
+## 未做 / 遗留
+
+- 未部署、未改生产配置；处置开关默认 false。
+- 恢复副作用白名单目前只有 `TICKET/REOPEN`；其它 subject/action 仍拒绝。
+- 权限页未做「新建草稿」表单（创建草稿仍走 API / 既有控制面）；本轮只接线生命周期写操作。
+- 契约字段提案未合入 `packages/contracts`。
+
+## 安全说明
+
+- **P3-1（已知、可接受）**：执行人可以与申请人是同一人。双人控制在「批准」这一步强制（批准人 ≠ 申请人），执行只是把已批准的决定落地，并在收据里同时记录申请人、批准人、执行人。
+- **P2-2**：workflow 恢复接口在 Spring Security 过滤链之外，controller 里再按 JWT 校验 `platform` 租户与 `admin.recovery.request` / `admin.recovery.command`。线上核实：公网 `api.clyunedev.com` → nginx → 网关；网关对 `/internal/v1/workflow/...` 与 `/internal/v1/admin-ops/tickets/*/recovery-reopen` 返回 404；admin-ops / workflow 容器没有映射宿主端口。
+- **P3-2**：工单操作按钮只对 `support.ticket.manage` 显示。
+
+## 已知缺口：工单流转未经网关开放
+
+网关只路由 `GET/POST /api/v1/admin/ops/tickets` 与 `GET /api/v1/admin/ops/tickets/{id}`，**没有** `/transitions` 与 `/transitions/prepare`。管理端工单按钮因此在线上会得到 404。补路由需要改网关路由表和 `p1r-gateway-boundary` 契约片段（契约只能提案）并重建 api-gateway，不在本次部署范围内。提案见契约文档第 5 节。

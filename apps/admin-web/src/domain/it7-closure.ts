@@ -17,7 +17,11 @@ export interface ClosureBoard {
 export function governanceNotice(board: ClosureBoard | null): string {
   if (board?.casesState === 'FORBIDDEN') return '没有查看治理区的权限。'
   if (board?.casesState === 'NO_CASES') return '治理区还没有案件。空列表不是拒绝访问。'
-  if (board?.casesState === 'HAS_CASES') return '这里显示的是有来源的档案。处置写链没有打开。'
+  if (board?.casesState === 'HAS_CASES') {
+    return board.dispositionOpen === true
+      ? '这里显示的是有来源的档案。处置写链已打开，可推进分诊/隔离/升级/关闭。'
+      : '这里显示的是有来源的档案。处置写链没有打开。'
+  }
   return board?.lockCopy || '写入开关未开启。可以查看锁定理由、影响和恢复条件，这次不会锁定账号或内容。'
 }
 

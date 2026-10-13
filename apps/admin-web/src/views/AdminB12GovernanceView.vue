@@ -23,8 +23,11 @@ watch([caseQuery, caseStatus], () => { casePage.value = 1; });
 
 const closure = ref<ClosureBoard | null>(null);
 const closureNotice = ref("");
-const dispositionWritesOpen = computed(() => closure.value?.dispositionOpen === true);
-const dispositionRefusal = computed(() => legacyDispositionRefusal(closure.value));
+const canWriteGovernance = computed(() => session.can("admin.risk.write") || session.can("admin.moderation.write"));
+const dispositionWritesOpen = computed(() => closure.value?.dispositionOpen === true && canWriteGovernance.value);
+const dispositionRefusal = computed(() => closure.value?.dispositionOpen === true && !canWriteGovernance.value
+  ? "当前会话没有治理写权限（admin.risk.write 或 admin.moderation.write），只能查看。"
+  : legacyDispositionRefusal(closure.value));
 const showFileForm = ref(false);
 const fileCategory = ref<string>("ACCOUNT_SECURITY");
 const fileSeverity = ref<string>("MEDIUM");

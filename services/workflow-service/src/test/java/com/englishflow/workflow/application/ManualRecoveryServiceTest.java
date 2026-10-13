@@ -27,7 +27,10 @@ class ManualRecoveryServiceTest {
     @BeforeEach
     void setUp() {
         store = new FakeRecoveryStore();
-        service = new ManualRecoveryService(store);
+        // Tests that are not about side effects still need an effect port; use a recording no-op
+        // so EXECUTED is only claimed when the port returns.
+        service = new ManualRecoveryService(store,
+                (recoveryId, type, id, action, executor, bearer) -> "test-effect:" + type + "/" + action);
     }
 
     @Test

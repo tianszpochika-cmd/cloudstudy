@@ -41,6 +41,7 @@ public class ManualRecoveryController {
     public ResponseEntity<Map<String, Object>> request(@AuthenticationPrincipal Jwt jwt,
                                                        @RequestBody Map<String, Object> body,
                                                        @RequestHeader(value = "Idempotency-Key", required = false) String key) {
+        requirePermission(jwt, "admin.recovery.request");
         String actor = subject(jwt);
         Map<String, Object> response = idempotency.execute(jwt.getClaimAsString("tenant_id"), actor,
                 "MANUAL_RECOVERY_REQUEST", key, body,
@@ -58,6 +59,7 @@ public class ManualRecoveryController {
                                                        @PathVariable String recoveryId,
                                                        @RequestBody(required = false) Map<String, Object> body,
                                                        @RequestHeader(value = "Idempotency-Key", required = false) String key) {
+        requirePermission(jwt, "admin.recovery.command");
         String actor = subject(jwt);
         Map<String, Object> input = body == null ? Map.of() : body;
         return ResponseEntity.ok(idempotency.execute(jwt.getClaimAsString("tenant_id"), actor,
@@ -74,6 +76,7 @@ public class ManualRecoveryController {
                                                       @PathVariable String recoveryId,
                                                       @RequestBody(required = false) Map<String, Object> body,
                                                       @RequestHeader(value = "Idempotency-Key", required = false) String key) {
+        requirePermission(jwt, "admin.recovery.command");
         String actor = subject(jwt);
         Map<String, Object> input = body == null ? Map.of() : body;
         Object rawReason = input.get("reason");
@@ -98,13 +101,14 @@ public class ManualRecoveryController {
                                                         @PathVariable String recoveryId,
                                                         @RequestBody(required = false) Map<String, Object> body,
                                                         @RequestHeader(value = "Idempotency-Key", required = false) String key) {
+        requirePermission(jwt, "admin.recovery.command");
         String actor = subject(jwt);
         Map<String, Object> input = body == null ? Map.of() : body;
         return ResponseEntity.ok(idempotency.execute(jwt.getClaimAsString("tenant_id"), actor,
                 "MANUAL_RECOVERY_EXECUTE", key, Map.of("recoveryId", recoveryId, "body", input),
                 () -> {
                     requireEmptyBody(input);
-                    return service.execute(recoveryId, actor).toMap();
+                    return service.execute(recoveryId, actor, jwt.getTokenValue()).toMap();
                 }));
     }
 
@@ -114,6 +118,20 @@ public class ManualRecoveryController {
      * <p>The subject claim rather than a header: a client-supplied identity would defeat the two-person rule
      * entirely, since anyone could then present themselves as two people.
      */
+    /**
+     * Defence in depth: the security filter chain already enforces these permissions, but the
+     * controller re-checks the verified claims so a future matcher change cannot open a write.
+     */
+    static void requirePermission(Jwt jwt, String permission) {
+        if (jwt == null || !"platform".equals(jwt.getClaimAsString("tenant_id"))) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "platform tenant required");
+        }
+        java.util.List<String> granted = jwt.getClaimAsStringList("permissions");
+        if (granted == null || !granted.contains(permission)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "missing permission " + permission);
+        }
+    }
+
     private static String subject(Jwt jwt) {
         String subject = jwt.getSubject();
         if (subject == null || subject.isBlank()) {

@@ -34,7 +34,11 @@ public record ClosureDeskState(
                 List.of(), List.of(), List.of(), 0);
     }
 
-    public record CaseRow(String id, String owner, String sourceRef, String title, String updatedAt) {
+    public record CaseRow(String id, String owner, String sourceRef, String title, String updatedAt,
+            String status, String disposition) {
+        public CaseRow(String id, String owner, String sourceRef, String title, String updatedAt) {
+            this(id, owner, sourceRef, title, updatedAt, "FILED", "NOT_STARTED");
+        }
     }
 
     public record TraceRow(String id, String owner, String bodyHash) {

@@ -1,12 +1,19 @@
 <script setup lang="ts">
-import { onMounted, watch } from 'vue'
+import { onMounted, ref, watch } from 'vue'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import { useRouter } from 'vue-router'
 import { loginReturn, permissionPage } from '../domain/content-release'
 import type { B8PolicyRule } from '@englishflow/contracts'
 import AdminPageIntro from '../components/AdminPageIntro.vue'
 import { adminI18n } from '../platform/v2-foundation'
 import { b8PolicyT } from '../platform/b8-policy-i18n'
+import {
+  submitB8PolicyVersion,
+  approveB8PolicyVersion,
+  activateB8PolicyVersion,
+} from '../api/b8-policy'
 import { useB8PolicyStore } from '../stores/b8-policy'
+import type { B8PolicyVersion } from '@englishflow/contracts'
 import { useAdminStore } from '../stores/admin'
 import { adminPages } from '../platform/experience'
 
@@ -45,6 +52,75 @@ function conditionText(rule: B8PolicyRule): string {
   return parts.join(' · ') || '—'
 }
 
+
+const actionBusy = ref(false)
+const actionNotice = ref('')
+
+function canSubmit(): boolean { return session.can('iam.policy.submit') }
+function canApprove(): boolean { return session.can('iam.policy.approve') }
+function canActivate(): boolean { return session.can('iam.policy.activate') }
+
+function actionsFor(policy: B8PolicyVersion): Array<{ key: string; label: string; disabled: boolean; reason: string }> {
+  const out: Array<{ key: string; label: string; disabled: boolean; reason: string }> = []
+  if (policy.status === 'DRAFT') {
+    out.push({
+      key: 'submit',
+      label: '送审',
+      disabled: !canSubmit(),
+      reason: canSubmit() ? '' : '当前会话没有 iam.policy.submit 权限，不能送审。',
+    })
+  }
+  if (policy.status === 'SUBMITTED') {
+    out.push({
+      key: 'approve',
+      label: '审批',
+      disabled: !canApprove(),
+      reason: canApprove() ? '' : '当前会话没有 iam.policy.approve 权限，不能审批。',
+    })
+  }
+  if (policy.status === 'APPROVED') {
+    out.push({
+      key: 'activate',
+      label: '激活',
+      disabled: !canActivate(),
+      reason: canActivate() ? '' : '当前会话没有 iam.policy.activate 权限，不能激活。',
+    })
+  }
+  return out
+}
+
+async function runPolicyAction(policy: B8PolicyVersion, key: string): Promise<void> {
+  if (actionBusy.value) return
+  const reasonPrompt =
+    key === 'submit' ? '请填写送审说明' : key === 'approve' ? '请填写审批说明' : '请填写激活说明'
+  try {
+    const { value } = await ElMessageBox.prompt(reasonPrompt, '权限变更', {
+      confirmButtonText: '确认',
+      cancelButtonText: '取消',
+      inputPattern: /\S+/,
+      inputErrorMessage: '说明不能为空',
+    })
+    actionBusy.value = true
+    actionNotice.value = ''
+    if (key === 'submit') {
+      await submitB8PolicyVersion(policy.policyVersionId, policy.revision, String(value))
+    } else if (key === 'approve') {
+      await approveB8PolicyVersion(policy.policyVersionId, policy.revision, String(value))
+    } else if (key === 'activate') {
+      await activateB8PolicyVersion(policy.policyVersionId, policy.revision, String(value))
+    }
+    ElMessage.success('已提交')
+    await store.load()
+  } catch (error) {
+    if (error === 'cancel') return
+    const message = error instanceof Error ? error.message : '操作失败'
+    actionNotice.value = message
+    ElMessage.error(message)
+  } finally {
+    actionBusy.value = false
+  }
+}
+
 onMounted(() => { void store.load() })
 watch(() => session.isAuthenticated, (authenticated) => {
   if (!authenticated) void router.replace({ name: 'admin-login', query: { redirect: '/permissions', reason: 'expired' } })
@@ -54,6 +130,8 @@ watch(() => session.isAuthenticated, (authenticated) => {
 <template>
   <div class="view-stack policy-page">
     <p data-permission-readonly>{{ permissionCopy.copy }}</p>
+    <p data-permission-write>{{ permissionCopy.writeCopy }}</p>
+    <el-alert v-if="actionNotice" :title="actionNotice" type="error" :closable="true" show-icon @close="actionNotice = ''" />
     <button type="button" data-permission-return @click="backToAllowed">回到有权页面</button>
     <AdminPageIntro>
       <el-button :loading="store.viewState === 'loading'" @click="store.load">
@@ -101,6 +179,26 @@ watch(() => session.isAuthenticated, (authenticated) => {
           <span>{{ b8PolicyT('rules') }} {{ policy.document.rules.length }}</span>
           <span>{{ b8PolicyT('review') }} {{ b8PolicyT(policy.separationOfDuties.satisfied ? 'approved' : 'pending') }}</span>
         </div>
+        <div v-if="actionsFor(policy).length" class="policy-actions" data-permission-write-actions>
+          <el-tooltip
+            v-for="action in actionsFor(policy)"
+            :key="action.key"
+            :disabled="!action.disabled"
+            :content="action.reason"
+            placement="top"
+          >
+            <span>
+              <el-button
+                type="primary"
+                plain
+                size="small"
+                :disabled="action.disabled || actionBusy"
+                :loading="actionBusy"
+                @click="runPolicyAction(policy, action.key)"
+              >{{ action.label }}</el-button>
+            </span>
+          </el-tooltip>
+        </div>
         <el-collapse class="policy-details">
           <el-collapse-item :name="policy.policyVersionId" :title="b8PolicyT('details')">
             <section class="policy-detail-section">
@@ -147,6 +245,7 @@ watch(() => session.isAuthenticated, (authenticated) => {
 .policy-detail-section h3 { font-size: 14px; margin: 0 0 8px; }
 .policy-detail-row { display: grid; gap: 5px; padding: 10px 0; border-top: 1px solid var(--admin-line); font-size: 13px; overflow-wrap: anywhere; }
 .policy-load-more { display: flex; justify-content: center; }
+.policy-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
 .policy-page :deep(.mobile-table-hint) { display: none; }
 @media (max-width: 600px) { .policy-heading { align-items: flex-start; } }
 </style>
