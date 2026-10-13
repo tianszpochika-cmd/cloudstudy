@@ -12,6 +12,15 @@ const session = useAdminStore();
 const store = useB12AdminStore();
 const risk = useRiskAdminStore();
 
+const caseQuery = ref("");
+const caseStatus = ref("");
+const casePage = ref(1);
+const CASE_PAGE_SIZE = 10;
+const caseStatuses = computed(() => [...new Set(risk.cases.map((c) => c.status))]);
+const filteredCases = computed(() => { const q = caseQuery.value.trim().toLowerCase(); return risk.cases.filter((c) => (!caseStatus.value || c.status === caseStatus.value) && (!q || `${c.caseId} ${c.title} ${c.category}`.toLowerCase().includes(q))); });
+const pagedCases = computed(() => filteredCases.value.slice((casePage.value - 1) * CASE_PAGE_SIZE, casePage.value * CASE_PAGE_SIZE));
+watch([caseQuery, caseStatus], () => { casePage.value = 1; });
+
 const closure = ref<ClosureBoard | null>(null);
 const closureNotice = ref("");
 const dispositionWritesOpen = computed(() => closure.value?.dispositionOpen === true);
@@ -200,15 +209,21 @@ watch(
           </div>
         </div>
       </template>
+      <div v-if="risk.viewState === 'ready'" class="risk-toolbar">
+        <el-input v-model="caseQuery" clearable placeholder="搜索案件编号、标题或类别" class="risk-toolbar__search" />
+        <el-select v-model="caseStatus" clearable placeholder="全部状态" class="risk-toolbar__status"><el-option v-for="s in caseStatuses" :key="s" :label="s" :value="s" /></el-select>
+        <span class="risk-toolbar__count">共 {{ filteredCases.length }} 条</span>
+      </div>
       <el-alert v-if="risk.viewState === 'permission'" title="当前账号没有风险案件读取权限。" type="warning" :closable="false" show-icon />
       <el-alert v-else-if="risk.viewState === 'error'" :title="risk.lastError ?? '风险队列读取失败。'" type="error" :closable="false" show-icon />
       <el-alert v-else-if="risk.viewState === 'loading'" title="风险队列读取中。" type="info" :closable="false" show-icon />
       <el-empty v-else-if="risk.viewState === 'empty'" description="暂无风险案件：队列诚实为空。" />
-      <el-table v-else-if="risk.viewState === 'ready'" :data="risk.cases" stripe style="width: 100%">
+      <el-table v-else-if="risk.viewState === 'ready'" :data="pagedCases" stripe style="width: 100%">
         <el-table-column prop="caseId" label="案件" min-width="200" />
         <el-table-column prop="category" label="类别" min-width="130" />
         <el-table-column prop="severity" label="严重度" min-width="90" />
         <el-table-column prop="status" label="状态" min-width="110" />
+        <el-table-column label="负责人" min-width="120"><template #default="scope">{{ scope.row.assigneeNote ?? "未分配" }}</template></el-table-column>
         <el-table-column prop="source" label="来源" min-width="120" />
         <el-table-column prop="title" label="标题" min-width="200" />
         <el-table-column v-if="dispositionWritesOpen" label="处置" min-width="300">
@@ -223,6 +238,7 @@ watch(
           </template>
         </el-table-column>
       </el-table>
+      <el-pagination v-if="risk.viewState === 'ready' && filteredCases.length > CASE_PAGE_SIZE" v-model:current-page="casePage" :page-size="CASE_PAGE_SIZE" :total="filteredCases.length" layout="total, prev, pager, next" class="risk-pagination" />
       <el-alert v-if="dispositionRefusal" :title="dispositionRefusal" type="warning" :closable="false" show-icon class="risk-notice" data-disposition-refusal="true" />
       <el-alert v-if="risk.lastNotice" :title="risk.lastNotice" type="success" :closable="false" show-icon class="risk-notice" />
       <el-alert v-if="risk.lastError && risk.viewState !== 'error'" :title="risk.lastError" type="error" :closable="false" show-icon class="risk-notice" />

@@ -73,10 +73,11 @@ onMounted(() => {
 
 <template>
   <div class="view-stack">
+    <div class="phonetics-page">
     <AdminPageIntro></AdminPageIntro>
 
     <el-card shadow="never">
-      <el-space wrap>
+      <el-space wrap class="phonetics-toolbar">
         <el-select
           v-model="language"
           placeholder="语言"
@@ -112,7 +113,8 @@ onMounted(() => {
       show-icon
     />
 
-    <el-card shadow="never">
+    <el-card shadow="never" class="phonetics-list">
+      <template #header><div class="card-header"><span>音素</span><el-tag>{{ phonemes.length }} 条</el-tag></div></template>
       <el-skeleton v-if="state === 'loading'" :rows="5" animated /><el-table
         v-else-if="phonemes.length && state === 'ready'"
         :data="phonemes"
@@ -137,15 +139,16 @@ onMounted(() => {
       /><el-button v-else @click="load()">{{ ui("retry") }}</el-button>
     </el-card>
 
-    <el-card v-if="pairs.length" shadow="never">
+    <el-card v-if="pairs.length" shadow="never" class="phonetics-pairs">
       <template #header
         ><span>最小对立对（{{ pairs.length }}）</span></template
       >
-      <el-space wrap>
+      <el-space wrap class="phonetics-pair-grid">
         <el-tag v-for="pair in pairs" :key="String(pair.pairId)" effect="plain">
           {{ String(pair.leftWord ?? "") }} ↔ {{ String(pair.rightWord ?? "") }}
         </el-tag>
       </el-space>
     </el-card>
+    </div>
   </div>
 </template>

@@ -5,6 +5,8 @@ import { router } from "./router";
 import { pinia } from "./stores/admin";
 import App from "./App.vue";
 import "./styles.css";
+import "./styles/v2-tokens.css";
+import "./styles/v2-console.css";
 import "./platform/motion";
 import {
   adminI18nAdapter,

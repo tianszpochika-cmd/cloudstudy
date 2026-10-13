@@ -192,6 +192,7 @@ onMounted(() => {
 
 <template>
   <div class="view-stack b13-ops">
+    <div class="commerce-page">
     <AdminPageIntro
       ><el-button :loading="loading" @click="load"
         >刷新</el-button
@@ -242,10 +243,10 @@ onMounted(() => {
       >
     </el-row>
 
-    <el-card shadow="never">
+    <el-card shadow="never" class="commerce-orders">
       <template #header
         ><div class="card-header">
-          <span>订单记录</span><el-tag type="info">已脱敏</el-tag>
+          <span>订单记录</span><el-tag type="info">已脱敏</el-tag><el-tag class="commerce-count-pill">{{ orders.length }} 条</el-tag>
         </div></template
       >
       <div class="list-toolbar">
@@ -307,7 +308,7 @@ onMounted(() => {
       </div>
     </el-card>
 
-    <el-card v-if="canRefund" shadow="never">
+    <el-card v-if="canRefund" shadow="never" class="commerce-refunds">
       <template #header
         ><div class="card-header">
           <span>退款操作</span><el-tag type="danger">二次确认</el-tag>
@@ -346,7 +347,7 @@ onMounted(() => {
         >
       </div>
       <div v-if="refundChallenge" class="b13-refund-challenge" role="status">
-        <span
+        <span class="detail-row"
           >待确认退款：{{ refundChallenge.resourceRef }} · 决策
           {{ refundChallenge.decisionId || "服务端已受理" }}</span
         >
@@ -438,6 +439,7 @@ onMounted(() => {
         </el-card>
       </el-col>
     </el-row>
+    </div>
   </div>
 </template>
 

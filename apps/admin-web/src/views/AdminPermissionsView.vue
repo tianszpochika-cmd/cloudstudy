@@ -75,7 +75,10 @@ watch(() => session.isAuthenticated, (authenticated) => {
       <el-empty :description="b8PolicyT('empty')" />
     </el-card>
     <template v-else-if="store.viewState === 'ready'">
+      <div class="policy-list-head"><div class="card-header"><span>策略版本</span><el-tag>{{ store.items.length }} 条</el-tag></div></div>
+      <div class="list-toolbar">
       <p class="policy-note">{{ b8PolicyT('note') }}</p>
+      </div>
       <el-card
         v-for="policy in store.items" :key="policy.policyVersionId"
         shadow="never" class="policy-card"

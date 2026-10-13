@@ -75,6 +75,11 @@ onMounted(() => {
         ><strong>{{ ui("dashboard.connected") }}</strong
         ><small>{{ ui("currentAccess") }}</small></el-card
       >
+      <el-card class="metric-card"
+        ><span>数据更新</span
+        ><strong>{{ updated || "—" }}</strong
+        ><small>运营指标最近一次加载时间</small></el-card
+      >
     </div>
     <div class="dashboard-columns">
       <el-card
@@ -104,6 +109,12 @@ onMounted(() => {
         </div>
         <el-empty v-if="!shortcuts.length" :description="ui('empty')"
       /></el-card>
+      <div class="dashboard-side">
+        <el-card v-if="session.roles.length" class="dashboard-team"
+          ><template #header>团队协作</template>
+          <p>当前身份：{{ session.roles.join("、") }}</p>
+          <RouterLink v-if="session.can('iam.policy.read')" class="dashboard-team__link" to="/permissions">查看身份与权限</RouterLink></el-card
+        >
       <el-card class="dashboard-journey"
         ><template #header>{{ ui("dashboard.journey") }}</template>
         <div
@@ -116,6 +127,7 @@ onMounted(() => {
         </div>
         <p class="muted">{{ ui("dashboard.journeyHint") }}</p></el-card
       >
+      </div>
     </div>
     <el-card
       ><template #header

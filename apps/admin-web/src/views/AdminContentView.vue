@@ -562,6 +562,7 @@ onMounted(() => {
                 :placeholder="ui('filter')"
                 :aria-label="ui('filter')"
               />
+              <span class="list-toolbar__hint">共 {{ contents.length }} 条 · 当前筛选 {{ filteredContents.length }} 条</span>
             </div>
             <el-empty
               v-if="!filteredContents.length && (viewState === 'ready' || viewState === 'empty')"

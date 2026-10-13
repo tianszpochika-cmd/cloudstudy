@@ -102,6 +102,7 @@ onMounted(() => {
 
 <template>
   <div class="view-stack">
+    <div class="b6release-page">
     <AdminPageIntro
       ><el-button :loading="loading" @click="load"
         >刷新</el-button
@@ -138,13 +139,14 @@ onMounted(() => {
         ></el-col
       ></el-row
     >
-    <el-card shadow="never"
+    <el-card shadow="never" class="b6release-list"
       ><template #header
         ><div class="card-header">
           <span>平台构建矩阵</span
           ><el-tag type="info" effect="plain">{{
             evidenceStatus(matrix.realDeviceEvidenceStatus)
           }}</el-tag>
+          <el-tag class="b6release-count-pill">{{ matrix.targets.length }} 条</el-tag>
         </div></template
       ><el-table :data="matrix.targets" empty-text="暂无平台记录" stripe
         ><el-table-column
@@ -174,7 +176,7 @@ onMounted(() => {
     ></el-card>
     <el-row :gutter="16"
       ><el-col :span="12"
-        ><el-card shadow="never"
+        ><el-card shadow="never" class="b6release-alerts"
           ><template #header
             ><div class="card-header">
               <span>质量告警</span
@@ -194,7 +196,7 @@ onMounted(() => {
               prop="errorCode"
               label="错误码" /></el-table></el-card></el-col
       ><el-col :span="12"
-        ><el-card shadow="never"
+        ><el-card shadow="never" class="b6release-state"
           ><template #header><span>运行关联字段</span></template>
           <div class="b6-admin-chip-list">
             <el-tag
@@ -211,5 +213,6 @@ onMounted(() => {
         ></el-col
       ></el-row
     >
+    </div>
   </div>
 </template>

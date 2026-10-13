@@ -299,8 +299,9 @@ function dueItems(): Row[] {
   <div class="view-stack">
     <AdminPageIntro></AdminPageIntro>
 
-    <el-card shadow="never">
-      <el-space>
+    <el-card shadow="never" class="learner-directory">
+      <template #header><div class="card-header"><span>学员目录</span><span v-if="subjects.length" class="learner-directory__count">已载入 {{ subjects.length }} 位</span></div></template>
+      <el-space class="learner-toolbar">
         <el-input
           v-model="q"
           placeholder="按学员标识检索"
@@ -356,7 +357,7 @@ function dueItems(): Row[] {
       show-icon
     />
 
-    <el-card v-if="state === 'ready'" shadow="never">
+    <el-card v-if="state === 'ready'" shadow="never" class="learner-profile">
       <template #header
         ><span>学员 {{ current }}</span></template
       >
