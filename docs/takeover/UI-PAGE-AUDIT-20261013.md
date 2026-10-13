@@ -1,7 +1,7 @@
 # V2 UI 逐页审查索引 — 2026-10-13
 
 > 分支：`dev-redesign`。本轮拉取后的源码观察基线：`4990dd29`；R1 原有签收基线：`7a6ac0a2`。时间口径：Asia/Shanghai。
-> 用户已明确改为全部正式页面简约重设计。LW-001/LW-002/LW-003分别推送`182e106b`/`60858fbc`/`5cd40e35`且远程SHA一致。2026-10-14额度已恢复后续做，MB-001已完成具名H5复验及独立复审，待推送收据；其余PENDING。见[续做交接](ui-audit-20261013/PAUSE-HANDOFF.md)。旧70c2623f仅为前轮缺陷修复。
+> 用户已明确改为全部正式页面简约重设计。LW-001/LW-002/LW-003分别推送`182e106b`/`60858fbc`/`5cd40e35`且远程SHA一致。2026-10-14额度已恢复后续做，MB-001推送`c6208c0a`且远程SHA一致；MB-002在审，其余PENDING。见[续做交接](ui-audit-20261013/PAUSE-HANDOFF.md)。旧70c2623f仅为前轮缺陷修复。
 
 ## 1. 进度与证据边界
 
@@ -130,8 +130,8 @@
 
 | 审查编号 | 真实路由 | 页面源文件 | 本页需展开的场景 | 当前状态 | 证据 / 提交 / 远程收据 |
 |---|---|---|---|---|---|
-| MB-001 | `#/pages/login/login` | [apps/mobile/src/pages/login/login.vue](../../apps/mobile/src/pages/login/login.vue) | 登录 | UI_VERIFIED | [新复验](ui-audit-20261013/mobile-login/20261014-run1/results.json)、[独立复审](ui-audit-20261013/mobile-login/independent-review.md)；原生语义与真实字段间距已修；待推送收据。旧失败原件保留 |
-| MB-002 | `#/pages/register/register` | [apps/mobile/src/pages/register/register.vue](../../apps/mobile/src/pages/register/register.vue) | 注册 | PENDING | — |
+| MB-001 | `#/pages/login/login` | [apps/mobile/src/pages/login/login.vue](../../apps/mobile/src/pages/login/login.vue) | 登录 | PUSHED_SCOPED | [报告](ui-audit-20261013/mobile-login/report.md)、[独立复审](ui-audit-20261013/mobile-login/independent-review.md)；c6208c0a远程SHA一致；旧失败原件保留 |
+| MB-002 | `#/pages/register/register` | [apps/mobile/src/pages/register/register.vue](../../apps/mobile/src/pages/register/register.vue) | 注册 | IN_REVIEW | 正式页面全面重排；原生输入/确认错误/焦点/busy与返回专项 |
 | MB-003 | `#/pages/reset-password/reset-password` | [apps/mobile/src/pages/reset-password/reset-password.vue](../../apps/mobile/src/pages/reset-password/reset-password.vue) | 请求/确认两步、完成态 | PENDING | — |
 | MB-004 | `#/pages/onboarding/onboarding` | [apps/mobile/src/pages/onboarding/onboarding.vue](../../apps/mobile/src/pages/onboarding/onboarding.vue) | 成人门、同意、目标、定级四幕 | PENDING | — |
 | MB-005 | `#/pages/forbidden/forbidden` | [apps/mobile/src/pages/forbidden/forbidden.vue](../../apps/mobile/src/pages/forbidden/forbidden.vue) | 限制说明、退出与可用出口 | PENDING | — |

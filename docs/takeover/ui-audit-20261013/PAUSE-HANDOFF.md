@@ -4,7 +4,9 @@
 
 本轮heartbeat先实读Plus额度已恢复（5小时已用0%，未使用重置券），再接续已有Mobile登录差量。拉取远程后HEAD与origin/dev-redesign均为`a873ed92`，没有新提交。保留原未提交工作；56个既有文件的记录哈希均无漂移。
 
-MB-001原生ARIA失败已定位为uni子插槽更新不触发页面onUpdated；显式语义watch与nextTick桥接已修。根Agent另实测发现uni-form内部span导致旧grid gap失效，已增真实字段容器并复验24px间距。新H5验收与独立复审通过，详见[新结果](mobile-login/20261014-run1/results.json)和[独立复审](mobile-login/independent-review.md)，待推送收据。随后接续MB-002正式注册重排。下文是上一周期暂停的历史断点，原失败原件保留。
+MB-001原生ARIA失败已定位为uni子插槽更新不触发页面onUpdated；显式语义watch与nextTick桥接已修。根Agent另实测发现uni-form内部span导致旧grid gap失效，已增真实字段容器并复验24px间距。新H5验收与独立复审通过，详见[新结果](mobile-login/20261014-run1/results.json)和[独立复审](mobile-login/independent-review.md)，推送`c6208c0a00a4e6ea80b4479f8e20ab6bea4aa389`且远程SHA一致。随后接续MB-002正式注册重排。下文是上一周期暂停的历史断点，原失败原件保留。
+
+## 上一周期暂停原记录
 
 2026-10-13北京时间23:51。任务未完成；因用户指定的Plus五小时额度保护暂停。工具实读`usedPercent=90`、剩余10%，`resetsAt=1791919005`，即2026-10-14 03:16:45 +08:00。续做heartbeat ID `ui` 已调整到北京时间03:18；届时必须再查实际额度，未恢复不开展工作，不使用重置券。
 
