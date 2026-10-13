@@ -5,6 +5,7 @@ import com.englishflow.adminops.adapter.memory.InMemoryDomainCommandPort;
 import com.englishflow.adminops.adapter.memory.InMemoryIdempotencyLedger;
 import com.englishflow.adminops.adapter.memory.InMemoryMediaObjectAuthorization;
 import com.englishflow.adminops.adapter.memory.InMemorySupportTicketStore;
+import com.englishflow.adminops.domain.AdminOpsException;
 import com.englishflow.adminops.domain.AdminPermission;
 import com.englishflow.adminops.domain.AdminPrincipal;
 import com.englishflow.adminops.domain.ConfirmationService;
@@ -64,6 +65,28 @@ class SupportVerifiedContentWorkflowTest {
         SupportTicketResult resolved = service.transition(staff(), created.ticket().ticketId(),
                 SupportAction.RESOLVE, "support-verified-key-0003", challenge.token(), "trace-3");
         assertThat(resolved.ticket().state()).isEqualTo(TicketState.RESOLVED);
+    }
+
+    @Test
+    void transitionAndPrepareWithoutManagePermissionAreForbidden() {
+        MediaObjectRef ref = attachment();
+        media.grant("platform", "support-1", ref);
+        SupportTicketDraft draft = new SupportTicketDraft(TicketCategory.TECHNICAL, "lesson-1",
+                "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                TicketPriority.NORMAL, List.of(ref));
+        SupportTicketResult created = service.create(staff(), draft, "support-manage-403-key-0001", "trace-1");
+        String ticketId = created.ticket().ticketId();
+        AdminPrincipal reader = AdminPrincipal.user("support-reader", "platform",
+                AdminPermission.SUPPORT_TICKET_CREATE, AdminPermission.SUPPORT_TICKET_READ);
+        org.assertj.core.api.Assertions.assertThatThrownBy(
+                        () -> service.prepareTransition(reader, ticketId, SupportAction.RESOLVE))
+                .isInstanceOfSatisfying(AdminOpsException.class,
+                        error -> org.assertj.core.api.Assertions.assertThat(error.status()).isEqualTo(403));
+        org.assertj.core.api.Assertions.assertThatThrownBy(
+                        () -> service.transition(reader, ticketId, SupportAction.START,
+                                "support-manage-403-key-0002", null, "trace-2"))
+                .isInstanceOfSatisfying(AdminOpsException.class,
+                        error -> org.assertj.core.api.Assertions.assertThat(error.status()).isEqualTo(403));
     }
 
     @Test

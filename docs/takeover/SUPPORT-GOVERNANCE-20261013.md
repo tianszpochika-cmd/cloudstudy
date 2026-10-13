@@ -51,7 +51,7 @@
     - nginx（`infra/docker/clyunedev/nginx-host.conf`、`nginx-host-clyune.conf`）：`api.clyunedev.com` / `api.clyune.com` 只 `proxy_pass http://127.0.0.1:18070`（网关），并把 `/actuator*` 直接 404；没有任何 `location` 直连 workflow（18071）或 admin-ops（18097），`internal/v1` 字样只出现在注释与 404 规则之外——结论：nginx 层没有暴露内部接口。
     - 网关（`GatewayRouteExecutionPolicy` + `CanonicalRoutePolicyWebFilter`）：公网路径只有 `/api/v1/...`；任何 `/internal/...` 或 `/api/v1/internal/...` 在路由前被 `isExternalInternal` 直接 404（`CanonicalRoutePolicyWebFilterTest.rejectsExternalInternalAliasesBeforeTheRemainingChain` 覆盖）；`admin-recovery` 规则只把公网 `/api/v1/admin/recovery/...` 重写到内部目标，**没有**把 `/internal/v1/workflow/...` 或 `.../recovery-reopen` 原样对外开放的 projection——结论：网关层没有暴露内部路径（外部打 `/internal/...` 得到 404）。
     - 容器（`docker-compose.core/full.yml`）：只有网关映射宿主端口（`127.0.0.1:18070`）；admin-ops / workflow 无 `ports:`，只在 `clyunedev` 私有网络内被网关经 `http://admin-ops-service:18097` / `http://workflow-service:18071` 调用——结论：容器层没有把内部端口暴露到宿主。
-- **P3-2**：工单操作按钮只对 `support.ticket.manage` 显示。
+- **P3-2**：工单操作按钮只对 `support.ticket.manage` 显示（`AdminSupportView.availableActions` 无该权限直接返回空数组，`act()` 再按同一权限拦截并提示中文原因；后端 `transition` / `prepareTransition` / `recoveryReopen` 同样以 `SUPPORT_TICKET_MANAGE` 强制，缺权限 403）。执行人可以是申请人：双人控制发生在审批环节（批准人 ≠ 申请人，`ManualRecoveryRequest.approve/reject` 强制），执行只是把已批准的决定落地，并在收据里同时记录申请人、批准人、执行人。
 
 ## 已知缺口：工单流转未经网关开放
 
