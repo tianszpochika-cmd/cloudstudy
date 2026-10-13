@@ -70,9 +70,10 @@ onMounted(() => {
 </script>
 
 <template>
-  <main class="page-stack">
+  <main class="page-stack v2-page v2-page--support">
     <ExperienceHeader page="Support" icon="help" />
-    <section class="info-card it7-closure" aria-label="客服提交状态">
+    <div class="v2-support-body"><div class="v2-support-main">
+    <section class="info-card it7-closure v2-support-card" aria-label="客服提交状态">
       <div class="yx-section-heading"><div><h3>提交问题</h3></div></div>
       <p>{{ ticketNotice(closure) }}</p>
       <p v-if="supportNotice(closure)">{{ supportNotice(closure) }}</p>
@@ -86,7 +87,7 @@ onMounted(() => {
       @action="load"
     />
     <template v-if="state === 'ready' || state === 'empty' || tickets.length">
-      <section class="info-card" aria-label="我的工单">
+      <section class="info-card v2-support-card" aria-label="我的工单">
         <div class="yx-section-heading"><div><h3>我的工单</h3></div><span class="yx-fact-tag">{{ tickets.length }} 张</span></div>
         <p v-if="!tickets.length" class="yx-fact-tag">暂无可见工单。</p>
         <ul v-else class="yx-ticket-list">
@@ -99,7 +100,7 @@ onMounted(() => {
           </li>
         </ul>
       </section>
-      <section v-if="selected" class="info-card" aria-label="工单详情">
+      <section v-if="selected" class="info-card v2-support-card" aria-label="工单详情">
         <div class="yx-section-heading"><div><h3>工单详情</h3></div></div>
         <dl class="yx-stats yx-stats--kv">
           <div><dt>引用</dt><dd>{{ selected.ticketId }}</dd></div>
@@ -109,10 +110,11 @@ onMounted(() => {
         </dl>
         <p v-if="selected.state === 'RESOLVED' || selected.state === 'CLOSED'">确认与重开暂不可用。</p>
       </section>
-      <div class="actions">
+      <div class="actions v2-support-actions">
         <button class="button" type="button" @click="load">刷新</button>
       </div>
     </template>
+    </div><aside class="v2-support-rail" aria-label="工单提示"><h2>工单提示</h2><ol><li>提交状态与支持编号可在本页查看。</li><li>打开工单可查看分类、状态与预计处理时间。</li><li>列表打不开可点刷新重试。</li></ol></aside></div>
   </main>
 </template>
 
