@@ -39,6 +39,7 @@ DELETE FROM social_service.soc_report WHERE report_id LIKE 'seed-20261013-%';
 DELETE FROM social_service.soc_study_room WHERE room_id LIKE 'seed20261013-%';
 DELETE FROM social_service.soc_leaderboard_projection WHERE source_watermark = 'SEED-20261013';
 -- commerce
+DELETE FROM admin_ops_service.admin_projection WHERE domain_name = 'COMMERCE' AND JSON_UNQUOTE(JSON_EXTRACT(redacted_payload, '$.seedTag')) = 'SEED-20261013';
 DELETE FROM commerce_service.commerce_entitlement WHERE entitlement_id LIKE 'seed-20261013-%' OR sku_id LIKE 'seed-20261013-%';
 DELETE FROM commerce_service.commerce_payment_attempt WHERE order_id IN (SELECT order_id FROM commerce_service.commerce_order WHERE sku_id LIKE 'seed-20261013-%');
 DELETE FROM commerce_service.commerce_order WHERE sku_id LIKE 'seed-20261013-%';
