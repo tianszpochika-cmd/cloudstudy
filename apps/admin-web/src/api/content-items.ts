@@ -8,7 +8,9 @@ import { readReviewTrail, toContentCommandError, type ReviewTrailView } from '..
  * Reuses the executable Gateway content-commands channel; no new paths.
  */
 
-export type ItemKind = 'QUESTION' | 'EXAMPLE' | 'GRAMMAR_POINT' | 'PASSAGE' | 'EXERCISE' | 'DICTATION' | 'SHADOWING'
+export type ItemKind =
+  | 'QUESTION' | 'EXAMPLE' | 'GRAMMAR_POINT' | 'PASSAGE' | 'EXERCISE' | 'DICTATION' | 'SHADOWING'
+  | 'PHONEME' | 'MINIMAL_PAIR'
 export type ItemAvailability = 'DRAFT' | 'IN_REVIEW' | 'APPROVED' | 'PUBLISHED' | 'ARCHIVED'
 
 export interface ContentItemRow {
@@ -23,6 +25,8 @@ export interface ContentItemRow {
   licenseCode: string | null
   createdBy: string
   updatedBy: string | null
+  /** Set once the first review passed; the next review step is then FINAL. */
+  firstReviewer: string | null
   reviewTrail: ReviewTrailView
 }
 
@@ -74,6 +78,7 @@ function asItemRow(item: Row): ContentItemRow | null {
     licenseCode: typeof record.licenseCode === 'string' ? record.licenseCode : null,
     createdBy: text(record.createdBy),
     updatedBy: typeof record.updatedBy === 'string' ? record.updatedBy : null,
+    firstReviewer: typeof record.firstReviewer === 'string' ? record.firstReviewer : null,
     reviewTrail: readReviewTrail(record.reviewTrail),
   }
 }
@@ -98,6 +103,8 @@ async function sendCommand(body: Row): Promise<Row> {
 }
 
 export async function listItems(input: {
+  /** Defaults server-side to VOCAB-PHASE1; phonetics rows live in PHONETICS / PHONETICS-{LANG}. */
+  packCode?: string
   kind?: string
   q?: string
   availability?: string
@@ -105,6 +112,7 @@ export async function listItems(input: {
   limit?: number
 }): Promise<{ rows: ContentItemRow[]; nextCursor: string | null }> {
   const params = new URLSearchParams({ kind: 'ITEM', pageSize: String(input.limit ?? 50) })
+  if (input.packCode) params.set('packCode', input.packCode)
   if (input.kind) params.set('itemKind', input.kind)
   if (input.q?.trim()) params.set('q', input.q.trim())
   if (input.availability) params.set('availability', input.availability)
@@ -169,12 +177,31 @@ export interface BatchEntry {
   itemId?: string
 }
 
-export async function importBatch(entries: BatchEntry[]): Promise<Row> {
+export interface BatchOptions {
+  /** Precheck only: validate every entry, write nothing. */
+  dryRun?: boolean
+  /** Stable key for the apply step so re-submitting the same batch replays instead of duplicating. */
+  batchKey?: string
+}
+
+/** Deterministic batch key: same entries → same key → server replays the original receipts. */
+export async function batchKeyFor(entries: BatchEntry[]): Promise<string> {
+  const bytes = new TextEncoder().encode(JSON.stringify(entries))
+  const digest = await globalThis.crypto.subtle.digest('SHA-256', bytes)
+  const hex = Array.from(new Uint8Array(digest), (b) => b.toString(16).padStart(2, '0')).join('')
+  return `batch-${hex.slice(0, 48)}`
+}
+
+export async function importBatch(entries: BatchEntry[], options: BatchOptions = {}): Promise<Row> {
   try {
     const response = await adminClient.request('/admin/content-commands/import/batch', {
       method: 'POST',
-      body: { items: entries },
-      headers: { 'Idempotency-Key': idempotencyKey('batch') },
+      body: options.dryRun ? { items: entries, dryRun: true } : { items: entries },
+      headers: {
+        'Idempotency-Key': options.dryRun
+          ? idempotencyKey('batch-check')
+          : options.batchKey ?? idempotencyKey('batch'),
+      },
     })
     return isRecord(response) && isRecord(response.data) ? response.data : {}
   } catch (error) {

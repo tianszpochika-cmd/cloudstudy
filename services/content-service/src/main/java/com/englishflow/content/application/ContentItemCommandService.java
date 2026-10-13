@@ -65,6 +65,7 @@ public final class ContentItemCommandService {
             ContentRequestContext context) {
         requireEditor(actor);
         String kind = kindOf(input);
+        ContentItem.requirePackForKind(packCode, kind);
         String stem = text(input.get("stem"));
         Map<String, Object> fields = fieldsOf(input);
         Map<String, Object> validated = ContentItem.validatedFields(kind, fields);
@@ -206,6 +207,32 @@ public final class ContentItemCommandService {
     public ContentItem current(String packCode, String itemId, ContentActor actor) {
         requireRead(actor);
         return owned(packCode, itemId, actor);
+    }
+
+    /** Batch-import dry run: validates like upsert and finds an identical live row (same kind, stem and fields). */
+    public record ItemPrecheck(String kind, String stem, String contentKey, String duplicateItemId) {
+    }
+
+    public ItemPrecheck precheck(String packCode, Map<String, Object> input, ContentActor actor) {
+        requireEditor(actor);
+        if (packCode == null || packCode.isBlank()) {
+            throw ContentOperationException.badRequest("ITEM_FIELD_INVALID", "contentCode (pack) is required");
+        }
+        String kind = kindOf(input);
+        ContentItem.requirePackForKind(packCode.trim(), kind);
+        String stem = text(input.get("stem"));
+        Map<String, Object> validated = ContentItem.validatedFields(kind, fieldsOf(input));
+        String contentKey = ContentPayloadHash.sha256(Map.of("kind", kind, "stem", stem.trim(), "fields", validated));
+        String duplicate = items.search(packCode.trim(), kind, stem.isBlank() ? null : stem.trim(), null, 100, null)
+                .stream()
+                .filter(row -> row.availability() != ItemAvailability.ARCHIVED)
+                .filter(row -> row.stem().trim().equals(stem.trim()))
+                .filter(row -> ContentPayloadHash.sha256(Map.of("kind", row.kind(), "stem", row.stem().trim(),
+                        "fields", row.fields())).equals(contentKey))
+                .map(ContentItem::itemId)
+                .findFirst()
+                .orElse(null);
+        return new ItemPrecheck(kind, stem, contentKey, duplicate);
     }
 
     public java.util.List<ContentItem> search(String packCode, String kind, String query,

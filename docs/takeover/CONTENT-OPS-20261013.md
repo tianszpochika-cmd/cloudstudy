@@ -144,3 +144,35 @@ IN_REVIEW / ARCHIVED --编辑--> 409 *_STATE_INVALID
 同一提案还包括能力 2 加在 `lexeme` / `item` 记录里的 `reviewTrail`、`firstReviewer`、`finalReviewer`，
 以及命令错误码 `*_SELF_APPROVAL_DENIED`、`*_REJECT_REASON_REQUIRED`、`*_REVISION_LIVE`、`CONTENT_IN_REVIEW`、
 `CONTENT_REJECT_REASON_REQUIRED`。请求体没有新增字段（`reviewNote`、`expectedStateVersion` 契约里本来就有）。
+
+## 能力 5：批量导入 预检 → 错误清单 → 确认导入（批次幂等）
+
+后端（`B9ContentAdminController.importBatch`、`LexemeCommandService.precheck`、`ContentItemCommandService.precheck`）：
+- 请求体新增可选 `dryRun: true`：逐条按真实写入的同一套校验执行，**不写库**，返回 200，条目状态为 `READY`（action CREATE/UPDATE）、`SKIPPED`（reason + message）、`INVALID`（errorCode + message）；汇总 `ready / skipped / invalid`。
+- 去重：
+  - 批内：同词包同 headword（大小写不敏感）、同 contentCode、内容完全相同的题目（kind+stem+fields 的 SHA-256）→ `SKIPPED DUPLICATE_IN_BATCH`。
+  - 库内：词条已存在 → `LEXEME_EXISTS`；已有内容完全相同且未归档的题目 → `ITEM_EXISTS`（附 itemId）；内容编码已存在 → `CONTENT_EXISTS`。以前题目没有任何自然键去重，换一个 Idempotency-Key 重导就会重复建题，已修复。
+- 批次幂等：词条和题目也像内容包一样，每条结果都写入幂等回执（scope `content.b9.batch.entry`），存在性判断放在回执内部。用同一个批次 key 重放，返回第一次的 ACCEPTED 结果；换一个 key 重导，结果是 SKIPPED，不会新建。
+- FAILED / INVALID 条目新增 `message`。
+- 测试：`web/BatchImportPrecheckTest`（4 个），覆盖：预检不写库、批内重复、非法 kind、空 contentCode、同 key 重放、新 key 重导、内容不同不算重复、失败带 message。
+
+admin-web（`AdminItemView.vue`、`api/content-items.ts`）：
+- 批量对话框改为「预检」→ 错误清单表（行号 / 状态 / 代码 / 说明）→「确认导入」。只有预检过且文本未改动、至少有一条可导入时，确认按钮才可点。
+- 确认导入使用确定性的 Idempotency-Key（`batch-` 加条目 JSON 的 SHA-256），重复点击或重复提交同一批会走回执重放。
+
+契约提议（未改 packages/contracts）：在 import/batch 请求里增加 `dryRun: boolean`。响应增加 `dryRun / ready / invalid / checkedAt`；条目增加 `READY / INVALID` 状态以及 `message / reason / action` 字段。现有 schema 允许额外字段，运行时兼容。
+
+## 能力 6：音标库 读路径 + 维护（新建 / 编辑 / 审核 / 发布）
+
+- 迁移 **V33__phonetics_item_kinds.sql**：重建 `chk_content_item_kind`，在原有取值上加 `PHONEME`、`MINIMAL_PAIR`。只放宽、不动数据，做法同 V21。⚠️ 形式上是 DROP+ADD CHECK，请 Luna 确认。已在 MySQL 8.4 临时容器上跑完 Flyway 全量迁移（ContentFlywayMigrationTest、ReviewTrailJdbcRoundTripTest 均通过）。
+- 领域：`ContentItem` 新增 PHONEME 和 MINIMAL_PAIR 两种 kind。PHONEME 必须有 symbol（不超过 16 字）和 group（大写下划线）。MINIMAL_PAIR 必须有 leftWord 和 rightWord。kind 与词包双向绑定：这两种 kind 只能放在 `PHONETICS` / `PHONETICS-XX` 包里，这两个包也只收这两种 kind，违反时返回 400 `ITEM_KIND_PACK_MISMATCH`。音标条目沿用条目的完整生命周期：四眼原则、退回必填原因、乐观锁、发布后修订。
+- 读路径：`GET /admin/content-commands?kind=PHONETICS&language=fr-FR&itemKind=PHONEME|MINIMAL_PAIR`，走现有网关路由，不需要打开 `/api/v1/phonetics` 这条 withheld 路由。返回 `b3_content_experience` 中该语言的全部行（含 UNPUBLISHED），每行附 `learnerVisible` 和 `canonicalVersion`，判定规则与学员端 ELIGIBLE_CONTENT 一致，另附 `maintainedItem`。维护行用 `kind=ITEM&packCode=PHONETICS-FR` 列出。
+- 投影（`JdbcPhoneticsCatalog`，仅 jdbc 模式）：ITEM_PUBLISH 之后，把条目投影到 `b3_content_experience`（experience_id 为 `b3-phonetics-item-{itemId}`）。前提是该音标包在 content_definition 里有正式发布的版本（`current_published_version_id`），否则不投影，返回 `learnerProjection: PACK_NOT_PUBLISHED`，界面给出提示。不借用遗留占位版本 301，以免绕过版权和来源校验。下线或归档会把投影行置为 UNPUBLISHED（`WITHDRAWN`）。命令响应新增 `learnerProjection` 字段（契约提议）。
+- 测试：`application/PhoneticsMaintenanceTest`（3 个）：字段和包的负例；送审、自审拒绝、退回无原因拒绝、退回、过期版本 409、改稿、一审、二审、发布；投影在包未发布时不写入、包发布后可见、下线后不可见。
+- admin-web：
+  - `api/phonetics.ts` 不再走 unavailableOperation，改为真实读取。
+  - `AdminPhoneticsView.vue` 的音素表新增「学员可见」列，并新增「音标维护」卡片：新建、编辑或修订，送审，一审 / 二审通过或退回（作者本人置灰并有提示），发布，下线，审核意见列，修订中标签，409 自动重载。
+  - `ItemKind` 新增两种 kind，`listItems` 支持 packCode，行数据带 firstReviewer。
+- 已知缺口：
+  - 现有 48 个英文音素和 37 个法文音素是迁移写入的遗留行，没有对应的条目，所以不能在后台直接编辑，只能新建条目替代。是否回填为条目需要另行决定，本轮没有自动造数据。
+  - 维护后的音素要让学员看到，需要先给 PHONETICS / PHONETICS-FR 建立并正式发布一个内容包版本（走内容工作台）。

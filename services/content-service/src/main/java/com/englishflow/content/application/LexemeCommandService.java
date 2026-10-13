@@ -361,6 +361,26 @@ public final class LexemeCommandService {
                 });
     }
 
+    /** Batch-import dry run: validates exactly like upsert and reports an existing row, writing nothing. */
+    public record LexemePrecheck(String headword, String language, String existingLexemeId,
+            LexemeAvailability existingAvailability) {
+    }
+
+    public LexemePrecheck precheck(String packCode, Map<String, Object> fields, ContentActor actor) {
+        requireEditor(actor);
+        if (packCode == null || packCode.isBlank()) {
+            throw ContentOperationException.badRequest("LEXEME_FIELD_INVALID", "contentCode (vocabulary pack) is required");
+        }
+        String language = Lexeme.requireLanguage(text(fields == null ? null : fields.get("language")));
+        Map<String, Object> validated = Lexeme.validatedFields(fields == null ? Map.of() : fields, language);
+        String headword = headwordOf(validated);
+        cefrOf(validated);
+        Lexeme existing = lexemes.findByPackHeadword(packCode.trim(), headword).orElse(null);
+        return new LexemePrecheck(headword, language,
+                existing == null ? null : existing.lexemeId(),
+                existing == null ? null : existing.availability());
+    }
+
     public List<Lexeme> search(String packCode, String query, String cefr, LexemeAvailability availability,
             String language, int limit, String afterLexemeId, ContentActor actor) {
         requireRead(actor);

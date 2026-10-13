@@ -37,6 +37,7 @@ const EXPLAIN: Array<[RegExp, string]> = [
   [/_REVIEW_DUPLICATE$/, '一审已经完成，不能重复审核。'],
   [/_REVISION_LIVE$/, '这是线上内容的修订稿，学员仍能看到旧版。请先下线旧版再归档。'],
   [/^LEXEME_DUPLICATE$/, '同一词包里已经有这个单词，请在列表里打开它编辑。'],
+  [/^ITEM_KIND_PACK_MISMATCH$/, '音素和最小对立对只能放在音标库（PHONETICS）里，音标库也只接受这两类条目。'],
   [/_STATE_INVALID$/, '当前状态不允许这个操作（例如审核中的内容不能编辑），请刷新后再试。'],
 ]
 

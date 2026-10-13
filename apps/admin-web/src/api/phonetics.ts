@@ -1,12 +1,12 @@
-import { unavailableOperation } from './unavailable'
 import { adminClient, AdminApiError } from './client'
 import { adminT } from '../platform/admin-i18n'
 
 /**
  * B4-02 phonetics catalog browser for the tenant control plane.
  *
- * The owner-bound Gateway projection is pending. Catalog and pair reads reject
- * locally with a translated unavailable state until that projection is verified.
+ * Reads go through the content admin channel (kind=PHONETICS), not the withheld
+ * learner /api/v1/phonetics route. Maintenance reuses the ITEM_* lifecycle with
+ * kind PHONEME / MINIMAL_PAIR in the PHONETICS[-LANG] pack (see api/content-items).
  */
 
 export interface PhonemeRow {
@@ -58,15 +58,26 @@ function friendlyError(error: unknown): Error {
   return error instanceof Error ? error : new Error(adminT('apiPhonetics.loadFailed'))
 }
 
-export async function listPhonemes(language?: string): Promise<PhonemeRow[]> {
-  const params = new URLSearchParams()
+/** Admin pack for a language: English → PHONETICS, others → PHONETICS-{PRIMARY}. Mirrors the server mapping. */
+export function phoneticsPack(language?: string): string {
+  const tag = language?.trim() ?? ''
+  const primary = (tag.includes('-') ? tag.slice(0, tag.indexOf('-')) : tag).toUpperCase()
+  return !primary || primary === 'EN' ? 'PHONETICS' : `PHONETICS-${primary}`
+}
+
+async function catalog(language: string | undefined, itemKind: 'PHONEME' | 'MINIMAL_PAIR'): Promise<Row[]> {
+  const params = new URLSearchParams({ kind: 'PHONETICS', itemKind, pageSize: '100' })
   if (language?.trim()) params.set('language', language.trim())
-  const query = params.toString() ? `?${params.toString()}` : ''
+  return unwrapItems(await adminClient.request(`/admin/content-commands?${params.toString()}`))
+}
+
+/** Catalog rows in every availability; learnerVisible says whether learners can see the row today. */
+export async function listPhonemes(language?: string): Promise<PhonemeRow[]> {
   try {
-    const rows = unwrapItems(await unavailableOperation())
+    const rows = await catalog(language, 'PHONEME')
     return rows.map((row) => ({
       ...row,
-      phonemeId: (row.phonemeId ?? '') as number | string,
+      phonemeId: (row.phonemeId ?? row.resourceKey ?? '') as number | string,
       symbol: text(row.symbol, '—'),
       group: text(row.group, '—'),
     }))
@@ -76,13 +87,11 @@ export async function listPhonemes(language?: string): Promise<PhonemeRow[]> {
 }
 
 export async function listPhoneticPairs(language?: string): Promise<MinimalPairRow[]> {
-  const params = new URLSearchParams({ limit: '20' })
-  if (language?.trim()) params.set('language', language.trim())
   try {
-    const rows = unwrapItems(await unavailableOperation())
+    const rows = await catalog(language, 'MINIMAL_PAIR')
     return rows.map((row) => ({
       ...row,
-      pairId: (row.pairId ?? '') as number | string,
+      pairId: (row.pairId ?? row.resourceKey ?? '') as number | string,
     }))
   } catch (error) {
     throw friendlyError(error)

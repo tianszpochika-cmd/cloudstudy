@@ -17,6 +17,7 @@ import {
   itemLifecycle,
   itemReview,
   importBatch,
+  batchKeyFor,
   type BatchEntry,
   type ContentItemRow,
   type ItemKind,
@@ -58,6 +59,25 @@ const batchVisible = ref(false);
 const batchText = ref("");
 const batchBusy = ref(false);
 const batchResult = ref<Record<string, unknown> | null>(null);
+/** Precheck receipt; apply is only offered after a precheck of exactly these entries. */
+const batchCheck = ref<Record<string, unknown> | null>(null);
+const batchCheckedText = ref("");
+const batchRows = computed(() => {
+  const source = batchResult.value ?? batchCheck.value;
+  const rows = source && Array.isArray(source.items) ? (source.items as Record<string, unknown>[]) : [];
+  return rows.filter((row) => row.status !== "READY" && row.status !== "ACCEPTED");
+});
+const canApplyBatch = computed(
+  () =>
+    !!batchCheck.value &&
+    batchCheckedText.value === batchText.value &&
+    Number(batchCheck.value.ready ?? 0) > 0,
+);
+function batchStatusLabel(status: unknown): string {
+  return (
+    { READY: "可导入", ACCEPTED: "已导入", SKIPPED: "跳过", INVALID: "校验失败", FAILED: "失败" } as Record<string, string>
+  )[String(status)] ?? String(status ?? "");
+}
 
 const KINDS: Array<{ label: string; value: string }> = [
   { label: "全部", value: "" },
@@ -371,23 +391,46 @@ function parseBatch(): BatchEntry[] {
   });
 }
 
-async function runBatch(): Promise<void> {
-  if (batchBusy.value || !canWrite.value) return;
-  batchResult.value = null;
+function readBatchEntries(): BatchEntry[] | null {
   let entries: BatchEntry[];
   try {
     entries = parseBatch();
   } catch (error) {
     ElMessage.error(error instanceof Error ? error.message : "批量解析失败。");
-    return;
+    return null;
   }
   if (!entries.length || entries.length > 100) {
     ElMessage.error("每次 1-100 行。");
-    return;
+    return null;
   }
+  return entries;
+}
+
+async function checkBatch(): Promise<void> {
+  if (batchBusy.value || !canWrite.value) return;
+  batchResult.value = null;
+  batchCheck.value = null;
+  const entries = readBatchEntries();
+  if (!entries) return;
   batchBusy.value = true;
   try {
-    batchResult.value = await importBatch(entries);
+    batchCheck.value = await importBatch(entries, { dryRun: true });
+    batchCheckedText.value = batchText.value;
+  } catch (error) {
+    ElMessage.error(error instanceof Error ? error.message : "预检失败。");
+  } finally {
+    batchBusy.value = false;
+  }
+}
+
+async function runBatch(): Promise<void> {
+  if (batchBusy.value || !canWrite.value || !canApplyBatch.value) return;
+  const entries = readBatchEntries();
+  if (!entries) return;
+  batchBusy.value = true;
+  try {
+    batchResult.value = await importBatch(entries, { batchKey: await batchKeyFor(entries) });
+    batchCheck.value = null;
     await load();
   } catch (error) {
     ElMessage.error(error instanceof Error ? error.message : "批量导入失败。");
@@ -703,7 +746,7 @@ onMounted(() => {
       width="680px"
     >
       <el-alert
-        title="每行一条 JSON，最多 100 条。重复提交会创建重复内容，请先核对导入结果。"
+        title="每行一条 JSON，最多 100 条。先预检，确认错误清单后再导入；同一批次重复提交不会产生重复内容，已存在的相同条目会被跳过。"
         type="info"
         :closable="false"
         show-icon
@@ -718,16 +761,36 @@ onMounted(() => {
         :rows="10"
         :placeholder="batchTemplate()"
       />
+      <el-card v-if="batchCheck && !batchResult" shadow="never" style="margin-top: 12px" class="questions-batch-check">
+        <p>
+          预检：总数 {{ batchCheck.total }} · 可导入 {{ batchCheck.ready }} · 跳过
+          {{ batchCheck.skipped }} · 校验失败 {{ batchCheck.invalid }}
+        </p>
+        <p v-if="batchCheckedText !== batchText" class="batch-stale">内容已修改，请重新预检。</p>
+      </el-card>
       <el-card v-if="batchResult" shadow="never" style="margin-top: 12px" class="questions-batch-result">
         <p>
           总数 {{ batchResult.total }} · 成功 {{ batchResult.accepted }} · 跳过
           {{ batchResult.skipped }} · 失败 {{ batchResult.failed }}
         </p>
       </el-card>
+      <el-table v-if="batchRows.length" :data="batchRows" size="small" max-height="240" style="margin-top: 8px">
+        <el-table-column label="行" width="60">
+          <template #default="{ row }">{{ Number(row.index) + 1 }}</template>
+        </el-table-column>
+        <el-table-column label="状态" width="90">
+          <template #default="{ row }">{{ batchStatusLabel(row.status) }}</template>
+        </el-table-column>
+        <el-table-column label="代码" width="180">
+          <template #default="{ row }">{{ row.errorCode ?? row.reason }}</template>
+        </el-table-column>
+        <el-table-column label="说明" prop="message" />
+      </el-table>
       <template #footer>
         <el-button @click="batchVisible = false">关闭</el-button>
-        <el-button type="primary" :loading="batchBusy" @click="runBatch()"
-          >提交导入</el-button
+        <el-button :loading="batchBusy" @click="checkBatch()">预检</el-button>
+        <el-button type="primary" :loading="batchBusy" :disabled="!canApplyBatch" @click="runBatch()"
+          >确认导入</el-button
         >
       </template>
     </el-dialog>

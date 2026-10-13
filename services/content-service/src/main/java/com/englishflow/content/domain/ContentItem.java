@@ -23,7 +23,28 @@ public final class ContentItem {
      * the same draft/review/publish lifecycle as the five historical kinds.
      */
     public static final Set<String> KINDS = Set.of(
-            "QUESTION", "EXAMPLE", "GRAMMAR_POINT", "PASSAGE", "EXERCISE", "DICTATION", "SHADOWING");
+            "QUESTION", "EXAMPLE", "GRAMMAR_POINT", "PASSAGE", "EXERCISE", "DICTATION", "SHADOWING",
+            "PHONEME", "MINIMAL_PAIR");
+
+    /** Phonetics library kinds; they live only in PHONETICS / PHONETICS-{LANG} packs. */
+    public static final Set<String> PHONETIC_KINDS = Set.of("PHONEME", "MINIMAL_PAIR");
+
+    private static final Pattern PHONETICS_PACK = Pattern.compile("PHONETICS(-[A-Z]{2,3})?");
+    private static final Pattern PHONEME_GROUP = Pattern.compile("[A-Z][A-Z_]{1,31}");
+
+    public static boolean isPhoneticsPack(String packCode) {
+        return packCode != null && PHONETICS_PACK.matcher(packCode.trim()).matches();
+    }
+
+    /** Phonetic kinds and phonetics packs must match both ways so the catalog never mixes in quiz rows. */
+    public static void requirePackForKind(String packCode, String kind) {
+        boolean phoneticKind = PHONETIC_KINDS.contains(kind);
+        if (phoneticKind != isPhoneticsPack(packCode)) {
+            throw ContentOperationException.badRequest("ITEM_KIND_PACK_MISMATCH", phoneticKind
+                    ? "PHONEME / MINIMAL_PAIR items belong to a PHONETICS or PHONETICS-{LANG} pack"
+                    : "phonetics packs only accept PHONEME / MINIMAL_PAIR items");
+        }
+    }
 
     private static final Pattern SAFE_CODE = Pattern.compile("[A-Za-z0-9][A-Za-z0-9._:-]{0,127}");
 
@@ -315,10 +336,45 @@ public final class ContentItem {
                 throw ContentOperationException.badRequest("ITEM_FIELD_INVALID", "answerIndex must be a non-negative number");
             }
         }
+        if ("PHONEME".equals(kind)) {
+            String symbol = phoneticText(raw, "symbol", 16);
+            if (symbol.isEmpty()) {
+                throw ContentOperationException.badRequest("ITEM_FIELD_INVALID", "symbol is required");
+            }
+            String group = phoneticText(raw, "group", 32);
+            if (!PHONEME_GROUP.matcher(group).matches()) {
+                throw ContentOperationException.badRequest("ITEM_FIELD_INVALID",
+                        "group is required, upper-case like MONOPHTHONG / CONSONANT");
+            }
+            phoneticText(raw, "exampleWord", 64);
+            phoneticText(raw, "description", 500);
+        }
+        if ("MINIMAL_PAIR".equals(kind)) {
+            if (phoneticText(raw, "leftWord", 64).isEmpty() || phoneticText(raw, "rightWord", 64).isEmpty()) {
+                throw ContentOperationException.badRequest("ITEM_FIELD_INVALID", "leftWord and rightWord are required");
+            }
+            for (String key : List.of("leftPhonemeId", "rightPhonemeId")) {
+                Object value = raw.get(key);
+                if (value != null && !(value instanceof Number) && !(value instanceof String)) {
+                    throw ContentOperationException.badRequest("ITEM_FIELD_INVALID", key + " must be a number or id");
+                }
+            }
+        }
         Object tags = raw.get("tags");
         if (tags != null && (!(tags instanceof List<?> tagList) || tagList.size() > 20)) {
             throw ContentOperationException.badRequest("ITEM_FIELD_INVALID", "tags must contain at most 20 entries");
         }
         return Map.copyOf(raw);
+    }
+
+    private static String phoneticText(Map<String, Object> raw, String key, int max) {
+        Object value = raw.get(key);
+        if (value == null) {
+            return "";
+        }
+        if (!(value instanceof String text) || text.trim().length() > max) {
+            throw ContentOperationException.badRequest("ITEM_FIELD_INVALID", key + " must be text up to " + max + " chars");
+        }
+        return text.trim();
     }
 }
