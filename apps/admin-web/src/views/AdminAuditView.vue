@@ -128,11 +128,13 @@ onUnmounted(() => { ++loadRequest; });
 
 <template>
   <div class="view-stack audit-page">
+    <small class="disabled-reason" data-closed-reason>审计导出即将开放：审计服务的导出接口目前是占位实现（AuditExportUnavailableController），尚不能生成文件；可先在下方按条件查询。</small>
     <AdminPageIntro
       ><el-space
         ><el-button :loading="loading" @click="load">刷新</el-button
+        ><el-tag type="warning" effect="plain" data-coming-soon>即将开放</el-tag
         ><el-button disabled
-          >导出暂不可用</el-button
+          >审计导出</el-button
         ></el-space
       ></AdminPageIntro
     ><el-alert title="脱敏记录" type="info" :closable="false" show-icon

@@ -189,7 +189,7 @@ onMounted(() => {
         :disabled="!canPublish() || !targets.length"
         @click="create()"
         >创建排期</el-button
-      >
+      ><small v-if="!busy && (!canPublish() || !targets.length)" class="disabled-reason" data-disabled-reason>{{ !canPublish() ? '需要发布权限才能创建排期。' : '先在列表中勾选要排期的条目。' }}</small>
     </el-space>
     <p class="hint">
       执行时复核版本：若对象版本已变化，任务失败而不发布错误版本。

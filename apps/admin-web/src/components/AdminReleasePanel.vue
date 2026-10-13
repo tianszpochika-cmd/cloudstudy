@@ -66,6 +66,7 @@ async function command(commandName: string, body: Record<string, unknown> = {}):
       <button type="button" :disabled="!canWrite" @click="command('RELEASE_SUBMIT')">送审</button>
       <button type="button" :disabled="mode !== 'DUAL'" @click="command('RELEASE_REVIEW_L1')">初审</button>
       <button type="button" :disabled="mode !== 'DUAL'" @click="command('RELEASE_REVIEW_L2')">终审</button>
+      <small v-if="mode !== 'DUAL'" class="disabled-reason" data-disabled-reason>初审/终审仅在双审模式下可用，请先「切换审核模式」。</small>
       </div>
       <div class="release-group"><span class="release-group__label">发布</span>
       <button type="button" :disabled="!canWrite" @click="command('RELEASE_PUBLISH')">发布</button>

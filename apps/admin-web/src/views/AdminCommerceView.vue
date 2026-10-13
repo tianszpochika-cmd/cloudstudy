@@ -344,7 +344,7 @@ onMounted(() => {
           :disabled="!refundOrderRef.trim()"
           @click="prepareRefund"
           >预检退款</el-button
-        >
+        ><small v-if="!refundOrderRef.trim()" class="disabled-reason" data-disabled-reason>输入订单号后可预检退款。</small>
       </div>
       <div v-if="refundChallenge" class="b13-refund-challenge" role="status">
         <span class="detail-row"

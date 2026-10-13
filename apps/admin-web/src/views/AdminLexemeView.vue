@@ -789,6 +789,7 @@ onMounted(() => {
                 @click="runReject(scope.row, 'FIRST')"
                 >一审退回</el-button
               >
+              <small v-if="scope.row.availability === 'IN_REVIEW' && ownSubmission(scope.row)" class="disabled-reason" data-disabled-reason>本人提交，需由其他审核员审核</small>
               <el-button
                 v-if="scope.row.availability === 'IN_REVIEW'"
                 size="small"

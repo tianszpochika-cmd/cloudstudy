@@ -183,7 +183,7 @@ onMounted(() => {
       show-icon
     />
     <el-alert
-      title="历史工单仅供查看，处理功能暂不可用。"
+      title="即将开放：工单处理（分派/回复/关闭）尚未接入，历史工单当前仅供查看。"
       type="warning"
       :closable="false"
       show-icon
