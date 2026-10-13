@@ -70,9 +70,10 @@ onMounted(() => {
 </script>
 
 <template>
-  <main class="page-stack">
+  <main class="page-stack v2-page v2-page--support">
     <ExperienceHeader page="Support" icon="help" />
-    <section class="info-card it7-closure" aria-label="客服提交状态">
+    <div class="v2-support-body"><div class="v2-support-main">
+    <section class="info-card it7-closure v2-support-card" aria-label="客服提交状态">
       <div class="yx-section-heading"><div><h3>提交问题</h3></div></div>
       <p>{{ ticketNotice(closure) }}</p>
       <p v-if="supportNotice(closure)">{{ supportNotice(closure) }}</p>
@@ -86,7 +87,7 @@ onMounted(() => {
       @action="load"
     />
     <template v-if="state === 'ready' || state === 'empty' || tickets.length">
-      <section class="info-card" aria-label="我的工单">
+      <section class="info-card v2-support-card" aria-label="我的工单">
         <div class="yx-section-heading"><div><h3>我的工单</h3></div><span class="yx-fact-tag">{{ tickets.length }} 张</span></div>
         <p v-if="!tickets.length" class="yx-fact-tag">暂无可见工单。</p>
         <ul v-else class="yx-ticket-list">
@@ -99,7 +100,7 @@ onMounted(() => {
           </li>
         </ul>
       </section>
-      <section v-if="selected" class="info-card" aria-label="工单详情">
+      <section v-if="selected" class="info-card v2-support-card" aria-label="工单详情">
         <div class="yx-section-heading"><div><h3>工单详情</h3></div></div>
         <dl class="yx-stats yx-stats--kv">
           <div><dt>引用</dt><dd>{{ selected.ticketId }}</dd></div>
@@ -109,10 +110,11 @@ onMounted(() => {
         </dl>
         <p v-if="selected.state === 'RESOLVED' || selected.state === 'CLOSED'">确认与重开暂不可用。</p>
       </section>
-      <div class="actions">
+      <div class="actions v2-support-actions">
         <button class="button" type="button" @click="load">刷新</button>
       </div>
     </template>
+    </div><aside class="v2-support-rail" aria-label="工单提示"><h2>工单提示</h2><ol><li>提交状态与支持编号可在本页查看。</li><li>打开工单可查看分类、状态与预计处理时间。</li><li>列表打不开可点刷新重试。</li></ol></aside></div>
   </main>
 </template>
 
@@ -148,4 +150,42 @@ onMounted(() => {
 .yx-stats--kv dd { font-size: 14px !important; word-break: break-all; }
 .actions { display: flex; gap: 12px; }
 @media (max-width: 640px) { .yx-stats--kv { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; } }
+</style>
+
+<style>
+/* Support v2 页面级样式（只做样式）：对齐 webDemo 普通内容页卡片风格（主列 + 侧栏 / 卡片 / 标签）。
+ * 选择器全部以 .v2-page--support 开头；颜色只用 --v2-* tokens，不写死色值以适配暗色。 */
+.v2-page--support{background:var(--v2-bg);color:var(--v2-ink);font-family:var(--v2-font);display:grid;gap:var(--v2-space-5);align-items:start}
+.v2-page--support .v2-support-body{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:var(--v2-space-5);align-items:start;min-width:0}
+.v2-page--support .v2-support-main{display:grid;gap:var(--v2-space-5);min-width:0;align-content:start}
+.v2-page--support .v2-support-card{background:var(--v2-card);border:1px solid var(--v2-line);border-radius:var(--v2-radius-lg);box-shadow:var(--v2-shadow);padding:var(--v2-space-6);min-width:0}
+.v2-page--support .v2-support-card{display:grid;gap:var(--v2-space-4);align-content:start}
+.v2-page--support .yx-section-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:var(--v2-space-4)}
+.v2-page--support .yx-section-heading>div{display:grid;gap:var(--v2-space-1);min-width:0}
+.v2-page--support .v2-support-card h3{margin:0;font-size:var(--v2-text-lg);color:var(--v2-ink);line-height:1.4}
+.v2-page--support .v2-support-card p{margin:0;color:var(--v2-mut);font-size:var(--v2-text-sm);line-height:1.6}
+.v2-page--support .yx-fact-tag{display:inline-flex;align-items:center;width:fit-content;max-width:100%;padding:var(--v2-space-1) var(--v2-space-3);border-radius:var(--v2-radius-pill);background:var(--v2-soft);color:var(--v2-mut);font-size:var(--v2-text-xs);line-height:1.6}
+.v2-page--support .yx-ticket-list{display:grid;gap:var(--v2-space-3);margin:0;padding:0;list-style:none}
+.v2-page--support .yx-ticket-list li button{display:grid;gap:var(--v2-space-2);width:100%;padding:var(--v2-space-4);background:var(--v2-surface);border:1px solid var(--v2-line);border-radius:var(--v2-radius-md);color:var(--v2-ink);text-align:left;cursor:pointer;transition:border-color var(--v2-motion-fast)}
+.v2-page--support .yx-ticket-list li button:hover{border-color:var(--v2-brand)}
+.v2-page--support .yx-ticket-list strong{color:var(--v2-ink);font-size:var(--v2-text-sm);font-weight:700}
+.v2-page--support .yx-ticket-list small{color:var(--v2-mut);font-size:var(--v2-text-xs)}
+.v2-page--support .yx-pill{display:inline-flex;align-items:center;justify-self:start;padding:var(--v2-space-1) var(--v2-space-3);border-radius:var(--v2-radius-pill);font-size:var(--v2-text-xs);font-weight:700;border:1px solid var(--v2-line);background:var(--v2-soft);color:var(--v2-brand)}
+.v2-page--support .yx-pill--warning{background:var(--v2-warn-soft);color:var(--v2-warn)}
+.v2-page--support .yx-pill--muted{background:var(--v2-surface);color:var(--v2-mut)}
+.v2-page--support .yx-stats--kv{display:grid;gap:var(--v2-space-3);margin:0;padding:0}
+.v2-page--support .yx-stats--kv div{display:grid;gap:var(--v2-space-1);padding:var(--v2-space-3) var(--v2-space-4);background:var(--v2-surface);border:1px solid var(--v2-line);border-radius:var(--v2-radius-md);min-width:0}
+.v2-page--support .yx-stats--kv dt{color:var(--v2-mut);font-size:var(--v2-text-xs)}
+.v2-page--support .yx-stats--kv dd{margin:0;font-weight:600;color:var(--v2-ink)}
+.v2-page--support .v2-support-actions{display:flex;gap:var(--v2-space-3);flex-wrap:wrap}
+.v2-page--support .button{min-height:40px;padding:0 var(--v2-space-4);border:1px solid var(--v2-brand);border-radius:var(--v2-radius-sm);background:var(--v2-brand);color:var(--v2-inverse);font-weight:750;cursor:pointer;justify-self:start;transition:background-color var(--v2-motion-fast)}
+.v2-page--support .button:hover:not(:disabled){background:var(--v2-brand2);border-color:var(--v2-brand2);color:var(--v2-inverse)}
+.v2-page--support .button:disabled{opacity:.5;cursor:not-allowed}
+.v2-page--support .v2-support-rail{background:var(--v2-card);border:1px solid var(--v2-line);border-radius:var(--v2-radius-lg);box-shadow:var(--v2-shadow);padding:var(--v2-space-6);min-width:0}
+.v2-page--support .v2-support-rail{position:sticky;top:var(--v2-space-6);display:grid;align-content:start;gap:var(--v2-space-3)}
+.v2-page--support .v2-support-rail h2{margin:0;font-size:var(--v2-text-lg);color:var(--v2-ink)}
+.v2-page--support .v2-support-rail ol{margin:0;padding-left:var(--v2-space-5);display:grid;gap:var(--v2-space-2);color:var(--v2-mut);font-size:var(--v2-text-sm);line-height:1.7}
+.v2-page--support button:focus-visible,.v2-page--support a:focus-visible{outline:2px solid var(--v2-brand);outline-offset:2px}
+@media(max-width:1190px){.v2-page--support .v2-support-body{grid-template-columns:minmax(0,1fr) 250px}}
+@media(max-width:900px){.v2-page--support .v2-support-body{grid-template-columns:1fr}.v2-page--support .v2-support-rail{position:static}}
 </style>

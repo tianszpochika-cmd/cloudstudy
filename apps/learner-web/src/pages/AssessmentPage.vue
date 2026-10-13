@@ -57,7 +57,7 @@ async function retest(): Promise<void> {
 }
 </script>
 <template>
-  <section class="page-stack" aria-labelledby="assessment-title"><ExperienceHeader page="Assessment" icon="target" title-id="assessment-title" hero><span class="assessment-progress-label">{{ progressLabel }}</span></ExperienceHeader>
+  <section class="page-stack v2-page v2-page--assessment" aria-labelledby="assessment-title"><ExperienceHeader page="Assessment" icon="target" title-id="assessment-title" hero><span class="assessment-progress-label">{{ progressLabel }}</span></ExperienceHeader><div class="v2-assessment-body"><div class="v2-assessment-main">
   <article v-if="isRestricted" class="result-card restricted-card" role="alert"><p class="card-kicker">测评访问受限</p><h3>暂未开放测评</h3><p>当前版本仅面向 18 岁以上成人开放，暂不能向你开放学习功能。</p><div class="result-actions"><RouterLink class="button button--secondary" to="/settings">前往账号设置</RouterLink><RouterLink class="button button--ghost" to="/support">帮助与反馈</RouterLink><button class="button button--ghost" type="button" @click="logout">退出登录</button></div></article>
   <article v-else-if="isDone && baseline" class="result-card"><p class="card-kicker">已跳过测评</p><h3>水平尚未验证</h3><p data-placement-card>这次跳过不是正式测评分数。</p><p v-if="baseline.requestedStartingLevel">你选择了 {{ baseline.requestedStartingLevel }} 作为起点；这不是测评等级。</p><div class="result-actions"><button class="button button--primary" type="button" @click="router.push({ name: 'today' })">查看今日状态</button><button class="button button--secondary" type="button" @click="restart">参加测评</button></div></article>
   <article v-else-if="isDone && hasServerReport" class="result-card"><p class="card-kicker">报告已生成</p><p data-placement-card>这份报告和快照是同一版本。</p><h3 v-if="report">{{ report.cefrLevel }} · {{ Math.round(report.score) }} 分</h3><p v-if="countedReport">答对 {{ countedReport.full }} 题，共 {{ countedReport.total }} 题。</p><p v-if="advice">{{ advice }}</p><p v-if="feedbackText" role="status">{{ feedbackText }}</p><p>重测会另开一套题，这份报告会保留。是否调整已有计划需要另外确认。</p><div class="result-actions"><button class="button button--primary" type="button" @click="router.push({ name: 'today' })">查看今日状态</button><button class="button button--secondary" type="button" :disabled="retestPending" @click="retest">重测</button></div></article>
@@ -67,7 +67,43 @@ async function retest(): Promise<void> {
   <article v-else-if="hasError" class="info-card" role="alert"><h3>测评暂时不可用</h3><p>{{ userFacingError(store.lastError, '暂时无法读取测评，请稍后重试。') }}</p><button class="button button--primary" type="button" @click="retry">重试</button></article>
   <article v-else-if="heldCheckpoint" class="info-card" role="status"><h3>定级进度在服务端</h3><p>重新读取会从已接收检查点的下一题继续，不会新开一套题。</p><button class="button button--primary" type="button" @click="retry">重新读取</button></article>
   <article v-else class="info-card"><h3>暂无可用测评</h3><p>目前没有可用题目，可以稍后重试。</p><button class="button button--primary" type="button" @click="retry">重新读取</button></article>
-  <details v-if="!isDone && !isRestricted && !(question && store.assessment.status === 'error')" class="fast-track"><summary>跳过测评，选择起点</summary><p>自选起点不会生成测评等级。</p><div class="tag-list"><button class="tag" type="button" :disabled="isLoading" @click="fastTrack('ZERO_A1')">从 A1 开始</button><button class="tag" type="button" :disabled="isLoading" @click="fastTrack('CET4_B1')">从 B1 开始</button><button class="tag" type="button" :disabled="isLoading" @click="fastTrack('CET6_B2')">从 B2 开始</button></div></details></section>
+  <details v-if="!isDone && !isRestricted && !(question && store.assessment.status === 'error')" class="fast-track"><summary>跳过测评，选择起点</summary><p>自选起点不会生成测评等级。</p><div class="tag-list"><button class="tag" type="button" :disabled="isLoading" @click="fastTrack('ZERO_A1')">从 A1 开始</button><button class="tag" type="button" :disabled="isLoading" @click="fastTrack('CET4_B1')">从 B1 开始</button><button class="tag" type="button" :disabled="isLoading" @click="fastTrack('CET6_B2')">从 B2 开始</button></div></details></div><aside class="v2-assessment-tips"><h2>了解你的起点</h2><ol><li>先读题目与材料。</li><li>选择答案后提交。</li><li>测评结果用于安排后面的学习。</li></ol></aside></div></section>
 </template>
 <style scoped>.question-card,.result-card{padding:32px;border:1px solid var(--yx-color-border);border-radius:var(--yx-radius-card);background:var(--yx-color-surface-card);box-shadow:var(--yx-shadow-card)}.question-meta{display:flex;justify-content:space-between;color:var(--yx-color-brand-primary);font-size:13px;font-weight:700}.question-card h3,.result-card h3{margin:26px 0;font-size:clamp(22px,4vw,32px);line-height:1.4}.options{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:24px}.option{display:flex;gap:12px;padding:18px;border:1px solid var(--yx-color-border);border-radius:12px;color:var(--yx-color-text-primary);background:var(--yx-color-surface-card);text-align:left}.option b{color:var(--yx-color-brand-primary)}.option.selected{border-color:var(--yx-color-brand-primary);background:var(--yx-color-brand-primary-soft)}.result-grid{display:flex;gap:12px;margin:24px 0}.result-grid span{display:grid;gap:5px;min-width:120px;padding:14px;border-radius:12px;background:var(--yx-color-brand-primary-soft)}.result-grid strong{color:var(--yx-color-brand-primary);font-size:22px}.result-grid small{color:var(--yx-color-text-secondary)}.fast-track{padding:18px 20px;border:1px solid var(--yx-color-border);border-radius:12px;background:var(--yx-color-surface-card)}.fast-track summary{cursor:pointer;color:var(--yx-color-text-secondary)}.tag-list{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}.tag{padding:10px 14px;border:1px solid var(--yx-color-border);border-radius:10px;background:var(--yx-color-surface-card)}.error-text{color:var(--yx-color-danger)}@media(max-width:640px){.options{grid-template-columns:1fr}.question-card,.result-card{padding:22px}.result-grid{flex-wrap:wrap}}
+</style>
+<style>
+.v2-page--assessment .v2-assessment-body { display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: var(--v2-space-6); align-items: start; }
+.v2-page--assessment .v2-assessment-main { display: grid; gap: var(--v2-space-5); grid-column: 1; min-width: 0; }
+.v2-page--assessment .v2-assessment-tips { grid-column: 2; grid-row: 1; position: sticky; top: var(--v2-space-6); background: var(--v2-card); border: 1px solid var(--v2-line); border-radius: var(--v2-radius-lg); box-shadow: var(--v2-shadow); padding: var(--v2-space-5); min-width: 0; }
+.v2-page--assessment .v2-assessment-tips h2 { margin: 0 0 var(--v2-space-3); font-size: var(--v2-text-md); line-height: 1.5; color: var(--v2-ink); }
+.v2-page--assessment .v2-assessment-tips ol { margin: 0; padding-left: var(--v2-space-5); display: grid; gap: var(--v2-space-2); color: var(--v2-mut); font-size: var(--v2-text-sm); line-height: 1.7; }
+.v2-page--assessment .question-card,
+.v2-page--assessment .result-card,
+.v2-page--assessment .info-card,
+.v2-page--assessment .fast-track { background: var(--v2-card); border: 1px solid var(--v2-line); border-radius: var(--v2-radius-lg); box-shadow: var(--v2-shadow); padding: var(--v2-space-6); min-width: 0; }
+.v2-page--assessment .question-card h3,
+.v2-page--assessment .result-card h3,
+.v2-page--assessment .info-card h3 { margin: var(--v2-space-5) 0; font-size: var(--v2-text-xl); line-height: 1.4; color: var(--v2-ink); letter-spacing: -0.5px; }
+.v2-page--assessment .question-card p,
+.v2-page--assessment .result-card p,
+.v2-page--assessment .info-card p,
+.v2-page--assessment .fast-track p { color: var(--v2-mut); font-size: var(--v2-text-sm); line-height: 1.7; }
+.v2-page--assessment .question-card h3,
+.v2-page--assessment .result-card h3 { color: var(--v2-ink); }
+.v2-page--assessment .card-kicker { color: var(--v2-brand); font-size: var(--v2-text-xs); font-weight: 700; letter-spacing: 1px; margin: 0 0 var(--v2-space-2); }
+.v2-page--assessment .assessment-progress-label { display: inline-flex; align-items: center; border-radius: var(--v2-radius-pill); background: var(--v2-soft); color: var(--v2-brand); font-size: var(--v2-text-xs); font-weight: 700; padding: var(--v2-space-1) var(--v2-space-3); white-space: nowrap; }
+.v2-page--assessment .question-meta { display: flex; justify-content: space-between; align-items: center; gap: var(--v2-space-3); color: var(--v2-brand); font-size: var(--v2-text-xs); font-weight: 700; }
+.v2-page--assessment .options { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--v2-space-3); margin: var(--v2-space-5) 0; }
+.v2-page--assessment .option { display: flex; gap: var(--v2-space-3); align-items: flex-start; text-align: left; padding: var(--v2-space-4); background: var(--v2-card); border: 1px solid var(--v2-line); border-radius: var(--v2-radius-md); color: var(--v2-ink); font-size: var(--v2-text-sm); line-height: 1.6; cursor: pointer; }
+.v2-page--assessment .option b { color: var(--v2-brand); }
+.v2-page--assessment .option.selected { border-color: var(--v2-brand); background: var(--v2-soft); }
+.v2-page--assessment .result-actions { display: flex; flex-wrap: wrap; gap: var(--v2-space-3); margin-top: var(--v2-space-4); }
+.v2-page--assessment .fast-track summary { cursor: pointer; color: var(--v2-mut); font-size: var(--v2-text-sm); font-weight: 600; }
+.v2-page--assessment .tag-list { display: flex; flex-wrap: wrap; gap: var(--v2-space-2); margin-top: var(--v2-space-4); }
+.v2-page--assessment .tag { border-radius: var(--v2-radius-pill); background: var(--v2-soft); color: var(--v2-brand); font-size: var(--v2-text-xs); font-weight: 600; padding: var(--v2-space-2) var(--v2-space-4); border: 1px solid var(--v2-line); min-height: 36px; cursor: pointer; }
+.v2-page--assessment .tag:disabled { opacity: 0.6; cursor: not-allowed; }
+.v2-page--assessment .error-text { color: var(--v2-bad); }
+.v2-page--assessment :is(.button, .option, .tag):focus-visible { outline: 2px solid var(--v2-brand); outline-offset: 2px; }
+@media (max-width: 1190px) { .v2-page--assessment .v2-assessment-body { grid-template-columns: minmax(0, 1fr) 240px; gap: var(--v2-space-5); } .v2-page--assessment .question-card, .v2-page--assessment .result-card, .v2-page--assessment .info-card, .v2-page--assessment .fast-track { padding: var(--v2-space-5); } }
+@media (max-width: 900px) { .v2-page--assessment .v2-assessment-body { grid-template-columns: 1fr; } .v2-page--assessment .v2-assessment-main { grid-column: 1; } .v2-page--assessment .v2-assessment-tips { grid-column: 1; grid-row: auto; position: static; } .v2-page--assessment .options { grid-template-columns: 1fr; } }
 </style>

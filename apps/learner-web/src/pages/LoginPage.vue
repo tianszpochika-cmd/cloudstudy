@@ -78,15 +78,15 @@ async function submit(): Promise<void> {
 
 <template>
   <AuthLayout>
-    <section class="login-card login-card--quiet" aria-labelledby="login-title">
+    <section class="login-card login-card--quiet v2-auth-card" aria-labelledby="login-title">
       <div class="brand">
         <span class="brand__mark" aria-hidden="true">✦</span>
         <span>语学星</span>
       </div>
-      <h1 id="login-title">{{ authT('login.title') }}</h1>
-      <p class="lead">{{ authT('login.description') }}</p>
-      <form class="login-form" novalidate @submit.prevent="submit">
-        <label class="field">
+      <h1 id="login-title" class="v2-auth-title">{{ authT('login.title') }}</h1>
+      <p class="lead v2-auth-lead">{{ authT('login.description') }}</p>
+      <form class="login-form v2-auth-fields" novalidate @submit.prevent="submit">
+        <label class="field v2-field">
           <span>{{ authT('login.identifier') }}</span>
           <input
             v-model="identifier"
@@ -98,7 +98,7 @@ async function submit(): Promise<void> {
             :disabled="submitting"
           >
         </label>
-        <label class="field">
+        <label class="field v2-field">
           <span>{{ authT('login.password') }}</span>
           <div class="password-field"><input
             v-model="password"
@@ -109,19 +109,19 @@ async function submit(): Promise<void> {
             :disabled="submitting"
           ><button type="button" class="icon-button" :aria-label="t(showPassword ? 'hidePassword' : 'showPassword')" :aria-pressed="showPassword" @click="showPassword = !showPassword"><AppIcon name="eye" :size="19" /></button></div>
         </label>
-        <div class="auth-links"><RouterLink :to="{ name: 'register', query: { redirect: redirectTarget } }">{{ t('createAccount') }}</RouterLink><RouterLink v-if="!noticeKind" :to="{ name: 'reset-password', query: { redirect: redirectTarget } }">{{ t('forgot') }}</RouterLink></div>
-        <div v-if="loginError || submitting || noticeKind" class="login-status" :class="{ 'login-status--error': loginError && !noticeKind }" :role="loginError && !noticeKind ? 'alert' : 'status'" aria-live="polite" :aria-busy="submitting">
+        <div class="auth-links v2-auth-links"><RouterLink :to="{ name: 'register', query: { redirect: redirectTarget } }">{{ t('createAccount') }}</RouterLink><RouterLink v-if="!noticeKind" :to="{ name: 'reset-password', query: { redirect: redirectTarget } }">{{ t('forgot') }}</RouterLink></div>
+        <div v-if="loginError || submitting || noticeKind" class="login-status v2-auth-status" :class="{ 'login-status--error': loginError && !noticeKind }" :role="loginError && !noticeKind ? 'alert' : 'status'" aria-live="polite" :aria-busy="submitting">
           <span class="login-status__mark" aria-hidden="true">{{ loginError && !noticeKind ? '!' : '✦' }}</span>
           <div>
             <strong>{{ statusTitle }}</strong>
             <p>{{ statusDescription }}</p>
           </div>
         </div>
-        <button class="button button--primary" type="submit" :disabled="submitting">
+        <button class="button button--primary v2-btn v2-btn--primary v2-btn--block" type="submit" :disabled="submitting">
           {{ submitting ? authT('login.submitting') : authT('login.start') }}
         </button>
       </form>
-      <p class="micro-copy">{{ authT('login.afterLogin') }}</p>
+      <p class="micro-copy v2-auth-micro">{{ authT('login.afterLogin') }}</p>
     </section>
   </AuthLayout>
 </template>

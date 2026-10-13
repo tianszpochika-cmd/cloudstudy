@@ -84,45 +84,45 @@ async function confirm(): Promise<void> {
 
 <template>
   <AuthLayout>
-    <section class="login-card login-card--quiet" aria-labelledby="reset-title">
+    <section class="login-card login-card--quiet v2-auth-card" aria-labelledby="reset-title">
       <div class="brand">
         <span class="brand__mark" aria-hidden="true">✦</span>
         <span>语学星</span>
       </div>
-      <h1 id="reset-title">{{ authT('passwordReset.title') }}</h1>
-      <p class="lead">{{ authT('passwordReset.description') }}</p>
-      <div class="login-status" :role="error ? 'alert' : 'status'" aria-live="polite" :aria-busy="submitting">
+      <h1 id="reset-title" class="v2-auth-title">{{ authT('passwordReset.title') }}</h1>
+      <p class="lead v2-auth-lead">{{ authT('passwordReset.description') }}</p>
+      <div class="login-status v2-auth-status" :role="error ? 'alert' : 'status'" aria-live="polite" :aria-busy="submitting">
         <span class="login-status__mark" aria-hidden="true">{{ error ? '!' : '✦' }}</span>
         <div>
           <strong>{{ error ? authT(errorKind === 'validation' ? 'passwordReset.validationTitle' : 'passwordReset.errorTitle') : authT('passwordReset.requestTitle') }}</strong>
           <p>{{ hint }}</p>
         </div>
       </div>
-      <form v-if="step === 'request'" class="login-form" novalidate @submit.prevent="send">
-        <label class="field">
+      <form v-if="step === 'request'" class="login-form v2-auth-fields" novalidate @submit.prevent="send">
+        <label class="field v2-field">
           <span>{{ authT('passwordReset.identifier') }}</span>
           <input v-model="identifier" name="identifier" type="text" autocomplete="username" :aria-label="authT('passwordReset.identifier')" :placeholder="authT('passwordReset.requestIdentifierPlaceholder')" :disabled="submitting">
         </label>
-        <button class="button button--primary" type="submit" :disabled="submitting">{{ submitting ? authT('passwordReset.sending') : authT('passwordReset.sendInstructions') }}</button>
-        <button class="button" type="button" @click="step = 'confirm'">{{ authT('passwordReset.receivedCode') }}</button>
+        <button class="button button--primary v2-btn v2-btn--primary v2-btn--block" type="submit" :disabled="submitting">{{ submitting ? authT('passwordReset.sending') : authT('passwordReset.sendInstructions') }}</button>
+        <button class="button v2-btn v2-btn--ghost v2-btn--block" type="button" @click="step = 'confirm'">{{ authT('passwordReset.receivedCode') }}</button>
       </form>
-      <form v-else class="login-form" novalidate @submit.prevent="confirm">
-        <label class="field">
+      <form v-else class="login-form v2-auth-fields" novalidate @submit.prevent="confirm">
+        <label class="field v2-field">
           <span>{{ authT('passwordReset.identifier') }}</span>
           <input v-model="identifier" name="identifier" type="text" autocomplete="username" :aria-label="authT('passwordReset.identifier')" :placeholder="authT('passwordReset.confirmIdentifierPlaceholder')" :disabled="submitting">
         </label>
-        <label class="field">
+        <label class="field v2-field">
           <span>{{ authT('passwordReset.token') }}</span>
           <input v-model="token" name="token" type="text" autocomplete="one-time-code" :aria-label="authT('passwordReset.token')" :placeholder="authT('passwordReset.tokenPlaceholder')" :disabled="submitting">
         </label>
-        <label class="field">
+        <label class="field v2-field">
           <span>{{ authT('passwordReset.newPassword') }}</span>
           <input v-model="newPassword" name="newPassword" type="password" autocomplete="new-password" :aria-label="authT('passwordReset.newPassword')" :placeholder="authT('passwordReset.newPasswordPlaceholder')" :disabled="submitting">
         </label>
-        <button class="button button--primary" type="submit" :disabled="submitting">{{ submitting ? authT('passwordReset.resetting') : authT('passwordReset.resetAction') }}</button>
-        <button class="button" type="button" @click="step = 'request'">{{ authT('passwordReset.back') }}</button>
+        <button class="button button--primary v2-btn v2-btn--primary v2-btn--block" type="submit" :disabled="submitting">{{ submitting ? authT('passwordReset.resetting') : authT('passwordReset.resetAction') }}</button>
+        <button class="button v2-btn v2-btn--ghost v2-btn--block" type="button" @click="step = 'request'">{{ authT('passwordReset.back') }}</button>
       </form>
-      <p class="micro-copy"><RouterLink :to="{ name: 'login', query: { redirect: redirectTarget } }">{{ authT('passwordReset.returnLogin') }}</RouterLink></p>
+      <p class="micro-copy v2-auth-micro"><RouterLink :to="{ name: 'login', query: { redirect: redirectTarget } }">{{ authT('passwordReset.returnLogin') }}</RouterLink></p>
     </section>
   </AuthLayout>
 </template>

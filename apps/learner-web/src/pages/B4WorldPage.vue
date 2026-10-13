@@ -91,7 +91,7 @@ function cleanupOfflineDownload(downloadId: string): void { void b4.cleanupOffli
 </script>
 
 <template>
-  <section class="b4-page" :data-performance="b4.performanceLevel" :data-avatar-render="b4.effectiveAvatarRenderMode" aria-labelledby="b4-title">
+  <section class="b4-page v2-page v2-page--b4world" :data-performance="b4.performanceLevel" :data-avatar-render="b4.effectiveAvatarRenderMode" aria-labelledby="b4-title">
     <ExperienceHeader page="World" icon="globe" title-id="b4-title" hero><StudyArtwork compact /></ExperienceHeader>
 
     <section class="b4-status" :class="`b4-status--${b4.status}`" role="status" aria-live="polite">
@@ -105,7 +105,7 @@ function cleanupOfflineDownload(downloadId: string): void { void b4.cleanupOffli
         <button v-if="b4.queueCount" class="button button--secondary" type="button" @click="b4.syncOffline">同步队列</button>
         <label class="quality-select">性能
           <select :value="b4.performanceLevel" aria-label="世界画质" @change="choosePerformance(($event.target as HTMLSelectElement).value)">
-            <option v-for="level in B4_PERFORMANCE_LEVELS" :key="level" :value="level">{{ level }}</option>
+            <option v-for="level in B4_PERFORMANCE_LEVELS" :key="level" :value="level">{{ ({ Ultra: "超高", High: "高", Medium: "均衡", Performance: "流畅" } as Record<string, string>)[level] ?? level }}</option>
           </select>
         </label>
       </div>
@@ -118,14 +118,14 @@ function cleanupOfflineDownload(downloadId: string): void { void b4.cleanupOffli
     <template v-if="activePanel === 'world'">
       <section class="b4-metrics" aria-label="成长摘要">
         <article class="b4-metric"><span>XP</span><strong v-if="b4.profile">{{ b4.profile.xp }}</strong><strong v-else>—</strong><small>{{ b4.profile ? `Lv.${b4.profile.level} · ${b4.profile.rank}` : '成长记录暂未加载' }}</small></article>
-        <article class="b4-metric"><span>STAR COIN</span><strong v-if="b4.profile">{{ b4.profile.coins }}</strong><strong v-else>—</strong><small>学习积累的星币</small></article>
-        <article class="b4-metric"><span>STREAK</span><strong v-if="b4.streak">{{ b4.streak.currentStreak }} 天</strong><strong v-else>—</strong><small>{{ stateLabel(b4.streak?.status) }}</small></article>
+        <article class="b4-metric"><span>星币<span class="v2-sr-only">STAR COIN</span></span><strong v-if="b4.profile">{{ b4.profile.coins }}</strong><strong v-else>—</strong><small>学习积累的星币</small></article>
+        <article class="b4-metric"><span>连续天数<span class="v2-sr-only">STREAK</span></span><strong v-if="b4.streak">{{ b4.streak.currentStreak }} 天</strong><strong v-else>—</strong><small>{{ stateLabel(b4.streak?.status) }}</small></article>
         <article class="b4-metric"><span>通知</span><strong>{{ unreadCount }}</strong><small>{{ b4.notifications.length ? '未读通知' : '暂时没有新通知' }}</small></article>
       </section>
 
-      <section class="b4-grid b4-grid--world">
+      <section class="b4-grid b4-grid--world v2-b4world-main">
         <article class="b4-card b4-card--wide">
-          <div class="b4-card__heading"><div><p class="card-kicker">GALAXY MAP</p><h2>成长世界</h2></div><span class="b4-fact-tag">我的学习足迹</span></div>
+          <div class="b4-card__heading"><div><p class="card-kicker">成长地图<span class="v2-sr-only">GALAXY MAP</span></p><h2>成长世界</h2></div><span class="b4-fact-tag">我的学习足迹</span></div>
           <p class="b4-muted">每次练习，都在为你的学习世界添一点光。看看已经走过的路，再选一个方向继续。</p>
           <div class="b4-map" :class="{ 'b4-map--static': b4.performanceLevel === 'Performance' }">
             <article v-for="node in galaxyNodes" :key="node.code" class="b4-map__node"><span class="b4-map__dot" aria-hidden="true"></span><strong>{{ node.title }}</strong><small>{{ node.description }}</small><em v-if="node.hasData">{{ stateLabel(node.status) }} · {{ node.progress }} / {{ node.requiredProgress }}（{{ node.progressPercent }}%）</em><em v-else>{{ t('stateUnknown') }}</em></article>
@@ -136,7 +136,7 @@ function cleanupOfflineDownload(downloadId: string): void { void b4.cleanupOffli
         </article>
 
         <article class="b4-card">
-          <div class="b4-card__heading"><div><p class="card-kicker">STREAK CALENDAR</p><h2>连续学习</h2></div><span class="b4-streak-mark" :class="`b4-streak-mark--${b4.streak?.status ?? 'UNKNOWN'}`">♨</span></div>
+          <div class="b4-card__heading"><div><p class="card-kicker">连续学习<span class="v2-sr-only">STREAK CALENDAR</span></p><h2>连续学习</h2></div><span class="b4-streak-mark" :class="`b4-streak-mark--${b4.streak?.status ?? 'UNKNOWN'}`">♨</span></div>
           <template v-if="b4.streak">
             <div class="b4-streak-number"><strong>{{ b4.streak.currentStreak }}</strong><span>天连续学习</span></div>
             <p class="b4-muted">上次有效日：{{ b4.streak.lastValidDate ?? '暂无记录' }}<br>时区：{{ b4.streak.timeZone }} · 状态：{{ stateLabel(b4.streak.status) }}</p>
@@ -150,7 +150,7 @@ function cleanupOfflineDownload(downloadId: string): void { void b4.cleanupOffli
       </section>
 
       <section class="b4-card">
-        <div class="b4-card__heading"><div><p class="card-kicker">QUESTS</p><h2>今日成长任务</h2></div><span>{{ b4.quests.length ? `${b4.quests.length} 个成长任务` : '未返回任务' }}</span></div>
+        <div class="b4-card__heading"><div><p class="card-kicker">成长任务<span class="v2-sr-only">QUESTS</span></p><h2>今日成长任务</h2></div><span>{{ b4.quests.length ? `${b4.quests.length} 个成长任务` : '未返回任务' }}</span></div>
         <div v-if="b4.quests.length" class="b4-quest-list"><article v-for="quest in b4.quests" :key="quest.questId" class="b4-quest"><div><strong>{{ quest.title }}</strong><small>{{ questPeriod(quest.period) }}</small></div><div class="b4-quest__progress"><span>{{ quest.progress }} / {{ quest.target }}</span><progress :value="quest.progress" :max="Math.max(quest.target, 1)"></progress></div><span class="b4-quest__state">{{ quest.claimed ? '已领取' : quest.completed ? '待领取' : '进行中' }}</span></article></div>
         <p v-else class="b4-inline-empty">今天还没有新的成长任务。</p>
       </section>
@@ -174,8 +174,8 @@ function cleanupOfflineDownload(downloadId: string): void { void b4.cleanupOffli
 
     <template v-else-if="activePanel === 'social'">
       <section class="b4-grid b4-grid--social">
-        <article class="b4-card b4-card--wide"><div class="b4-card__heading"><div><p class="card-kicker">STUDY ROOMS</p><h2>虚拟自习室</h2></div><span>仅预设互动</span></div><div v-if="b4.rooms.length" class="b4-room-list"><article v-for="room in b4.rooms" :key="room.roomId" class="b4-room"><div><strong>{{ room.name }}</strong><small>安静自习 · 互相鼓励</small></div><span>{{ room.memberCount }} / {{ room.capacity }} 人</span><button class="button button--secondary" type="button" @click="joinOrLeave(room.roomId, room.joined)">{{ room.joined ? '离开' : '加入' }}</button><div v-if="room.joined" class="b4-room__actions"><button class="button button--primary" type="button" @click="b4.startFocus(room.roomId, focusMinutes)">开始 {{ focusMinutes }} 分钟专注</button><select v-model="interactionCode" aria-label="预设互动"><option v-for="code in (['CHEER_UP', 'STUDY_TOGETHER', 'CONGRATS', 'TRY_AGAIN', 'TONIGHT_20_MIN'] as B4InteractionCode[])" :key="code" :value="code">{{ interactionLabel(code) }}</option></select><button class="button button--ghost" type="button" @click="sendInteraction(room.roomId)">发送预设鼓励</button></div></article></div><p v-else class="b4-inline-empty">自习室暂时未能加载，请稍后再试。</p></article>
-        <article class="b4-card"><div class="b4-card__heading"><div><p class="card-kicker">POMODORO</p><h2>番茄专注</h2></div><span v-if="b4.activeFocus">{{ b4.activeFocus.status }}</span></div><template v-if="b4.activeFocus"><strong class="b4-timer">{{ formatSeconds(activeFocusSeconds) }}</strong><p class="b4-muted">暂停时休息一下，准备好后再继续。</p><div class="b4-button-row"><button v-if="b4.activeFocus.status === 'RUNNING'" class="button button--secondary" type="button" @click="b4.updateFocus('PAUSE')">暂停</button><button v-if="b4.activeFocus.status === 'PAUSED'" class="button button--secondary" type="button" @click="b4.updateFocus('RESUME')">恢复</button><button v-if="['RUNNING', 'PAUSED'].includes(b4.activeFocus.status)" class="button button--danger" type="button" @click="b4.updateFocus('COMPLETE')">完成专注</button></div></template><template v-else><p class="b4-muted">找一个喜欢的房间，安静地学一会儿。</p><label class="b4-field">计划专注时长<select v-model="focusMinutes"><option :value="25">25 分钟</option><option :value="45">45 分钟</option></select></label><small class="b4-muted">完成一次专注后，可以回到这里查看记录。</small></template></article>
+        <article class="b4-card b4-card--wide"><div class="b4-card__heading"><div><p class="card-kicker">学习小组<span class="v2-sr-only">STUDY ROOMS</span></p><h2>虚拟自习室</h2></div><span>仅预设互动</span></div><div v-if="b4.rooms.length" class="b4-room-list"><article v-for="room in b4.rooms" :key="room.roomId" class="b4-room"><div><strong>{{ room.name }}</strong><small>安静自习 · 互相鼓励</small></div><span>{{ room.memberCount }} / {{ room.capacity }} 人</span><button class="button button--secondary" type="button" @click="joinOrLeave(room.roomId, room.joined)">{{ room.joined ? '离开' : '加入' }}</button><div v-if="room.joined" class="b4-room__actions"><button class="button button--primary" type="button" @click="b4.startFocus(room.roomId, focusMinutes)">开始 {{ focusMinutes }} 分钟专注</button><select v-model="interactionCode" aria-label="预设互动"><option v-for="code in (['CHEER_UP', 'STUDY_TOGETHER', 'CONGRATS', 'TRY_AGAIN', 'TONIGHT_20_MIN'] as B4InteractionCode[])" :key="code" :value="code">{{ interactionLabel(code) }}</option></select><button class="button button--ghost" type="button" @click="sendInteraction(room.roomId)">发送预设鼓励</button></div></article></div><p v-else class="b4-inline-empty">自习室暂时未能加载，请稍后再试。</p></article>
+        <article class="b4-card"><div class="b4-card__heading"><div><p class="card-kicker">番茄专注<span class="v2-sr-only">POMODORO</span></p><h2>番茄专注</h2></div><span v-if="b4.activeFocus">{{ b4.activeFocus.status }}</span></div><template v-if="b4.activeFocus"><strong class="b4-timer">{{ formatSeconds(activeFocusSeconds) }}</strong><p class="b4-muted">暂停时休息一下，准备好后再继续。</p><div class="b4-button-row"><button v-if="b4.activeFocus.status === 'RUNNING'" class="button button--secondary" type="button" @click="b4.updateFocus('PAUSE')">暂停</button><button v-if="b4.activeFocus.status === 'PAUSED'" class="button button--secondary" type="button" @click="b4.updateFocus('RESUME')">恢复</button><button v-if="['RUNNING', 'PAUSED'].includes(b4.activeFocus.status)" class="button button--danger" type="button" @click="b4.updateFocus('COMPLETE')">完成专注</button></div></template><template v-else><p class="b4-muted">找一个喜欢的房间，安静地学一会儿。</p><label class="b4-field">计划专注时长<select v-model="focusMinutes"><option :value="25">25 分钟</option><option :value="45">45 分钟</option></select></label><small class="b4-muted">完成一次专注后，可以回到这里查看记录。</small></template></article>
       </section>
       <section class="b4-card"><div class="b4-card__heading"><div><p class="card-kicker">消息</p><h2>通知</h2></div><button v-if="b4.notifications.length" class="button button--ghost" type="button" @click="b4.readAllNotifications">全部标记已读</button></div><div v-if="b4.notifications.length" class="b4-notification-list"><article v-for="item in b4.notifications" :key="item.messageId" class="b4-notification" :class="{ 'b4-notification--unread': !item.read }"><div><strong>{{ item.title }}</strong><p v-if="item.body">{{ item.body }}</p><small>{{ notificationCategory(item.category) }}<template v-if="notificationTime(item.createdAt)"> · {{ notificationTime(item.createdAt) }}</template></small></div><button v-if="!item.read" class="button button--secondary" type="button" @click="b4.readNotification(item.messageId)">标记已读</button></article></div><p v-else class="b4-inline-empty">暂无新通知。</p></section>
       <B12SocialExtensions />
@@ -206,6 +206,7 @@ function cleanupOfflineDownload(downloadId: string): void { void b4.cleanupOffli
       <section class="b4-card"><div class="b4-card__heading"><div><p class="card-kicker">离线学习</p><h2>内容包</h2></div><span>{{ b4.online ? '在线' : '离线' }}</span></div><div v-if="b4.offlinePackages.length" class="b4-package-list"><article v-for="item in b4.offlinePackages" :key="item.packageId" class="b4-package"><div><strong>{{ item.packageCode }}</strong><small>{{ fileSize(item.sizeBytes) }} · {{ item.completedPartCount }}/{{ item.partCount }} 部分</small></div><span class="b4-package__state">{{ packageStatus(item.downloadState ?? item.state) }}</span><button v-if="item.state === 'PUBLISHED' && !item.downloadId" class="button button--secondary" type="button" @click="authorizePackage(item.packageId)">请求授权</button><button v-if="item.downloadId && ['AUTHORIZED', 'DOWNLOADING'].includes(item.downloadState ?? '')" class="button button--secondary" type="button" @click="updateOfflineDownload(item.downloadId, 'PAUSE')">暂停</button><button v-if="item.downloadId && item.downloadState === 'PAUSED'" class="button button--secondary" type="button" @click="updateOfflineDownload(item.downloadId, 'RESUME')">继续</button><button v-if="item.downloadId && item.downloadState !== 'ACTIVE_LOCAL'" class="button button--ghost" type="button" @click="cleanupOfflineDownload(item.downloadId)">清理</button></article></div><p v-else class="b4-inline-empty">暂无可下载的内容包。</p></section>
       <section class="b4-card"><div class="b4-card__heading"><div><p class="card-kicker">离线操作</p><h2>待同步</h2></div><span>{{ b4.queueCount }} 条</span></div><div v-if="b4.offlineRecords.length" class="b4-queue-list"><article v-for="item in b4.offlineRecords" :key="item.id"><strong>自习室互动</strong><span>{{ queueStatus(item.status) }}</span><small v-if="item.lastError">{{ item.lastError }}</small></article></div><p v-else class="b4-inline-empty">没有待同步操作。</p><button v-if="b4.queueCount" class="button button--primary" type="button" @click="b4.syncOffline">立即同步</button></section>
     </template>
+    <aside class="v2-b4world-rail" aria-label="练习提示"><h2>语言世界</h2><ol><li>选择一个场景开始练习。</li><li>完成后可回到列表继续。</li></ol></aside>
   </section>
 </template>
 
@@ -215,4 +216,151 @@ function cleanupOfflineDownload(downloadId: string): void { void b4.cleanupOffli
 @media(max-width:640px){.b4-hero{padding:24px}.b4-hero__orb{width:76px;height:76px;font-size:30px}.b4-status{display:grid}.b4-status__actions{justify-content:flex-start}.b4-metrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.b4-metric{padding:14px}.b4-metric strong{font-size:24px}.b4-card{padding:18px}.b4-map,.b4-game-grid,.b4-item-grid,.b4-form-grid{grid-template-columns:1fr}.b4-quest,.b4-room,.b4-notification,.b4-package{grid-template-columns:1fr}.b4-room__actions{grid-column:auto}.b4-loadout button{grid-column:auto}.b4-timer{font-size:46px}}
 @media(prefers-reduced-motion:reduce){.b4-hero__orb{animation:none}}
 .b4-game--disabled{background:var(--yx-color-surface-page)}.b4-game--disabled .b4-game__icon{color:var(--yx-color-text-secondary);background:var(--yx-color-surface-muted)}.b4-game .button:disabled{cursor:not-allowed;opacity:.55}
+</style>
+
+<style>
+/* v2 B4World 页面级布局（只做样式）：对齐 webDemo learner-web 原型 world（.desktop-page--world .desktop-body 1.3fr 1fr，主列+侧栏）与普通内容页卡片风格。
+ * 选择器全部以 .v2-page--b4world 开头；颜色只用 --v2-* tokens，不写死色值以适配暗色。 */
+.v2-page--b4world.b4-page{background:var(--v2-bg);color:var(--v2-ink);font-family:var(--v2-font);display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:var(--v2-space-5);align-items:start;min-width:0}
+.v2-page--b4world>header.experience-heading{grid-column:1/-1;min-width:0}
+.v2-page--b4world>.b4-status{grid-column:1/-1;min-width:0}
+.v2-page--b4world>.b4-tabs{grid-column:1/-1;min-width:0}
+.v2-page--b4world>section{grid-column:1;min-width:0}
+.v2-page--b4world .b4-status{display:flex;align-items:center;justify-content:space-between;gap:var(--v2-space-4);flex-wrap:wrap;background:var(--v2-card);border:1px solid var(--v2-line);border-radius:var(--v2-radius-lg);box-shadow:var(--v2-shadow);padding:var(--v2-space-4) var(--v2-space-5)}
+.v2-page--b4world .b4-status>div:first-child{display:grid;gap:var(--v2-space-1);min-width:0}
+.v2-page--b4world .b4-status strong{color:var(--v2-ink);font-size:var(--v2-text-sm)}
+.v2-page--b4world .b4-status span{color:var(--v2-mut);font-size:var(--v2-text-sm);line-height:1.6}
+.v2-page--b4world .b4-status__actions{display:flex;align-items:center;justify-content:flex-end;gap:var(--v2-space-2);flex-wrap:wrap}
+.v2-page--b4world .b4-queue{display:inline-flex;align-items:center;padding:var(--v2-space-1) var(--v2-space-3);border-radius:var(--v2-radius-pill);background:var(--v2-warn-soft);color:var(--v2-warn);font-size:var(--v2-text-xs);font-weight:700}
+.v2-page--b4world .quality-select{display:flex;align-items:center;gap:var(--v2-space-2);color:var(--v2-mut);font-size:var(--v2-text-sm)}
+.v2-page--b4world .b4-tabs{display:flex;gap:var(--v2-space-2);overflow:auto;padding-bottom:var(--v2-space-1)}
+.v2-page--b4world .b4-tabs button{min-height:40px;padding:0 var(--v2-space-4);border:1px solid var(--v2-line);border-radius:var(--v2-radius-pill);background:var(--v2-card);color:var(--v2-mut);font-size:var(--v2-text-sm);font-weight:600;white-space:nowrap;cursor:pointer;transition:border-color var(--v2-motion-fast)}
+.v2-page--b4world .b4-tabs button:hover{border-color:var(--v2-brand);color:var(--v2-brand)}
+.v2-page--b4world .b4-tabs .b4-tabs__item--active{background:var(--v2-soft);border-color:var(--v2-brand);color:var(--v2-brand)}
+.v2-page--b4world .b4-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--v2-space-4);background:transparent;border:0;box-shadow:none;padding:0}
+.v2-page--b4world .b4-metric{display:grid;gap:var(--v2-space-2);align-content:start;background:var(--v2-card);border:1px solid var(--v2-line);border-radius:var(--v2-radius-lg);box-shadow:var(--v2-shadow);padding:var(--v2-space-5);min-width:0}
+.v2-page--b4world .b4-metric span{margin:0;color:var(--v2-brand);font-size:var(--v2-text-xs);font-weight:800;letter-spacing:1px}
+.v2-page--b4world .b4-metric strong{margin:0;color:var(--v2-ink);font-size:var(--v2-text-xl);line-height:1.25}
+.v2-page--b4world .b4-metric small{color:var(--v2-mut);font-size:var(--v2-text-xs);line-height:1.6}
+.v2-page--b4world .b4-grid{background:transparent;border:0;box-shadow:none;padding:0;display:grid;gap:var(--v2-space-5);min-width:0;align-items:start}
+.v2-page--b4world .v2-b4world-main{grid-template-columns:minmax(0,1.3fr) minmax(0,1fr)}
+.v2-page--b4world .b4-grid--social{grid-template-columns:minmax(0,1.4fr) minmax(0,.6fr)}
+.v2-page--b4world .b4-grid--avatar{grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr)}
+.v2-page--b4world .b4-card{background:var(--v2-card);border:1px solid var(--v2-line);border-radius:var(--v2-radius-lg);box-shadow:var(--v2-shadow);padding:var(--v2-space-6);min-width:0;display:grid;gap:var(--v2-space-4);align-content:start}
+.v2-page--b4world .b12-card{background:var(--v2-card);border:1px solid var(--v2-line);border-radius:var(--v2-radius-lg);box-shadow:var(--v2-shadow);padding:var(--v2-space-6);min-width:0;display:grid;gap:var(--v2-space-4);align-content:start}
+.v2-page--b4world .b4-card--wide{min-width:0}
+.v2-page--b4world .b4-card__heading{display:flex;align-items:flex-start;justify-content:space-between;gap:var(--v2-space-4)}
+.v2-page--b4world .b12-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:var(--v2-space-4)}
+.v2-page--b4world .b4-card__heading>div{display:grid;gap:var(--v2-space-1);min-width:0}
+.v2-page--b4world .b12-heading>div{display:grid;gap:var(--v2-space-1);min-width:0}
+.v2-page--b4world .b4-card h2{margin:0;font-size:var(--v2-text-lg);color:var(--v2-ink);line-height:1.4}
+.v2-page--b4world .b12-heading h2{margin:0;font-size:var(--v2-text-lg);color:var(--v2-ink);line-height:1.4}
+.v2-page--b4world .card-kicker{margin:0;color:var(--v2-brand);font-size:var(--v2-text-xs);font-weight:700;letter-spacing:1px}
+.v2-page--b4world .b12-kicker{margin:0;color:var(--v2-brand);font-size:var(--v2-text-xs);font-weight:700;letter-spacing:1px}
+.v2-page--b4world .b4-card__heading>span{color:var(--v2-mut);font-size:var(--v2-text-xs)}
+.v2-page--b4world .b12-state{color:var(--v2-mut);font-size:var(--v2-text-xs)}
+.v2-page--b4world .b4-fact-tag{display:inline-flex;align-items:center;width:fit-content;max-width:100%;padding:var(--v2-space-1) var(--v2-space-3);border-radius:var(--v2-radius-pill);background:var(--v2-soft);color:var(--v2-brand);font-size:var(--v2-text-xs);font-weight:700;line-height:1.6}
+.v2-page--b4world .b4-session-state{display:inline-flex;align-items:center;width:fit-content;max-width:100%;padding:var(--v2-space-1) var(--v2-space-3);border-radius:var(--v2-radius-pill);background:var(--v2-ok-soft);color:var(--v2-ok);font-size:var(--v2-text-xs);font-weight:700}
+.v2-page--b4world .b4-quest__state{display:inline-flex;align-items:center;padding:var(--v2-space-1) var(--v2-space-3);border-radius:var(--v2-radius-pill);background:var(--v2-soft);color:var(--v2-brand);font-size:var(--v2-text-xs);font-weight:700;white-space:nowrap}
+.v2-page--b4world .b4-package__state{color:var(--v2-brand);font-weight:800;font-size:var(--v2-text-xs)}
+.v2-page--b4world .b12-chest__kind{display:inline-flex;align-items:center;padding:var(--v2-space-1) var(--v2-space-3);border-radius:var(--v2-radius-pill);background:var(--v2-soft);color:var(--v2-brand);font-size:var(--v2-text-xs);font-weight:700}
+.v2-page--b4world .b4-muted{margin:0;color:var(--v2-mut);font-size:var(--v2-text-sm);line-height:1.7}
+.v2-page--b4world .b12-muted{margin:0;color:var(--v2-mut);font-size:var(--v2-text-sm);line-height:1.7}
+.v2-page--b4world .b4-inline-empty{margin:0;padding:var(--v2-space-4);border:1px dashed var(--v2-line);border-radius:var(--v2-radius-md);color:var(--v2-mut);font-size:var(--v2-text-sm);line-height:1.6}
+.v2-page--b4world .b12-inline-state{margin:0;color:var(--v2-mut);font-size:var(--v2-text-sm);line-height:1.6}
+.v2-page--b4world .b4-warning{margin:0;padding:var(--v2-space-3) var(--v2-space-4);border-radius:var(--v2-radius-md);background:var(--v2-warn-soft);color:var(--v2-warn);font-size:var(--v2-text-sm);line-height:1.6}
+.v2-page--b4world .b4-result{display:flex;align-items:center;gap:var(--v2-space-4);flex-wrap:wrap;background:var(--v2-ok-soft);color:var(--v2-ok)}
+.v2-page--b4world .b4-result span{color:var(--v2-ok);font-size:var(--v2-text-sm)}
+.v2-page--b4world .b4-result small{color:var(--v2-ok);font-size:var(--v2-text-xs)}
+.v2-page--b4world .b12-result{display:grid;gap:var(--v2-space-1);padding:var(--v2-space-4);background:var(--v2-ok-soft);color:var(--v2-ok);border-radius:var(--v2-radius-md);font-size:var(--v2-text-sm);line-height:1.6}
+.v2-page--b4world .b4-map{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--v2-space-3);padding:var(--v2-space-4);background:var(--v2-surface);border:1px solid var(--v2-line);border-radius:var(--v2-radius-md)}
+.v2-page--b4world .b4-map__node{display:grid;gap:var(--v2-space-2);align-content:start;min-height:120px;padding:var(--v2-space-4);background:var(--v2-card);border:1px solid var(--v2-line);border-radius:var(--v2-radius-md);min-width:0}
+.v2-page--b4world .b4-map__dot{width:var(--v2-space-5);height:var(--v2-space-5);border-radius:50%;background:var(--v2-brand)}
+.v2-page--b4world .b4-map__node strong{color:var(--v2-ink);font-size:var(--v2-text-sm)}
+.v2-page--b4world .b4-map__node small{color:var(--v2-mut);font-size:var(--v2-text-xs);line-height:1.5}
+.v2-page--b4world .b4-map__node em{color:var(--v2-mut);font-size:var(--v2-text-xs);font-style:normal;line-height:1.5}
+.v2-page--b4world .b4-season{display:flex;align-items:center;gap:var(--v2-space-3);flex-wrap:wrap;padding:var(--v2-space-3) var(--v2-space-4);background:var(--v2-surface);border:1px solid var(--v2-line);border-radius:var(--v2-radius-md)}
+.v2-page--b4world .b4-season strong{color:var(--v2-brand);font-size:var(--v2-text-sm)}
+.v2-page--b4world .b4-season span{color:var(--v2-ink);font-size:var(--v2-text-sm)}
+.v2-page--b4world .b4-season small{color:var(--v2-mut);font-size:var(--v2-text-xs)}
+.v2-page--b4world .b4-streak-mark{display:grid;width:38px;height:38px;place-items:center;border-radius:var(--v2-radius-md);background:var(--v2-soft);color:var(--v2-brand);font-size:var(--v2-text-md)}
+.v2-page--b4world .b4-streak-number{display:flex;align-items:baseline;gap:var(--v2-space-3)}
+.v2-page--b4world .b4-streak-number strong{font-size:var(--v2-text-2xl);line-height:1;color:var(--v2-brand)}
+.v2-page--b4world .b4-streak-number span{color:var(--v2-mut);font-size:var(--v2-text-sm)}
+.v2-page--b4world .b4-toggle{display:flex;align-items:center;gap:var(--v2-space-2);color:var(--v2-ink);font-size:var(--v2-text-sm)}
+.v2-page--b4world .b4-field{display:grid;gap:var(--v2-space-2);color:var(--v2-mut);font-size:var(--v2-text-sm)}
+.v2-page--b4world .b4-field input{width:100%;min-height:40px;padding:0 var(--v2-space-3);border:1px solid var(--v2-line);border-radius:var(--v2-radius-md);background:var(--v2-card);color:var(--v2-ink);font-size:var(--v2-text-sm)}
+.v2-page--b4world .b4-field select{width:100%;min-height:40px;padding:0 var(--v2-space-3);border:1px solid var(--v2-line);border-radius:var(--v2-radius-md);background:var(--v2-card);color:var(--v2-ink);font-size:var(--v2-text-sm)}
+.v2-page--b4world .quality-select select{min-height:38px;padding:0 var(--v2-space-3);border:1px solid var(--v2-line);border-radius:var(--v2-radius-md);background:var(--v2-card);color:var(--v2-ink);font-size:var(--v2-text-sm)}
+.v2-page--b4world .b4-room__actions select{min-height:40px;padding:0 var(--v2-space-3);border:1px solid var(--v2-line);border-radius:var(--v2-radius-md);background:var(--v2-card);color:var(--v2-ink);font-size:var(--v2-text-sm)}
+.v2-page--b4world .b12-report-controls select{min-height:40px;padding:0 var(--v2-space-3);border:1px solid var(--v2-line);border-radius:var(--v2-radius-md);background:var(--v2-card);color:var(--v2-ink);font-size:var(--v2-text-sm)}
+.v2-page--b4world .b4-button-row{display:flex;gap:var(--v2-space-2);flex-wrap:wrap}
+.v2-page--b4world .b4-quest-list{display:grid;gap:var(--v2-space-3)}
+.v2-page--b4world .b4-room-list{display:grid;gap:var(--v2-space-3)}
+.v2-page--b4world .b4-notification-list{display:grid;gap:var(--v2-space-3)}
+.v2-page--b4world .b4-loadout-list{display:grid;gap:var(--v2-space-3)}
+.v2-page--b4world .b4-package-list{display:grid;gap:var(--v2-space-3)}
+.v2-page--b4world .b4-queue-list{display:grid;gap:var(--v2-space-3)}
+.v2-page--b4world .b12-chest-list{display:grid;gap:var(--v2-space-3)}
+.v2-page--b4world .b4-quest{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;align-items:center;gap:var(--v2-space-4);padding:var(--v2-space-4);background:var(--v2-surface);border:1px solid var(--v2-line);border-radius:var(--v2-radius-md)}
+.v2-page--b4world .b4-quest>div:first-child{display:grid;gap:var(--v2-space-1);min-width:0}
+.v2-page--b4world .b4-quest strong{color:var(--v2-ink);font-size:var(--v2-text-sm)}
+.v2-page--b4world .b4-quest small{color:var(--v2-mut);font-size:var(--v2-text-xs)}
+.v2-page--b4world .b4-quest__progress{display:grid;gap:var(--v2-space-2)}
+.v2-page--b4world .b4-quest__progress span{color:var(--v2-mut);font-size:var(--v2-text-xs)}
+.v2-page--b4world .b4-quest progress{width:100%;height:8px;accent-color:var(--v2-brand)}
+.v2-page--b4world .b4-game-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--v2-space-3)}
+.v2-page--b4world .b4-game{display:grid;gap:var(--v2-space-2);align-content:start;padding:var(--v2-space-4);background:var(--v2-surface);border:1px solid var(--v2-line);border-radius:var(--v2-radius-md);min-width:0}
+.v2-page--b4world .b4-game strong{color:var(--v2-ink);font-size:var(--v2-text-sm)}
+.v2-page--b4world .b4-game>span:not(.b4-game__icon){color:var(--v2-mut);font-size:var(--v2-text-xs)}
+.v2-page--b4world .b4-game__icon{display:grid;width:36px;height:36px;place-items:center;border-radius:var(--v2-radius-md);background:var(--v2-soft);color:var(--v2-brand)}
+.v2-page--b4world .b4-session-meta{display:flex;gap:var(--v2-space-3);flex-wrap:wrap;color:var(--v2-mut);font-size:var(--v2-text-xs)}
+.v2-page--b4world .b4-room{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:var(--v2-space-3);padding:var(--v2-space-4);background:var(--v2-surface);border:1px solid var(--v2-line);border-radius:var(--v2-radius-md)}
+.v2-page--b4world .b4-room>div:first-child{display:grid;gap:var(--v2-space-1);min-width:0}
+.v2-page--b4world .b4-room strong{color:var(--v2-ink);font-size:var(--v2-text-sm)}
+.v2-page--b4world .b4-room small{color:var(--v2-mut);font-size:var(--v2-text-xs)}
+.v2-page--b4world .b4-room>span{color:var(--v2-mut);font-size:var(--v2-text-xs)}
+.v2-page--b4world .b4-room__actions{grid-column:1/-1;display:flex;align-items:center;gap:var(--v2-space-2);flex-wrap:wrap;border-top:1px solid var(--v2-line);padding-top:var(--v2-space-3)}
+.v2-page--b4world .b4-timer{display:block;font-size:var(--v2-text-2xl);color:var(--v2-brand);font-variant-numeric:tabular-nums;line-height:1.1}
+.v2-page--b4world .b4-notification{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:var(--v2-space-3);padding:var(--v2-space-4);background:var(--v2-surface);border:1px solid var(--v2-line);border-radius:var(--v2-radius-md)}
+.v2-page--b4world .b4-notification>div{display:grid;gap:var(--v2-space-1);min-width:0}
+.v2-page--b4world .b4-notification strong{color:var(--v2-ink);font-size:var(--v2-text-sm)}
+.v2-page--b4world .b4-notification p{margin:0;color:var(--v2-mut);font-size:var(--v2-text-sm);line-height:1.6}
+.v2-page--b4world .b4-notification small{color:var(--v2-mut);font-size:var(--v2-text-xs)}
+.v2-page--b4world .b4-notification--unread{background:var(--v2-soft);border-color:var(--v2-brand)}
+.v2-page--b4world .b12-room-tabs{display:flex;gap:var(--v2-space-2);flex-wrap:wrap}
+.v2-page--b4world .b12-room-tabs button{min-height:36px;padding:0 var(--v2-space-4);border:1px solid var(--v2-line);border-radius:var(--v2-radius-pill);background:var(--v2-card);color:var(--v2-mut);font-size:var(--v2-text-xs);font-weight:700;cursor:pointer}
+.v2-page--b4world .b12-room-tabs button.active{background:var(--v2-soft);border-color:var(--v2-brand);color:var(--v2-brand)}
+.v2-page--b4world .b12-report-controls{display:grid;gap:var(--v2-space-2);color:var(--v2-mut);font-size:var(--v2-text-sm)}
+.v2-page--b4world .b12-settings-link{color:var(--v2-brand);font-weight:600;font-size:var(--v2-text-sm)}
+.v2-page--b4world .b4-avatar-preview{display:grid;place-items:center;gap:var(--v2-space-2);min-height:180px;padding:var(--v2-space-5);border-radius:var(--v2-radius-md);background:var(--v2-surface);border:1px solid var(--v2-line);color:var(--v2-brand)}
+.v2-page--b4world .b4-avatar-preview small{color:var(--v2-mut);font-size:var(--v2-text-xs)}
+.v2-page--b4world .b4-loadout{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:var(--v2-space-3);padding:var(--v2-space-4);background:var(--v2-surface);border:1px solid var(--v2-line);border-radius:var(--v2-radius-md)}
+.v2-page--b4world .b4-loadout>div:first-child{display:grid;gap:var(--v2-space-1);min-width:0}
+.v2-page--b4world .b4-loadout strong{color:var(--v2-ink);font-size:var(--v2-text-sm)}
+.v2-page--b4world .b4-loadout small{color:var(--v2-mut);font-size:var(--v2-text-xs)}
+.v2-page--b4world .b4-loadout>span{color:var(--v2-mut);font-size:var(--v2-text-xs)}
+.v2-page--b4world .b4-item-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--v2-space-3)}
+.v2-page--b4world .b4-item{display:grid;gap:var(--v2-space-1);padding:var(--v2-space-4);background:var(--v2-surface);border:1px solid var(--v2-line);border-radius:var(--v2-radius-md);min-width:0}
+.v2-page--b4world .b4-item span{color:var(--v2-brand);font-size:var(--v2-text-xs);font-weight:800}
+.v2-page--b4world .b4-item strong{color:var(--v2-ink);font-size:var(--v2-text-sm)}
+.v2-page--b4world .b4-package{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:var(--v2-space-3);padding:var(--v2-space-4);background:var(--v2-surface);border:1px solid var(--v2-line);border-radius:var(--v2-radius-md)}
+.v2-page--b4world .b4-package>div:first-child{display:grid;gap:var(--v2-space-1);min-width:0}
+.v2-page--b4world .b4-package strong{color:var(--v2-ink);font-size:var(--v2-text-sm)}
+.v2-page--b4world .b4-package small{color:var(--v2-mut);font-size:var(--v2-text-xs)}
+.v2-page--b4world .b4-package>span{color:var(--v2-mut);font-size:var(--v2-text-xs)}
+.v2-page--b4world .b4-queue-list article{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:var(--v2-space-1);padding:var(--v2-space-3) var(--v2-space-4);background:var(--v2-surface);border:1px solid var(--v2-line);border-radius:var(--v2-radius-md)}
+.v2-page--b4world .b4-queue-list strong{color:var(--v2-ink);font-size:var(--v2-text-sm)}
+.v2-page--b4world .b4-queue-list span{color:var(--v2-warn);font-size:var(--v2-text-xs)}
+.v2-page--b4world .b4-queue-list small{grid-column:1/-1;color:var(--v2-mut);font-size:var(--v2-text-xs)}
+.v2-page--b4world .b12-chest{display:grid;gap:var(--v2-space-2);padding:var(--v2-space-4);background:var(--v2-surface);border:1px solid var(--v2-line);border-radius:var(--v2-radius-md)}
+.v2-page--b4world .v2-b4world-rail{grid-column:2;grid-row:4/span 40;position:sticky;top:var(--v2-space-6);background:var(--v2-card);border:1px solid var(--v2-line);border-radius:var(--v2-radius-lg);box-shadow:var(--v2-shadow);padding:var(--v2-space-6);min-width:0;display:grid;align-content:start;gap:var(--v2-space-3)}
+.v2-page--b4world .v2-b4world-rail h2{margin:0;font-size:var(--v2-text-lg);color:var(--v2-ink);line-height:1.4}
+.v2-page--b4world .v2-b4world-rail ol{margin:0;padding-left:var(--v2-space-5);display:grid;gap:var(--v2-space-2);color:var(--v2-mut);font-size:var(--v2-text-sm);line-height:1.7}
+.v2-page--b4world button:focus-visible{outline:2px solid var(--v2-brand);outline-offset:2px}
+.v2-page--b4world a:focus-visible{outline:2px solid var(--v2-brand);outline-offset:2px}
+.v2-page--b4world input:focus-visible{outline:2px solid var(--v2-brand);outline-offset:2px}
+.v2-page--b4world select:focus-visible{outline:2px solid var(--v2-brand);outline-offset:2px}
+@media (max-width:1190px){.v2-page--b4world{grid-template-columns:minmax(0,1fr) 250px}.v2-page--b4world .b4-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.v2-page--b4world .b4-map{grid-template-columns:repeat(2,minmax(0,1fr))}.v2-page--b4world .v2-b4world-main{grid-template-columns:minmax(0,1fr) minmax(0,.9fr)}}
+@media (max-width:900px){.v2-page--b4world{grid-template-columns:1fr}.v2-page--b4world>section{grid-column:1}.v2-page--b4world .v2-b4world-main{grid-template-columns:1fr}.v2-page--b4world .b4-grid--social{grid-template-columns:1fr}.v2-page--b4world .b4-grid--avatar{grid-template-columns:1fr}.v2-page--b4world .b4-map{grid-template-columns:1fr}.v2-page--b4world .b4-game-grid{grid-template-columns:1fr}.v2-page--b4world .b4-item-grid{grid-template-columns:1fr}.v2-page--b4world .b4-quest{grid-template-columns:1fr}.v2-page--b4world .b4-room{grid-template-columns:1fr}.v2-page--b4world .b4-notification{grid-template-columns:1fr}.v2-page--b4world .b4-package{grid-template-columns:1fr}.v2-page--b4world .v2-b4world-rail{grid-column:1;grid-row:auto;position:static}}
 </style>

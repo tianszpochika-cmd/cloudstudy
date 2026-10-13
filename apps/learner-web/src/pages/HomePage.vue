@@ -73,7 +73,7 @@ async function loadGuide(): Promise<void> {
 onMounted(() => { store.restore(); void store.loadHome(); void loadGuide() })
 </script>
 <template>
-  <section class="page-stack home-experience" aria-labelledby="home-title">
+  <section class="page-stack home-experience v2-home" aria-labelledby="home-title">
     <div class="home-greeting"><div><p class="experience-eyebrow"><AppIcon name="spark" :size="15" />A LITTLE, EVERY DAY</p><h1 id="home-title">{{ t('homeTitle') }}</h1><p>{{ t('homeDescription') }}</p></div><RouterLink v-if="!isRestricted" class="text-link" :to="{ name: 'onboarding' }">{{ t('setGoal') }}<AppIcon name="arrow" :size="16" /></RouterLink></div>
     <RouterLink v-if="guideVisible" class="onboarding-guide" :to="guideTo"><span class="onboarding-guide__copy"><span>{{ guideLabel }}</span><small v-if="guideSteps.length">剩余步骤：{{ guideSteps.join('、') }}</small></span><strong>{{ guideAction }}</strong></RouterLink>
     <p v-if="firstLearningCopy" class="first-learning-guide" role="status">{{ firstLearningCopy }}</p>
@@ -101,14 +101,14 @@ onMounted(() => { store.restore(); void store.loadHome(); void loadGuide() })
           <StatePanel v-if="store.homeStatus === 'loading'" state="loading" :title="t('loading')" />
           <StatePanel v-else-if="store.homeStatus === 'offline'" state="offline" :title="ui.t('common.state.offline')" :description="ui.t('learning.state.offline')" :action-label="ui.t('common.retry')" @action="() => { void store.loadHome() }" />
           <StatePanel v-else-if="store.lastError" state="error" :title="t('myTasks')" :description="userFacingError(store.lastError, '暂时无法读取今日任务，请稍后重试。')" action-label="重试" @action="() => { void store.loadHome() }" />
-          <div v-else-if="tasks.length" class="daily-task-list"><button v-for="(task, index) in tasks.slice(0,4)" :key="task.id" type="button" class="daily-task" :class="{ 'daily-task--done': task.completed }" :disabled="task.completed || isRestricted" @click="start(task)"><span class="daily-task__number"><AppIcon v-if="task.completed" name="check" :size="18" /><template v-else>{{ String(index + 1).padStart(2, '0') }}</template></span><span class="daily-task__copy"><strong>{{ task.title }}</strong><small>{{ task.minutes }} {{ t('minutes') }} · {{ task.description }}</small></span><span class="daily-task__state">{{ task.completed ? t('completed') : task.contentCode ? t('start') : '浏览课程' }}</span><AppIcon v-if="!task.completed" name="arrow" :size="17" /></button></div>
+          <div v-else-if="tasks.length" class="daily-task-list v2-home-table"><div class="v2-home-thead" aria-hidden="true"><span>学习内容</span><span>预计时长</span><span>操作</span></div><button v-for="(task, index) in tasks.slice(0,4)" :key="task.id" type="button" class="daily-task v2-home-row" :class="{ 'daily-task--done': task.completed }" :disabled="task.completed || isRestricted" @click="start(task)"><span class="daily-task__number"><AppIcon v-if="task.completed" name="check" :size="18" /><template v-else>{{ String(index + 1).padStart(2, '0') }}</template></span><span class="daily-task__copy"><strong>{{ task.title }}</strong><small>{{ task.minutes }} {{ t('minutes') }} · {{ task.description }}</small></span><span class="v2-home-min">{{ task.minutes }} {{ t('minutes') }}</span><span class="daily-task__state">{{ task.completed ? t('completed') : task.contentCode ? t('start') : '浏览课程' }}</span><AppIcon v-if="!task.completed" name="arrow" :size="17" /></button></div>
           <StatePanel v-else-if="planEmpty" state="empty" :title="planEmpty.title" :description="planEmpty.description" :action-label="planEmpty.action" @action="openPlanEmpty(planEmpty)" />
           <StatePanel v-else state="empty" title="今天还没有安排任务" description="可以先从书架选择一节课。" action-label="浏览课程" @action="router.push({ name: 'courses' })" />
         </article>
       </div>
-      <aside class="home-aside">
+      <aside class="home-aside v2-home-rail">
         <article class="experience-card daily-progress"><span class="card-kicker">LITTLE STEPS COUNT</span><h2>{{ t('progress') }}</h2><div class="daily-progress__ring" :style="{ '--progress': (stream ? store.todayProgress : 0) + '%' }"><div><strong>{{ stream ? store.todayProgress + '%' : '—' }}</strong><span>{{ t('completed') }}</span></div></div><div class="daily-progress__facts"><span>{{ t('target') }}<strong>{{ stream ? stream.targetMinutes : '—' }} <small>{{ t('minutes') }}</small></strong></span><span>{{ t('completed') }}<strong>{{ stream ? stream.completedMinutes : '—' }} <small>{{ t('minutes') }}</small></strong></span></div><p v-if="tasks.length" class="muted">{{ completeCount }} / {{ tasks.length }} {{ t('completed') }}</p></article>
-        <RouterLink class="world-invitation" :to="{ name: 'world' }"><div class="world-invitation__art" aria-hidden="true"><span>✦</span><i></i><b>✧</b></div><span class="card-kicker">YOUR LITTLE WORLD</span><h3>{{ t('worldTitle') }}</h3><p>{{ t('worldHint') }}</p><span class="text-link">{{ t('enterWorld') }}<AppIcon name="arrow" :size="17" /></span></RouterLink>
+        <RouterLink class="world-invitation" :to="{ name: 'world' }"><div class="world-invitation__art" aria-hidden="true"><span>✦</span><i></i><b>✧</b></div><span class="card-kicker">YOUR LITTLE WORLD</span><h3>{{ t('worldTitle') }}</h3><p>{{ t('worldHint') }}</p><span class="text-link">{{ t('enterWorld') }}<AppIcon name="arrow" :size="17" /></span></RouterLink><nav class="experience-card v2-home-quick" aria-label="快捷入口"><span class="card-kicker">快捷入口</span><RouterLink :to="{ name: 'vocabulary' }">词汇复习<AppIcon name="arrow" :size="15" /></RouterLink><RouterLink :to="{ name: 'mistakes' }">错题本<AppIcon name="arrow" :size="15" /></RouterLink><RouterLink :to="{ name: 'b2-report' }">学习报告<AppIcon name="arrow" :size="15" /></RouterLink></nav>
       </aside>
     </div>
     <section class="home-explore"><div class="section-heading"><div><span class="card-kicker">FIND YOUR RHYTHM</span><h2>{{ t('explore') }}</h2></div><p>{{ t('exploreDescription') }}</p></div><div class="activity-grid"><RouterLink v-for="(activity, index) in activities" :key="activity.key" class="activity-card" :data-tone="index % 3" :to="{ name: activity.name }"><span class="activity-card__icon"><AppIcon :name="activity.icon" :size="25" /></span><span><strong>{{ t(activity.key) }}</strong><small>{{ t(activity.hint) }}</small></span><AppIcon name="arrow" :size="17" /></RouterLink></div></section>
@@ -127,4 +127,36 @@ onMounted(() => { store.restore(); void store.loadHome(); void loadGuide() })
 .plan-banner{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 14px;border:1px solid var(--yx-color-border);border-radius:12px;background:var(--yx-color-surface-card);margin-bottom:12px}
 .plan-banner span{color:var(--yx-color-text-secondary);font-size:13px}
 .first-learning-guide,.plan-notice{margin:0 0 12px;padding:12px 14px;border:1px solid var(--yx-color-border);border-radius:12px;background:var(--yx-color-surface-card)}
+</style>
+<style>
+.home-experience.v2-home h1 { font-size: 28px; letter-spacing: -1px; color: var(--v2-ink); }
+.home-experience.v2-home .experience-eyebrow, .home-experience.v2-home .card-kicker { color: var(--v2-brand); letter-spacing: 1px; font-weight: 700; }
+.home-experience.v2-home .home-hero { background: var(--v2-grad-soft); color: var(--v2-ink); border: 1px solid var(--v2-line); box-shadow: var(--v2-shadow-pop); border-radius: var(--v2-radius-lg); }
+.home-experience.v2-home .home-hero h2 { color: var(--v2-ink); font-size: 30px; letter-spacing: -1px; }
+.home-experience.v2-home .home-hero p { color: var(--v2-mut); }
+.home-experience.v2-home .home-hero .hero-label { background: var(--v2-soft); color: var(--v2-brand); border-color: transparent; }
+.home-experience.v2-home .home-hero .button, .home-experience.v2-home .home-hero button { background: var(--v2-brand); color: var(--v2-inverse); border-radius: var(--v2-radius-md); }
+.home-experience.v2-home .home-hero .study-artwork { opacity: .55; }
+.home-experience.v2-home .experience-card { background: var(--v2-card); border: 1px solid var(--v2-line); border-radius: var(--v2-radius-lg); box-shadow: var(--v2-shadow); }
+.home-experience.v2-home .daily-task-list { border: 1px solid var(--v2-line); border-radius: var(--v2-radius-md); overflow: hidden; }
+.home-experience.v2-home .daily-task { border-radius: 0; border-bottom: 1px solid var(--v2-line); padding: 14px 16px; transition: background var(--v2-motion-fast); }
+.home-experience.v2-home .daily-task:last-child { border-bottom: 0; }
+.home-experience.v2-home .daily-task:hover:not(:disabled) { background: var(--v2-surface); }
+.home-experience.v2-home .daily-task--done { opacity: .6; }
+.home-experience.v2-home .text-link { color: var(--v2-brand); font-weight: 600; }
+.home-experience.v2-home .onboarding-guide { background: var(--v2-soft); border-color: var(--v2-line); }
+.home-experience.v2-home .v2-home-thead { display: grid; grid-template-columns: 44px minmax(0, 1fr) 90px 110px; gap: 12px; padding: 10px 16px; background: var(--v2-surface); color: var(--v2-mut); font-size: 12px; font-weight: 600; border-bottom: 1px solid var(--v2-line); }
+.home-experience.v2-home .v2-home-thead span:first-child { grid-column: 1 / 3; }
+.home-experience.v2-home .v2-home-row { display: grid; grid-template-columns: 44px minmax(0, 1fr) 90px 110px; gap: 12px; align-items: center; border-top: 0; text-align: left; }
+.home-experience.v2-home .v2-home-row > svg { display: none; }
+.home-experience.v2-home .v2-home-row .daily-task__copy small { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+.home-experience.v2-home .v2-home-min { color: var(--v2-mut); font-size: 13px; }
+.home-experience.v2-home .v2-home-row .daily-task__state { justify-self: start; padding: 4px 12px; border-radius: var(--v2-radius-pill); background: var(--v2-soft); color: var(--v2-brand); font-size: 12px; font-weight: 700; }
+.home-experience.v2-home .v2-home-row.daily-task--done .daily-task__state { background: var(--v2-ok-soft); color: var(--v2-ok); }
+.home-experience.v2-home .v2-home-rail { display: flex; flex-direction: column; gap: 16px; }
+.home-experience.v2-home .v2-home-rail .world-invitation { background: var(--v2-card); border: 1px solid var(--v2-line); border-radius: var(--v2-radius-lg); box-shadow: var(--v2-shadow); color: var(--v2-ink); }
+.home-experience.v2-home .v2-home-quick { display: flex; flex-direction: column; gap: 6px; padding: 18px 20px; }
+.home-experience.v2-home .v2-home-quick a { display: flex; align-items: center; justify-content: space-between; min-height: 40px; padding: 0 12px; border-radius: var(--v2-radius-md); color: var(--v2-ink); text-decoration: none; font-size: 13px; transition: background var(--v2-motion-fast); }
+.home-experience.v2-home .v2-home-quick a:hover { background: var(--v2-surface); color: var(--v2-brand); }
+@media (max-width: 650px) { .home-experience.v2-home .v2-home-thead { display: none; } .home-experience.v2-home .v2-home-row { grid-template-columns: 40px minmax(0, 1fr); } .home-experience.v2-home .v2-home-min { display: none; } .home-experience.v2-home .v2-home-row .daily-task__state { grid-column: 2; } }
 </style>

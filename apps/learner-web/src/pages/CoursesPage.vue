@@ -35,15 +35,35 @@ function resumeActive(): void {
 }
 </script>
 <template>
-  <section class="page-stack library-experience" aria-labelledby="courses-title">
+  <section class="page-stack library-experience v2-page v2-page--courses" aria-labelledby="courses-title">
     <ExperienceHeader page="Courses" title-id="courses-title" icon="book" />
-    <div class="library-toolbar"><div class="filter-pills"><button type="button" :class="{ active: !kind }" :aria-pressed="!kind" @click="kind = ''">{{ t('all') }}</button><button v-for="value in kinds" :key="value" type="button" :class="{ active: kind === value }" :aria-pressed="kind === value" @click="kind = value">{{ kindLabel(value) }}</button></div><label class="search-field"><AppIcon name="search" :size="18" /><input v-model="query" type="search" :aria-label="t('searchCourses')" :placeholder="t('searchCourses')" /></label><button v-if="activeContinue" class="button button--secondary" type="button" @click="resumeActive">继续学习</button></div>
+    <div class="library-toolbar v2-courses-toolbar"><div class="v2-courses-toolbar__copy"><h3>发现适合你的内容</h3><p class="muted">章节、进度和收藏会保存在你的学习档案里。</p></div><div class="filter-pills"><button type="button" :class="{ active: !kind }" :aria-pressed="!kind" @click="kind = ''">{{ t('all') }}</button><button v-for="value in kinds" :key="value" type="button" :class="{ active: kind === value }" :aria-pressed="kind === value" @click="kind = value">{{ kindLabel(value) }}</button></div><label class="search-field"><AppIcon name="search" :size="18" /><input v-model="query" type="search" :aria-label="t('searchCourses')" :placeholder="t('searchCourses')" /></label><button v-if="activeContinue" class="button button--secondary" type="button" @click="resumeActive">继续学习</button></div>
     <p v-if="releaseNote" data-release-note>{{ releaseNote }}</p>
     <StatePanel v-if="store.homeStatus === 'loading'" state="loading" :title="t('loading')" />
     <StatePanel v-else-if="store.homeStatus === 'forbidden'" state="permission" title="暂时没有访问权限" description="请确认使用了正确的账号，或前往帮助页反馈。" action-label="帮助与反馈" @action="router.push({ name: 'support' })" />
     <StatePanel v-else-if="shelf === 'error'" state="error" title="内容暂时没能加载" :description="userFacingError(store.lastError, '请检查网络后重试。')" action-label="重新加载" @action="retry" />
     <StatePanel v-else-if="shelf === 'catalog-empty'" state="empty" title="书架正在准备中" description="有可学习的内容时，会出现在这里。你也可以先调整学习目标。" :action-label="t('setGoal')" @action="router.push({ name: 'onboarding' })" />
     <StatePanel v-else-if="shelf === 'no-matches'" state="empty" :title="t('noResults')" :action-label="t('clearFilter')" @action="() => { query = ''; kind = '' }" />
-    <div v-else class="library-grid"><button v-for="(item, index) in results" :key="item.contentId" type="button" class="library-card" @click="openCourse(item.contentId)"><span class="library-card__art" :data-tone="index % 3"><span class="library-card__edition">{{ String(index + 1).padStart(2, '0') }}</span><AppIcon name="book" :size="62" /><span class="library-card__language">{{ item.contentLocale }}</span><i></i></span><span class="library-card__body"><small>{{ kindLabel(item.kind) }}</small><strong>{{ item.title }}</strong><span>{{ item.description || t('courseFallback') }}</span><span class="library-card__cta">{{ t('openCourse') }}<AppIcon name="arrow" :size="18" /></span></span></button></div>
+    <div v-else class="library-grid v2-courses-grid"><button v-for="(item, index) in results" :key="item.contentId" type="button" class="library-card v2-course-card" @click="openCourse(item.contentId)"><span class="library-card__art" :data-tone="index % 3"><span class="library-card__edition">{{ String(index + 1).padStart(2, '0') }}</span><AppIcon name="book" :size="62" /><span class="library-card__language">{{ item.contentLocale }}</span><i></i></span><span class="library-card__body"><small>{{ kindLabel(item.kind) }}</small><strong>{{ item.title }}</strong><span>{{ item.description || t('courseFallback') }}</span><span class="library-card__cta">{{ t('openCourse') }}<AppIcon name="arrow" :size="18" /></span></span></button></div>
   </section>
 </template>
+
+<style>
+.v2-page--courses .v2-courses-toolbar { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "copy copy" "pills search"; gap: 14px 16px; align-items: center; padding: 22px; background: var(--v2-card); border: 1px solid var(--v2-line); border-radius: var(--v2-radius-lg); box-shadow: var(--v2-shadow); }
+.v2-page--courses .v2-courses-toolbar__copy { grid-area: copy; }
+.v2-page--courses .v2-courses-toolbar__copy h3 { margin: 0 0 4px; font-size: 18px; }
+.v2-page--courses .v2-courses-toolbar__copy p { margin: 0; font-size: 13px; }
+.v2-page--courses .v2-courses-toolbar .filter-pills { grid-area: pills; background: transparent; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.v2-page--courses .v2-courses-toolbar .filter-pills button { min-height: 36px; padding: 0 14px; border: 1px solid var(--v2-line); border-radius: var(--v2-radius-pill); background: var(--v2-card); color: var(--v2-ink); font-size: 13px; }
+.v2-page--courses .v2-courses-toolbar .filter-pills button.active { border-color: var(--v2-brand); background: var(--v2-soft); color: var(--v2-brand); font-weight: 700; }
+.v2-page--courses .v2-courses-toolbar .search-field { grid-area: search; min-width: 240px; border: 1px solid var(--v2-line); border-radius: var(--v2-radius-md); background: var(--v2-surface); }
+.v2-page--courses .v2-courses-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.v2-page--courses .v2-course-card { display: flex; flex-direction: column; text-align: left; padding: 0; overflow: hidden; background: var(--v2-card); border: 1px solid var(--v2-line); border-radius: var(--v2-radius-lg); box-shadow: var(--v2-shadow); transition: border-color var(--v2-motion-fast), transform var(--v2-motion-fast); }
+.v2-page--courses .v2-course-card:hover { border-color: var(--v2-brand2); transform: translateY(-2px); }
+.v2-page--courses .v2-course-card:focus-visible { outline: 2px solid var(--v2-focus); outline-offset: 2px; }
+.v2-page--courses .v2-course-card .library-card__art { height: 96px; min-height: 0; background: var(--v2-grad-soft); }
+.v2-page--courses .v2-course-card .library-card__body { padding: 16px 18px 18px; }
+.v2-page--courses .v2-course-card .library-card__cta { color: var(--v2-brand); font-weight: 700; }
+@media (max-width: 1100px) { .v2-page--courses .v2-courses-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 650px) { .v2-page--courses .v2-courses-grid { grid-template-columns: 1fr; } .v2-page--courses .v2-courses-toolbar { grid-template-columns: 1fr; grid-template-areas: "copy" "pills" "search"; } .v2-page--courses .v2-courses-toolbar .search-field { min-width: 0; } }
+</style>

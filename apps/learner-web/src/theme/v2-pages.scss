@@ -1,0 +1,107 @@
+/* 学员 Web 各业务页共用的 v2 外观层：把原型 webDemo/shared/components.css 的观感映射到学员 Web 现有通用类名。
+ * 只用 v2-tokens.scss 里的 --v2-*（原型 --brand 对应 --v2-brand，依此类推）。
+ * 所有选择器以 .v2-page 开头（页面根元素会带 v2-page 类）。 */
+
+.v2-page h1 {
+  font-size: 28px;
+  letter-spacing: -1px;
+  color: var(--v2-ink);
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.v2-page .eyebrow,
+.v2-page .card-kicker,
+.v2-page .experience-eyebrow {
+  color: var(--v2-brand);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.v2-page .lead,
+.v2-page .muted {
+  color: var(--v2-mut);
+}
+
+.v2-page .info-card,
+.v2-page .form-card,
+.v2-page .experience-card,
+.v2-page .task-list,
+.v2-page .report-card,
+.v2-page .lesson-card {
+  background: var(--v2-card);
+  border: 1px solid var(--v2-line);
+  border-radius: var(--v2-radius-lg);
+  box-shadow: var(--v2-shadow);
+  padding: 22px;
+}
+
+.v2-page .button {
+  border-radius: var(--v2-radius-md);
+  min-height: 44px;
+  font-weight: 650;
+  transition: background var(--v2-motion-fast), box-shadow var(--v2-motion-fast);
+}
+
+.v2-page .button--primary {
+  background: var(--v2-brand);
+  color: var(--v2-inverse);
+}
+
+.v2-page .button--primary:hover:not(:disabled) {
+  background: var(--v2-brand2);
+}
+
+.v2-page .button--secondary {
+  background: var(--v2-soft);
+  color: var(--v2-brand);
+}
+
+.v2-page .button--ghost {
+  background: var(--v2-card);
+  border: 1px solid var(--v2-line);
+  color: var(--v2-brand);
+}
+
+.v2-page .yx-pill,
+.v2-page .yx-fact-tag,
+.v2-page .filter-pills button {
+  border-radius: var(--v2-radius-pill);
+  background: var(--v2-soft);
+  color: var(--v2-brand);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.v2-page .yx-pill--warning {
+  background: var(--v2-warn-soft);
+  color: var(--v2-warn);
+}
+
+.v2-page .error-text {
+  color: var(--v2-bad);
+}
+
+.v2-page .success-text {
+  color: var(--v2-ok);
+}
+
+.v2-page .section-heading h2 {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.v2-page a.text-link {
+  color: var(--v2-brand);
+  font-weight: 600;
+}
+
+.v2-page :is(.button, a, button):focus-visible {
+  outline: 2px solid var(--v2-focus);
+  outline-offset: 2px;
+}
+.v2-page .v2-sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.v2-page .experience-heading--hero { background: var(--v2-grad-soft); color: var(--v2-ink); border: 1px solid var(--v2-line); border-radius: var(--v2-radius-lg); box-shadow: var(--v2-shadow); }
+.v2-page .experience-heading--hero h1, .v2-page .experience-heading--hero p { color: var(--v2-ink); }
+.v2-page .experience-heading--hero .experience-eyebrow { color: var(--v2-brand); }
