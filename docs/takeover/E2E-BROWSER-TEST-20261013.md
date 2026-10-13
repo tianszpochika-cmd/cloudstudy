@@ -181,3 +181,19 @@
 - **验证**：新浏览器上下文登录 `e2e-20261013-learner` → `/home`，无「剩余步骤：定级」、无 onboarding-guide。截图：`/workspace/e2e-seed/fix-learner-home-fresh.png`。
 
 部署：仅重建 learner-web / admin-web / mobile-h5（tag ba346d44）。未改 contracts/、schema、nginx、证书。
+
+## 修复 2：登录落到 /lexemes 与 404 布局（2026-10-13，27bbe619）
+- **原因**：
+  - `/lexemes` 是 admin-web 的路由，学员站并没有这个路由。旧逻辑只检查返回地址是不是站内路径，不检查是不是学员路由；所以只要 `?redirect=/lexemes` 或 sessionStorage `yx.auth.return-to` 里留着这个值，登录后就会被带过去。也可能是浏览器地址栏自动补全，直接打开了这个地址。
+  - 404 页（EmptyPage）和 Forbidden 页都套在登录用的 AuthLayout 里，内容被挤进右侧 500px 一栏，再减去 280px 的侧栏，文字只能竖着排。
+- **修复**：
+  - 新增 `learnerReturnTo`：返回地址必须解析到真实存在的学员路由，404、login、register、reset-password 一律回退到 /home。登录页和已登录守卫都改用它。
+  - 404 和 Forbidden 不再使用 AuthLayout：已登录时在 AppShell 里显示，未登录时在新的 StatusLayout 里居中显示。
+  - mobile 本来只接受 `/pages/x/y` 形式的返回地址，没有改动。
+- **测试**：新增 `tests/return-to-and-status-layout.test.mjs`，通过；全量测试仍是原有的 19 个失败，与改动前一致；vue-tsc 通过。
+- **验证**（截图：`/workspace/e2e-seed/fix2-*.png`）：
+  - 干净浏览器登录直接进 /home。
+  - 带 `?redirect=/lexemes`、同时预置脏的 sessionStorage 登录，仍然进 /home。
+  - /lexemes：未登录时 404 卡片居中，宽 660px；已登录时在 AppShell 内正常横排。
+  - /forbidden 同样正常。
+- **部署**：只重建了 learner-web。
