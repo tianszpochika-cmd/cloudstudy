@@ -2,10 +2,13 @@
 import { onErrorCaptured, ref } from 'vue'
 import { RouterView, useRouter } from 'vue-router'
 import AppShell from './layouts/AppShell.vue'
+import StatusLayout from './layouts/StatusLayout.vue'
+import { useSessionStore } from './stores/session'
 
 const errorMessage = ref<string | null>(null)
 const booting = ref(true)
 const router = useRouter()
+const session = useSessionStore()
 
 void router.isReady().finally(() => {
   booting.value = false
@@ -37,9 +40,12 @@ function retry(): void {
   </div>
   <RouterView v-else>
     <template #default="{ Component, route }">
-      <AppShell v-if="route.meta.shell">
+      <AppShell v-if="route.meta.shell || (route.meta.statusPage && session.isAuthenticated)">
         <component :is="Component" />
       </AppShell>
+      <StatusLayout v-else-if="route.meta.statusPage">
+        <component :is="Component" />
+      </StatusLayout>
       <component :is="Component" v-else />
     </template>
   </RouterView>

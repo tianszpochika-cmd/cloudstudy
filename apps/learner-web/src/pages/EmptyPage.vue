@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
-import AuthLayout from '../layouts/AuthLayout.vue'
 const router = useRouter()
 import EmptyState from '../components/EmptyState.vue'
 
@@ -11,7 +10,7 @@ defineProps<{
 </script>
 
 <template>
-  <AuthLayout class="v2-page v2-page--empty">
+  <section class="v2-page v2-page--empty">
     <div class="v2-empty-layout">
       <div class="v2-empty-main">
         <section class="page-stack v2-empty-card">
@@ -27,7 +26,7 @@ defineProps<{
         </ol>
       </aside>
     </div>
-  </AuthLayout>
+  </section>
 </template>
 
 <style>

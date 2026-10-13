@@ -186,7 +186,7 @@ export const routes: RouteRecordRaw[] = [
   // Kept as a compatibility URL for old bookmarks. The visible first-run
   // experience is the single onboarding flow, not a separate gate page.
   { path: '/adult-gate', name: 'adult-gate', redirect: { name: 'onboarding' }, meta: { requiresAuth: true, title: '开始设置' } },
-  { path: '/forbidden', name: 'forbidden', component: () => import('../pages/ForbiddenPage.vue'), meta: { requiresAuth: true, title: '访问权限' } },
+  { path: '/forbidden', name: 'forbidden', component: () => import('../pages/ForbiddenPage.vue'), meta: { requiresAuth: true, statusPage: true, title: '访问权限' } },
   {
     path: '/commerce',
     name: 'commerce',
@@ -229,6 +229,7 @@ export const routes: RouteRecordRaw[] = [
     name: 'not-found',
     component: () => import('../pages/EmptyPage.vue'),
     props: { title: '页面不存在', description: '请返回学习首页，或从导航中选择一个可用入口。' },
+    meta: { statusPage: true, title: '页面不存在' },
   },
 ]
 
@@ -237,6 +238,23 @@ export const router = createRouter({
   routes,
   scrollBehavior: () => ({ top: 0 }),
 })
+
+const NON_RETURN_ROUTES = new Set(['not-found', 'login', 'register', 'reset-password'])
+
+/**
+ * Only honor a return path that resolves to a real learner route. Paths from other
+ * apps on the shared domain (e.g. admin /lexemes) or unknown paths fall back to home.
+ */
+export function learnerReturnTo(value: unknown, fallback = '/home'): string {
+  const safe = safeReturnTo(value, fallback)
+  try {
+    const resolved = router.resolve(safe)
+    if (!resolved.matched.length || NON_RETURN_ROUTES.has(String(resolved.name ?? ''))) return fallback
+    return safe
+  } catch {
+    return fallback
+  }
+}
 
 router.beforeEach(async (to) => {
   const session = useSessionStore(pinia)
@@ -251,7 +269,7 @@ router.beforeEach(async (to) => {
   }
 
   if ((to.name === 'login' || to.name === 'register' || to.name === 'reset-password') && session.isAuthenticated) {
-    return session.consumeReturnTo()
+    return learnerReturnTo(session.consumeReturnTo())
   }
 
   const allowedAccountRoutes = new Set(['settings', 'settings-root', 'me', 'support', 'platform', 'forbidden'])

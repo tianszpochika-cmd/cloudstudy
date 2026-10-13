@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { learnerReturnTo } from '../router'
 import AppIcon from '../components/AppIcon.vue'
 import { useExperienceText } from '../platform/experience-ui'
 const t = useExperienceText()
@@ -8,7 +9,6 @@ import { computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { authT } from '../auth/i18n'
 import { learnerAuthFailureCopy, learnerAuthFailureMarker, learnerLoginArrival } from '../auth/auth-failure-copy'
-import { safeReturnTo } from '../auth/gateway-auth'
 import { useSessionStore } from '../stores/session'
 
 const route = useRoute()
@@ -19,7 +19,7 @@ const password = ref('')
 const submitting = ref(false)
 const loginError = ref<string | null>(null)
 const failureKind = ref<'consent_withdrawn' | 'eligibility_insufficient' | 'credentials' | 'other' | null>(null)
-const redirectTarget = computed(() => safeReturnTo(route.query.redirect ?? session.peekReturnTo()))
+const redirectTarget = computed(() => learnerReturnTo(route.query.redirect ?? session.peekReturnTo()))
 const arrival = computed(() => learnerLoginArrival(route.query.reason))
 const noticeKind = computed(() => {
   if (failureKind.value === 'consent_withdrawn' || failureKind.value === 'eligibility_insufficient') return failureKind.value
@@ -69,7 +69,7 @@ async function submit(): Promise<void> {
       return
     }
     failureKind.value = null
-    await router.replace(session.adultGate === 'REQUIRED' ? { name: 'onboarding' } : session.adultGate === 'REJECTED' ? { name: 'forbidden' } : session.consumeReturnTo())
+    await router.replace(session.adultGate === 'REQUIRED' ? { name: 'onboarding' } : session.adultGate === 'REJECTED' ? { name: 'forbidden' } : learnerReturnTo(session.consumeReturnTo()))
   } finally {
     submitting.value = false
   }

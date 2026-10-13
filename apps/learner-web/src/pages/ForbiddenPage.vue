@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
-import AuthLayout from '../layouts/AuthLayout.vue'
 import { authT } from '../auth/i18n'
 import { useSessionStore } from '../stores/session'
 
@@ -23,7 +22,7 @@ async function logout(): Promise<void> {
 </script>
 
 <template>
-  <AuthLayout class="v2-page v2-page--forbidden">
+  <section class="v2-page v2-page--forbidden">
     <div class="v2-forbidden-layout">
       <div class="v2-forbidden-main">
         <section class="login-card v2-forbidden-card" aria-labelledby="forbidden-title">
@@ -52,7 +51,7 @@ async function logout(): Promise<void> {
         </ol>
       </aside>
     </div>
-  </AuthLayout>
+  </section>
 </template>
 
 <style>
