@@ -88,3 +88,36 @@ page {
   --v2-shadow-pop: 0 18px 60px #00000066;
   --v2-grad: linear-gradient(120deg, #46317d, #6549a1);
 }
+
+/* The shared mobile adapter owns high-contrast colors. Bridge the v2 aliases
+ * on both the page and root so uni's page variables do not shadow this theme. */
+:root[data-theme="high-contrast"],
+:root[data-theme="high-contrast"] page,
+.yx-theme-high-contrast,
+.yx-theme-high-contrast page,
+.b10-theme--high-contrast,
+.b10-theme--high-contrast page {
+  color-scheme: dark;
+  --v2-bg: var(--yx-surface-page);
+  --v2-card: var(--yx-surface-card);
+  --v2-surface: var(--yx-surface-soft);
+  --v2-ink: var(--yx-text-primary);
+  --v2-mut: var(--yx-text-secondary);
+  --v2-brand: var(--yx-brand);
+  --v2-brand2: var(--yx-brand);
+  --v2-soft: var(--yx-brand-soft);
+  --v2-line: var(--yx-border);
+  --v2-ok: var(--yx-success);
+  --v2-ok-soft: var(--yx-success-soft);
+  --v2-bad: var(--yx-danger);
+  --v2-bad-soft: var(--yx-danger-soft);
+  --v2-warn: var(--yx-warning);
+  --v2-warn-soft: var(--yx-warning-soft);
+  --v2-inverse: var(--yx-surface-page);
+  --v2-side: var(--yx-surface-card);
+  --v2-side-ink: var(--yx-text-primary);
+  --v2-side-muted: var(--yx-text-secondary);
+  --v2-shadow: none;
+  --v2-shadow-pop: none;
+  --v2-grad: var(--v2-brand);
+}

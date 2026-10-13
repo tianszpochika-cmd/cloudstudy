@@ -1,0 +1,163 @@
+{
+  "before": [
+    {
+      "node": 2,
+      "id": "mobile-login-identifier",
+      "invalid": null,
+      "describedby": null,
+      "label": "账号",
+      "autocomplete": "username",
+      "wrapperClass": "login-input is-focused",
+      "wrapperInvalid": null,
+      "focused": true
+    },
+    {
+      "node": 3,
+      "id": "mobile-login-password",
+      "invalid": null,
+      "describedby": null,
+      "label": "密码",
+      "autocomplete": "current-password",
+      "wrapperClass": "login-input",
+      "wrapperInvalid": null,
+      "focused": false
+    }
+  ],
+  "immediately": [
+    {
+      "node": 2,
+      "id": "mobile-login-identifier",
+      "invalid": null,
+      "describedby": null,
+      "label": "账号",
+      "autocomplete": "username",
+      "wrapperClass": "login-input is-invalid is-focused",
+      "wrapperInvalid": "true",
+      "focused": true
+    },
+    {
+      "node": 3,
+      "id": "mobile-login-password",
+      "invalid": null,
+      "describedby": null,
+      "label": "密码",
+      "autocomplete": "current-password",
+      "wrapperClass": "login-input is-invalid",
+      "wrapperInvalid": "true",
+      "focused": false
+    }
+  ],
+  "settled": [
+    {
+      "node": 2,
+      "id": "mobile-login-identifier",
+      "invalid": null,
+      "describedby": null,
+      "label": "账号",
+      "autocomplete": "username",
+      "wrapperClass": "login-input is-invalid is-focused",
+      "wrapperInvalid": "true",
+      "focused": true
+    },
+    {
+      "node": 3,
+      "id": "mobile-login-password",
+      "invalid": null,
+      "describedby": null,
+      "label": "密码",
+      "autocomplete": "current-password",
+      "wrapperClass": "login-input is-invalid",
+      "wrapperInvalid": "true",
+      "focused": false
+    }
+  ],
+  "error": "请输入账号和密码。",
+  "events": [
+    {
+      "time": 1634.199999999255,
+      "node": 1,
+      "tag": "UNI-INPUT",
+      "attribute": "class",
+      "old": "login-input",
+      "current": "login-input is-focused"
+    },
+    {
+      "time": 1664.800000000745,
+      "node": 1,
+      "tag": "UNI-INPUT",
+      "attribute": "class",
+      "old": "login-input is-focused",
+      "current": "login-input"
+    },
+    {
+      "time": 1666.800000000745,
+      "node": 1,
+      "tag": "UNI-INPUT",
+      "attribute": "class",
+      "old": "login-input",
+      "current": "login-input is-invalid"
+    },
+    {
+      "time": 1666.800000000745,
+      "node": 1,
+      "tag": "UNI-INPUT",
+      "attribute": "aria-invalid",
+      "old": null,
+      "current": "true"
+    },
+    {
+      "time": 1666.800000000745,
+      "node": 1,
+      "tag": "UNI-INPUT",
+      "attribute": "aria-describedby",
+      "old": null,
+      "current": "mobile-login-error"
+    },
+    {
+      "time": 1666.800000000745,
+      "node": 4,
+      "tag": "UNI-INPUT",
+      "attribute": "class",
+      "old": "login-input",
+      "current": "login-input is-invalid"
+    },
+    {
+      "time": 1666.800000000745,
+      "node": 4,
+      "tag": "UNI-INPUT",
+      "attribute": "aria-invalid",
+      "old": null,
+      "current": "true"
+    },
+    {
+      "time": 1666.800000000745,
+      "node": 4,
+      "tag": "UNI-INPUT",
+      "attribute": "aria-describedby",
+      "old": null,
+      "current": "mobile-login-error"
+    },
+    {
+      "time": 1666.800000000745,
+      "childList": true,
+      "added": [],
+      "removed": []
+    },
+    {
+      "time": 1666.800000000745,
+      "childList": true,
+      "added": [
+        "UNI-TEXT"
+      ],
+      "removed": []
+    },
+    {
+      "time": 1668.1000000014901,
+      "node": 1,
+      "tag": "UNI-INPUT",
+      "attribute": "class",
+      "old": "login-input is-invalid",
+      "current": "login-input is-invalid is-focused"
+    }
+  ]
+}

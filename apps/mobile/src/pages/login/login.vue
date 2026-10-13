@@ -1,18 +1,16 @@
 <script setup lang="ts">
 import AppIcon from '../../components/AppIcon.vue'
-import MobilePageHeader from '../../components/MobilePageHeader.vue'
 import { openUniPage } from '../../platform/uni-runtime'
 import { mobileT, useMobileExperience } from '../../platform/experience'
-const { experienceStyle, experienceMotion } = useMobileExperience()
-
-import { onLoad } from '@dcloudio/uni-app'
-import { onMounted, ref } from 'vue'
+import { onLoad, onShow } from '@dcloudio/uni-app'
+import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import { authT } from '../../auth/i18n'
 import { mobileAuthFailureCopy } from '../../auth/auth-failure-copy'
 import { continueAfterLogin } from '../../auth/navigation'
 import { safeMobileRouteReturnTo } from '../../auth/gateway-auth'
 import { useSessionStore } from '../../stores/session'
 
+const { experienceStyle, experienceMotion } = useMobileExperience()
 const session = useSessionStore()
 const showPassword = ref(false)
 const identifier = ref('')
@@ -21,12 +19,84 @@ const returnTo = ref('/pages/home/home')
 const submitting = ref(false)
 const initialized = ref(false)
 const error = ref<string | null>(null)
+const requiredError = ref(false)
+const validationAttempted = ref(false)
+const identifierMissing = computed(() => validationAttempted.value && !identifier.value.trim())
+const passwordMissing = computed(() => validationAttempted.value && !password.value)
+const identifierFocused = ref(false)
+const passwordFocused = ref(false)
+const identifierField = ref<{ $el?: HTMLElement } | null>(null)
+const passwordField = ref<{ $el?: HTMLElement } | null>(null)
+let passwordControls = 'mobile-login-password-host'
+// #ifdef H5
+passwordControls = 'mobile-login-password'
+// #endif
+
+watch([identifier, password], () => {
+  if (requiredError.value && identifier.value.trim() && password.value) {
+    requiredError.value = false
+    error.value = null
+  }
+})
+
+// Keep uni-input and its focus/model handling on every platform. This version of
+// uni-h5 passes ARIA to the wrapper and limits native autocomplete to off/code.
+// The H5-only bridge supplies semantics to the actual input, without reading values.
+// #ifdef H5
+function syncNativeInput(host: { $el?: HTMLElement } | null, kind: 'identifier' | 'password'): void {
+  const input = host?.$el?.querySelector<HTMLInputElement>('.uni-input-input')
+  if (!input) return
+  const missing = kind === 'identifier' ? identifierMissing.value : passwordMissing.value
+  const attributes: Record<string, string | null> = {
+    id: `mobile-login-${kind}`,
+    name: kind,
+    autocomplete: kind === 'identifier' ? 'username' : 'current-password',
+    autocapitalize: 'none',
+    spellcheck: 'false',
+    required: '',
+    'aria-label': authT(`login.${kind}`),
+    'aria-labelledby': `mobile-login-${kind}-label`,
+    'aria-invalid': missing ? 'true' : null,
+    'aria-describedby': missing && error.value ? 'mobile-login-error' : null,
+  }
+  for (const [name, value] of Object.entries(attributes)) {
+    if (value === null) input.removeAttribute(name)
+    else input.setAttribute(name, value)
+  }
+}
+function syncNativeInputs(): void {
+  syncNativeInput(identifierField.value, 'identifier')
+  syncNativeInput(passwordField.value, 'password')
+}
+// Uni's view/form slots can update without updating the page component itself.
+// Watch the semantic state explicitly, after their render flush, and synchronize
+// after the child input patch; a page onUpdated hook does not cover these slots.
+watch([
+  identifier, password, identifierMissing, passwordMissing, error, submitting,
+  showPassword, identifierFocused, passwordFocused,
+  () => authT('login.identifier'), () => authT('login.password'),
+], async () => {
+  await nextTick()
+  syncNativeInputs()
+}, { flush: 'post' })
+// #endif
+
+async function focusField(kind: 'identifier' | 'password'): Promise<void> {
+  if (submitting.value) return
+  identifierFocused.value = false
+  passwordFocused.value = false
+  await nextTick()
+  if (submitting.value) return
+  if (kind === 'identifier') identifierFocused.value = true
+  else passwordFocused.value = true
+}
 
 function timeout<T>(promise: Promise<T>, milliseconds: number, message: string): Promise<T> {
-  return Promise.race([
-    promise,
-    new Promise<T>((_, reject) => setTimeout(() => reject(new Error(message)), milliseconds)),
-  ])
+  let timer: ReturnType<typeof setTimeout>
+  const expired = new Promise<T>((_, reject) => {
+    timer = setTimeout(() => reject(new Error(message)), milliseconds)
+  })
+  return Promise.race([promise, expired]).finally(() => clearTimeout(timer))
 }
 
 async function initialize(options?: { returnTo?: string; redirect?: string }): Promise<void> {
@@ -37,27 +107,45 @@ async function initialize(options?: { returnTo?: string; redirect?: string }): P
   session.setReturnTo(returnTo.value)
   try {
     await timeout(session.restore(), 1500, '会话恢复超时')
-    if (session.isAuthenticated) {
-      await continueAfterLogin(session.consumeReturnTo())
-    }
+    if (session.isAuthenticated) await continueAfterLogin(session.consumeReturnTo())
   } catch {
-    // The form remains available when an existing cookie/session cannot be restored.
+    // An unavailable existing session leaves the public login form usable.
   }
 }
 
 onLoad((options) => { void initialize(options) })
-onMounted(() => { void initialize() })
+onShow(() => { uni.setNavigationBarTitle({ title: mobileT('auth.login.start') }) })
+onMounted(() => {
+  void initialize()
+  // #ifdef H5
+  syncNativeInputs()
+  // #endif
+})
+
+function navigate(path: string): void {
+  if (!submitting.value) openUniPage(path)
+}
+
+function togglePassword(): void {
+  if (!submitting.value) showPassword.value = !showPassword.value
+}
 
 async function submit(): Promise<void> {
   if (submitting.value) return
+  validationAttempted.value = true
+  error.value = null
+  requiredError.value = false
   if (!identifier.value.trim() || !password.value) {
+    requiredError.value = true
     error.value = authT('login.required')
+    await focusField(!identifier.value.trim() ? 'identifier' : 'password')
     return
   }
   submitting.value = true
-  error.value = null
   try {
-    const success = await timeout(session.login(identifier.value, password.value), 10000, '登录服务响应超时，请稍后重试。')
+    // The IAM and permission requests already have bounded client timeouts.
+    // A separate page race could unlock this form while the login still runs.
+    const success = await session.login(identifier.value, password.value)
     if (!success) {
       error.value = mobileAuthFailureCopy('login', session.lastError, mobileT)
       return
@@ -73,228 +161,130 @@ async function submit(): Promise<void> {
 </script>
 
 <template>
-  <view class="yx-page yx-login-page v2-login" :style="experienceStyle" :data-motion="experienceMotion">
-
-    <MobilePageHeader page="login" compact />
-
-    <view class="v2-login-brand" aria-hidden="true"><view class="v2-login-brand-mark"><AppIcon name="spark" :size="28" /></view></view>
-
-    <view class="yx-card yx-login-card v2-login-card">
-      <text class="v2-login-title">{{ mobileT('account') }}</text>
-      <text class="mobile-auth-note v2-login-desc">{{ mobileT('adultNote') }}</text>
-      <!-- No .prevent here: uni emits submit as a component event whose payload has no
-           preventDefault, and Vue skips a handler guarded by a modifier that does not apply to a
-           non-DOM event. There is also no native default action left to cancel. -->
-      <form class="v2-login-form" @submit="submit">
-        <label class="yx-field v2-login-field">
-          <text>{{ authT('login.identifier') }}</text>
-          <input class="v2-login-input" :aria-label="authT('login.identifier')" v-model="identifier" type="text" autocomplete="username" :placeholder="authT('login.identifierPlaceholder')" :disabled="submitting" />
-        </label>
-        <label class="yx-field v2-login-field">
-          <text>{{ authT('login.password') }}</text>
-          <view class="mobile-password v2-login-password"><input class="v2-login-input" :aria-label="authT('login.password')" v-model="password" :password="!showPassword" type="text" autocomplete="current-password" :placeholder="authT('login.passwordPlaceholder')" :disabled="submitting" @confirm="submit" /><button tabindex="0" role="button" class="mobile-text-button mobile-password-toggle v2-login-toggle" :aria-pressed="showPassword" @click="showPassword = !showPassword">{{ mobileT(showPassword ? 'hide' : 'show') }}</button></view>
-        </label>
-        <text v-if="error" class="yx-login-error v2-login-error" role="alert">{{ error }}</text>
-        <!-- uni-app resolves form submission from the form-type prop, not from the HTML type
-             attribute: its button component only calls form.submit() when props.formType is
-             'submit'. A plain type="submit" therefore looks right on H5 but never submits. -->
-        <button tabindex="0" role="button" class="yx-button v2-login-primary" form-type="submit" :disabled="submitting">
-          {{ submitting ? authT('login.submitting') : authT('login.start') }}
-        </button>
+  <view class="yx-page v2-login" :style="experienceStyle" :data-motion="experienceMotion">
+    <view class="login-topline">
+      <view class="login-brand"><AppIcon name="brand" :size="25" /><text>{{ mobileT('brand') }}</text></view>
+      <text class="login-adult-note">{{ mobileT('auth.login.note') }}</text>
+    </view>
+    <view class="login-content" aria-labelledby="mobile-login-title">
+      <text id="mobile-login-title" class="login-title" role="heading" aria-level="1">{{ mobileT('auth.login.title') }}</text>
+      <text class="login-description">{{ mobileT('auth.login.description') }}</text>
+      <!-- Uni submit is a component event, not a native form event. -->
+      <form class="login-form" :aria-busy="submitting" @submit="submit">
+        <view class="login-fields">
+        <view class="login-field">
+          <label id="mobile-login-identifier-label" class="login-label" for="mobile-login-identifier-host" @click="focusField('identifier')">{{ authT('login.identifier') }}</label>
+          <input
+            id="mobile-login-identifier-host"
+            ref="identifierField"
+            v-model="identifier"
+            name="identifier"
+            class="login-input"
+            :class="{ 'is-invalid': identifierMissing, 'is-focused': identifierFocused }"
+            type="text"
+            text-content-type="username"
+            confirm-type="next"
+            :focus="identifierFocused"
+            :placeholder="authT('login.identifierPlaceholder')"
+            :disabled="submitting"
+            :aria-invalid="identifierMissing || undefined"
+            :aria-describedby="identifierMissing && error ? 'mobile-login-error' : undefined"
+            @focus="identifierFocused = true"
+            @blur="identifierFocused = false"
+            @confirm="focusField('password')"
+          />
+        </view>
+        <view class="login-field">
+          <label id="mobile-login-password-label" class="login-label" for="mobile-login-password-host" @click="focusField('password')">{{ authT('login.password') }}</label>
+          <view class="login-password">
+            <input
+              id="mobile-login-password-host"
+              ref="passwordField"
+              v-model="password"
+              name="password"
+              class="login-input"
+              :class="{ 'is-invalid': passwordMissing, 'is-focused': passwordFocused }"
+              :password="!showPassword"
+              type="text"
+              text-content-type="password"
+              confirm-type="go"
+              :focus="passwordFocused"
+              :placeholder="authT('login.passwordPlaceholder')"
+              :disabled="submitting"
+              :aria-invalid="passwordMissing || undefined"
+              :aria-describedby="passwordMissing && error ? 'mobile-login-error' : undefined"
+              @focus="passwordFocused = true"
+              @blur="passwordFocused = false"
+              @confirm="submit"
+            />
+            <button
+              class="login-password-toggle"
+              tabindex="0"
+              role="button"
+              :aria-controls="passwordControls"
+              :aria-label="mobileT(showPassword ? 'auth.login.hidePassword' : 'auth.login.showPassword')"
+              :aria-pressed="showPassword"
+              :disabled="submitting"
+              :aria-disabled="submitting"
+              @click="togglePassword"
+            ><AppIcon name="eye" :size="19" /></button>
+          </view>
+          <view class="login-recovery"><button class="login-text-button" tabindex="0" role="button" :disabled="submitting" :aria-disabled="submitting" @click="navigate('/pages/reset-password/reset-password')">{{ mobileT('forgot') }}</button></view>
+        </view>
+        <text v-if="error" id="mobile-login-error" class="login-error" role="alert">{{ error }}</text>
+        <button class="login-submit" tabindex="0" role="button" form-type="submit" :disabled="submitting" :aria-disabled="submitting">{{ submitting ? authT('login.submitting') : mobileT('auth.login.start') }}</button>
+        </view>
       </form>
-      <button tabindex="0" role="button" class="mobile-text-button v2-login-secondary" @click="openUniPage('/pages/register/register')">{{ mobileT('register') }} ↗</button>
-      <button tabindex="0" role="button" class="mobile-text-button v2-login-secondary" @click="openUniPage('/pages/reset-password/reset-password')">{{ mobileT('forgot') }}</button>
+      <view class="login-register"><text>{{ mobileT('auth.login.noAccount') }}</text><button class="login-text-button" tabindex="0" role="button" :disabled="submitting" :aria-disabled="submitting" @click="navigate('/pages/register/register')">{{ mobileT('register') }}</button></view>
     </view>
   </view>
 </template>
 
 <style scoped lang="scss">
-/* v2 登录页换皮：对齐 webDemo shared/components.css 中 .card/.lb/input/.btn/.btn.ghost，
- * 与 mobile/refine.css 登录区（品牌区居中、表单卡抬升、主按钮 50px、次按钮文本化）。
- * 颜色/间距/圆角/字体/阴影一律取 var(--v2-*)，深色经 .yx-theme-dark 自动切换。 */
-.v2-login {
-  box-sizing: border-box;
+.yx-page.v2-login {
+  max-width: none;
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: calc(20px + env(safe-area-inset-top)) 24px calc(40px + env(safe-area-inset-bottom));
   background: var(--v2-bg);
   color: var(--v2-ink);
   font-family: var(--v2-font);
-  padding: var(--v2-space-5) var(--v2-space-4) var(--v2-space-8);
-}
-.v2-login-brand {
-  display: flex;
-  justify-content: center;
-  padding: var(--v2-space-4) var(--v2-space-2) var(--v2-space-2);
-  color: #fff;
-}
-.v2-login-brand-mark {
-  display: grid;
-  place-items: center;
-  width: var(--v2-space-12);
-  height: var(--v2-space-12);
-  border-radius: var(--v2-radius-lg);
-  background: var(--v2-grad);
-  color: var(--v2-inverse);
-  font-size: var(--v2-text-xl);
-  box-shadow: var(--v2-shadow-pop);
-}
-.v2-login-card {
-  box-sizing: border-box;
-  background: var(--v2-card);
-  border: 1px solid var(--v2-line);
-  border-radius: var(--v2-radius-lg);
-  padding: var(--v2-space-6);
-  box-shadow: var(--v2-shadow-pop);
-  margin-top: var(--v2-space-4);
-}
-.v2-login-title {
-  display: block;
-  margin: 0 0 var(--v2-space-2);
-  color: var(--v2-ink);
-  font-family: var(--v2-font);
-  font-size: var(--v2-text-lg);
-  font-weight: 700;
-  line-height: 1.35;
-}
-.v2-login-desc {
-  display: block;
-  margin: 0 0 var(--v2-space-4);
-  color: var(--v2-mut);
-  font-family: var(--v2-font);
-  font-size: var(--v2-text-sm);
   line-height: 1.6;
 }
-.v2-login-form {
-  display: grid;
-  gap: var(--v2-space-4);
-  margin-top: var(--v2-space-4);
+.login-topline { display: flex; flex-direction: column; align-items: flex-start; max-width: 1080px; margin: 0 auto 40px; }
+.login-brand { display: inline-flex; min-height: 44px; align-items: center; gap: 10px; color: var(--v2-ink); font-size: 20px; font-weight: 650; white-space: nowrap; }
+.login-brand :deep(.app-icon) { color: var(--v2-brand); }
+.login-adult-note { color: var(--v2-mut); font-size: 13px; line-height: 1.6; overflow-wrap: anywhere; }
+.login-content { width: 100%; max-width: 420px; margin: 0 auto; }
+.login-title { display: block; margin: 0 0 8px; color: var(--v2-ink); text-align: center; font-size: 28px; line-height: 1.4; font-weight: 650; letter-spacing: 0; }
+.login-description { display: block; color: var(--v2-mut); text-align: center; font-size: 14px; line-height: 1.75; }
+.login-form { display: block; margin-top: 32px; }
+.login-fields { display: grid; gap: 24px; }
+.login-field { display: grid; gap: 8px; min-width: 0; }
+.login-label { color: var(--v2-ink); font-size: 14px; line-height: 1.6; font-weight: 500; }
+.v2-login .login-input { width: 100%; height: calc(1.5em + 24px); min-height: 48px; padding: 0 14px; border: 1px solid var(--v2-line); border-radius: 10px; color: var(--v2-ink); background: var(--v2-card); font-size: 16px; line-height: 1.5; font-weight: 400; }
+.login-input :deep(.uni-input-input), .login-input :deep(.uni-input-placeholder) { font: inherit; color: inherit; }
+.login-input :deep(.uni-input-placeholder) { color: var(--v2-mut); }
+.v2-login .login-input.is-invalid { border-color: var(--v2-bad); }
+.v2-login .login-input.is-focused, .v2-login .login-input:focus-within { outline: 2px solid var(--v2-brand); outline-offset: 2px; }
+.login-password { position: relative; min-width: 0; }
+.v2-login .login-password .login-input { padding-right: 58px; }
+.v2-login .login-password-toggle { position: absolute; top: 50%; right: 4px; display: flex; width: 44px; height: 44px; min-height: 44px; padding: 0; align-items: center; justify-content: center; transform: translateY(-50%); border: 0; border-radius: 8px; background: transparent; color: var(--v2-mut); }
+.v2-login .login-password-toggle:active:not([disabled]) { transform: translateY(-50%); background: var(--v2-soft); }
+.login-recovery { display: flex; justify-content: flex-end; margin-top: -4px; }
+.v2-login .login-text-button { display: inline-flex; width: auto; min-width: 44px; min-height: 44px; margin: 0; padding: 8px 0; align-items: center; justify-content: center; border: 0; border-radius: 0; background: transparent; color: var(--v2-brand); font-size: 14px; line-height: 1.6; font-weight: 500; text-align: center; }
+.login-error { display: block; color: var(--v2-bad); font-size: 14px; line-height: 1.6; overflow-wrap: anywhere; }
+.v2-login .login-submit { display: flex; width: 100%; min-height: 48px; margin: 0; padding: 12px 20px; align-items: center; justify-content: center; border: 1px solid transparent; border-radius: 10px; background: var(--v2-brand); color: var(--v2-inverse); box-shadow: none; font-size: 16px; line-height: 1.5; font-weight: 600; }
+.v2-login .login-submit:active:not([disabled]) { transform: none; background: var(--v2-brand2); }
+.v2-login button[disabled] { cursor: default; }
+.v2-login .login-submit[disabled] { opacity: .6; }
+.v2-login button:focus-visible { outline: 2px solid var(--v2-brand); outline-offset: 3px; }
+.login-register { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 4px 8px; margin-top: 28px; padding-top: 16px; border-top: 1px solid var(--v2-line); color: var(--v2-mut); font-size: 14px; line-height: 1.6; }
+@media (min-width: 521px) {
+  .yx-page.v2-login { padding: calc(32px + env(safe-area-inset-top)) 32px calc(64px + env(safe-area-inset-bottom)); }
+  .login-topline { flex-direction: row; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 80px; }
 }
-.v2-login-field {
-  display: grid;
-  gap: var(--v2-space-2);
-  margin: 0;
-  color: var(--v2-ink);
-  font-family: var(--v2-font);
-  font-size: var(--v2-text-sm);
-  font-weight: 600;
-}
-.v2-login-input {
-  box-sizing: border-box;
-  width: 100%;
-  min-height: var(--v2-space-12);
-  padding: var(--v2-space-3);
-  border: 1px solid var(--v2-line);
-  border-radius: var(--v2-radius-md);
-  background: var(--v2-card);
-  color: var(--v2-ink);
-  font-family: var(--v2-font);
-  font-size: var(--v2-text-md);
-  line-height: 1.5;
-  &::placeholder {
-    color: var(--v2-mut);
-  }
-  &:focus {
-    border-color: var(--v2-brand);
-    box-shadow: var(--v2-focus);
-    outline: none;
-  }
-  &:focus-visible {
-    border-color: var(--v2-brand);
-    box-shadow: var(--v2-focus);
-    outline: none;
-  }
-  &:disabled {
-    opacity: 0.55;
-  }
-}
-.v2-login-password {
-  display: flex;
-  align-items: center;
-  gap: var(--v2-space-2);
-  .v2-login-input {
-    flex: 1;
-    min-width: 0;
-  }
-}
-.v2-login-toggle {
-  flex: none;
-  min-height: var(--v2-space-8);
-  padding: var(--v2-space-2);
-  background: transparent;
-  border: 1px solid transparent;
-  border-radius: var(--v2-radius-sm);
-  color: var(--v2-brand);
-  font-family: var(--v2-font);
-  font-size: var(--v2-text-sm);
-  font-weight: 600;
-  &:focus-visible {
-    box-shadow: var(--v2-focus);
-    outline: none;
-  }
-}
-.v2-login-error {
-  display: block;
-  margin-top: var(--v2-space-2);
-  color: var(--v2-bad);
-  font-family: var(--v2-font);
-  font-size: var(--v2-text-sm);
-  line-height: 1.55;
-}
-.v2-login-primary {
-  box-sizing: border-box;
-  width: 100%;
-  min-height: var(--v2-space-12);
-  margin-top: var(--v2-space-2);
-  padding: var(--v2-space-3) var(--v2-space-4);
-  border: 1px solid transparent;
-  border-radius: var(--v2-radius-md);
-  background: var(--v2-grad);
-  color: var(--v2-inverse);
-  font-family: var(--v2-font);
-  font-size: var(--v2-text-md);
-  font-weight: 700;
-  text-align: center;
-  box-shadow: var(--v2-shadow);
-  cursor: pointer;
-  &:hover {
-    filter: brightness(0.94);
-  }
-  &:active {
-    transform: scale(0.97);
-  }
-  &:focus-visible {
-    box-shadow: var(--v2-focus);
-    outline: none;
-  }
-  &:disabled {
-    background: var(--v2-surface);
-    color: var(--v2-mut);
-    border: 1px dashed var(--v2-line);
-    box-shadow: none;
-    filter: none;
-    opacity: 1;
-    cursor: not-allowed;
-  }
-}
-.v2-login-secondary {
-  display: block;
-  width: 100%;
-  min-height: var(--v2-space-8);
-  margin-top: var(--v2-space-2);
-  padding: var(--v2-space-2) var(--v2-space-3);
-  background: transparent;
-  border: 1px solid transparent;
-  border-radius: var(--v2-radius-md);
-  color: var(--v2-brand);
-  font-family: var(--v2-font);
-  font-size: var(--v2-text-sm);
-  font-weight: 600;
-  text-align: center;
-  cursor: pointer;
-  &:last-of-type {
-    color: var(--v2-mut);
-  }
-  &:focus-visible {
-    box-shadow: var(--v2-focus);
-    outline: none;
-  }
+@media (prefers-reduced-motion: reduce) {
+  .v2-login * { transition: none; animation: none; }
 }
 </style>
