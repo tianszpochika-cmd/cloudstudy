@@ -1,5 +1,6 @@
-import { adminClient, AdminApiError } from './client'
+import { adminClient } from './client'
 import { adminT } from '../platform/admin-i18n'
+import { readReviewTrail, toContentCommandError, type ReviewTrailView } from '../platform/content-review'
 
 /**
  * B1 word-master port for the tenant control plane.
@@ -94,6 +95,7 @@ export interface LexemeRow {
   pronunciations: LexemePronunciation[]
   createdBy: string
   updatedBy: string | null
+  reviewTrail: ReviewTrailView
 }
 
 type Row = Record<string, unknown>
@@ -137,6 +139,7 @@ function asLexemeRow(item: Row): LexemeRow | null {
       : [],
     createdBy: text(lexeme.createdBy),
     updatedBy: typeof lexeme.updatedBy === 'string' ? lexeme.updatedBy : null,
+    reviewTrail: readReviewTrail(lexeme.reviewTrail),
   }
 }
 
@@ -181,17 +184,22 @@ async function sendLexemeCommand(body: Row): Promise<Row> {
     })
     return isRecord(response) && isRecord(response.data) ? response.data : {}
   } catch (error) {
-    if (error instanceof AdminApiError) throw new Error(error.message)
-    throw error instanceof Error ? error : new Error(adminT('apiLexeme.commandFailed'))
+    throw toContentCommandError(error, adminT('apiLexeme.commandFailed'))
   }
 }
 
-export function upsertLexeme(fields: LexemeFields, lexemeId?: string): Promise<Row> {
+/**
+ * Saves a lexeme. `base` is the row the editor opened: its stateVersion is
+ * the optimistic-lock token (409 LEXEME_VERSION_CONFLICT when someone saved
+ * first). Omit it to create (409 LEXEME_DUPLICATE if the headword exists).
+ * Editing an APPROVED/PUBLISHED row opens a revision draft server-side.
+ */
+export function upsertLexeme(fields: LexemeFields, base?: Pick<LexemeRow, 'lexemeId' | 'stateVersion' | 'packCode'>): Promise<Row> {
   return sendLexemeCommand({
     command: 'LEXEME_UPSERT',
-    contentCode: LEXEME_PACK,
-    expectedStateVersion: 0,
-    lexemeId: lexemeId ?? '',
+    contentCode: base?.packCode ?? LEXEME_PACK,
+    expectedStateVersion: base ? base.stateVersion : 0,
+    lexemeId: base?.lexemeId ?? '',
     lexeme: fields,
   })
 }
@@ -213,7 +221,8 @@ export function lexemeLifecycle(
 export function lexemeReview(
   lexeme: LexemeRow,
   stage: 'FIRST' | 'FINAL',
-  decision: 'APPROVED' = 'APPROVED',
+  decision: 'APPROVED' | 'REJECTED' | 'CHANGES_REQUESTED' = 'APPROVED',
+  reviewNote?: string,
 ): Promise<Row> {
   return sendLexemeCommand({
     command: stage === 'FIRST' ? 'LEXEME_REVIEW_FIRST' : 'LEXEME_REVIEW_FINAL',
@@ -221,6 +230,7 @@ export function lexemeReview(
     expectedStateVersion: lexeme.stateVersion,
     lexemeId: lexeme.lexemeId,
     reviewDecision: decision,
+    ...(reviewNote ? { reviewNote } : {}),
   })
 }
 

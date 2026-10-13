@@ -16,6 +16,13 @@ import {
   type LexemeRow,
 } from "../api/lexeme";
 import { useAdminStore } from "../stores/admin";
+import {
+  decisionLabel,
+  explainContentError,
+  isOwnSubmission,
+  isRejection,
+  isVersionConflict,
+} from "../platform/content-review";
 import SchedulePanel from "../components/SchedulePanel.vue";
 import AudioPreview from "../components/AudioPreview.vue";
 
@@ -338,14 +345,119 @@ async function save(): Promise<void> {
     ) {
       delete payload.conjugation;
     }
-    await upsertLexeme(payload, editing.value?.lexemeId);
-    ElMessage.success("单词已保存为草稿。");
+    const wasLive =
+      editing.value?.availability === "PUBLISHED" ||
+      editing.value?.availability === "APPROVED";
+    await upsertLexeme(payload, editing.value ?? undefined);
+    ElMessage.success(
+      wasLive
+        ? "已创建修订稿：需要重新送审，线上仍显示旧版，直到修订稿发布。"
+        : "单词已保存为草稿。",
+    );
     dialogVisible.value = false;
     await load();
   } catch (error) {
-    ElMessage.error(error instanceof Error ? error.message : "保存失败。");
+    if (isVersionConflict(error) && editing.value) {
+      await resolveConflict(editing.value.lexemeId);
+    } else {
+      ElMessage.error(explainContentError(error, "保存失败。"));
+    }
   } finally {
     formBusy.value = false;
+  }
+}
+
+/**
+ * 409 on save: someone saved after this editor opened the row. Offer to
+ * reload (discard mine) or to compare first; never silently overwrite.
+ */
+async function resolveConflict(lexemeId: string): Promise<void> {
+  await load();
+  const latest = rows.value.find((row) => row.lexemeId === lexemeId) ?? null;
+  const lines: DiffLine[] = [];
+  if (latest) buildDiff(latest.fields, form.value, "", lines);
+  try {
+    await ElMessageBox.confirm(
+      `这个单词在你打开后已被 ${latest?.updatedBy ?? "其他人"} 修改（当前版本 ${latest?.stateVersion ?? "?"}）。` +
+        `你的修改和最新版本有 ${lines.length} 处不同。` +
+        "选择「载入最新版本」会放弃你的修改；选择「对比差异」可以先看清楚再决定。",
+      "内容已被他人修改",
+      {
+        type: "warning",
+        confirmButtonText: "载入最新版本",
+        cancelButtonText: "对比差异",
+        distinguishCancelAndClose: true,
+      },
+    );
+    if (latest) openEdit(latest);
+  } catch (action) {
+    if (action === "cancel" && latest) {
+      diffTarget.value = latest;
+      diffLines.value = lines.length
+        ? lines.slice(0, 200).map((line) => ({
+            path: line.path,
+            before: `最新：${line.before}`,
+            after: `我的：${line.after}`,
+          }))
+        : [{ path: "(equal)", before: "与最新版本一致", after: "无差异" }];
+      diffVisible.value = true;
+      // Keep the editor open on top of the latest version token so a
+      // deliberate re-save applies the user's edits to the version they saw.
+      editing.value = latest;
+    }
+  }
+}
+
+function canEditRow(row: LexemeRow): boolean {
+  return row.availability !== "IN_REVIEW" && row.availability !== "ARCHIVED";
+}
+
+function editLabel(row: LexemeRow): string {
+  return row.availability === "PUBLISHED" || row.availability === "APPROVED"
+    ? "修订"
+    : "编辑";
+}
+
+function ownSubmission(row: LexemeRow): boolean {
+  return isOwnSubmission(row.reviewTrail, session.principal?.subject);
+}
+
+function trailText(row: LexemeRow): string {
+  const trail = row.reviewTrail;
+  if (row.availability === "IN_REVIEW" && trail.submittedBy)
+    return `待审 · 提交人 ${trail.submittedBy}`;
+  if (isRejection(trail))
+    return `${decisionLabel(trail.lastDecision)}（${trail.lastReviewer ?? ""}）：${trail.lastNote ?? ""}`;
+  return decisionLabel(trail.lastDecision);
+}
+
+async function runReject(row: LexemeRow, stage: "FIRST" | "FINAL"): Promise<void> {
+  let note = "";
+  try {
+    const result = await ElMessageBox.prompt(
+      `退回「${row.headword}」给作者修改。请写清楚需要改什么，作者会看到这段说明。`,
+      stage === "FIRST" ? "一审退回" : "二审退回",
+      {
+        confirmButtonText: "退回",
+        cancelButtonText: "取消",
+        inputType: "textarea",
+        inputPlaceholder: "例如：第二个释义缺少例句；音标与发音不一致",
+        inputValidator: (value: string) =>
+          (value?.trim().length ?? 0) > 0 && value.trim().length <= 500
+            ? true
+            : "请填写 1 到 500 字的退回原因",
+      },
+    );
+    note = (result as { value: string }).value.trim();
+  } catch {
+    return;
+  }
+  try {
+    await lexemeReview(row, stage, "CHANGES_REQUESTED", note);
+    ElMessage.success("已退回，作者修改后可以重新送审。");
+    await load();
+  } catch (error) {
+    ElMessage.error(explainContentError(error, "退回失败。"));
   }
 }
 
@@ -377,7 +489,7 @@ async function runLifecycle(
     ElMessage.success(`${labels[command]}已提交。`);
     await load();
   } catch (error) {
-    ElMessage.error(error instanceof Error ? error.message : "命令提交失败。");
+    ElMessage.error(explainContentError(error, "命令提交失败。"));
   }
 }
 
@@ -405,7 +517,7 @@ async function runReview(
     ElMessage.success("审核已提交。");
     await load();
   } catch (error) {
-    ElMessage.error(error instanceof Error ? error.message : "审核提交失败。");
+    ElMessage.error(explainContentError(error, "审核提交失败。"));
   }
 }
 
@@ -594,8 +706,28 @@ onMounted(() => {
           <template #default="scope"
             ><el-tag :type="stateTag(scope.row.availability)" effect="plain">{{
               scope.row.availability
-            }}</el-tag></template
+            }}</el-tag>
+            <el-tag
+              v-if="scope.row.reviewTrail.revisionOfLive"
+              type="warning"
+              effect="plain"
+              size="small"
+              title="这是已发布内容的修订稿；学员仍看到旧版，直到修订稿重新发布"
+              >修订中</el-tag
+            ></template
           >
+        </el-table-column>
+        <el-table-column label="审核意见" min-width="200">
+          <template #default="scope">
+            <span
+              :style="{
+                color: isRejection(scope.row.reviewTrail)
+                  ? 'var(--el-color-danger)'
+                  : undefined,
+              }"
+              >{{ trailText(scope.row) || "—" }}</span
+            >
+          </template>
         </el-table-column>
         <el-table-column prop="stateVersion" label="版本" width="80" />
         <el-table-column label="动作" width="330" fixed="right">
@@ -603,9 +735,14 @@ onMounted(() => {
             <el-space wrap>
               <el-button
                 size="small"
-                :disabled="!canWrite"
+                :disabled="!canWrite || !canEditRow(scope.row)"
+                :title="
+                  canEditRow(scope.row)
+                    ? ''
+                    : '审核中或已归档的单词不能编辑；审核员退回后作者才能修改'
+                "
                 @click="openEdit(scope.row)"
-                >编辑</el-button
+                >{{ editLabel(scope.row) }}</el-button
               >
               <el-button
                 size="small"
@@ -630,18 +767,54 @@ onMounted(() => {
                 size="small"
                 type="primary"
                 link
-                :disabled="!session.can('admin.content.review.l1')"
+                :disabled="
+                  !session.can('admin.content.review.l1') || ownSubmission(scope.row)
+                "
+                :title="
+                  ownSubmission(scope.row)
+                    ? '你是提交人，不能审核自己的提交，请换一位审核员'
+                    : ''
+                "
                 @click="runReview(scope.row, 'FIRST')"
-                >一审</el-button
+                >一审通过</el-button
+              >
+              <el-button
+                v-if="scope.row.availability === 'IN_REVIEW'"
+                size="small"
+                type="danger"
+                link
+                :disabled="
+                  !session.can('admin.content.review.l1') || ownSubmission(scope.row)
+                "
+                @click="runReject(scope.row, 'FIRST')"
+                >一审退回</el-button
               >
               <el-button
                 v-if="scope.row.availability === 'IN_REVIEW'"
                 size="small"
                 type="primary"
                 link
-                :disabled="!session.can('admin.content.review.l2')"
+                :disabled="
+                  !session.can('admin.content.review.l2') || ownSubmission(scope.row)
+                "
+                :title="
+                  ownSubmission(scope.row)
+                    ? '你是提交人，不能审核自己的提交，请换一位审核员'
+                    : ''
+                "
                 @click="runReview(scope.row, 'FINAL')"
-                >二审</el-button
+                >二审通过</el-button
+              >
+              <el-button
+                v-if="scope.row.availability === 'IN_REVIEW'"
+                size="small"
+                type="danger"
+                link
+                :disabled="
+                  !session.can('admin.content.review.l2') || ownSubmission(scope.row)
+                "
+                @click="runReject(scope.row, 'FINAL')"
+                >二审退回</el-button
               >
               <el-button
                 v-if="scope.row.availability === 'APPROVED'"

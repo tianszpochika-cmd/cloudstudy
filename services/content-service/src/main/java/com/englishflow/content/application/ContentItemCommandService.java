@@ -9,6 +9,7 @@ import com.englishflow.content.domain.ContentPayloadHash;
 import com.englishflow.content.domain.ContentRequestContext;
 import com.englishflow.content.domain.ItemAvailability;
 import com.englishflow.content.domain.ReviewDecision;
+import com.englishflow.content.domain.ReviewStage;
 import com.englishflow.content.port.ContentIdempotencyPort;
 import com.englishflow.content.port.ContentItemRepository;
 import com.englishflow.content.port.ContentOutboxPort;
@@ -50,8 +51,21 @@ public final class ContentItemCommandService {
             ContentActor actor,
             ContentIdempotencyKey key,
             ContentRequestContext context) {
+        return upsert(packCode, input, itemId, null, actor, key, context);
+    }
+
+    /** Optimistic-lock aware upsert; a positive expectedStateVersion must match the row (else 409). */
+    public ItemResult upsert(
+            String packCode,
+            Map<String, Object> input,
+            String itemId,
+            Long expectedStateVersion,
+            ContentActor actor,
+            ContentIdempotencyKey key,
+            ContentRequestContext context) {
         requireEditor(actor);
         String kind = kindOf(input);
+        ContentItem.requirePackForKind(packCode, kind);
         String stem = text(input.get("stem"));
         Map<String, Object> fields = fieldsOf(input);
         Map<String, Object> validated = ContentItem.validatedFields(kind, fields);
@@ -64,8 +78,17 @@ public final class ContentItemCommandService {
                                 .orElseThrow(() -> ContentOperationException.notFound("ITEM_NOT_FOUND",
                                         "item does not exist"));
                         assertExpectedPack(existing, packCode);
+                        if (expectedStateVersion != null && expectedStateVersion != existing.stateVersion()) {
+                            throw ContentOperationException.conflict("ITEM_VERSION_CONFLICT",
+                                    "stale stateVersion: expected " + expectedStateVersion
+                                            + " but current is " + existing.stateVersion());
+                        }
+                        boolean openedRevision = existing.availability() != ItemAvailability.DRAFT;
                         existing.applyUpsert(stem, validated, actor.subjectId(), now);
                         items.save(existing);
+                        if (openedRevision) {
+                            audit(existing, "content.item.revision-opened.v1", actor, null, null, context, now);
+                        }
                         return resultOf(existing);
                     }
                     String id = prefix(kind) + UUID.randomUUID().toString().replace("-", "").substring(0, 12);
@@ -84,42 +107,42 @@ public final class ContentItemCommandService {
                 scope(actor, "item.submit"), key, fingerprint(packCode, itemId),
                 () -> {
                     ContentItem item = owned(packCode, itemId, actor);
-                    item.submit(actor.subjectId(), clock.instant());
+                    Instant now = clock.instant();
+                    item.submit(actor.subjectId(), now);
                     items.save(item);
+                    audit(item, "content.item.submitted.v1", actor, null, null, context, now);
                     return resultOf(item);
                 });
     }
 
     public ItemResult reviewFirst(String packCode, String itemId, ReviewDecision decision,
             ContentActor actor, ContentIdempotencyKey key, ContentRequestContext context) {
+        return reviewFirst(packCode, itemId, decision, null, actor, key, context);
+    }
+
+    public ItemResult reviewFirst(String packCode, String itemId, ReviewDecision decision, String reviewNote,
+            ContentActor actor, ContentIdempotencyKey key, ContentRequestContext context) {
         if (!actor.canReviewFirst()) {
             throw ContentOperationException.forbidden("ITEM_REVIEW_REQUIRED", "first-review permission is required");
         }
         return idempotency.execute(
-                scope(actor, "item.review-first"), key, fingerprint(packCode, itemId, decision),
-                () -> {
-                    ContentItem item = owned(packCode, itemId, actor);
-                    requireApproved(decision);
-                    item.reviewFirst(actor.subjectId(), clock.instant());
-                    items.save(item);
-                    return resultOf(item);
-                });
+                scope(actor, "item.review-first"), key, fingerprint(packCode, itemId, decision, reviewNote),
+                () -> decide(packCode, itemId, ReviewStage.FIRST_REVIEW, decision, reviewNote, actor, context));
     }
 
     public ItemResult reviewFinal(String packCode, String itemId, ReviewDecision decision,
+            ContentActor actor, ContentIdempotencyKey key, ContentRequestContext context) {
+        return reviewFinal(packCode, itemId, decision, null, actor, key, context);
+    }
+
+    public ItemResult reviewFinal(String packCode, String itemId, ReviewDecision decision, String reviewNote,
             ContentActor actor, ContentIdempotencyKey key, ContentRequestContext context) {
         if (!actor.canReviewFinal()) {
             throw ContentOperationException.forbidden("ITEM_REVIEW_REQUIRED", "final-review permission is required");
         }
         return idempotency.execute(
-                scope(actor, "item.review-final"), key, fingerprint(packCode, itemId, decision),
-                () -> {
-                    ContentItem item = owned(packCode, itemId, actor);
-                    requireApproved(decision);
-                    item.reviewFinal(actor.subjectId(), clock.instant());
-                    items.save(item);
-                    return resultOf(item);
-                });
+                scope(actor, "item.review-final"), key, fingerprint(packCode, itemId, decision, reviewNote),
+                () -> decide(packCode, itemId, ReviewStage.FINAL_REVIEW, decision, reviewNote, actor, context));
     }
 
     public ItemResult publish(String packCode, String itemId, String reasonCode,
@@ -186,6 +209,32 @@ public final class ContentItemCommandService {
         return owned(packCode, itemId, actor);
     }
 
+    /** Batch-import dry run: validates like upsert and finds an identical live row (same kind, stem and fields). */
+    public record ItemPrecheck(String kind, String stem, String contentKey, String duplicateItemId) {
+    }
+
+    public ItemPrecheck precheck(String packCode, Map<String, Object> input, ContentActor actor) {
+        requireEditor(actor);
+        if (packCode == null || packCode.isBlank()) {
+            throw ContentOperationException.badRequest("ITEM_FIELD_INVALID", "contentCode (pack) is required");
+        }
+        String kind = kindOf(input);
+        ContentItem.requirePackForKind(packCode.trim(), kind);
+        String stem = text(input.get("stem"));
+        Map<String, Object> validated = ContentItem.validatedFields(kind, fieldsOf(input));
+        String contentKey = ContentPayloadHash.sha256(Map.of("kind", kind, "stem", stem.trim(), "fields", validated));
+        String duplicate = items.search(packCode.trim(), kind, stem.isBlank() ? null : stem.trim(), null, 100, null)
+                .stream()
+                .filter(row -> row.availability() != ItemAvailability.ARCHIVED)
+                .filter(row -> row.stem().trim().equals(stem.trim()))
+                .filter(row -> ContentPayloadHash.sha256(Map.of("kind", row.kind(), "stem", row.stem().trim(),
+                        "fields", row.fields())).equals(contentKey))
+                .map(ContentItem::itemId)
+                .findFirst()
+                .orElse(null);
+        return new ItemPrecheck(kind, stem, contentKey, duplicate);
+    }
+
     public java.util.List<ContentItem> search(String packCode, String kind, String query,
             ItemAvailability availability, int limit, String afterItemId, ContentActor actor) {
         requireRead(actor);
@@ -239,11 +288,44 @@ public final class ContentItemCommandService {
         }
     }
 
-    private static void requireApproved(ReviewDecision decision) {
-        if (decision != ReviewDecision.APPROVED) {
-            throw ContentOperationException.badRequest("ITEM_REVIEW_DECISION_INVALID",
-                    "review only accepts APPROVED; rework stays in DRAFT via upsert");
+    private ItemResult decide(String packCode, String itemId, ReviewStage stage, ReviewDecision decision,
+            String reviewNote, ContentActor actor, ContentRequestContext context) {
+        if (decision == null) {
+            throw ContentOperationException.badRequest("ITEM_REVIEW_DECISION_INVALID", "reviewDecision is required");
         }
+        ContentItem item = owned(packCode, itemId, actor);
+        Instant now = clock.instant();
+        if (decision == ReviewDecision.APPROVED) {
+            if (stage == ReviewStage.FIRST_REVIEW) {
+                item.reviewFirst(actor.subjectId(), now);
+            } else {
+                item.reviewFinal(actor.subjectId(), now);
+            }
+            items.save(item);
+            audit(item, "content.item.review-approved.v1", actor, stage.name(), null, context, now);
+        } else {
+            item.reject(stage, decision, actor.subjectId(), reviewNote, now);
+            items.save(item);
+            audit(item, "content.item.review-rejected.v1", actor, stage.name() + ":" + decision.name(),
+                    item.trail().lastNote(), context, now);
+        }
+        return resultOf(item);
+    }
+
+    private void audit(ContentItem item, String eventType, ContentActor actor, String decision, String note,
+            ContentRequestContext context, Instant now) {
+        outbox.appendAfterFact(ContentOutboxEvent.create(
+                "content-item", item.itemId(), eventType, actor.subjectId(),
+                item.itemId() + ":" + eventType + ":" + item.stateVersion(),
+                "{\"itemId\":" + ReviewAuditJson.quote(item.itemId())
+                        + ",\"packCode\":" + ReviewAuditJson.quote(item.packCode())
+                        + ",\"availability\":" + ReviewAuditJson.quote(item.availability().name())
+                        + ",\"stateVersion\":" + item.stateVersion()
+                        + ",\"actor\":" + ReviewAuditJson.quote(actor.subjectId())
+                        + ",\"decision\":" + ReviewAuditJson.quote(decision)
+                        + ",\"note\":" + ReviewAuditJson.quote(note)
+                        + ",\"revisionOfLive\":" + item.trail().revisionOfLive() + "}",
+                context, now));
     }
 
     private static String kindOf(Map<String, Object> input) {

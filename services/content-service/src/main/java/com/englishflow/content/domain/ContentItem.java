@@ -23,7 +23,28 @@ public final class ContentItem {
      * the same draft/review/publish lifecycle as the five historical kinds.
      */
     public static final Set<String> KINDS = Set.of(
-            "QUESTION", "EXAMPLE", "GRAMMAR_POINT", "PASSAGE", "EXERCISE", "DICTATION", "SHADOWING");
+            "QUESTION", "EXAMPLE", "GRAMMAR_POINT", "PASSAGE", "EXERCISE", "DICTATION", "SHADOWING",
+            "PHONEME", "MINIMAL_PAIR");
+
+    /** Phonetics library kinds; they live only in PHONETICS / PHONETICS-{LANG} packs. */
+    public static final Set<String> PHONETIC_KINDS = Set.of("PHONEME", "MINIMAL_PAIR");
+
+    private static final Pattern PHONETICS_PACK = Pattern.compile("PHONETICS(-[A-Z]{2,3})?");
+    private static final Pattern PHONEME_GROUP = Pattern.compile("[A-Z][A-Z_]{1,31}");
+
+    public static boolean isPhoneticsPack(String packCode) {
+        return packCode != null && PHONETICS_PACK.matcher(packCode.trim()).matches();
+    }
+
+    /** Phonetic kinds and phonetics packs must match both ways so the catalog never mixes in quiz rows. */
+    public static void requirePackForKind(String packCode, String kind) {
+        boolean phoneticKind = PHONETIC_KINDS.contains(kind);
+        if (phoneticKind != isPhoneticsPack(packCode)) {
+            throw ContentOperationException.badRequest("ITEM_KIND_PACK_MISMATCH", phoneticKind
+                    ? "PHONEME / MINIMAL_PAIR items belong to a PHONETICS or PHONETICS-{LANG} pack"
+                    : "phonetics packs only accept PHONEME / MINIMAL_PAIR items");
+        }
+    }
 
     private static final Pattern SAFE_CODE = Pattern.compile("[A-Za-z0-9][A-Za-z0-9._:-]{0,127}");
 
@@ -44,6 +65,7 @@ public final class ContentItem {
     private Map<String, Object> fields;
     private final Instant createdAt;
     private Instant updatedAt;
+    private ReviewTrail trail = ReviewTrail.EMPTY;
 
     public ContentItem(
             String itemId, String tenantId, String packCode, String kind, String stem,
@@ -150,9 +172,35 @@ public final class ContentItem {
         return updatedAt;
     }
 
+    public ReviewTrail trail() {
+        return trail;
+    }
+
+    /** Rehydrates persisted review bookkeeping; adapters call this right after construction. */
+    public ContentItem restoreTrail(ReviewTrail restored) {
+        this.trail = restored == null ? ReviewTrail.EMPTY : restored;
+        return this;
+    }
+
+    /** True when learners still see a published copy (PUBLISHED, or a revision draft of a live row). */
+    public boolean isLive() {
+        return availability == ItemAvailability.PUBLISHED || trail.revisionOfLive();
+    }
+
+    /**
+     * DRAFT rows are edited in place; editing an APPROVED/PUBLISHED row opens a
+     * revision (back to DRAFT, both reviews again). IN_REVIEW/ARCHIVED are frozen.
+     */
     public void applyUpsert(String stem, Map<String, Object> nextFields, String editor, Instant now) {
-        if (availability != ItemAvailability.DRAFT) {
-            throw ContentOperationException.conflict("ITEM_STATE_INVALID", "only a DRAFT item can be edited");
+        if (availability == ItemAvailability.APPROVED || availability == ItemAvailability.PUBLISHED) {
+            boolean live = availability == ItemAvailability.PUBLISHED || trail.revisionOfLive();
+            this.availability = ItemAvailability.DRAFT;
+            this.firstReviewer = null;
+            this.finalReviewer = null;
+            this.trail = trail.revision(live);
+        } else if (availability != ItemAvailability.DRAFT) {
+            throw ContentOperationException.conflict("ITEM_STATE_INVALID",
+                    "an item under review or archived cannot be edited");
         }
         this.stem = stem == null ? "" : stem;
         this.fields = Map.copyOf(nextFields);
@@ -164,6 +212,7 @@ public final class ContentItem {
     public void submit(String editor, Instant now) {
         requireTransition(availability.canSubmit(), "only a DRAFT item can be submitted");
         this.availability = ItemAvailability.IN_REVIEW;
+        this.trail = trail.submitted(editor);
         this.updatedBy = editor;
         this.updatedAt = now;
         this.stateVersion += 1;
@@ -174,7 +223,13 @@ public final class ContentItem {
         if (firstReviewer != null) {
             throw ContentOperationException.conflict("ITEM_REVIEW_DUPLICATE", "the FIRST review is already completed");
         }
+        trail.requireNotAuthorAtFirstReview(reviewer, updatedBy, createdBy, "ITEM");
+        if (trail.submittedBy() == null) {
+            // Legacy row: pin the inferred submitter before updatedBy is overwritten (P2-1).
+            this.trail = trail.submitted(updatedBy);
+        }
         this.firstReviewer = reviewer;
+        this.trail = trail.decided("APPROVED_FIRST", null, reviewer, now);
         this.updatedBy = reviewer;
         this.updatedAt = now;
         this.stateVersion += 1;
@@ -190,8 +245,36 @@ public final class ContentItem {
             throw ContentOperationException.forbidden("ITEM_SELF_REVIEW_DENIED",
                     "the author of the first review cannot approve the final review");
         }
+        trail.requireNotAuthorAfterFirstReview(reviewer, createdBy, true, "ITEM");
         this.finalReviewer = reviewer;
+        this.trail = trail.decided("APPROVED_FINAL", null, reviewer, now);
         this.availability = ItemAvailability.APPROVED;
+        this.updatedBy = reviewer;
+        this.updatedAt = now;
+        this.stateVersion += 1;
+    }
+
+    /** Sends an IN_REVIEW item back to its author with a reason; both reviews restart. */
+    public void reject(ReviewStage stage, ReviewDecision decision, String reviewer, String note, Instant now) {
+        requireTransition(availability.canReview(), "only an IN_REVIEW item can be rejected");
+        if (decision == ReviewDecision.APPROVED) {
+            throw ContentOperationException.badRequest("ITEM_REVIEW_DECISION_INVALID", "reject needs a non-APPROVED decision");
+        }
+        if (stage == ReviewStage.FINAL_REVIEW && firstReviewer == null) {
+            throw ContentOperationException.conflict("ITEM_REVIEW_ORDER_INVALID",
+                    "FINAL review requires a completed FIRST review");
+        }
+        if (firstReviewer == null) {
+            trail.requireNotAuthorAtFirstReview(reviewer, updatedBy, createdBy, "ITEM");
+        } else {
+            trail.requireNotAuthorAfterFirstReview(reviewer, createdBy, false, "ITEM");
+        }
+        String reason = ReviewTrail.requireRejectNote(note, "ITEM");
+        this.availability = ItemAvailability.DRAFT;
+        this.firstReviewer = null;
+        this.finalReviewer = null;
+        this.trail = trail.decided(decision.name() + "_" + (stage == ReviewStage.FIRST_REVIEW ? "FIRST" : "FINAL"),
+                reason, reviewer, now);
         this.updatedBy = reviewer;
         this.updatedAt = now;
         this.stateVersion += 1;
@@ -200,6 +283,7 @@ public final class ContentItem {
     public void publish(String publisher, Instant now) {
         requireTransition(availability.canPublish(), "only an APPROVED item can be published");
         this.availability = ItemAvailability.PUBLISHED;
+        this.trail = trail.revision(false);
         this.publisher = publisher;
         this.updatedBy = publisher;
         this.updatedAt = now;
@@ -207,6 +291,13 @@ public final class ContentItem {
     }
 
     public void unpublish(String publisher, Instant now) {
+        if (availability != ItemAvailability.PUBLISHED && trail.revisionOfLive()) {
+            this.trail = trail.revision(false);
+            this.updatedBy = publisher;
+            this.updatedAt = now;
+            this.stateVersion += 1;
+            return;
+        }
         requireTransition(availability.canUnpublish(), "only a PUBLISHED item can be unpublished");
         this.availability = ItemAvailability.APPROVED;
         this.updatedBy = publisher;
@@ -216,6 +307,10 @@ public final class ContentItem {
 
     public void archive(String actor, Instant now) {
         requireTransition(availability.canArchive(), "this item state cannot be archived");
+        if (trail.revisionOfLive()) {
+            throw ContentOperationException.conflict("ITEM_REVISION_LIVE",
+                    "this draft revises a live item; unpublish the live copy before archiving");
+        }
         this.availability = ItemAvailability.ARCHIVED;
         this.updatedBy = actor;
         this.updatedAt = now;
@@ -249,10 +344,45 @@ public final class ContentItem {
                 throw ContentOperationException.badRequest("ITEM_FIELD_INVALID", "answerIndex must be a non-negative number");
             }
         }
+        if ("PHONEME".equals(kind)) {
+            String symbol = phoneticText(raw, "symbol", 16);
+            if (symbol.isEmpty()) {
+                throw ContentOperationException.badRequest("ITEM_FIELD_INVALID", "symbol is required");
+            }
+            String group = phoneticText(raw, "group", 32);
+            if (!PHONEME_GROUP.matcher(group).matches()) {
+                throw ContentOperationException.badRequest("ITEM_FIELD_INVALID",
+                        "group is required, upper-case like MONOPHTHONG / CONSONANT");
+            }
+            phoneticText(raw, "exampleWord", 64);
+            phoneticText(raw, "description", 500);
+        }
+        if ("MINIMAL_PAIR".equals(kind)) {
+            if (phoneticText(raw, "leftWord", 64).isEmpty() || phoneticText(raw, "rightWord", 64).isEmpty()) {
+                throw ContentOperationException.badRequest("ITEM_FIELD_INVALID", "leftWord and rightWord are required");
+            }
+            for (String key : List.of("leftPhonemeId", "rightPhonemeId")) {
+                Object value = raw.get(key);
+                if (value != null && !(value instanceof Number) && !(value instanceof String)) {
+                    throw ContentOperationException.badRequest("ITEM_FIELD_INVALID", key + " must be a number or id");
+                }
+            }
+        }
         Object tags = raw.get("tags");
         if (tags != null && (!(tags instanceof List<?> tagList) || tagList.size() > 20)) {
             throw ContentOperationException.badRequest("ITEM_FIELD_INVALID", "tags must contain at most 20 entries");
         }
         return Map.copyOf(raw);
+    }
+
+    private static String phoneticText(Map<String, Object> raw, String key, int max) {
+        Object value = raw.get(key);
+        if (value == null) {
+            return "";
+        }
+        if (!(value instanceof String text) || text.trim().length() > max) {
+            throw ContentOperationException.badRequest("ITEM_FIELD_INVALID", key + " must be text up to " + max + " chars");
+        }
+        return text.trim();
     }
 }

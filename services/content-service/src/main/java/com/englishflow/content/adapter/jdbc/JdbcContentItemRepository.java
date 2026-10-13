@@ -2,6 +2,7 @@ package com.englishflow.content.adapter.jdbc;
 
 import com.englishflow.content.domain.ContentItem;
 import com.englishflow.content.domain.ContentOperationException;
+import com.englishflow.content.domain.ReviewTrail;
 import com.englishflow.content.domain.ItemAvailability;
 import com.englishflow.content.port.ContentItemRepository;
 
@@ -23,7 +24,9 @@ public final class JdbcContentItemRepository implements ContentItemRepository {
     private static final String COLUMNS = """
             item_id, tenant_id, pack_code, kind, stem, availability, state_version,
             created_by, updated_by, first_reviewer, final_reviewer, publisher,
-            source_code, license_code, fields_json, created_at, updated_at
+            source_code, license_code, fields_json, created_at, updated_at,
+            submitted_by, last_review_decision, last_review_note, last_reviewer, last_reviewed_at,
+            revision_of_live
             """;
 
     private final JdbcTemplate jdbc;
@@ -97,6 +100,26 @@ public final class JdbcContentItemRepository implements ContentItemRepository {
                 item.firstReviewer(), item.finalReviewer(), item.publisher(),
                 item.sourceCode(), item.licenseCode(), fieldsJson,
                 JdbcContentJson.timestamp(item.createdAt()), JdbcContentJson.timestamp(item.updatedAt()));
+        saveTrail(item);
+    }
+
+    private void saveTrail(ContentItem item) {
+        ReviewTrail trail = item.trail();
+        jdbc.update("""
+                UPDATE content_item SET submitted_by = ?, last_review_decision = ?, last_review_note = ?,
+                    last_reviewer = ?, last_reviewed_at = ?, revision_of_live = ?
+                WHERE item_id = ?
+                """,
+                trail.submittedBy(), trail.lastDecision(), trail.lastNote(), trail.lastReviewer(),
+                JdbcContentJson.timestamp(trail.lastReviewedAt()), trail.revisionOfLive() ? 1 : 0,
+                item.itemId());
+    }
+
+    static ReviewTrail readTrail(ResultSet resultSet) throws SQLException {
+        return new ReviewTrail(
+                resultSet.getString("submitted_by"), resultSet.getString("last_review_decision"),
+                resultSet.getString("last_review_note"), resultSet.getString("last_reviewer"),
+                JdbcContentJson.instant(resultSet, "last_reviewed_at"), resultSet.getInt("revision_of_live") == 1);
     }
 
     private ContentItem mapItem(ResultSet resultSet) throws SQLException {
@@ -109,7 +132,8 @@ public final class JdbcContentItemRepository implements ContentItemRepository {
                 resultSet.getString("final_reviewer"), resultSet.getString("publisher"),
                 resultSet.getString("source_code"), resultSet.getString("license_code"),
                 readFields(resultSet.getString("fields_json")),
-                JdbcContentJson.instant(resultSet, "created_at"), JdbcContentJson.instant(resultSet, "updated_at"));
+                JdbcContentJson.instant(resultSet, "created_at"), JdbcContentJson.instant(resultSet, "updated_at"))
+                .restoreTrail(JdbcLexemeRepository.readTrail(resultSet));
     }
 
     @SuppressWarnings("unchecked")

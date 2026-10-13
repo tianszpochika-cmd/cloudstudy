@@ -1,6 +1,7 @@
 package com.englishflow.content.adapter.jdbc;
 
 import com.englishflow.content.domain.ContentOperationException;
+import com.englishflow.content.domain.ReviewTrail;
 import com.englishflow.content.domain.Lexeme;
 import com.englishflow.content.domain.LexemeAvailability;
 import com.englishflow.content.domain.LexemePronunciation;
@@ -26,7 +27,9 @@ public final class JdbcLexemeRepository implements LexemeRepository {
     private static final String LEXEME_COLUMNS = """
             lexeme_id, tenant_id, pack_code, headword, language, cefr, availability, state_version,
             content_version, created_by, updated_by, first_reviewer, final_reviewer,
-            publisher, fields_json, published_fields_json, created_at, updated_at
+            publisher, fields_json, published_fields_json, created_at, updated_at,
+            submitted_by, last_review_decision, last_review_note, last_reviewer, last_reviewed_at,
+            revision_of_live
             """;
 
     private static final String PRON_COLUMNS = """
@@ -140,6 +143,7 @@ public final class JdbcLexemeRepository implements LexemeRepository {
             throw ContentOperationException.conflict("LEXEME_DUPLICATE",
                     "a lexeme with this pack and headword already exists");
         }
+        saveTrail(lexeme);
     }
 
     @Override
@@ -171,6 +175,25 @@ public final class JdbcLexemeRepository implements LexemeRepository {
                 JdbcContentJson.timestamp(pronunciation.createdAt()));
     }
 
+    private void saveTrail(Lexeme lexeme) {
+        ReviewTrail trail = lexeme.trail();
+        jdbc.update("""
+                UPDATE lexeme SET submitted_by = ?, last_review_decision = ?, last_review_note = ?,
+                    last_reviewer = ?, last_reviewed_at = ?, revision_of_live = ?
+                WHERE lexeme_id = ?
+                """,
+                trail.submittedBy(), trail.lastDecision(), trail.lastNote(), trail.lastReviewer(),
+                JdbcContentJson.timestamp(trail.lastReviewedAt()), trail.revisionOfLive() ? 1 : 0,
+                lexeme.lexemeId());
+    }
+
+    static ReviewTrail readTrail(ResultSet resultSet) throws SQLException {
+        return new ReviewTrail(
+                resultSet.getString("submitted_by"), resultSet.getString("last_review_decision"),
+                resultSet.getString("last_review_note"), resultSet.getString("last_reviewer"),
+                JdbcContentJson.instant(resultSet, "last_reviewed_at"), resultSet.getInt("revision_of_live") == 1);
+    }
+
     private Lexeme mapLexeme(ResultSet resultSet) throws SQLException {
         Map<String, Object> fields = readFields(resultSet.getString("fields_json"));
         Map<String, Object> published = readNullableFields(resultSet.getString("published_fields_json"));
@@ -184,7 +207,8 @@ public final class JdbcLexemeRepository implements LexemeRepository {
                 resultSet.getString("created_by"), resultSet.getString("updated_by"),
                 resultSet.getString("first_reviewer"), resultSet.getString("final_reviewer"),
                 resultSet.getString("publisher"), fields, published,
-                JdbcContentJson.instant(resultSet, "created_at"), JdbcContentJson.instant(resultSet, "updated_at"));
+                JdbcContentJson.instant(resultSet, "created_at"), JdbcContentJson.instant(resultSet, "updated_at"))
+                .restoreTrail(readTrail(resultSet));
     }
 
     private LexemePronunciation mapPronunciation(ResultSet resultSet) throws SQLException {

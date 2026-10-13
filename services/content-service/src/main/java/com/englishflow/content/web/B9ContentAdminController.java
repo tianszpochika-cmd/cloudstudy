@@ -12,6 +12,7 @@ import com.englishflow.content.domain.ContentId;
 import com.englishflow.content.domain.ContentItem;
 import com.englishflow.content.domain.ContentIdempotencyKey;
 import com.englishflow.content.domain.ContentKind;
+import com.englishflow.content.domain.ContentSchemaValidator;
 import com.englishflow.content.domain.ContentOperationException;
 import com.englishflow.content.domain.ContentPayloadHash;
 import com.englishflow.content.domain.ContentRequestContext;
@@ -86,6 +87,20 @@ public final class B9ContentAdminController {
     private final ValidationReportStore reports;
     private ContentReleaseStudio releaseStudio = new ContentReleaseStudio();
 
+    private com.englishflow.content.adapter.jdbc.JdbcContentReviewNotes reviewNotes;
+
+    private com.englishflow.content.adapter.jdbc.JdbcPhoneticsCatalog phonetics;
+
+    @Autowired(required = false)
+    void setPhoneticsCatalog(com.englishflow.content.adapter.jdbc.JdbcPhoneticsCatalog phonetics) {
+        this.phonetics = phonetics;
+    }
+
+    @Autowired(required = false)
+    void setReviewNotes(com.englishflow.content.adapter.jdbc.JdbcContentReviewNotes reviewNotes) {
+        this.reviewNotes = reviewNotes;
+    }
+
     @Autowired
     void setReleaseStudio(ContentReleaseStudio releaseStudio) {
         if (releaseStudio != null) {
@@ -136,6 +151,9 @@ public final class B9ContentAdminController {
         if ("LEXEME".equalsIgnoreCase(text(kind))) {
             return lexemeList(actor, cursor, size, packCode, q, cefr, availability, language, context);
         }
+        if ("PHONETICS".equalsIgnoreCase(text(kind))) {
+            return phoneticsCatalog(language, itemKind, size);
+        }
         if ("ITEM".equalsIgnoreCase(text(kind))) {
             return itemList(actor, cursor, size, packCode, itemKind, q, availability, context);
         }
@@ -151,7 +169,13 @@ public final class B9ContentAdminController {
         requireAdminRead(actor);
         ContentDefinition content = repository.findByCode(contentCode)
                 .orElseThrow(() -> ContentOperationException.notFound("CONTENT_NOT_FOUND", "content does not exist"));
-        return ResponseEntity.ok(envelope(withScheduledTasks(state(content, actor), contentCode, actor), headers));
+        Map<String, Object> detail = new LinkedHashMap<>(withScheduledTasks(state(content, actor), contentCode, actor));
+        content.versions().stream().reduce((left, right) -> right)
+                .ifPresent(latest -> detail.put("editorDraft", editorDraft(content, latest)));
+        if (reviewNotes != null) {
+            reviewNotes.latest(contentCode).ifPresent(note -> detail.put("lastRejection", note));
+        }
+        return ResponseEntity.ok(envelope(detail, headers));
     }
 
     @PostMapping
@@ -214,11 +238,17 @@ public final class B9ContentAdminController {
                 ContentVersion version = targetVersion(content, input);
                 ReviewStage stage = "REVIEW_FIRST".equals(command) ? ReviewStage.FIRST_REVIEW : ReviewStage.FINAL_REVIEW;
                 ReviewDecision decision = reviewDecision(input.get("reviewDecision"));
+                String rejectNote = decision == ReviewDecision.APPROVED ? null
+                        : com.englishflow.content.domain.ReviewTrail.requireRejectNote(reviewNote(input), "CONTENT");
                 versionSnapshot = commands.review(
                         new ContentCommandService.ReviewCommand(
                                 content.contentId(), version.versionId(), stage, decision,
                                 textOr(input.get("reasonCode"), "B31_REVIEW"), textOr(input.get("reviewNote"), "")),
                         actor, key(key + ":review:" + stage.name()), context);
+                if (rejectNote != null && reviewNotes != null) {
+                    reviewNotes.record(contentCode, version.versionId().value(), version.versionNumber(),
+                            stage.name(), decision.name(), rejectNote, actor.subjectId(), Instant.now());
+                }
             }
             case "PUBLISH" -> {
                 requirePublisher(actor);
@@ -260,7 +290,7 @@ public final class B9ContentAdminController {
                 checkLexemeVersion(contentCode, text(input.get("lexemeId")), input, actor);
                 LexemeCommandService.LexemeResult outcome = lexemes.upsert(
                         contentCode, record(input.get("lexeme")), text(input.get("lexemeId")),
-                        actor, key(key + ":lexeme:upsert"), context);
+                        expectedVersion(input), actor, key(key + ":lexeme:upsert"), context);
                 Map<String, Object> lexemeResult = new LinkedHashMap<>();
                 lexemeResult.put("commandId", commandId(key));
                 lexemeResult.put("command", command);
@@ -286,9 +316,9 @@ public final class B9ContentAdminController {
                 checkLexemeVersion(contentCode, lexemeId, input, actor);
                 ReviewDecision decision = reviewDecision(input.get("reviewDecision"));
                 LexemeCommandService.LexemeResult outcome = "LEXEME_REVIEW_FIRST".equals(command)
-                        ? lexemes.reviewFirst(contentCode, lexemeId, decision, actor,
+                        ? lexemes.reviewFirst(contentCode, lexemeId, decision, reviewNote(input), actor,
                                 key(key + ":lexeme:review:first"), context)
-                        : lexemes.reviewFinal(contentCode, lexemeId, decision, actor,
+                        : lexemes.reviewFinal(contentCode, lexemeId, decision, reviewNote(input), actor,
                                 key(key + ":lexeme:review:final"), context);
                 return lexemeAccepted(key, command, contentCode, outcome);
             }
@@ -328,7 +358,7 @@ public final class B9ContentAdminController {
                 checkItemVersion(contentCode, text(input.get("itemId")), input, actor);
                 ContentItemCommandService.ItemResult outcome = contentItems.upsert(
                         contentCode, record(input.get("item")), text(input.get("itemId")),
-                        actor, key(key + ":item:upsert"), context);
+                        expectedVersion(input), actor, key(key + ":item:upsert"), context);
                 Map<String, Object> itemResult = new LinkedHashMap<>();
                 itemResult.put("commandId", commandId(key));
                 itemResult.put("command", command);
@@ -354,9 +384,9 @@ public final class B9ContentAdminController {
                 checkItemVersion(contentCode, itemId, input, actor);
                 ReviewDecision decision = reviewDecision(input.get("reviewDecision"));
                 ContentItemCommandService.ItemResult outcome = "ITEM_REVIEW_FIRST".equals(command)
-                        ? contentItems.reviewFirst(contentCode, itemId, decision, actor,
+                        ? contentItems.reviewFirst(contentCode, itemId, decision, reviewNote(input), actor,
                                 key(key + ":item:review:first"), context)
-                        : contentItems.reviewFinal(contentCode, itemId, decision, actor,
+                        : contentItems.reviewFinal(contentCode, itemId, decision, reviewNote(input), actor,
                                 key(key + ":item:review:final"), context);
                 return itemAccepted(key, command, contentCode, outcome);
             }
@@ -372,7 +402,18 @@ public final class B9ContentAdminController {
                     default -> contentItems.archive(contentCode, itemId, reasonCode, actor,
                             key(key + ":item:archive"), context);
                 };
-                return itemAccepted(key, command, contentCode, outcome);
+                ResponseEntity<Map<String, Object>> accepted = itemAccepted(key, command, contentCode, outcome);
+                if (phonetics == null || !ContentItem.isPhoneticsPack(contentCode)) {
+                    return accepted;
+                }
+                // Phonetics library: keep the learner catalog in step with the reviewed row.
+                ContentItem row = contentItems.current(contentCode, itemId, actor);
+                Map<String, Object> data = new LinkedHashMap<>();
+                if (accepted.getBody() != null && accepted.getBody().get("data") instanceof Map<?, ?> previous) {
+                    previous.forEach((field, value) -> data.put(String.valueOf(field), value));
+                }
+                data.put("learnerProjection", phonetics.project(row, row.isLive()));
+                return ResponseEntity.status(accepted.getStatusCode()).body(Map.of("data", data));
             }
             case "SCHEDULE_PUBLISH" -> {
                 Map<String, Object> schedule = record(input.get("schedule"));
@@ -459,6 +500,12 @@ public final class B9ContentAdminController {
                     } else {
                         ContentDefinition current = ownedForUpdate(contentCode, actor);
                         requireExpectedRevision(input, current.stateVersion());
+                        current.versions().stream().reduce((left, right) -> right)
+                                .filter(latest -> latest.status() == com.englishflow.content.domain.ContentVersionStatus.IN_REVIEW)
+                                .ifPresent(latest -> {
+                                    throw ContentOperationException.conflict("CONTENT_IN_REVIEW",
+                                            "the latest version is under review; wait for the decision or ask a reviewer to reject it");
+                                });
                         Object target = input.get("targetVersionNumber");
                         if (target != null) {
                             int latestNumber = current.versions().stream()
@@ -611,6 +658,9 @@ public final class B9ContentAdminController {
             throw ContentOperationException.badRequest("CONTENT_BATCH_TOO_LARGE", "at most 100 items per batch");
         }
         ContentRequestContext context = context(headers);
+        // dryRun: validate every entry exactly as the apply step would, write nothing.
+        boolean dryRun = Boolean.TRUE.equals(input.get("dryRun"));
+        java.util.Set<String> seenInBatch = new java.util.HashSet<>();
         List<Map<String, Object>> results = new ArrayList<>();
         for (int index = 0; index < items.size(); index++) {
             Map<String, Object> item = items.get(index);
@@ -620,43 +670,107 @@ public final class B9ContentAdminController {
             entry.put("index", index);
             entry.put("contentCode", contentCode);
             if (contentCode.isBlank()) {
-                entry.put("status", "FAILED");
+                entry.put("status", dryRun ? "INVALID" : "FAILED");
                 entry.put("errorCode", "CONTENT_FIELD_REQUIRED");
+                entry.put("message", "contentCode 不能为空");
                 results.add(entry);
                 continue;
             }
             String subKey = "batch-" + ContentPayloadHash.sha256(Map.of(
                     "batchKey", batchKey, "index", index, "contentCode", contentCode));
             try {
+                String entryScope = actor.tenantId() + ":" + actor.subjectId() + ":content.b9.batch.entry";
                 if (item.containsKey("lexeme")) {
                     Map<String, Object> lexemeFields = record(item.get("lexeme"));
-                    String headword = text(lexemeFields.get("headword"));
-                    checkLexemeVersion(contentCode, text(item.get("lexemeId")), item, actor);
-                    LexemeCommandService.LexemeResult outcome;
-                    if (!headword.isBlank() && !text(item.get("lexemeId")).isBlank()) {
-                        outcome = lexemes.upsert(contentCode, lexemeFields, text(item.get("lexemeId")),
-                                actor, key(subKey + ":lexeme"), context);
-                    } else if (!headword.isBlank() && lexemeExists(contentCode, headword, actor)) {
-                        entry.put("status", "SKIPPED");
-                        entry.put("reason", "LEXEME_EXISTS");
-                        results.add(entry);
-                        continue;
+                    String lexemeId = text(item.get("lexemeId"));
+                    LexemeCommandService.LexemePrecheck check = lexemes.precheck(contentCode, lexemeFields, actor);
+                    String dedupe = "L:" + contentCode + ":" + check.headword().toLowerCase(java.util.Locale.ROOT);
+                    if (lexemeId.isBlank() && !seenInBatch.add(dedupe)) {
+                        entry.putAll(skipped("DUPLICATE_IN_BATCH", "同一批次内重复的词条 " + check.headword()));
+                    } else if (dryRun && lexemeId.isBlank() && check.existingLexemeId() != null) {
+                        entry.putAll(skipped("LEXEME_EXISTS", "词条已存在：" + check.headword()));
+                        entry.put("lexemeId", check.existingLexemeId());
+                    } else if (dryRun) {
+                        if (!lexemeId.isBlank()) {
+                            checkLexemeVersion(contentCode, lexemeId, item, actor);
+                        }
+                        entry.put("status", "READY");
+                        entry.put("action", lexemeId.isBlank() ? "CREATE" : "UPDATE");
+                        entry.put("headword", check.headword());
                     } else {
-                        outcome = lexemes.upsert(contentCode, lexemeFields, text(item.get("lexemeId")),
-                                actor, key(subKey + ":lexeme"), context);
+                        entry.putAll(idempotency.executeMap(entryScope, key(subKey + ":lexeme-entry"),
+                                ContentPayloadHash.sha256(item), () -> {
+                                    // Existence is decided inside the receipt so a replay returns the
+                                    // original ACCEPTED result instead of re-reporting it as existing.
+                                    if (lexemeId.isBlank()) {
+                                        LexemeCommandService.LexemePrecheck fresh =
+                                                lexemes.precheck(contentCode, lexemeFields, actor);
+                                        if (fresh.existingLexemeId() != null) {
+                                            Map<String, Object> skip = skipped("LEXEME_EXISTS",
+                                                    "词条已存在：" + fresh.headword());
+                                            skip.put("lexemeId", fresh.existingLexemeId());
+                                            return skip;
+                                        }
+                                    }
+                                    checkLexemeVersion(contentCode, lexemeId, item, actor);
+                                    LexemeCommandService.LexemeResult outcome = lexemes.upsert(contentCode,
+                                            lexemeFields, lexemeId, actor, key(subKey + ":lexeme"), context);
+                                    return Map.of("status", "ACCEPTED", "lexemeId", outcome.lexemeId(),
+                                            "stateVersion", outcome.stateVersion());
+                                }));
                     }
-                    entry.put("status", "ACCEPTED");
-                    entry.put("lexemeId", outcome.lexemeId());
-                    entry.put("stateVersion", outcome.stateVersion());
                 } else if (item.containsKey("item")) {
                     Map<String, Object> itemFields = record(item.get("item"));
-                    checkItemVersion(contentCode, text(item.get("itemId")), item, actor);
-                    ContentItemCommandService.ItemResult outcome = contentItems.upsert(
-                            contentCode, itemFields, text(item.get("itemId")),
-                            actor, key(subKey + ":content-item"), context);
-                    entry.put("status", "ACCEPTED");
-                    entry.put("itemId", outcome.itemId());
-                    entry.put("stateVersion", outcome.stateVersion());
+                    String itemId = text(item.get("itemId"));
+                    ContentItemCommandService.ItemPrecheck check = contentItems.precheck(contentCode, itemFields, actor);
+                    String dedupe = "I:" + contentCode + ":" + check.contentKey();
+                    if (itemId.isBlank() && !seenInBatch.add(dedupe)) {
+                        entry.putAll(skipped("DUPLICATE_IN_BATCH", "同一批次内内容完全相同的题目"));
+                    } else if (dryRun && itemId.isBlank() && check.duplicateItemId() != null) {
+                        entry.putAll(skipped("ITEM_EXISTS", "已存在内容完全相同的题目"));
+                        entry.put("itemId", check.duplicateItemId());
+                    } else if (dryRun) {
+                        if (!itemId.isBlank()) {
+                            checkItemVersion(contentCode, itemId, item, actor);
+                        }
+                        entry.put("status", "READY");
+                        entry.put("action", itemId.isBlank() ? "CREATE" : "UPDATE");
+                        entry.put("kind", check.kind());
+                    } else {
+                        entry.putAll(idempotency.executeMap(entryScope, key(subKey + ":item-entry"),
+                                ContentPayloadHash.sha256(item), () -> {
+                                    if (itemId.isBlank()) {
+                                        String duplicate = contentItems.precheck(contentCode, itemFields, actor)
+                                                .duplicateItemId();
+                                        if (duplicate != null) {
+                                            Map<String, Object> skip = skipped("ITEM_EXISTS", "已存在内容完全相同的题目");
+                                            skip.put("itemId", duplicate);
+                                            return skip;
+                                        }
+                                    }
+                                    checkItemVersion(contentCode, itemId, item, actor);
+                                    ContentItemCommandService.ItemResult outcome = contentItems.upsert(
+                                            contentCode, itemFields, itemId,
+                                            actor, key(subKey + ":content-item"), context);
+                                    return Map.of("status", "ACCEPTED", "itemId", outcome.itemId(),
+                                            "stateVersion", outcome.stateVersion());
+                                }));
+                    }
+                } else if (dryRun) {
+                    if (!seenInBatch.add("C:" + contentCode)) {
+                        entry.putAll(skipped("DUPLICATE_IN_BATCH", "同一批次内重复的内容编码 " + contentCode));
+                    } else if (repository.findByCode(contentCode).isPresent()) {
+                        entry.putAll(skipped("CONTENT_EXISTS", "内容编码已存在：" + contentCode));
+                    } else {
+                        Map<String, Object> merged = new LinkedHashMap<>(draft);
+                        merged.putIfAbsent("title", contentCode);
+                        ContentKind draftKind = kind(merged.get("contentType"));
+                        required(merged, "title");
+                        rights(merged);
+                        ContentSchemaValidator.validate(draftKind, payload(merged));
+                        entry.put("status", "READY");
+                        entry.put("action", "CREATE");
+                    }
                 } else {
                     String scope = actor.tenantId() + ":" + actor.subjectId() + ":content.b9.batch.draft";
                     entry.putAll(idempotency.executeMap(scope, key(subKey),
@@ -687,13 +801,15 @@ public final class B9ContentAdminController {
                             }));
                 }
             } catch (ContentOperationException error) {
-                entry.put("status", "FAILED");
+                entry.put("status", dryRun ? "INVALID" : "FAILED");
                 entry.put("errorCode", error.code());
+                entry.put("message", error.getMessage());
             } catch (RuntimeException error) {
                 // One poisoned entry must not abort the batch; the row is recorded
                 // and the remaining entries still run.
-                entry.put("status", "FAILED");
+                entry.put("status", dryRun ? "INVALID" : "FAILED");
                 entry.put("errorCode", "CONTENT_BATCH_ENTRY_FAILED");
+                entry.put("message", String.valueOf(error.getMessage()));
             }
             results.add(entry);
         }
@@ -705,8 +821,23 @@ public final class B9ContentAdminController {
         data.put("skipped", results.stream().filter(r -> "SKIPPED".equals(r.get("status"))).count());
         data.put("failed", results.stream().filter(r -> "FAILED".equals(r.get("status"))).count() + dropped);
         data.put("items", results);
+        if (dryRun) {
+            data.put("dryRun", true);
+            data.put("ready", results.stream().filter(r -> "READY".equals(r.get("status"))).count());
+            data.put("invalid", results.stream().filter(r -> "INVALID".equals(r.get("status"))).count() + dropped);
+            data.put("checkedAt", Instant.now());
+            return ResponseEntity.ok(Map.of("data", data));
+        }
         data.put("acceptedAt", Instant.now());
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(Map.of("data", data));
+    }
+
+    private static Map<String, Object> skipped(String reason, String message) {
+        Map<String, Object> out = new LinkedHashMap<>();
+        out.put("status", "SKIPPED");
+        out.put("reason", reason);
+        out.put("message", message);
+        return out;
     }
 
     /**
@@ -794,7 +925,7 @@ public final class B9ContentAdminController {
                 lexeme.packCode(), lexeme.lexemeId(), actor);
         Map<String, Object> projection = new LinkedHashMap<>();
         projection.put("availability",
-                lexeme.availability() == LexemeAvailability.PUBLISHED ? "PUBLISHED" : "UNPUBLISHED");
+                lexeme.isLive() ? "PUBLISHED" : "UNPUBLISHED");
         projection.put("projectionVersion", Math.max(1, lexeme.contentVersion()));
         projection.put("contentEpoch", 1L);
         Map<String, Object> fields = lexeme.fields();
@@ -812,6 +943,9 @@ public final class B9ContentAdminController {
         record.put("pronunciations", pronunciations.stream().map(B9ContentAdminController::pronunciationView).toList());
         record.put("createdBy", lexeme.createdBy());
         record.put("updatedBy", lexeme.updatedBy());
+        record.put("firstReviewer", lexeme.firstReviewer());
+        record.put("finalReviewer", lexeme.finalReviewer());
+        record.put("reviewTrail", reviewTrail(lexeme.trail()));
         record.put("createdAt", lexeme.createdAt());
         record.put("updatedAt", lexeme.updatedAt());
         Map<String, Object> result = new LinkedHashMap<>();
@@ -857,6 +991,23 @@ public final class B9ContentAdminController {
         requireAdminRead(actor);
         ScheduledPublishTask task = schedules.get(taskId, actor);
         return ResponseEntity.ok(envelope(scheduleView(task), headers));
+    }
+
+    /**
+     * Phonetics library read path for admin: catalog rows for one language and
+     * resource type (PHONEME default, or MINIMAL_PAIR) in every availability, with
+     * learnerVisible computed from the same canonical-version rule the learner
+     * read path applies. Maintained rows are listed through kind=ITEM&packCode=PHONETICS[-XX].
+     */
+    private ResponseEntity<Map<String, Object>> phoneticsCatalog(String language, String itemKind, int size) {
+        String domain = B3ContentJdbcController.phoneticsDomain(language);
+        String resourceType = "MINIMAL_PAIR".equalsIgnoreCase(text(itemKind)) ? "MINIMAL_PAIR" : "PHONEME";
+        Map<String, Object> data = new LinkedHashMap<>();
+        data.put("packCode", domain);
+        data.put("resourceType", resourceType);
+        data.put("catalogAvailable", phonetics != null);
+        data.put("items", phonetics == null ? List.of() : phonetics.catalog(domain, resourceType, Math.max(size, 100)));
+        return ResponseEntity.ok(Map.of("data", data));
     }
 
     private ResponseEntity<Map<String, Object>> itemList(
@@ -991,13 +1142,16 @@ public final class B9ContentAdminController {
     private static Map<String, Object> itemState(ContentItem item) {
         Map<String, Object> projection = new LinkedHashMap<>();
         projection.put("availability",
-                item.availability() == ItemAvailability.PUBLISHED ? "PUBLISHED" : "UNPUBLISHED");
+                item.isLive() ? "PUBLISHED" : "UNPUBLISHED");
         projection.put("projectionVersion", 1L);
         projection.put("contentEpoch", 1L);
         Map<String, Object> record = new LinkedHashMap<>();
         record.put("itemId", item.itemId());
         record.put("kind", item.kind());
         record.put("stem", item.stem());
+        record.put("firstReviewer", item.firstReviewer());
+        record.put("finalReviewer", item.finalReviewer());
+        record.put("reviewTrail", reviewTrail(item.trail()));
         record.put("packCode", item.packCode());
         record.put("availability", item.availability().name());
         record.put("stateVersion", item.stateVersion());
@@ -1211,6 +1365,28 @@ public final class B9ContentAdminController {
                 ? null : rights(draft);
     }
 
+    /** Contract expectedStateVersion as an optimistic-lock token; absent/non-numeric keeps legacy semantics. */
+    private static Long expectedVersion(Map<String, Object> input) {
+        Object expected = input.get("expectedStateVersion");
+        return expected instanceof Number number && number.longValue() >= 0 ? number.longValue() : null;
+    }
+
+    private static String reviewNote(Map<String, Object> input) {
+        Object note = input.get("reviewNote");
+        return note == null ? null : String.valueOf(note);
+    }
+
+    static Map<String, Object> reviewTrail(com.englishflow.content.domain.ReviewTrail trail) {
+        Map<String, Object> view = new LinkedHashMap<>();
+        view.put("submittedBy", trail.submittedBy());
+        view.put("lastDecision", trail.lastDecision());
+        view.put("lastNote", trail.lastNote());
+        view.put("lastReviewer", trail.lastReviewer());
+        view.put("lastReviewedAt", trail.lastReviewedAt() == null ? null : trail.lastReviewedAt().toString());
+        view.put("revisionOfLive", trail.revisionOfLive());
+        return view;
+    }
+
     private static ReviewDecision reviewDecision(Object raw) {
         String value = text(raw).toUpperCase();
         if (value.isBlank()) {
@@ -1353,6 +1529,34 @@ public final class B9ContentAdminController {
         return version.proposal().isComplete()
                 && rights.sourceCode() != null && !rights.sourceCode().isBlank()
                 && rights.licenseCode() != null && !rights.licenseCode().isBlank();
+    }
+
+    /**
+     * Content-ops R2 workbench backfill (contract proposal, see CONTENT-OPS-20261013.md):
+     * the latest version's editable facts so opening a draft or starting a
+     * revision shows the stored content instead of an empty form. Admin read
+     * only; the evidence reference is the editor's own dossier pointer.
+     */
+    private static Map<String, Object> editorDraft(ContentDefinition content, ContentVersion version) {
+        Map<String, Object> draft = new LinkedHashMap<>();
+        draft.put("contentVersionId", version.versionId().value());
+        draft.put("versionNumber", version.versionNumber());
+        draft.put("status", version.status().name());
+        draft.put("editor", version.editor());
+        draft.put("contentType", content.kind().name());
+        draft.put("title", content.title());
+        draft.put("contentHash", version.contentHash());
+        draft.put("releaseNote", version.releaseNote());
+        draft.put("sourceCode", version.rights().map(ContentRights::sourceCode).orElse(""));
+        draft.put("licenseCode", version.rights().map(ContentRights::licenseCode).orElse(""));
+        RightsProposal proposal = version.proposal();
+        draft.put("permittedChannels", proposal == null ? List.of() : proposal.channelList());
+        draft.put("authorizationEvidenceRef", proposal == null ? null : proposal.proposedEvidenceRef());
+        draft.put("allowsLearning", proposal != null && proposal.proposedAllowsLearning());
+        draft.put("payload", version.payload().raw());
+        draft.put("publishedVersionNumber", content.currentPublishedVersion()
+                .map(ContentVersion::versionNumber).orElse(null));
+        return draft;
     }
 
     private static Map<String, Object> versionView(ContentVersion version) {

@@ -45,6 +45,7 @@ public final class Lexeme {
     private Map<String, Object> publishedFields;
     private final Instant createdAt;
     private Instant updatedAt;
+    private ReviewTrail trail = ReviewTrail.EMPTY;
 
     public Lexeme(
             String lexemeId,
@@ -198,10 +199,33 @@ public final class Lexeme {
         return updatedAt;
     }
 
-    /** Applies an editor upsert. Only DRAFT rows accept field changes. */
+    public ReviewTrail trail() {
+        return trail;
+    }
+
+    /** Rehydrates persisted review bookkeeping; adapters call this right after construction. */
+    public Lexeme restoreTrail(ReviewTrail restored) {
+        this.trail = restored == null ? ReviewTrail.EMPTY : restored;
+        return this;
+    }
+
+    /**
+     * Applies an editor upsert. DRAFT rows are edited in place. Editing an
+     * APPROVED or PUBLISHED row opens a revision: the row returns to DRAFT and
+     * must pass both reviews again, while {@code publishedFields} keeps the
+     * live copy until the revision is republished. IN_REVIEW and ARCHIVED rows
+     * are frozen.
+     */
     public void applyUpsert(Map<String, Object> nextFields, String editor, Instant now) {
-        if (availability != LexemeAvailability.DRAFT) {
-            throw ContentOperationException.conflict("LEXEME_STATE_INVALID", "only a DRAFT lexeme can be edited");
+        if (availability == LexemeAvailability.APPROVED || availability == LexemeAvailability.PUBLISHED) {
+            boolean live = availability == LexemeAvailability.PUBLISHED || trail.revisionOfLive();
+            this.availability = LexemeAvailability.DRAFT;
+            this.firstReviewer = null;
+            this.finalReviewer = null;
+            this.trail = trail.revision(live);
+        } else if (availability != LexemeAvailability.DRAFT) {
+            throw ContentOperationException.conflict("LEXEME_STATE_INVALID",
+                    "a lexeme under review or archived cannot be edited");
         }
         this.fields = Map.copyOf(nextFields);
         this.updatedBy = editor;
@@ -212,6 +236,7 @@ public final class Lexeme {
     public void submit(String editor, Instant now) {
         requireTransition(availability.canSubmit(), "only a DRAFT lexeme can be submitted");
         this.availability = LexemeAvailability.IN_REVIEW;
+        this.trail = trail.submitted(editor);
         this.updatedBy = editor;
         this.updatedAt = now;
         this.stateVersion += 1;
@@ -223,7 +248,13 @@ public final class Lexeme {
             throw ContentOperationException.conflict("LEXEME_REVIEW_DUPLICATE",
                     "the FIRST review is already completed");
         }
+        trail.requireNotAuthorAtFirstReview(reviewer, updatedBy, createdBy, "LEXEME");
+        if (trail.submittedBy() == null) {
+            // Legacy row: pin the inferred submitter before updatedBy is overwritten (P2-1).
+            this.trail = trail.submitted(updatedBy);
+        }
         this.firstReviewer = reviewer;
+        this.trail = trail.decided("APPROVED_FIRST", null, reviewer, now);
         this.updatedBy = reviewer;
         this.updatedAt = now;
         this.stateVersion += 1;
@@ -239,8 +270,40 @@ public final class Lexeme {
             throw ContentOperationException.forbidden("LEXEME_SELF_REVIEW_DENIED",
                     "the author of the first review cannot approve the final review");
         }
+        trail.requireNotAuthorAfterFirstReview(reviewer, createdBy, true, "LEXEME");
         this.finalReviewer = reviewer;
+        this.trail = trail.decided("APPROVED_FINAL", null, reviewer, now);
         this.availability = LexemeAvailability.APPROVED;
+        this.updatedBy = reviewer;
+        this.updatedAt = now;
+        this.stateVersion += 1;
+    }
+
+    /**
+     * Sends an IN_REVIEW lexeme back to its author with a reason. Either review
+     * stage may reject; both reviewer slots are cleared so the resubmitted
+     * draft goes through FIRST and FINAL again.
+     */
+    public void reject(ReviewStage stage, ReviewDecision decision, String reviewer, String note, Instant now) {
+        requireTransition(availability.canReview(), "only an IN_REVIEW lexeme can be rejected");
+        if (decision == ReviewDecision.APPROVED) {
+            throw ContentOperationException.badRequest("LEXEME_REVIEW_DECISION_INVALID", "reject needs a non-APPROVED decision");
+        }
+        if (stage == ReviewStage.FINAL_REVIEW && firstReviewer == null) {
+            throw ContentOperationException.conflict("LEXEME_REVIEW_ORDER_INVALID",
+                    "FINAL review requires a completed FIRST review");
+        }
+        if (firstReviewer == null) {
+            trail.requireNotAuthorAtFirstReview(reviewer, updatedBy, createdBy, "LEXEME");
+        } else {
+            trail.requireNotAuthorAfterFirstReview(reviewer, createdBy, false, "LEXEME");
+        }
+        String reason = ReviewTrail.requireRejectNote(note, "LEXEME");
+        this.availability = LexemeAvailability.DRAFT;
+        this.firstReviewer = null;
+        this.finalReviewer = null;
+        this.trail = trail.decided(decision.name() + "_" + (stage == ReviewStage.FIRST_REVIEW ? "FIRST" : "FINAL"),
+                reason, reviewer, now);
         this.updatedBy = reviewer;
         this.updatedAt = now;
         this.stateVersion += 1;
@@ -249,6 +312,7 @@ public final class Lexeme {
     public void publish(String publisher, Instant now) {
         requireTransition(availability.canPublish(), "only an APPROVED lexeme can be published");
         this.availability = LexemeAvailability.PUBLISHED;
+        this.trail = trail.revision(false);
         this.publisher = publisher;
         this.publishedFields = Map.copyOf(fields);
         this.updatedBy = publisher;
@@ -257,7 +321,20 @@ public final class Lexeme {
         this.contentVersion += 1;
     }
 
+    /** True when learners still see a published copy (PUBLISHED, or a revision draft of a live row). */
+    public boolean isLive() {
+        return availability == LexemeAvailability.PUBLISHED || trail.revisionOfLive();
+    }
+
     public void unpublish(String publisher, Instant now) {
+        if (availability != LexemeAvailability.PUBLISHED && trail.revisionOfLive()) {
+            // Withdraw the live copy while the revision keeps its own state.
+            this.trail = trail.revision(false);
+            this.updatedBy = publisher;
+            this.updatedAt = now;
+            this.stateVersion += 1;
+            return;
+        }
         requireTransition(availability.canUnpublish(), "only a PUBLISHED lexeme can be unpublished");
         this.availability = LexemeAvailability.APPROVED;
         this.updatedBy = publisher;
@@ -267,6 +344,10 @@ public final class Lexeme {
 
     public void archive(String actor, Instant now) {
         requireTransition(availability.canArchive(), "this lexeme state cannot be archived");
+        if (trail.revisionOfLive()) {
+            throw ContentOperationException.conflict("LEXEME_REVISION_LIVE",
+                    "this draft revises a live lexeme; unpublish the live copy before archiving");
+        }
         this.availability = LexemeAvailability.ARCHIVED;
         this.updatedBy = actor;
         this.updatedAt = now;
