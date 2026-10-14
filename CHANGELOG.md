@@ -1,5 +1,7 @@
 # Changelog
 
+- [MB-001-KEYBOARD-20261014] 正式Mobile登录主按钮Enter/Space改为局部keyup单次提交，修复空表单Enter跳过账号首错；17项独立浏览器复验及typecheck通过，涵盖hold/repeat、最新字段、busy与短视口Space不滚动。原设计/原FAIL和真实业务边界保留。
+
 - [MB-003-REDESIGN-20261014] 正式Mobile找回密码两步骤全面简约重排：开放表单、统一字号/图标/间距、简短提示与明确返回；补齐即时字段值、契约长度/不截断、原生语义、pending锁定和真假回执。修复首次/多行错误及回执清除造成真实点击丢失/误切，以及Enter首错焦点跳过；当前c9a6独立49项、typecheck/H5 build和marker8专项通过。旧FAIL按版本保留，真实IAM/mail/native安全清理另列，详见本页报告。
 
 - [UI-PAUSE-20261014-1227] 按用户更正将UI heartbeat从每天纠正为每五小时，额度90%即停（根回读92%，真实reset16:07:06）。LW-003补修远程收据2a352cf7补齐；MB-003未提交新指针修稿仍FAIL，MB-002同类首次错误窗口独审复现并重新IN_REVIEW；原PASS/FAIL及源码版本保留，见本轮暂停断点。

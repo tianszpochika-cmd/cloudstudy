@@ -1,0 +1,798 @@
+{
+  "at": "2026-10-14T15:38:12.573Z",
+  "scope": "INDEPENDENT_MB001_1D34_PRIMARY_KEYBOARD_DELTA_H5",
+  "sourceHashBefore": "1d347967146a38723ab0bf3ae0b1accca3b519ae6515e7c14f12297be1b80e19",
+  "browserAvailability": "Browser plugin not available; existing Playwright 1.63.0 Chromium",
+  "cases": [
+    {
+      "test": "empty-primary-held-repeat-keydown-and-keyup-first-error",
+      "key": "Enter",
+      "holdMs": 160,
+      "held": {
+        "buttonFocused": true,
+        "errors": 0,
+        "busy": "false"
+      },
+      "semantics": [
+        {
+          "id": "mobile-login-identifier",
+          "name": "identifier",
+          "autocomplete": "username",
+          "type": "text",
+          "labelledBy": "mobile-login-identifier-label",
+          "invalid": "true",
+          "describedBy": "mobile-login-error",
+          "disabled": false
+        },
+        {
+          "id": "mobile-login-password",
+          "name": "password",
+          "autocomplete": "current-password",
+          "type": "password",
+          "labelledBy": "mobile-login-password-label",
+          "invalid": "true",
+          "describedBy": "mobile-login-error",
+          "disabled": false
+        }
+      ],
+      "afterFocus": "mobile-login-identifier",
+      "loginRequests": 0,
+      "trace": [
+        {
+          "type": "focusin",
+          "key": null,
+          "repeat": null,
+          "targetId": "",
+          "targetClass": "login-submit",
+          "trusted": true,
+          "focusId": ""
+        },
+        {
+          "type": "keydown",
+          "key": "Enter",
+          "repeat": false,
+          "targetId": "",
+          "targetClass": "login-submit",
+          "trusted": true,
+          "focusId": ""
+        },
+        {
+          "type": "keydown",
+          "key": "Enter",
+          "repeat": true,
+          "targetId": "",
+          "targetClass": "login-submit",
+          "trusted": true,
+          "focusId": ""
+        },
+        {
+          "type": "keyup",
+          "key": "Enter",
+          "repeat": false,
+          "targetId": "",
+          "targetClass": "login-submit",
+          "trusted": true,
+          "focusId": ""
+        },
+        {
+          "type": "focusin",
+          "key": null,
+          "repeat": null,
+          "targetId": "mobile-login-identifier",
+          "targetClass": "uni-input-input",
+          "trusted": true,
+          "focusId": "mobile-login-identifier"
+        }
+      ],
+      "result": "PASS"
+    },
+    {
+      "test": "empty-primary-held-repeat-keydown-and-keyup-first-error",
+      "key": "Space",
+      "holdMs": 160,
+      "held": {
+        "buttonFocused": true,
+        "errors": 0,
+        "busy": "false"
+      },
+      "semantics": [
+        {
+          "id": "mobile-login-identifier",
+          "name": "identifier",
+          "autocomplete": "username",
+          "type": "text",
+          "labelledBy": "mobile-login-identifier-label",
+          "invalid": "true",
+          "describedBy": "mobile-login-error",
+          "disabled": false
+        },
+        {
+          "id": "mobile-login-password",
+          "name": "password",
+          "autocomplete": "current-password",
+          "type": "password",
+          "labelledBy": "mobile-login-password-label",
+          "invalid": "true",
+          "describedBy": "mobile-login-error",
+          "disabled": false
+        }
+      ],
+      "afterFocus": "mobile-login-identifier",
+      "loginRequests": 0,
+      "trace": [
+        {
+          "type": "focusin",
+          "key": null,
+          "repeat": null,
+          "targetId": "",
+          "targetClass": "login-submit",
+          "trusted": true,
+          "focusId": ""
+        },
+        {
+          "type": "keydown",
+          "key": " ",
+          "repeat": false,
+          "targetId": "",
+          "targetClass": "login-submit",
+          "trusted": true,
+          "focusId": ""
+        },
+        {
+          "type": "keydown",
+          "key": " ",
+          "repeat": true,
+          "targetId": "",
+          "targetClass": "login-submit",
+          "trusted": true,
+          "focusId": ""
+        },
+        {
+          "type": "keyup",
+          "key": " ",
+          "repeat": false,
+          "targetId": "",
+          "targetClass": "login-submit",
+          "trusted": true,
+          "focusId": ""
+        },
+        {
+          "type": "focusin",
+          "key": null,
+          "repeat": null,
+          "targetId": "mobile-login-identifier",
+          "targetClass": "uni-input-input",
+          "trusted": true,
+          "focusId": "mobile-login-identifier"
+        }
+      ],
+      "result": "PASS"
+    },
+    {
+      "test": "valid-primary-one-request-pending-guards-and-rejection-recovery",
+      "key": "Enter",
+      "holdMs": 160,
+      "held": {
+        "buttonFocused": true,
+        "errors": 0,
+        "busy": "false"
+      },
+      "disabled": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "busySemantics": [
+        {
+          "id": "mobile-login-identifier",
+          "name": "identifier",
+          "autocomplete": "username",
+          "type": "text",
+          "labelledBy": "mobile-login-identifier-label",
+          "invalid": null,
+          "describedBy": null,
+          "disabled": true
+        },
+        {
+          "id": "mobile-login-password",
+          "name": "password",
+          "autocomplete": "current-password",
+          "type": "password",
+          "labelledBy": "mobile-login-password-label",
+          "invalid": null,
+          "describedBy": null,
+          "disabled": true
+        }
+      ],
+      "guarded": {
+        "busy": true,
+        "accountPreserved": true,
+        "passwordPreserved": true,
+        "passwordHidden": true,
+        "route": "#/pages/login/login"
+      },
+      "loginRequests": 1,
+      "afterErrorVisible": true,
+      "trace": [
+        {
+          "type": "focusin",
+          "key": null,
+          "repeat": null,
+          "targetId": "mobile-login-identifier",
+          "targetClass": "uni-input-input",
+          "trusted": true,
+          "focusId": "mobile-login-identifier"
+        },
+        {
+          "type": "focusin",
+          "key": null,
+          "repeat": null,
+          "targetId": "mobile-login-password",
+          "targetClass": "uni-input-input",
+          "trusted": true,
+          "focusId": "mobile-login-password"
+        },
+        {
+          "type": "focusin",
+          "key": null,
+          "repeat": null,
+          "targetId": "",
+          "targetClass": "login-submit",
+          "trusted": true,
+          "focusId": ""
+        },
+        {
+          "type": "keydown",
+          "key": "Enter",
+          "repeat": false,
+          "targetId": "",
+          "targetClass": "login-submit",
+          "trusted": true,
+          "focusId": ""
+        },
+        {
+          "type": "keydown",
+          "key": "Enter",
+          "repeat": true,
+          "targetId": "",
+          "targetClass": "login-submit",
+          "trusted": true,
+          "focusId": ""
+        },
+        {
+          "type": "keyup",
+          "key": "Enter",
+          "repeat": false,
+          "targetId": "",
+          "targetClass": "login-submit",
+          "trusted": true,
+          "focusId": ""
+        },
+        {
+          "type": "keydown",
+          "key": "Enter",
+          "repeat": false,
+          "targetId": "",
+          "targetClass": "login-submit",
+          "trusted": true,
+          "focusId": ""
+        },
+        {
+          "type": "keyup",
+          "key": "Enter",
+          "repeat": false,
+          "targetId": "",
+          "targetClass": "login-submit",
+          "trusted": true,
+          "focusId": ""
+        },
+        {
+          "type": "keydown",
+          "key": " ",
+          "repeat": false,
+          "targetId": "",
+          "targetClass": "login-submit",
+          "trusted": true,
+          "focusId": ""
+        },
+        {
+          "type": "keyup",
+          "key": " ",
+          "repeat": false,
+          "targetId": "",
+          "targetClass": "login-submit",
+          "trusted": true,
+          "focusId": ""
+        },
+        {
+          "type": "click",
+          "key": null,
+          "repeat": null,
+          "targetId": "",
+          "targetClass": "login-submit",
+          "trusted": true,
+          "focusId": ""
+        },
+        {
+          "type": "focusin",
+          "key": null,
+          "repeat": null,
+          "targetId": "",
+          "targetClass": "login-password-toggle",
+          "trusted": true,
+          "focusId": ""
+        },
+        {
+          "type": "click",
+          "key": null,
+          "repeat": null,
+          "targetId": "",
+          "targetClass": "login-password-toggle",
+          "trusted": true,
+          "focusId": ""
+        },
+        {
+          "type": "focusin",
+          "key": null,
+          "repeat": null,
+          "targetId": "",
+          "targetClass": "login-text-button",
+          "trusted": true,
+          "focusId": ""
+        },
+        {
+          "type": "click",
+          "key": null,
+          "repeat": null,
+          "targetId": "",
+          "targetClass": "login-text-button",
+          "trusted": true,
+          "focusId": ""
+        },
+        {
+          "type": "focusin",
+          "key": null,
+          "repeat": null,
+          "targetId": "",
+          "targetClass": "login-text-button",
+          "trusted": true,
+          "focusId": ""
+        },
+        {
+          "type": "click",
+          "key": null,
+          "repeat": null,
+          "targetId": "",
+          "targetClass": "login-text-button",
+          "trusted": true,
+          "focusId": ""
+        },
+        {
+          "type": "click",
+          "key": null,
+          "repeat": null,
+          "targetId": "",
+          "targetClass": "login-password-toggle",
+          "trusted": false,
+          "focusId": ""
+        },
+        {
+          "type": "click",
+          "key": null,
+          "repeat": null,
+          "targetId": "",
+          "targetClass": "login-text-button",
+          "trusted": false,
+          "focusId": ""
+        },
+        {
+          "type": "click",
+          "key": null,
+          "repeat": null,
+          "targetId": "",
+          "targetClass": "login-submit",
+          "trusted": false,
+          "focusId": ""
+        },
+        {
+          "type": "click",
+          "key": null,
+          "repeat": null,
+          "targetId": "",
+          "targetClass": "login-text-button",
+          "trusted": false,
+          "focusId": ""
+        },
+        {
+          "type": "keyup",
+          "key": "Enter",
+          "repeat": false,
+          "targetId": "mobile-login-password",
+          "targetClass": "uni-input-input",
+          "trusted": false,
+          "focusId": ""
+        }
+      ],
+      "result": "PASS"
+    },
+    {
+      "test": "valid-primary-one-request-pending-guards-and-rejection-recovery",
+      "key": "Space",
+      "holdMs": 160,
+      "held": {
+        "buttonFocused": true,
+        "errors": 0,
+        "busy": "false"
+      },
+      "disabled": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "busySemantics": [
+        {
+          "id": "mobile-login-identifier",
+          "name": "identifier",
+          "autocomplete": "username",
+          "type": "text",
+          "labelledBy": "mobile-login-identifier-label",
+          "invalid": null,
+          "describedBy": null,
+          "disabled": true
+        },
+        {
+          "id": "mobile-login-password",
+          "name": "password",
+          "autocomplete": "current-password",
+          "type": "password",
+          "labelledBy": "mobile-login-password-label",
+          "invalid": null,
+          "describedBy": null,
+          "disabled": true
+        }
+      ],
+      "guarded": {
+        "busy": true,
+        "accountPreserved": true,
+        "passwordPreserved": true,
+        "passwordHidden": true,
+        "route": "#/pages/login/login"
+      },
+      "loginRequests": 1,
+      "afterErrorVisible": true,
+      "trace": [
+        {
+          "type": "focusin",
+          "key": null,
+          "repeat": null,
+          "targetId": "mobile-login-identifier",
+          "targetClass": "uni-input-input",
+          "trusted": true,
+          "focusId": "mobile-login-identifier"
+        },
+        {
+          "type": "focusin",
+          "key": null,
+          "repeat": null,
+          "targetId": "mobile-login-password",
+          "targetClass": "uni-input-input",
+          "trusted": true,
+          "focusId": "mobile-login-password"
+        },
+        {
+          "type": "focusin",
+          "key": null,
+          "repeat": null,
+          "targetId": "",
+          "targetClass": "login-submit",
+          "trusted": true,
+          "focusId": ""
+        },
+        {
+          "type": "keydown",
+          "key": " ",
+          "repeat": false,
+          "targetId": "",
+          "targetClass": "login-submit",
+          "trusted": true,
+          "focusId": ""
+        },
+        {
+          "type": "keydown",
+          "key": " ",
+          "repeat": true,
+          "targetId": "",
+          "targetClass": "login-submit",
+          "trusted": true,
+          "focusId": ""
+        },
+        {
+          "type": "keyup",
+          "key": " ",
+          "repeat": false,
+          "targetId": "",
+          "targetClass": "login-submit",
+          "trusted": true,
+          "focusId": ""
+        },
+        {
+          "type": "keydown",
+          "key": "Enter",
+          "repeat": false,
+          "targetId": "",
+          "targetClass": "login-submit",
+          "trusted": true,
+          "focusId": ""
+        },
+        {
+          "type": "keyup",
+          "key": "Enter",
+          "repeat": false,
+          "targetId": "",
+          "targetClass": "login-submit",
+          "trusted": true,
+          "focusId": ""
+        },
+        {
+          "type": "keydown",
+          "key": " ",
+          "repeat": false,
+          "targetId": "",
+          "targetClass": "login-submit",
+          "trusted": true,
+          "focusId": ""
+        },
+        {
+          "type": "keyup",
+          "key": " ",
+          "repeat": false,
+          "targetId": "",
+          "targetClass": "login-submit",
+          "trusted": true,
+          "focusId": ""
+        },
+        {
+          "type": "click",
+          "key": null,
+          "repeat": null,
+          "targetId": "",
+          "targetClass": "login-submit",
+          "trusted": true,
+          "focusId": ""
+        },
+        {
+          "type": "focusin",
+          "key": null,
+          "repeat": null,
+          "targetId": "",
+          "targetClass": "login-password-toggle",
+          "trusted": true,
+          "focusId": ""
+        },
+        {
+          "type": "click",
+          "key": null,
+          "repeat": null,
+          "targetId": "",
+          "targetClass": "login-password-toggle",
+          "trusted": true,
+          "focusId": ""
+        },
+        {
+          "type": "focusin",
+          "key": null,
+          "repeat": null,
+          "targetId": "",
+          "targetClass": "login-text-button",
+          "trusted": true,
+          "focusId": ""
+        },
+        {
+          "type": "click",
+          "key": null,
+          "repeat": null,
+          "targetId": "",
+          "targetClass": "login-text-button",
+          "trusted": true,
+          "focusId": ""
+        },
+        {
+          "type": "focusin",
+          "key": null,
+          "repeat": null,
+          "targetId": "",
+          "targetClass": "login-text-button",
+          "trusted": true,
+          "focusId": ""
+        },
+        {
+          "type": "click",
+          "key": null,
+          "repeat": null,
+          "targetId": "",
+          "targetClass": "login-text-button",
+          "trusted": true,
+          "focusId": ""
+        },
+        {
+          "type": "click",
+          "key": null,
+          "repeat": null,
+          "targetId": "",
+          "targetClass": "login-password-toggle",
+          "trusted": false,
+          "focusId": ""
+        },
+        {
+          "type": "click",
+          "key": null,
+          "repeat": null,
+          "targetId": "",
+          "targetClass": "login-text-button",
+          "trusted": false,
+          "focusId": ""
+        },
+        {
+          "type": "click",
+          "key": null,
+          "repeat": null,
+          "targetId": "",
+          "targetClass": "login-submit",
+          "trusted": false,
+          "focusId": ""
+        },
+        {
+          "type": "click",
+          "key": null,
+          "repeat": null,
+          "targetId": "",
+          "targetClass": "login-text-button",
+          "trusted": false,
+          "focusId": ""
+        },
+        {
+          "type": "keyup",
+          "key": "Enter",
+          "repeat": false,
+          "targetId": "mobile-login-password",
+          "targetClass": "uni-input-input",
+          "trusted": false,
+          "focusId": ""
+        }
+      ],
+      "result": "PASS"
+    },
+    {
+      "test": "primary-first-missing-password-remains-first-error-after-keyup",
+      "key": "Enter",
+      "afterFocus": "mobile-login-password",
+      "semantics": [
+        {
+          "id": "mobile-login-identifier",
+          "name": "identifier",
+          "autocomplete": "username",
+          "type": "text",
+          "labelledBy": "mobile-login-identifier-label",
+          "invalid": null,
+          "describedBy": null,
+          "disabled": false
+        },
+        {
+          "id": "mobile-login-password",
+          "name": "password",
+          "autocomplete": "current-password",
+          "type": "password",
+          "labelledBy": "mobile-login-password-label",
+          "invalid": "true",
+          "describedBy": "mobile-login-error",
+          "disabled": false
+        }
+      ],
+      "loginRequests": 0,
+      "result": "PASS"
+    },
+    {
+      "test": "primary-first-missing-password-remains-first-error-after-keyup",
+      "key": "Space",
+      "afterFocus": "mobile-login-password",
+      "semantics": [
+        {
+          "id": "mobile-login-identifier",
+          "name": "identifier",
+          "autocomplete": "username",
+          "type": "text",
+          "labelledBy": "mobile-login-identifier-label",
+          "invalid": null,
+          "describedBy": null,
+          "disabled": false
+        },
+        {
+          "id": "mobile-login-password",
+          "name": "password",
+          "autocomplete": "current-password",
+          "type": "password",
+          "labelledBy": "mobile-login-password-label",
+          "invalid": "true",
+          "describedBy": "mobile-login-error",
+          "disabled": false
+        }
+      ],
+      "loginRequests": 0,
+      "result": "PASS"
+    },
+    {
+      "test": "input-confirm-account-next-empty-password-error-and-valid-password-submit",
+      "accountEnterFocus": "mobile-login-password",
+      "emptyPasswordRequests": 0,
+      "missingPasswordSemantics": [
+        {
+          "id": "mobile-login-identifier",
+          "name": "identifier",
+          "autocomplete": "username",
+          "type": "text",
+          "labelledBy": "mobile-login-identifier-label",
+          "invalid": null,
+          "describedBy": null,
+          "disabled": false
+        },
+        {
+          "id": "mobile-login-password",
+          "name": "password",
+          "autocomplete": "current-password",
+          "type": "password",
+          "labelledBy": "mobile-login-password-label",
+          "invalid": "true",
+          "describedBy": "mobile-login-error",
+          "disabled": false
+        }
+      ],
+      "validPasswordRequests": 1,
+      "result": "PASS"
+    },
+    {
+      "test": "mouse-primary-form-submit-preserved",
+      "loginRequests": 1,
+      "result": "PASS"
+    }
+  ],
+  "requests": [
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login"
+    }
+  ],
+  "pageErrors": [],
+  "expectedConsoleErrors": 4,
+  "unexpectedConsoleErrors": 0,
+  "sourceHashAfter": "1d347967146a38723ab0bf3ae0b1accca3b519ae6515e7c14f12297be1b80e19",
+  "result": "UI_PASS_PRIMARY_KEYBOARD_DELTA_H5",
+  "unverified": [
+    "26-case ordinary visual matrix not repeated",
+    "real IAM login/adult gate/business acceptance",
+    "native App or mini-program",
+    "physical keyboard/screen reader",
+    "credential storage or refresh clearing"
+  ]
+}

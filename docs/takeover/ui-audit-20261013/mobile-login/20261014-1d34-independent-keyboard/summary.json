@@ -1,0 +1,58 @@
+{
+  "at": "2026-10-14T15:48:47.8602071Z",
+  "reviewer": "/root/mb003_final",
+  "result": "UI_PASS_PRIMARY_KEYBOARD_DELTA_H5",
+  "sourceHash": "1d347967146a38723ab0bf3ae0b1accca3b519ae6515e7c14f12297be1b80e19",
+  "scope": "FORMAL_MOBILE_LOGIN_PRIMARY_KEYBOARD_DELTA_ONLY",
+  "ordinary26VisualMatrixRepeated": false,
+  "stages": [
+    {
+      "cases": 8,
+      "expectedConsoleErrors": 4,
+      "pageErrors": 0,
+      "file": "results.json",
+      "unexpectedConsoleErrors": 0,
+      "result": "UI_PASS_PRIMARY_KEYBOARD_DELTA_H5"
+    },
+    {
+      "cases": 9,
+      "expectedConsoleErrors": 5,
+      "pageErrors": 0,
+      "file": "supplemental-results.json",
+      "unexpectedConsoleErrors": 0,
+      "result": "UI_PASS_LATEST_FIELD_AND_SPACE_SCROLL_H5"
+    }
+  ],
+  "totalCheckRecords": 17,
+  "oldFailurePreserved": "../20261014-2239-keyboard-diagnostic/button-keyboard-results.json",
+  "currentValueProbe": "Known synthetic arguments; booleans only; forwards existing session.login; no HTTP body inspection",
+  "service": {
+    "host": "127.0.0.1",
+    "pid": 19892,
+    "session": 77625,
+    "existingServiceReused": true,
+    "port": 18183
+  },
+  "usage": {
+    "close": {
+      "primaryUsedPercent": 46,
+      "secondaryUsedPercent": 73
+    },
+    "start": {
+      "primaryUsedPercent": 36,
+      "secondaryUsedPercent": 71
+    },
+    "preSupplement": {
+      "primaryUsedPercent": 41,
+      "secondaryUsedPercent": 72
+    }
+  },
+  "sourceSharedGitMutatedByReviewer": false,
+  "unverified": [
+    "ordinary visual matrix not repeated",
+    "real IAM login/adult gate/business return",
+    "native App/mini-program",
+    "physical keyboard/screen reader",
+    "credential storage or refresh clearing"
+  ]
+}

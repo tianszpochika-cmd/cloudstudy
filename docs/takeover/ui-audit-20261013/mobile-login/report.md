@@ -1,5 +1,7 @@
 # MB-001 — Mobile 登录页逐页重设计与复验
 
+> **2026-10-14当前键盘差量**：原da5空主按钮Enter跳过账号首错已真实复现并保留FAIL；当前1d347967局部keyup提交获[17项独立复签](20261014-1d34-independent-keyboard/review.md)与[root收口](20261014-1d34-independent-keyboard/root-review.md)，typecheck通过，UI_VERIFIED待单独推送。无布局变更，本次不重签原26矩阵或真实IAM/native范围。
+
 日期：2026-10-14（北京时间）。正式入口：`http://127.0.0.1:18183/#/pages/login/login`。
 
 作者结论：`PASS_UI_SCOPED_NOT_BUSINESS_ACCEPTANCE`；独立复审结论见 [independent-review.md](independent-review.md)。当前签收范围为 Mobile H5 登录页的排版、响应式、主题、表单语义及受控认证失败交互。提交、推送与远程收据由主 Agent 记录如下，不宣称实时部署。

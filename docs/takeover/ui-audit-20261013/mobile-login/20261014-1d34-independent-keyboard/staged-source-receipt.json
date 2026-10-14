@@ -1,0 +1,7 @@
+{
+  "scope": "MB-001 primary keyboard only",
+  "rawSha256": "1d347967146a38723ab0bf3ae0b1accca3b519ae6515e7c14f12297be1b80e19",
+  "stagedLfSha256": "1d347967146a38723ab0bf3ae0b1accca3b519ae6515e7c14f12297be1b80e19",
+  "equivalentAfterCrLfToLf": true,
+  "stagedPathCount": 27
+}

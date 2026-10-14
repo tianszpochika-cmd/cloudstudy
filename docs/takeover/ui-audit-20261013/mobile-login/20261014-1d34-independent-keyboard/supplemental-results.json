@@ -1,0 +1,214 @@
+{
+  "at": "2026-10-14T15:41:51.491Z",
+  "scope": "INDEPENDENT_MB001_1D34_LATEST_FIELD_AND_SPACE_SCROLL_H5",
+  "sourceHashBefore": "1d347967146a38723ab0bf3ae0b1accca3b519ae6515e7c14f12297be1b80e19",
+  "browserAvailability": "Browser plugin not available; existing Playwright 1.63.0 Chromium",
+  "cases": [
+    {
+      "test": "rapid-native-edit-immediate-primary-key",
+      "field": "identifier",
+      "change": "clear",
+      "key": "Enter",
+      "probe": {
+        "staleBeforeBlur": true,
+        "nativeLength": 0,
+        "primaryFocused": true
+      },
+      "actual": {
+        "calls": 0,
+        "identifierMatches": null,
+        "passwordMatches": null,
+        "focus": "mobile-login-identifier"
+      },
+      "loginRequests": 0,
+      "result": "PASS"
+    },
+    {
+      "test": "rapid-native-edit-immediate-primary-key",
+      "field": "identifier",
+      "change": "clear",
+      "key": "Space",
+      "probe": {
+        "staleBeforeBlur": true,
+        "nativeLength": 0,
+        "primaryFocused": true
+      },
+      "actual": {
+        "calls": 0,
+        "identifierMatches": null,
+        "passwordMatches": null,
+        "focus": "mobile-login-identifier"
+      },
+      "loginRequests": 0,
+      "result": "PASS"
+    },
+    {
+      "test": "rapid-native-edit-immediate-primary-key",
+      "field": "identifier",
+      "change": "replace",
+      "key": "Enter",
+      "probe": {
+        "staleBeforeBlur": true,
+        "nativeLength": 37,
+        "primaryFocused": true
+      },
+      "actual": {
+        "calls": 1,
+        "identifierMatches": true,
+        "passwordMatches": true,
+        "focus": ""
+      },
+      "loginRequests": 1,
+      "result": "PASS"
+    },
+    {
+      "test": "rapid-native-edit-immediate-primary-key",
+      "field": "identifier",
+      "change": "replace",
+      "key": "Space",
+      "probe": {
+        "staleBeforeBlur": true,
+        "nativeLength": 37,
+        "primaryFocused": true
+      },
+      "actual": {
+        "calls": 1,
+        "identifierMatches": true,
+        "passwordMatches": true,
+        "focus": ""
+      },
+      "loginRequests": 1,
+      "result": "PASS"
+    },
+    {
+      "test": "rapid-native-edit-immediate-primary-key",
+      "field": "password",
+      "change": "clear",
+      "key": "Enter",
+      "probe": {
+        "staleBeforeBlur": true,
+        "nativeLength": 0,
+        "primaryFocused": true
+      },
+      "actual": {
+        "calls": 0,
+        "identifierMatches": null,
+        "passwordMatches": null,
+        "focus": "mobile-login-password"
+      },
+      "loginRequests": 0,
+      "result": "PASS"
+    },
+    {
+      "test": "rapid-native-edit-immediate-primary-key",
+      "field": "password",
+      "change": "clear",
+      "key": "Space",
+      "probe": {
+        "staleBeforeBlur": true,
+        "nativeLength": 0,
+        "primaryFocused": true
+      },
+      "actual": {
+        "calls": 0,
+        "identifierMatches": null,
+        "passwordMatches": null,
+        "focus": "mobile-login-password"
+      },
+      "loginRequests": 0,
+      "result": "PASS"
+    },
+    {
+      "test": "rapid-native-edit-immediate-primary-key",
+      "field": "password",
+      "change": "replace",
+      "key": "Enter",
+      "probe": {
+        "staleBeforeBlur": true,
+        "nativeLength": 38,
+        "primaryFocused": true
+      },
+      "actual": {
+        "calls": 1,
+        "identifierMatches": true,
+        "passwordMatches": true,
+        "focus": ""
+      },
+      "loginRequests": 1,
+      "result": "PASS"
+    },
+    {
+      "test": "rapid-native-edit-immediate-primary-key",
+      "field": "password",
+      "change": "replace",
+      "key": "Space",
+      "probe": {
+        "staleBeforeBlur": true,
+        "nativeLength": 38,
+        "primaryFocused": true
+      },
+      "actual": {
+        "calls": 1,
+        "identifierMatches": true,
+        "passwordMatches": true,
+        "focus": ""
+      },
+      "loginRequests": 1,
+      "result": "PASS"
+    },
+    {
+      "test": "space-short-viewport-no-default-scroll-while-valid-submission-pending",
+      "viewport": {
+        "width": 390,
+        "height": 460
+      },
+      "holdMs": 160,
+      "before": {
+        "scrollY": 200,
+        "focusClass": "login-submit"
+      },
+      "down": {
+        "scrollY": 200,
+        "focusClass": "login-submit"
+      },
+      "up": {
+        "scrollY": 200,
+        "busy": "true"
+      },
+      "loginRequests": 1,
+      "result": "PASS"
+    }
+  ],
+  "requests": [
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login"
+    }
+  ],
+  "pageErrors": [],
+  "expectedConsoleErrors": 5,
+  "unexpectedConsoleErrors": 0,
+  "sourceHashAfter": "1d347967146a38723ab0bf3ae0b1accca3b519ae6515e7c14f12297be1b80e19",
+  "result": "UI_PASS_LATEST_FIELD_AND_SPACE_SCROLL_H5"
+}

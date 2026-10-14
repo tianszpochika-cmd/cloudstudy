@@ -262,7 +262,7 @@ async function submit(event?: SubmitEvent): Promise<void> {
           <view class="login-recovery"><button class="login-text-button" tabindex="0" role="button" :disabled="submitting" :aria-disabled="submitting" @click="navigate('/pages/reset-password/reset-password')">{{ mobileT('forgot') }}</button></view>
         </view>
         <text v-if="lastErrorText" :id="error ? 'mobile-login-error' : undefined" class="login-error" :class="{ 'is-cleared': !error }" :role="error ? 'alert' : undefined" :aria-hidden="!error || undefined">{{ error || lastErrorText }}</text>
-        <button class="login-submit" tabindex="0" role="button" form-type="submit" :disabled="submitting" :aria-disabled="submitting">{{ submitting ? authT('login.submitting') : mobileT('auth.login.start') }}</button>
+        <button class="login-submit" tabindex="0" role="button" form-type="submit" :disabled="submitting" :aria-disabled="submitting" @keydown.enter.stop.prevent @keyup.enter.stop.prevent="submit()" @keydown.space.stop.prevent @keyup.space.stop.prevent="submit()">{{ submitting ? authT('login.submitting') : mobileT('auth.login.start') }}</button>
         </view>
       </form>
       <view class="login-register"><text>{{ mobileT('auth.login.noAccount') }}</text><button class="login-text-button" tabindex="0" role="button" :disabled="submitting" :aria-disabled="submitting" @click="navigate('/pages/register/register')">{{ mobileT('register') }}</button></view>

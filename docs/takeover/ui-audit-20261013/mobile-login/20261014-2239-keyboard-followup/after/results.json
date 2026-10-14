@@ -1,0 +1,268 @@
+{
+  "at": "2026-10-14T15:30:29.578Z",
+  "scope": "MB001_PRIMARY_KEYBOARD_H5_ONLY_SYNTHETIC_FIXTURES",
+  "browserPlugin": "Browser plugin not available; Playwright Chromium",
+  "sourceHashBefore": "1d347967146a38723ab0bf3ae0b1accca3b519ae6515e7c14f12297be1b80e19",
+  "cases": [
+    {
+      "name": "empty-primary",
+      "key": "Enter",
+      "noSubmitOnKeydown": true,
+      "focusAfterKeyup": "mobile-login-identifier",
+      "firstErrorAria": true,
+      "requests": 0,
+      "trace": [
+        {
+          "type": "focusin",
+          "key": null,
+          "targetId": "",
+          "targetClass": "login-submit",
+          "trusted": true
+        },
+        {
+          "type": "keydown",
+          "key": "Enter",
+          "targetId": "",
+          "targetClass": "login-submit",
+          "trusted": true
+        },
+        {
+          "type": "keyup",
+          "key": "Enter",
+          "targetId": "",
+          "targetClass": "login-submit",
+          "trusted": true
+        },
+        {
+          "type": "focusin",
+          "key": null,
+          "targetId": "mobile-login-identifier",
+          "targetClass": "uni-input-input",
+          "trusted": true
+        }
+      ],
+      "result": "PASS"
+    },
+    {
+      "name": "empty-primary",
+      "key": "Space",
+      "noSubmitOnKeydown": true,
+      "focusAfterKeyup": "mobile-login-identifier",
+      "firstErrorAria": true,
+      "requests": 0,
+      "trace": [
+        {
+          "type": "focusin",
+          "key": null,
+          "targetId": "",
+          "targetClass": "login-submit",
+          "trusted": true
+        },
+        {
+          "type": "keydown",
+          "key": " ",
+          "targetId": "",
+          "targetClass": "login-submit",
+          "trusted": true
+        },
+        {
+          "type": "keyup",
+          "key": " ",
+          "targetId": "",
+          "targetClass": "login-submit",
+          "trusted": true
+        },
+        {
+          "type": "focusin",
+          "key": null,
+          "targetId": "mobile-login-identifier",
+          "targetClass": "uni-input-input",
+          "trusted": true
+        }
+      ],
+      "result": "PASS"
+    },
+    {
+      "name": "valid-primary-pending-rejection",
+      "key": "Enter",
+      "noSubmitOnKeydown": true,
+      "requests": 1,
+      "pendingLocked": true,
+      "pendingDuplicatePrevented": true,
+      "recoveredAfterFixture": true,
+      "trace": [
+        {
+          "type": "focusin",
+          "key": null,
+          "targetId": "mobile-login-identifier",
+          "targetClass": "uni-input-input",
+          "trusted": true
+        },
+        {
+          "type": "focusin",
+          "key": null,
+          "targetId": "mobile-login-password",
+          "targetClass": "uni-input-input",
+          "trusted": true
+        },
+        {
+          "type": "focusin",
+          "key": null,
+          "targetId": "",
+          "targetClass": "login-submit",
+          "trusted": true
+        },
+        {
+          "type": "keydown",
+          "key": "Enter",
+          "targetId": "",
+          "targetClass": "login-submit",
+          "trusted": true
+        },
+        {
+          "type": "keyup",
+          "key": "Enter",
+          "targetId": "",
+          "targetClass": "login-submit",
+          "trusted": true
+        },
+        {
+          "type": "keydown",
+          "key": "Enter",
+          "targetId": "",
+          "targetClass": "login-submit",
+          "trusted": true
+        },
+        {
+          "type": "keyup",
+          "key": "Enter",
+          "targetId": "",
+          "targetClass": "login-submit",
+          "trusted": true
+        },
+        {
+          "type": "keydown",
+          "key": " ",
+          "targetId": "",
+          "targetClass": "login-submit",
+          "trusted": true
+        },
+        {
+          "type": "keyup",
+          "key": " ",
+          "targetId": "",
+          "targetClass": "login-submit",
+          "trusted": true
+        }
+      ],
+      "result": "PASS"
+    },
+    {
+      "name": "valid-primary-pending-rejection",
+      "key": "Space",
+      "noSubmitOnKeydown": true,
+      "requests": 1,
+      "pendingLocked": true,
+      "pendingDuplicatePrevented": true,
+      "recoveredAfterFixture": true,
+      "trace": [
+        {
+          "type": "focusin",
+          "key": null,
+          "targetId": "mobile-login-identifier",
+          "targetClass": "uni-input-input",
+          "trusted": true
+        },
+        {
+          "type": "focusin",
+          "key": null,
+          "targetId": "mobile-login-password",
+          "targetClass": "uni-input-input",
+          "trusted": true
+        },
+        {
+          "type": "focusin",
+          "key": null,
+          "targetId": "",
+          "targetClass": "login-submit",
+          "trusted": true
+        },
+        {
+          "type": "keydown",
+          "key": " ",
+          "targetId": "",
+          "targetClass": "login-submit",
+          "trusted": true
+        },
+        {
+          "type": "keyup",
+          "key": " ",
+          "targetId": "",
+          "targetClass": "login-submit",
+          "trusted": true
+        },
+        {
+          "type": "keydown",
+          "key": "Enter",
+          "targetId": "",
+          "targetClass": "login-submit",
+          "trusted": true
+        },
+        {
+          "type": "keyup",
+          "key": "Enter",
+          "targetId": "",
+          "targetClass": "login-submit",
+          "trusted": true
+        },
+        {
+          "type": "keydown",
+          "key": " ",
+          "targetId": "",
+          "targetClass": "login-submit",
+          "trusted": true
+        },
+        {
+          "type": "keyup",
+          "key": " ",
+          "targetId": "",
+          "targetClass": "login-submit",
+          "trusted": true
+        }
+      ],
+      "result": "PASS"
+    },
+    {
+      "name": "field-confirm-next-required-and-valid-submit",
+      "accountEnterFocus": "mobile-login-password",
+      "emptyPasswordRequests": 0,
+      "validPasswordRequests": 1,
+      "result": "PASS"
+    }
+  ],
+  "pageErrors": [],
+  "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+  ],
+  "fixtureRequests": [
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login"
+    }
+  ],
+  "sourceHashAfter": "1d347967146a38723ab0bf3ae0b1accca3b519ae6515e7c14f12297be1b80e19",
+  "result": "PASS_PRIMARY_KEYBOARD_UI_SCOPE_NOT_BUSINESS_ACCEPTANCE"
+}
