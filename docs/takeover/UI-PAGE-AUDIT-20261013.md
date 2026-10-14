@@ -1,5 +1,7 @@
 # V2 UI 逐页审查索引 — 2026-10-13
 
+> **2026-10-14 12:27最新**：五小时已用90%即暂停，根回读92%；定时已纠正为每五小时。LW-003补修2a352cf7已推；MB-003未提交指针修稿仍FAIL，MB-002新首次错误指针FAIL已重新打开。准确未完范围见[暂停断点](ui-audit-20261013/PAUSE-20261014-1227.md)。下面“注册已推/其余PENDING”等早期描述只作历史，不覆盖本次重新IN_REVIEW。
+
 > 分支：`dev-redesign`。本轮拉取后的源码观察基线：`4990dd29`；R1 原有签收基线：`7a6ac0a2`。时间口径：Asia/Shanghai。
 > **2026-10-14 11:10续做**：实际额度已恢复（已用1%），错误的每天续跑设置已更正为每五小时检查；立即接续MB-001/MB-002最终独立复签，详见[续做记录](ui-audit-20261013/RESUME-20261014-1110.md)。
 > 用户已明确改为全部正式页面简约重设计。Web三页分别推送`182e106b`/`60858fbc`/`5cd40e35`；Mobile登录即时值补修`46c5106d`、注册重设计`4968bc76`已独立复签并推送，远程SHA一致。接续MB-003正式找回密码，其余PENDING。旧FAIL与暂停记录保留，见[续做交接](ui-audit-20261013/PAUSE-HANDOFF.md)。
@@ -61,7 +63,7 @@
 |---|---|---|---|---|---|
 | LW-001 | `/login` | [apps/learner-web/src/pages/LoginPage.vue](../../apps/learner-web/src/pages/LoginPage.vue) | 登录：空提交、密码显示、错误、等待、链接与键盘 | PUSHED_SCOPED | [重设计记录](ui-audit-20261013/learner-login-redesign/review.md)，182e106b远程SHA一致；70c2623f旧范围保留 |
 | LW-002 | `/register` | [apps/learner-web/src/pages/RegisterPage.vue](../../apps/learner-web/src/pages/RegisterPage.vue) | 注册：密码规则、确认密码、错误定位 | PUSHED_SCOPED | [重设计记录](ui-audit-20261013/learner-register/review.md)，60858fbc远程SHA一致 |
-| LW-003 | `/reset-password` | [apps/learner-web/src/pages/PasswordResetPage.vue](../../apps/learner-web/src/pages/PasswordResetPage.vue) | 请求/确认两步、切步清错、等待与完成 | UI_VERIFIED | 原重设计5cd40e35；[503/断网补修](ui-audit-20261013/learner-reset/20261014-outage-followup/report.md)、[中英失败/重试独立复签](ui-audit-20261013/learner-reset/20261014-outage-final-review/review.md)通过，待本页收据 |
+| LW-003 | `/reset-password` | [apps/learner-web/src/pages/PasswordResetPage.vue](../../apps/learner-web/src/pages/PasswordResetPage.vue) | 请求/确认两步、切步清错、等待与完成 | PUSHED_SCOPED | 原重设计5cd40e35；[503/断网补修](ui-audit-20261013/learner-reset/20261014-outage-followup/report.md)、[中英失败/重试独立复签](ui-audit-20261013/learner-reset/20261014-outage-final-review/review.md)通过，2a352cf7远程SHA一致 |
 | LW-004 | `/onboarding` | [apps/learner-web/src/pages/OnboardingPage.vue](../../apps/learner-web/src/pages/OnboardingPage.vue) | 成人门、三项同意、目标/时长、保存后定级四幕 | PENDING | — |
 | LW-005 | `/forbidden` | [apps/learner-web/src/pages/ForbiddenPage.vue](../../apps/learner-web/src/pages/ForbiddenPage.vue) | 限制说明、可用出口与退出 | PENDING | — |
 | LW-006 | `/assessment` | [apps/learner-web/src/pages/AssessmentPage.vue](../../apps/learner-web/src/pages/AssessmentPage.vue) | 开场、选项、保存回执、反馈、报告与重测 | PENDING | — |
@@ -133,8 +135,8 @@
 | 审查编号 | 真实路由 | 页面源文件 | 本页需展开的场景 | 当前状态 | 证据 / 提交 / 远程收据 |
 |---|---|---|---|---|---|
 | MB-001 | `#/pages/login/login` | [apps/mobile/src/pages/login/login.vue](../../apps/mobile/src/pages/login/login.vue) | 登录 | PUSHED_SCOPED | 原范围c6208c0a；即时值补修[最终独立13组复签](ui-audit-20261013/mobile-login/20261014-final-review/review.md)通过，46c5106d远程SHA一致；旧FAIL保留 |
-| MB-002 | `#/pages/register/register` | [apps/mobile/src/pages/register/register.vue](../../apps/mobile/src/pages/register/register.vue) | 注册 | PUSHED_SCOPED | [作者34矩阵](ui-audit-20261013/mobile-register/report.md)、[最终独立32矩阵/多行纠错复签](ui-audit-20261013/mobile-register/20261014-final-review/review.md)通过；4968bc76远程SHA一致；根随后仅清理EOF空行，报告单列hash差异 |
-| MB-003 | `#/pages/reset-password/reset-password` | [apps/mobile/src/pages/reset-password/reset-password.vue](../../apps/mobile/src/pages/reset-password/reset-password.vue) | 请求/确认两步、完成态 | IN_REVIEW | 正式两步全面重排，pending切步/残留提示/即时值/错误语义专项；IAM owner及原生清理GAP保留 |
+| MB-002 | `#/pages/register/register` | [apps/mobile/src/pages/register/register.vue](../../apps/mobile/src/pages/register/register.vue) | 注册 | IN_REVIEW | 原重设计4968bc76已推且SHA一致；旧34/32矩阵与多行纠错PASS保留。新[首次错误指针FAIL](ui-audit-20261013/mobile-register/20261014-pointer-followup/before/results.json)已复现，按钮移位丢点击；未补修，不能凭旧PASS放行 |
+| MB-003 | `#/pages/reset-password/reset-password` | [apps/mobile/src/pages/reset-password/reset-password.vue](../../apps/mobile/src/pages/reset-password/reset-password.vue) | 请求/确认两步、完成态 | IN_REVIEW | [正式两步全面重排及版本报告](ui-audit-20261013/mobile-reset/report.md)；旧68矩阵/独立视觉PASS，新源3e7b9fc8指针修稿仍FAIL，未提交；[暂停断点](ui-audit-20261013/PAUSE-20261014-1227.md)，IAM/native GAP保留 |
 | MB-004 | `#/pages/onboarding/onboarding` | [apps/mobile/src/pages/onboarding/onboarding.vue](../../apps/mobile/src/pages/onboarding/onboarding.vue) | 成人门、同意、目标、定级四幕 | PENDING | — |
 | MB-005 | `#/pages/forbidden/forbidden` | [apps/mobile/src/pages/forbidden/forbidden.vue](../../apps/mobile/src/pages/forbidden/forbidden.vue) | 限制说明、退出与可用出口 | PENDING | — |
 | MB-006 | `#/pages/assessment/assessment` | [apps/mobile/src/pages/assessment/assessment.vue](../../apps/mobile/src/pages/assessment/assessment.vue) | 开场、作答、反馈、结果与重测 | PENDING | — |

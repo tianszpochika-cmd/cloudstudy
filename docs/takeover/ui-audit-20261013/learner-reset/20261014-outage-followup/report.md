@@ -11,3 +11,5 @@
 本次所有API均受控拦截，无真实账号或真实邮件/密码更新，不能称真实后台成功。独立复签另存`../20261014-outage-final-review/`；提交推送收据收口后追加。
 
 [最终独立复签](../20261014-outage-final-review/review.md)签`UI_SCOPE_PASS`：中英8场景（202/503/断网/429）及6失败恢复均通过，三个源码哈希与作者报告一致。仅202显示条件回执，其他路径均有相应失败提示；waiting禁切步、retry成功清旧错误、pageerror及非预期consoleerror为0。root接受本次具名UI范围，随后按LW-003单页提交推送。
+
+远程收据：本页补修与证据已单独提交推送 `2a352cf7e36bd768fdb193f9862d480932caa6ac`，`origin/dev-redesign`回读SHA一致。本页具名UI范围已收口。

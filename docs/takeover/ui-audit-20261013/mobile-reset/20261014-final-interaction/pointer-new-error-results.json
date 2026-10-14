@@ -1,0 +1,20 @@
+{
+  "before": {
+    "stale": true,
+    "identifierErrorPresent": 0,
+    "buttonTop": 625.234375,
+    "x": 195,
+    "y": 650.234375
+  },
+  "after": {
+    "trustedClicks": 0,
+    "staleAtPointer": true,
+    "buttonTop": 655.625,
+    "focusedId": "",
+    "identifierLength": 129,
+    "errorPresent": 1,
+    "errorText": "账号长度需为 3 至 128 位。"
+  },
+  "apiCount": 0,
+  "scope": "SYNTHETIC_POINTER_UI_DIAGNOSIS_ONLY"
+}

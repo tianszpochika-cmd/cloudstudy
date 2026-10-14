@@ -1,5 +1,7 @@
 # CURRENT-HANDOFF — dev-redesign 迭代 2（第二轮重设计）
 
+> **当前UI接续（2026-10-14 12:27）**：[额度与逐页精确断点](docs/takeover/ui-audit-20261013/PAUSE-20261014-1227.md)。五小时已用90%即停，根回读92%，真实reset16:07:06；自动续做已纠正为每五小时。MB-003未提交修稿仍有真实指针FAIL，随后MB-002新指针边界补修；不能据旧PASS放行。LW-003补修已推`2a352cf7`。以下R1历史入口继续有效，不替代本轮UI未完成项。
+
 > 更新：2026-10-11。本分支只有一套当前进度入口：[迭代 2 当前进度](docs/06-design/v2-980plus/redesign/CURRENT-PROGRESS.md)。本文件仅提供阅读路径，不重复维护完成率或任务状态。
 >
 > **2026-10-11 Luna 签收**：IT-1…IT-7 与全链已由 Luna（Grok Bot 测试项目练手，负责人指定的唯一全职审查者）在 `7a6ac0a2` 签收，`lunaStamp=true`，残留为零，见 [LUNA-SIGNOFF](docs/takeover/LUNA-SIGNOFF.md)。下文第 3 条为签收前的历史描述，保留原文。

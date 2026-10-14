@@ -1,0 +1,5 @@
+# MB-003 next-page read-only audit
+
+Pending request can switch to confirm and receive request errors there. switchStep must guard busy and clear errors/receipt/visibility; back clears code/password. Native inputs lack name/id/label/ARIA, actual font15px. Two-step headings and descriptions, open420 column,28/14/16/13 typography, true24px gaps. Generic bottom membership copy should be return-to-login. Invalid-code401 loses detail marker in session.confirmPasswordReset; inspect allowlist before changing shared store. Do not claim physical native token cleanup: contract requires Keychain/Keystore refresh removal, current success source only returns true. Real email/code/reset chain remains NOT_RUN.
+
+Evidence: request-390-before.png, confirm-stale-error-390-before.png, busy-cross-step-390-before.png, confirm-retained-390-before.png, request-320-en-fresh-before.png, invalid-code-320-en-before.png. Ignore request-320-en-before.png: same-document hash retained old state; corrected with fresh context.

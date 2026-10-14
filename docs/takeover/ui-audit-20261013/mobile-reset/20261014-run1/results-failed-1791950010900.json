@@ -1,0 +1,24 @@
+{
+  "scope": "MOBILE_RESET_H5_UI_ONLY_SYNTHETIC_FIXTURES",
+  "at": "2026-10-14T03:53:29.895Z",
+  "browserPlugin": "unavailable; Playwright Chromium",
+  "matrix": [],
+  "checks": [],
+  "pageErrors": [],
+  "consoleErrors": [],
+  "fixtureRequests": [],
+  "sourceHashes": {
+    "apps/mobile/src/pages/reset-password/reset-password.vue": "b3eebb09cf8e2194ed9355f5dce863786789ca870b25d47203022815bef7c361",
+    "apps/mobile/src/theme/v2-tokens.scss": "561d1b8bead07c1c09ecf6c2bec0b4eee4151d5ae1b15e9cc755f84fac855869",
+    "apps/mobile/src/theme/v2-icons.ts": "93951db891ef4997dc071482176ce2c1b5801c600c5315bbcf915691ef164ba5",
+    "apps/mobile/src/uni.scss": "0bd56842fc5baebd8767e721f2d938986e293d1d87bfc74bb087b3c228f638d7",
+    "apps/mobile/src/platform/v2-foundation.ts": "8cbfe6c7665de68dfba0c281e3b0a2abc296d091dc043782e5ff7af775018c37",
+    "packages/i18n/src/mobile-experience.ts": "f772bccef324eeac99e3f7b31292040d1353557387aaf6f05d309b74d7ad947d",
+    "apps/mobile/src/auth/gateway-auth.ts": "b17373e792c34287ac8e3e78db97e6fb71b7f4599df88a9a8a2bac1e8005d711",
+    "apps/mobile/src/auth/auth-failure-copy.ts": "0ecf6aab291dc6f5fa20b561141eafedc7091bc3773e4203b5c68b64232fc795",
+    "apps/mobile/src/stores/session.ts": "6cbf1f855f49e389bd03a3eb2e21135c1bd604aad2722469b46bdd49466a5b68",
+    "apps/mobile/tests/ui-reset.e2e.cjs": "5694af720702376abe385b89a3521aea12fef98f09a60ce8f7f81c4b57e7d7bb"
+  },
+  "status": "FAIL",
+  "failure": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\n0 !== 1\n\n    at C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\apps\\mobile\\tests\\ui-reset.e2e.cjs:79:12"
+}

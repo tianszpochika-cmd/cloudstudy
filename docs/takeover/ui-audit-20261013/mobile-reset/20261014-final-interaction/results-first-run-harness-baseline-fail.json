@@ -1,0 +1,15 @@
+{
+  "at": "2026-10-14T04:03:13.224Z",
+  "scope": "INDEPENDENT_MOBILE_RESET_H5_INTERACTION_ONLY",
+  "sourceHashBefore": "b3eebb09cf8e2194ed9355f5dce863786789ca870b25d47203022815bef7c361",
+  "cases": [],
+  "pageErrors": [],
+  "expectedConsoleErrors": 0,
+  "unexpectedConsoleErrors": 0,
+  "requests": [],
+  "result": "FAIL",
+  "failure": {
+    "name": "AssertionError",
+    "message": "Expected values to be strictly equal:\n\nfalse !== true\n"
+  }
+}

@@ -1,0 +1,20 @@
+[
+  {
+    "step": "request",
+    "scrollY": 130,
+    "exitTop": 376.375,
+    "exitBottom": 420.375,
+    "viewportHeight": 460,
+    "fullyInsideViewport": true,
+    "overflow": false
+  },
+  {
+    "step": "confirm",
+    "scrollY": 403,
+    "exitTop": 376.140625,
+    "exitBottom": 420.140625,
+    "viewportHeight": 460,
+    "fullyInsideViewport": true,
+    "overflow": false
+  }
+]

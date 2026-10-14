@@ -1,0 +1,24 @@
+{
+  "sourceHashBefore": "e2115e12d993ceba294afe60933a6e5d8ad0d8916b210daa4e6052ff3cf8782f",
+  "sourceHashAfter": "e2115e12d993ceba294afe60933a6e5d8ad0d8916b210daa4e6052ff3cf8782f",
+  "before": {
+    "stale": true,
+    "identifierErrorPresent": 0,
+    "buttonTop": 610.84375,
+    "x": 195,
+    "y": 635.84375
+  },
+  "after": {
+    "trustedClicks": 0,
+    "staleAtPointer": true,
+    "elapsedMs": 2.5,
+    "buttonTop": 641.234375,
+    "focusedId": "",
+    "identifierLength": 0,
+    "errorPresent": 1,
+    "errorText": "请输入账号。"
+  },
+  "registerCount": 1,
+  "scope": "SYNTHETIC_POINTER_ONLY",
+  "result": "CONFIRMED_POINTER_MISS"
+}

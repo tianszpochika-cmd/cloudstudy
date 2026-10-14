@@ -1,0 +1,5900 @@
+{
+  "scope": "MB003_INDEPENDENT_FINAL_VISUAL_REVIEW",
+  "at": "2026-10-14T04:03:37.188Z",
+  "browser": "Playwright Chromium; Browser plugin/skill unavailable",
+  "sourceHashes": {
+    "apps/mobile/src/pages/reset-password/reset-password.vue": "b3eebb09cf8e2194ed9355f5dce863786789ca870b25d47203022815bef7c361",
+    "packages/i18n/src/mobile-experience.ts": "f772bccef324eeac99e3f7b31292040d1353557387aaf6f05d309b74d7ad947d",
+    "apps/mobile/src/theme/v2-tokens.scss": "561d1b8bead07c1c09ecf6c2bec0b4eee4151d5ae1b15e9cc755f84fac855869",
+    "apps/mobile/src/theme/v2-icons.ts": "93951db891ef4997dc071482176ce2c1b5801c600c5315bbcf915691ef164ba5",
+    "apps/mobile/src/uni.scss": "0bd56842fc5baebd8767e721f2d938986e293d1d87bfc74bb087b3c228f638d7"
+  },
+  "matrix": [
+    {
+      "width": 320,
+      "locale": "zh-CN",
+      "requestedTheme": "light",
+      "step": "request",
+      "route": "#/pages/reset-password/reset-password",
+      "title": "找回密码",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 272,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "labelFonts": [
+        "14px"
+      ],
+      "hintFont": null,
+      "inputFonts": [
+        "16px"
+      ],
+      "submitFont": "16px",
+      "fieldGaps": [],
+      "actionGap": 24,
+      "submitTop": 330.875,
+      "contrast": {
+        ".reset-title": 14.171267244103936,
+        ".reset-description": 5.504103371100126,
+        ".reset-adult-note": 5.504103371100126,
+        ".reset-label": 14.171267244103936,
+        ".reset-submit": 7.996499985642157,
+        ".reset-step-button": 7.3582589983975835,
+        ".reset-login-button": 7.3582589983975835
+      },
+      "targets": [
+        {
+          "top": 330.875,
+          "bottom": 380.875,
+          "width": 272,
+          "height": 50
+        },
+        {
+          "top": 392.875,
+          "bottom": 436.875,
+          "width": 84,
+          "height": 44
+        },
+        {
+          "top": 481.875,
+          "bottom": 525.875,
+          "width": 56,
+          "height": 44
+        }
+      ],
+      "errors": [],
+      "inputs": [
+        {
+          "name": "identifier",
+          "label": "账号",
+          "autocomplete": "username",
+          "invalid": null,
+          "description": null
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 320,
+      "locale": "zh-CN",
+      "requestedTheme": "light",
+      "step": "confirm",
+      "route": "#/pages/reset-password/reset-password",
+      "title": "找回密码",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 272,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "labelFonts": [
+        "14px",
+        "14px",
+        "14px"
+      ],
+      "hintFont": "13px",
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "submitFont": "16px",
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "submitTop": 564.453125,
+      "contrast": {
+        ".reset-title": 14.171267244103936,
+        ".reset-description": 5.504103371100126,
+        ".reset-adult-note": 5.504103371100126,
+        ".reset-label": 14.171267244103936,
+        ".reset-submit": 7.996499985642157,
+        ".reset-step-button": 7.3582589983975835,
+        ".reset-login-button": 7.3582589983975835,
+        ".reset-password-hint": 5.504103371100126
+      },
+      "targets": [
+        {
+          "top": 465.65625,
+          "bottom": 509.65625,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 564.453125,
+          "bottom": 614.453125,
+          "width": 272,
+          "height": 50
+        },
+        {
+          "top": 626.453125,
+          "bottom": 670.453125,
+          "width": 84,
+          "height": 44
+        },
+        {
+          "top": 715.453125,
+          "bottom": 759.453125,
+          "width": 56,
+          "height": 44
+        }
+      ],
+      "errors": [],
+      "inputs": [
+        {
+          "name": "identifier",
+          "label": "账号",
+          "autocomplete": "username",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "token",
+          "label": "重置口令",
+          "autocomplete": "one-time-code",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "newPassword",
+          "label": "新密码",
+          "autocomplete": "new-password",
+          "invalid": null,
+          "description": "mobile-reset-password-hint"
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 320,
+      "locale": "zh-CN",
+      "requestedTheme": "dark",
+      "step": "request",
+      "route": "#/pages/reset-password/reset-password",
+      "title": "找回密码",
+      "theme": "dark",
+      "overflow": false,
+      "contentWidth": 272,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "labelFonts": [
+        "14px"
+      ],
+      "hintFont": null,
+      "inputFonts": [
+        "16px"
+      ],
+      "submitFont": "16px",
+      "fieldGaps": [],
+      "actionGap": 24,
+      "submitTop": 330.875,
+      "contrast": {
+        ".reset-title": 15.923775297667023,
+        ".reset-description": 9.357719562635204,
+        ".reset-adult-note": 9.357719562635204,
+        ".reset-label": 15.923775297667023,
+        ".reset-submit": 8.176495938166001,
+        ".reset-step-button": 8.98015130138188,
+        ".reset-login-button": 8.98015130138188
+      },
+      "targets": [
+        {
+          "top": 330.875,
+          "bottom": 380.875,
+          "width": 272,
+          "height": 50
+        },
+        {
+          "top": 392.875,
+          "bottom": 436.875,
+          "width": 84,
+          "height": 44
+        },
+        {
+          "top": 481.875,
+          "bottom": 525.875,
+          "width": 56,
+          "height": 44
+        }
+      ],
+      "errors": [],
+      "inputs": [
+        {
+          "name": "identifier",
+          "label": "账号",
+          "autocomplete": "username",
+          "invalid": null,
+          "description": null
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 320,
+      "locale": "zh-CN",
+      "requestedTheme": "dark",
+      "step": "confirm",
+      "route": "#/pages/reset-password/reset-password",
+      "title": "找回密码",
+      "theme": "dark",
+      "overflow": false,
+      "contentWidth": 272,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "labelFonts": [
+        "14px",
+        "14px",
+        "14px"
+      ],
+      "hintFont": "13px",
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "submitFont": "16px",
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "submitTop": 564.453125,
+      "contrast": {
+        ".reset-title": 15.923775297667023,
+        ".reset-description": 9.357719562635204,
+        ".reset-adult-note": 9.357719562635204,
+        ".reset-label": 15.923775297667023,
+        ".reset-submit": 8.176495938166001,
+        ".reset-step-button": 8.98015130138188,
+        ".reset-login-button": 8.98015130138188,
+        ".reset-password-hint": 9.357719562635204
+      },
+      "targets": [
+        {
+          "top": 465.65625,
+          "bottom": 509.65625,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 564.453125,
+          "bottom": 614.453125,
+          "width": 272,
+          "height": 50
+        },
+        {
+          "top": 626.453125,
+          "bottom": 670.453125,
+          "width": 84,
+          "height": 44
+        },
+        {
+          "top": 715.453125,
+          "bottom": 759.453125,
+          "width": 56,
+          "height": 44
+        }
+      ],
+      "errors": [],
+      "inputs": [
+        {
+          "name": "identifier",
+          "label": "账号",
+          "autocomplete": "username",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "token",
+          "label": "重置口令",
+          "autocomplete": "one-time-code",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "newPassword",
+          "label": "新密码",
+          "autocomplete": "new-password",
+          "invalid": null,
+          "description": "mobile-reset-password-hint"
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 320,
+      "locale": "zh-CN",
+      "requestedTheme": "high-contrast",
+      "step": "request",
+      "route": "#/pages/reset-password/reset-password",
+      "title": "找回密码",
+      "theme": "high-contrast",
+      "overflow": false,
+      "contentWidth": 272,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "labelFonts": [
+        "14px"
+      ],
+      "hintFont": null,
+      "inputFonts": [
+        "16px"
+      ],
+      "submitFont": "16px",
+      "fieldGaps": [],
+      "actionGap": 24,
+      "submitTop": 330.875,
+      "contrast": {
+        ".reset-title": 21,
+        ".reset-description": 16.822650673503315,
+        ".reset-adult-note": 16.822650673503315,
+        ".reset-label": 21,
+        ".reset-submit": 11.31039533489464,
+        ".reset-step-button": 11.31039533489464,
+        ".reset-login-button": 11.31039533489464
+      },
+      "targets": [
+        {
+          "top": 330.875,
+          "bottom": 380.875,
+          "width": 272,
+          "height": 50
+        },
+        {
+          "top": 392.875,
+          "bottom": 436.875,
+          "width": 84,
+          "height": 44
+        },
+        {
+          "top": 481.875,
+          "bottom": 525.875,
+          "width": 56,
+          "height": 44
+        }
+      ],
+      "errors": [],
+      "inputs": [
+        {
+          "name": "identifier",
+          "label": "账号",
+          "autocomplete": "username",
+          "invalid": null,
+          "description": null
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 320,
+      "locale": "zh-CN",
+      "requestedTheme": "high-contrast",
+      "step": "confirm",
+      "route": "#/pages/reset-password/reset-password",
+      "title": "找回密码",
+      "theme": "high-contrast",
+      "overflow": false,
+      "contentWidth": 272,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "labelFonts": [
+        "14px",
+        "14px",
+        "14px"
+      ],
+      "hintFont": "13px",
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "submitFont": "16px",
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "submitTop": 564.453125,
+      "contrast": {
+        ".reset-title": 21,
+        ".reset-description": 16.822650673503315,
+        ".reset-adult-note": 16.822650673503315,
+        ".reset-label": 21,
+        ".reset-submit": 11.31039533489464,
+        ".reset-step-button": 11.31039533489464,
+        ".reset-login-button": 11.31039533489464,
+        ".reset-password-hint": 16.822650673503315
+      },
+      "targets": [
+        {
+          "top": 465.65625,
+          "bottom": 509.65625,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 564.453125,
+          "bottom": 614.453125,
+          "width": 272,
+          "height": 50
+        },
+        {
+          "top": 626.453125,
+          "bottom": 670.453125,
+          "width": 84,
+          "height": 44
+        },
+        {
+          "top": 715.453125,
+          "bottom": 759.453125,
+          "width": 56,
+          "height": 44
+        }
+      ],
+      "errors": [],
+      "inputs": [
+        {
+          "name": "identifier",
+          "label": "账号",
+          "autocomplete": "username",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "token",
+          "label": "重置口令",
+          "autocomplete": "one-time-code",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "newPassword",
+          "label": "新密码",
+          "autocomplete": "new-password",
+          "invalid": null,
+          "description": "mobile-reset-password-hint"
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 320,
+      "locale": "zh-CN",
+      "requestedTheme": "system",
+      "step": "request",
+      "route": "#/pages/reset-password/reset-password",
+      "title": "找回密码",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 272,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "labelFonts": [
+        "14px"
+      ],
+      "hintFont": null,
+      "inputFonts": [
+        "16px"
+      ],
+      "submitFont": "16px",
+      "fieldGaps": [],
+      "actionGap": 24,
+      "submitTop": 330.875,
+      "contrast": {
+        ".reset-title": 14.171267244103936,
+        ".reset-description": 5.504103371100126,
+        ".reset-adult-note": 5.504103371100126,
+        ".reset-label": 14.171267244103936,
+        ".reset-submit": 7.996499985642157,
+        ".reset-step-button": 7.3582589983975835,
+        ".reset-login-button": 7.3582589983975835
+      },
+      "targets": [
+        {
+          "top": 330.875,
+          "bottom": 380.875,
+          "width": 272,
+          "height": 50
+        },
+        {
+          "top": 392.875,
+          "bottom": 436.875,
+          "width": 84,
+          "height": 44
+        },
+        {
+          "top": 481.875,
+          "bottom": 525.875,
+          "width": 56,
+          "height": 44
+        }
+      ],
+      "errors": [],
+      "inputs": [
+        {
+          "name": "identifier",
+          "label": "账号",
+          "autocomplete": "username",
+          "invalid": null,
+          "description": null
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 320,
+      "locale": "zh-CN",
+      "requestedTheme": "system",
+      "step": "confirm",
+      "route": "#/pages/reset-password/reset-password",
+      "title": "找回密码",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 272,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "labelFonts": [
+        "14px",
+        "14px",
+        "14px"
+      ],
+      "hintFont": "13px",
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "submitFont": "16px",
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "submitTop": 564.453125,
+      "contrast": {
+        ".reset-title": 14.171267244103936,
+        ".reset-description": 5.504103371100126,
+        ".reset-adult-note": 5.504103371100126,
+        ".reset-label": 14.171267244103936,
+        ".reset-submit": 7.996499985642157,
+        ".reset-step-button": 7.3582589983975835,
+        ".reset-login-button": 7.3582589983975835,
+        ".reset-password-hint": 5.504103371100126
+      },
+      "targets": [
+        {
+          "top": 465.65625,
+          "bottom": 509.65625,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 564.453125,
+          "bottom": 614.453125,
+          "width": 272,
+          "height": 50
+        },
+        {
+          "top": 626.453125,
+          "bottom": 670.453125,
+          "width": 84,
+          "height": 44
+        },
+        {
+          "top": 715.453125,
+          "bottom": 759.453125,
+          "width": 56,
+          "height": 44
+        }
+      ],
+      "errors": [],
+      "inputs": [
+        {
+          "name": "identifier",
+          "label": "账号",
+          "autocomplete": "username",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "token",
+          "label": "重置口令",
+          "autocomplete": "one-time-code",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "newPassword",
+          "label": "新密码",
+          "autocomplete": "new-password",
+          "invalid": null,
+          "description": "mobile-reset-password-hint"
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 320,
+      "locale": "en-US",
+      "requestedTheme": "light",
+      "step": "request",
+      "route": "#/pages/reset-password/reset-password",
+      "title": "Reset password",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 272,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "labelFonts": [
+        "14px"
+      ],
+      "hintFont": null,
+      "inputFonts": [
+        "16px"
+      ],
+      "submitFont": "16px",
+      "fieldGaps": [],
+      "actionGap": 24,
+      "submitTop": 355.375,
+      "contrast": {
+        ".reset-title": 14.171267244103936,
+        ".reset-description": 5.504103371100126,
+        ".reset-adult-note": 5.504103371100126,
+        ".reset-label": 14.171267244103936,
+        ".reset-submit": 7.996499985642157,
+        ".reset-step-button": 7.3582589983975835,
+        ".reset-login-button": 7.3582589983975835
+      },
+      "targets": [
+        {
+          "top": 355.375,
+          "bottom": 405.375,
+          "width": 272,
+          "height": 50
+        },
+        {
+          "top": 417.375,
+          "bottom": 461.375,
+          "width": 139.578125,
+          "height": 44
+        },
+        {
+          "top": 506.375,
+          "bottom": 550.375,
+          "width": 111.015625,
+          "height": 44
+        }
+      ],
+      "errors": [],
+      "inputs": [
+        {
+          "name": "identifier",
+          "label": "Account",
+          "autocomplete": "username",
+          "invalid": null,
+          "description": null
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 320,
+      "locale": "en-US",
+      "requestedTheme": "light",
+      "step": "confirm",
+      "route": "#/pages/reset-password/reset-password",
+      "title": "Reset password",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 272,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "labelFonts": [
+        "14px",
+        "14px",
+        "14px"
+      ],
+      "hintFont": "13px",
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "submitFont": "16px",
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "submitTop": 628.140625,
+      "contrast": {
+        ".reset-title": 14.171267244103936,
+        ".reset-description": 5.504103371100126,
+        ".reset-adult-note": 5.504103371100126,
+        ".reset-label": 14.171267244103936,
+        ".reset-submit": 7.996499985642157,
+        ".reset-step-button": 7.3582589983975835,
+        ".reset-login-button": 7.3582589983975835,
+        ".reset-password-hint": 5.504103371100126
+      },
+      "targets": [
+        {
+          "top": 529.34375,
+          "bottom": 573.34375,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 628.140625,
+          "bottom": 678.140625,
+          "width": 272,
+          "height": 50
+        },
+        {
+          "top": 690.140625,
+          "bottom": 734.140625,
+          "width": 167.78125,
+          "height": 44
+        },
+        {
+          "top": 779.140625,
+          "bottom": 823.140625,
+          "width": 111.015625,
+          "height": 44
+        }
+      ],
+      "errors": [],
+      "inputs": [
+        {
+          "name": "identifier",
+          "label": "Account",
+          "autocomplete": "username",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "token",
+          "label": "Reset code",
+          "autocomplete": "one-time-code",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "newPassword",
+          "label": "New password",
+          "autocomplete": "new-password",
+          "invalid": null,
+          "description": "mobile-reset-password-hint"
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 320,
+      "locale": "en-US",
+      "requestedTheme": "dark",
+      "step": "request",
+      "route": "#/pages/reset-password/reset-password",
+      "title": "Reset password",
+      "theme": "dark",
+      "overflow": false,
+      "contentWidth": 272,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "labelFonts": [
+        "14px"
+      ],
+      "hintFont": null,
+      "inputFonts": [
+        "16px"
+      ],
+      "submitFont": "16px",
+      "fieldGaps": [],
+      "actionGap": 24,
+      "submitTop": 355.375,
+      "contrast": {
+        ".reset-title": 15.923775297667023,
+        ".reset-description": 9.357719562635204,
+        ".reset-adult-note": 9.357719562635204,
+        ".reset-label": 15.923775297667023,
+        ".reset-submit": 8.176495938166001,
+        ".reset-step-button": 8.98015130138188,
+        ".reset-login-button": 8.98015130138188
+      },
+      "targets": [
+        {
+          "top": 355.375,
+          "bottom": 405.375,
+          "width": 272,
+          "height": 50
+        },
+        {
+          "top": 417.375,
+          "bottom": 461.375,
+          "width": 139.578125,
+          "height": 44
+        },
+        {
+          "top": 506.375,
+          "bottom": 550.375,
+          "width": 111.015625,
+          "height": 44
+        }
+      ],
+      "errors": [],
+      "inputs": [
+        {
+          "name": "identifier",
+          "label": "Account",
+          "autocomplete": "username",
+          "invalid": null,
+          "description": null
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 320,
+      "locale": "en-US",
+      "requestedTheme": "dark",
+      "step": "confirm",
+      "route": "#/pages/reset-password/reset-password",
+      "title": "Reset password",
+      "theme": "dark",
+      "overflow": false,
+      "contentWidth": 272,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "labelFonts": [
+        "14px",
+        "14px",
+        "14px"
+      ],
+      "hintFont": "13px",
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "submitFont": "16px",
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "submitTop": 628.140625,
+      "contrast": {
+        ".reset-title": 15.923775297667023,
+        ".reset-description": 9.357719562635204,
+        ".reset-adult-note": 9.357719562635204,
+        ".reset-label": 15.923775297667023,
+        ".reset-submit": 8.176495938166001,
+        ".reset-step-button": 8.98015130138188,
+        ".reset-login-button": 8.98015130138188,
+        ".reset-password-hint": 9.357719562635204
+      },
+      "targets": [
+        {
+          "top": 529.34375,
+          "bottom": 573.34375,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 628.140625,
+          "bottom": 678.140625,
+          "width": 272,
+          "height": 50
+        },
+        {
+          "top": 690.140625,
+          "bottom": 734.140625,
+          "width": 167.78125,
+          "height": 44
+        },
+        {
+          "top": 779.140625,
+          "bottom": 823.140625,
+          "width": 111.015625,
+          "height": 44
+        }
+      ],
+      "errors": [],
+      "inputs": [
+        {
+          "name": "identifier",
+          "label": "Account",
+          "autocomplete": "username",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "token",
+          "label": "Reset code",
+          "autocomplete": "one-time-code",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "newPassword",
+          "label": "New password",
+          "autocomplete": "new-password",
+          "invalid": null,
+          "description": "mobile-reset-password-hint"
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 320,
+      "locale": "en-US",
+      "requestedTheme": "high-contrast",
+      "step": "request",
+      "route": "#/pages/reset-password/reset-password",
+      "title": "Reset password",
+      "theme": "high-contrast",
+      "overflow": false,
+      "contentWidth": 272,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "labelFonts": [
+        "14px"
+      ],
+      "hintFont": null,
+      "inputFonts": [
+        "16px"
+      ],
+      "submitFont": "16px",
+      "fieldGaps": [],
+      "actionGap": 24,
+      "submitTop": 355.375,
+      "contrast": {
+        ".reset-title": 21,
+        ".reset-description": 16.822650673503315,
+        ".reset-adult-note": 16.822650673503315,
+        ".reset-label": 21,
+        ".reset-submit": 11.31039533489464,
+        ".reset-step-button": 11.31039533489464,
+        ".reset-login-button": 11.31039533489464
+      },
+      "targets": [
+        {
+          "top": 355.375,
+          "bottom": 405.375,
+          "width": 272,
+          "height": 50
+        },
+        {
+          "top": 417.375,
+          "bottom": 461.375,
+          "width": 139.578125,
+          "height": 44
+        },
+        {
+          "top": 506.375,
+          "bottom": 550.375,
+          "width": 111.015625,
+          "height": 44
+        }
+      ],
+      "errors": [],
+      "inputs": [
+        {
+          "name": "identifier",
+          "label": "Account",
+          "autocomplete": "username",
+          "invalid": null,
+          "description": null
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 320,
+      "locale": "en-US",
+      "requestedTheme": "high-contrast",
+      "step": "confirm",
+      "route": "#/pages/reset-password/reset-password",
+      "title": "Reset password",
+      "theme": "high-contrast",
+      "overflow": false,
+      "contentWidth": 272,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "labelFonts": [
+        "14px",
+        "14px",
+        "14px"
+      ],
+      "hintFont": "13px",
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "submitFont": "16px",
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "submitTop": 628.140625,
+      "contrast": {
+        ".reset-title": 21,
+        ".reset-description": 16.822650673503315,
+        ".reset-adult-note": 16.822650673503315,
+        ".reset-label": 21,
+        ".reset-submit": 11.31039533489464,
+        ".reset-step-button": 11.31039533489464,
+        ".reset-login-button": 11.31039533489464,
+        ".reset-password-hint": 16.822650673503315
+      },
+      "targets": [
+        {
+          "top": 529.34375,
+          "bottom": 573.34375,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 628.140625,
+          "bottom": 678.140625,
+          "width": 272,
+          "height": 50
+        },
+        {
+          "top": 690.140625,
+          "bottom": 734.140625,
+          "width": 167.78125,
+          "height": 44
+        },
+        {
+          "top": 779.140625,
+          "bottom": 823.140625,
+          "width": 111.015625,
+          "height": 44
+        }
+      ],
+      "errors": [],
+      "inputs": [
+        {
+          "name": "identifier",
+          "label": "Account",
+          "autocomplete": "username",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "token",
+          "label": "Reset code",
+          "autocomplete": "one-time-code",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "newPassword",
+          "label": "New password",
+          "autocomplete": "new-password",
+          "invalid": null,
+          "description": "mobile-reset-password-hint"
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 320,
+      "locale": "en-US",
+      "requestedTheme": "system",
+      "step": "request",
+      "route": "#/pages/reset-password/reset-password",
+      "title": "Reset password",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 272,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "labelFonts": [
+        "14px"
+      ],
+      "hintFont": null,
+      "inputFonts": [
+        "16px"
+      ],
+      "submitFont": "16px",
+      "fieldGaps": [],
+      "actionGap": 24,
+      "submitTop": 355.375,
+      "contrast": {
+        ".reset-title": 14.171267244103936,
+        ".reset-description": 5.504103371100126,
+        ".reset-adult-note": 5.504103371100126,
+        ".reset-label": 14.171267244103936,
+        ".reset-submit": 7.996499985642157,
+        ".reset-step-button": 7.3582589983975835,
+        ".reset-login-button": 7.3582589983975835
+      },
+      "targets": [
+        {
+          "top": 355.375,
+          "bottom": 405.375,
+          "width": 272,
+          "height": 50
+        },
+        {
+          "top": 417.375,
+          "bottom": 461.375,
+          "width": 139.578125,
+          "height": 44
+        },
+        {
+          "top": 506.375,
+          "bottom": 550.375,
+          "width": 111.015625,
+          "height": 44
+        }
+      ],
+      "errors": [],
+      "inputs": [
+        {
+          "name": "identifier",
+          "label": "Account",
+          "autocomplete": "username",
+          "invalid": null,
+          "description": null
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 320,
+      "locale": "en-US",
+      "requestedTheme": "system",
+      "step": "confirm",
+      "route": "#/pages/reset-password/reset-password",
+      "title": "Reset password",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 272,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "labelFonts": [
+        "14px",
+        "14px",
+        "14px"
+      ],
+      "hintFont": "13px",
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "submitFont": "16px",
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "submitTop": 628.140625,
+      "contrast": {
+        ".reset-title": 14.171267244103936,
+        ".reset-description": 5.504103371100126,
+        ".reset-adult-note": 5.504103371100126,
+        ".reset-label": 14.171267244103936,
+        ".reset-submit": 7.996499985642157,
+        ".reset-step-button": 7.3582589983975835,
+        ".reset-login-button": 7.3582589983975835,
+        ".reset-password-hint": 5.504103371100126
+      },
+      "targets": [
+        {
+          "top": 529.34375,
+          "bottom": 573.34375,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 628.140625,
+          "bottom": 678.140625,
+          "width": 272,
+          "height": 50
+        },
+        {
+          "top": 690.140625,
+          "bottom": 734.140625,
+          "width": 167.78125,
+          "height": 44
+        },
+        {
+          "top": 779.140625,
+          "bottom": 823.140625,
+          "width": 111.015625,
+          "height": 44
+        }
+      ],
+      "errors": [],
+      "inputs": [
+        {
+          "name": "identifier",
+          "label": "Account",
+          "autocomplete": "username",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "token",
+          "label": "Reset code",
+          "autocomplete": "one-time-code",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "newPassword",
+          "label": "New password",
+          "autocomplete": "new-password",
+          "invalid": null,
+          "description": "mobile-reset-password-hint"
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 390,
+      "locale": "zh-CN",
+      "requestedTheme": "light",
+      "step": "request",
+      "route": "#/pages/reset-password/reset-password",
+      "title": "找回密码",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 342,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "labelFonts": [
+        "14px"
+      ],
+      "hintFont": null,
+      "inputFonts": [
+        "16px"
+      ],
+      "submitFont": "16px",
+      "fieldGaps": [],
+      "actionGap": 24,
+      "submitTop": 330.875,
+      "contrast": {
+        ".reset-title": 14.171267244103936,
+        ".reset-description": 5.504103371100126,
+        ".reset-adult-note": 5.504103371100126,
+        ".reset-label": 14.171267244103936,
+        ".reset-submit": 7.996499985642157,
+        ".reset-step-button": 7.3582589983975835,
+        ".reset-login-button": 7.3582589983975835
+      },
+      "targets": [
+        {
+          "top": 330.875,
+          "bottom": 380.875,
+          "width": 342,
+          "height": 50
+        },
+        {
+          "top": 392.875,
+          "bottom": 436.875,
+          "width": 84,
+          "height": 44
+        },
+        {
+          "top": 481.875,
+          "bottom": 525.875,
+          "width": 56,
+          "height": 44
+        }
+      ],
+      "errors": [],
+      "inputs": [
+        {
+          "name": "identifier",
+          "label": "账号",
+          "autocomplete": "username",
+          "invalid": null,
+          "description": null
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 390,
+      "locale": "zh-CN",
+      "requestedTheme": "light",
+      "step": "confirm",
+      "route": "#/pages/reset-password/reset-password",
+      "title": "找回密码",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 342,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "labelFonts": [
+        "14px",
+        "14px",
+        "14px"
+      ],
+      "hintFont": "13px",
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "submitFont": "16px",
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "submitTop": 564.453125,
+      "contrast": {
+        ".reset-title": 14.171267244103936,
+        ".reset-description": 5.504103371100126,
+        ".reset-adult-note": 5.504103371100126,
+        ".reset-label": 14.171267244103936,
+        ".reset-submit": 7.996499985642157,
+        ".reset-step-button": 7.3582589983975835,
+        ".reset-login-button": 7.3582589983975835,
+        ".reset-password-hint": 5.504103371100126
+      },
+      "targets": [
+        {
+          "top": 465.65625,
+          "bottom": 509.65625,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 564.453125,
+          "bottom": 614.453125,
+          "width": 342,
+          "height": 50
+        },
+        {
+          "top": 626.453125,
+          "bottom": 670.453125,
+          "width": 84,
+          "height": 44
+        },
+        {
+          "top": 715.453125,
+          "bottom": 759.453125,
+          "width": 56,
+          "height": 44
+        }
+      ],
+      "errors": [],
+      "inputs": [
+        {
+          "name": "identifier",
+          "label": "账号",
+          "autocomplete": "username",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "token",
+          "label": "重置口令",
+          "autocomplete": "one-time-code",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "newPassword",
+          "label": "新密码",
+          "autocomplete": "new-password",
+          "invalid": null,
+          "description": "mobile-reset-password-hint"
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 390,
+      "locale": "zh-CN",
+      "requestedTheme": "dark",
+      "step": "request",
+      "route": "#/pages/reset-password/reset-password",
+      "title": "找回密码",
+      "theme": "dark",
+      "overflow": false,
+      "contentWidth": 342,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "labelFonts": [
+        "14px"
+      ],
+      "hintFont": null,
+      "inputFonts": [
+        "16px"
+      ],
+      "submitFont": "16px",
+      "fieldGaps": [],
+      "actionGap": 24,
+      "submitTop": 330.875,
+      "contrast": {
+        ".reset-title": 15.923775297667023,
+        ".reset-description": 9.357719562635204,
+        ".reset-adult-note": 9.357719562635204,
+        ".reset-label": 15.923775297667023,
+        ".reset-submit": 8.176495938166001,
+        ".reset-step-button": 8.98015130138188,
+        ".reset-login-button": 8.98015130138188
+      },
+      "targets": [
+        {
+          "top": 330.875,
+          "bottom": 380.875,
+          "width": 342,
+          "height": 50
+        },
+        {
+          "top": 392.875,
+          "bottom": 436.875,
+          "width": 84,
+          "height": 44
+        },
+        {
+          "top": 481.875,
+          "bottom": 525.875,
+          "width": 56,
+          "height": 44
+        }
+      ],
+      "errors": [],
+      "inputs": [
+        {
+          "name": "identifier",
+          "label": "账号",
+          "autocomplete": "username",
+          "invalid": null,
+          "description": null
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 390,
+      "locale": "zh-CN",
+      "requestedTheme": "dark",
+      "step": "confirm",
+      "route": "#/pages/reset-password/reset-password",
+      "title": "找回密码",
+      "theme": "dark",
+      "overflow": false,
+      "contentWidth": 342,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "labelFonts": [
+        "14px",
+        "14px",
+        "14px"
+      ],
+      "hintFont": "13px",
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "submitFont": "16px",
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "submitTop": 564.453125,
+      "contrast": {
+        ".reset-title": 15.923775297667023,
+        ".reset-description": 9.357719562635204,
+        ".reset-adult-note": 9.357719562635204,
+        ".reset-label": 15.923775297667023,
+        ".reset-submit": 8.176495938166001,
+        ".reset-step-button": 8.98015130138188,
+        ".reset-login-button": 8.98015130138188,
+        ".reset-password-hint": 9.357719562635204
+      },
+      "targets": [
+        {
+          "top": 465.65625,
+          "bottom": 509.65625,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 564.453125,
+          "bottom": 614.453125,
+          "width": 342,
+          "height": 50
+        },
+        {
+          "top": 626.453125,
+          "bottom": 670.453125,
+          "width": 84,
+          "height": 44
+        },
+        {
+          "top": 715.453125,
+          "bottom": 759.453125,
+          "width": 56,
+          "height": 44
+        }
+      ],
+      "errors": [],
+      "inputs": [
+        {
+          "name": "identifier",
+          "label": "账号",
+          "autocomplete": "username",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "token",
+          "label": "重置口令",
+          "autocomplete": "one-time-code",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "newPassword",
+          "label": "新密码",
+          "autocomplete": "new-password",
+          "invalid": null,
+          "description": "mobile-reset-password-hint"
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 390,
+      "locale": "zh-CN",
+      "requestedTheme": "high-contrast",
+      "step": "request",
+      "route": "#/pages/reset-password/reset-password",
+      "title": "找回密码",
+      "theme": "high-contrast",
+      "overflow": false,
+      "contentWidth": 342,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "labelFonts": [
+        "14px"
+      ],
+      "hintFont": null,
+      "inputFonts": [
+        "16px"
+      ],
+      "submitFont": "16px",
+      "fieldGaps": [],
+      "actionGap": 24,
+      "submitTop": 330.875,
+      "contrast": {
+        ".reset-title": 21,
+        ".reset-description": 16.822650673503315,
+        ".reset-adult-note": 16.822650673503315,
+        ".reset-label": 21,
+        ".reset-submit": 11.31039533489464,
+        ".reset-step-button": 11.31039533489464,
+        ".reset-login-button": 11.31039533489464
+      },
+      "targets": [
+        {
+          "top": 330.875,
+          "bottom": 380.875,
+          "width": 342,
+          "height": 50
+        },
+        {
+          "top": 392.875,
+          "bottom": 436.875,
+          "width": 84,
+          "height": 44
+        },
+        {
+          "top": 481.875,
+          "bottom": 525.875,
+          "width": 56,
+          "height": 44
+        }
+      ],
+      "errors": [],
+      "inputs": [
+        {
+          "name": "identifier",
+          "label": "账号",
+          "autocomplete": "username",
+          "invalid": null,
+          "description": null
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 390,
+      "locale": "zh-CN",
+      "requestedTheme": "high-contrast",
+      "step": "confirm",
+      "route": "#/pages/reset-password/reset-password",
+      "title": "找回密码",
+      "theme": "high-contrast",
+      "overflow": false,
+      "contentWidth": 342,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "labelFonts": [
+        "14px",
+        "14px",
+        "14px"
+      ],
+      "hintFont": "13px",
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "submitFont": "16px",
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "submitTop": 564.453125,
+      "contrast": {
+        ".reset-title": 21,
+        ".reset-description": 16.822650673503315,
+        ".reset-adult-note": 16.822650673503315,
+        ".reset-label": 21,
+        ".reset-submit": 11.31039533489464,
+        ".reset-step-button": 11.31039533489464,
+        ".reset-login-button": 11.31039533489464,
+        ".reset-password-hint": 16.822650673503315
+      },
+      "targets": [
+        {
+          "top": 465.65625,
+          "bottom": 509.65625,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 564.453125,
+          "bottom": 614.453125,
+          "width": 342,
+          "height": 50
+        },
+        {
+          "top": 626.453125,
+          "bottom": 670.453125,
+          "width": 84,
+          "height": 44
+        },
+        {
+          "top": 715.453125,
+          "bottom": 759.453125,
+          "width": 56,
+          "height": 44
+        }
+      ],
+      "errors": [],
+      "inputs": [
+        {
+          "name": "identifier",
+          "label": "账号",
+          "autocomplete": "username",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "token",
+          "label": "重置口令",
+          "autocomplete": "one-time-code",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "newPassword",
+          "label": "新密码",
+          "autocomplete": "new-password",
+          "invalid": null,
+          "description": "mobile-reset-password-hint"
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 390,
+      "locale": "zh-CN",
+      "requestedTheme": "system",
+      "step": "request",
+      "route": "#/pages/reset-password/reset-password",
+      "title": "找回密码",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 342,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "labelFonts": [
+        "14px"
+      ],
+      "hintFont": null,
+      "inputFonts": [
+        "16px"
+      ],
+      "submitFont": "16px",
+      "fieldGaps": [],
+      "actionGap": 24,
+      "submitTop": 330.875,
+      "contrast": {
+        ".reset-title": 14.171267244103936,
+        ".reset-description": 5.504103371100126,
+        ".reset-adult-note": 5.504103371100126,
+        ".reset-label": 14.171267244103936,
+        ".reset-submit": 7.996499985642157,
+        ".reset-step-button": 7.3582589983975835,
+        ".reset-login-button": 7.3582589983975835
+      },
+      "targets": [
+        {
+          "top": 330.875,
+          "bottom": 380.875,
+          "width": 342,
+          "height": 50
+        },
+        {
+          "top": 392.875,
+          "bottom": 436.875,
+          "width": 84,
+          "height": 44
+        },
+        {
+          "top": 481.875,
+          "bottom": 525.875,
+          "width": 56,
+          "height": 44
+        }
+      ],
+      "errors": [],
+      "inputs": [
+        {
+          "name": "identifier",
+          "label": "账号",
+          "autocomplete": "username",
+          "invalid": null,
+          "description": null
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 390,
+      "locale": "zh-CN",
+      "requestedTheme": "system",
+      "step": "confirm",
+      "route": "#/pages/reset-password/reset-password",
+      "title": "找回密码",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 342,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "labelFonts": [
+        "14px",
+        "14px",
+        "14px"
+      ],
+      "hintFont": "13px",
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "submitFont": "16px",
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "submitTop": 564.453125,
+      "contrast": {
+        ".reset-title": 14.171267244103936,
+        ".reset-description": 5.504103371100126,
+        ".reset-adult-note": 5.504103371100126,
+        ".reset-label": 14.171267244103936,
+        ".reset-submit": 7.996499985642157,
+        ".reset-step-button": 7.3582589983975835,
+        ".reset-login-button": 7.3582589983975835,
+        ".reset-password-hint": 5.504103371100126
+      },
+      "targets": [
+        {
+          "top": 465.65625,
+          "bottom": 509.65625,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 564.453125,
+          "bottom": 614.453125,
+          "width": 342,
+          "height": 50
+        },
+        {
+          "top": 626.453125,
+          "bottom": 670.453125,
+          "width": 84,
+          "height": 44
+        },
+        {
+          "top": 715.453125,
+          "bottom": 759.453125,
+          "width": 56,
+          "height": 44
+        }
+      ],
+      "errors": [],
+      "inputs": [
+        {
+          "name": "identifier",
+          "label": "账号",
+          "autocomplete": "username",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "token",
+          "label": "重置口令",
+          "autocomplete": "one-time-code",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "newPassword",
+          "label": "新密码",
+          "autocomplete": "new-password",
+          "invalid": null,
+          "description": "mobile-reset-password-hint"
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 390,
+      "locale": "en-US",
+      "requestedTheme": "light",
+      "step": "request",
+      "route": "#/pages/reset-password/reset-password",
+      "title": "Reset password",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 342,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "labelFonts": [
+        "14px"
+      ],
+      "hintFont": null,
+      "inputFonts": [
+        "16px"
+      ],
+      "submitFont": "16px",
+      "fieldGaps": [],
+      "actionGap": 24,
+      "submitTop": 330.875,
+      "contrast": {
+        ".reset-title": 14.171267244103936,
+        ".reset-description": 5.504103371100126,
+        ".reset-adult-note": 5.504103371100126,
+        ".reset-label": 14.171267244103936,
+        ".reset-submit": 7.996499985642157,
+        ".reset-step-button": 7.3582589983975835,
+        ".reset-login-button": 7.3582589983975835
+      },
+      "targets": [
+        {
+          "top": 330.875,
+          "bottom": 380.875,
+          "width": 342,
+          "height": 50
+        },
+        {
+          "top": 392.875,
+          "bottom": 436.875,
+          "width": 139.578125,
+          "height": 44
+        },
+        {
+          "top": 481.875,
+          "bottom": 525.875,
+          "width": 111.015625,
+          "height": 44
+        }
+      ],
+      "errors": [],
+      "inputs": [
+        {
+          "name": "identifier",
+          "label": "Account",
+          "autocomplete": "username",
+          "invalid": null,
+          "description": null
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 390,
+      "locale": "en-US",
+      "requestedTheme": "light",
+      "step": "confirm",
+      "route": "#/pages/reset-password/reset-password",
+      "title": "Reset password",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 342,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "labelFonts": [
+        "14px",
+        "14px",
+        "14px"
+      ],
+      "hintFont": "13px",
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "submitFont": "16px",
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "submitTop": 588.953125,
+      "contrast": {
+        ".reset-title": 14.171267244103936,
+        ".reset-description": 5.504103371100126,
+        ".reset-adult-note": 5.504103371100126,
+        ".reset-label": 14.171267244103936,
+        ".reset-submit": 7.996499985642157,
+        ".reset-step-button": 7.3582589983975835,
+        ".reset-login-button": 7.3582589983975835,
+        ".reset-password-hint": 5.504103371100126
+      },
+      "targets": [
+        {
+          "top": 490.15625,
+          "bottom": 534.15625,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 588.953125,
+          "bottom": 638.953125,
+          "width": 342,
+          "height": 50
+        },
+        {
+          "top": 650.953125,
+          "bottom": 694.953125,
+          "width": 167.78125,
+          "height": 44
+        },
+        {
+          "top": 739.953125,
+          "bottom": 783.953125,
+          "width": 111.015625,
+          "height": 44
+        }
+      ],
+      "errors": [],
+      "inputs": [
+        {
+          "name": "identifier",
+          "label": "Account",
+          "autocomplete": "username",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "token",
+          "label": "Reset code",
+          "autocomplete": "one-time-code",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "newPassword",
+          "label": "New password",
+          "autocomplete": "new-password",
+          "invalid": null,
+          "description": "mobile-reset-password-hint"
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 390,
+      "locale": "en-US",
+      "requestedTheme": "dark",
+      "step": "request",
+      "route": "#/pages/reset-password/reset-password",
+      "title": "Reset password",
+      "theme": "dark",
+      "overflow": false,
+      "contentWidth": 342,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "labelFonts": [
+        "14px"
+      ],
+      "hintFont": null,
+      "inputFonts": [
+        "16px"
+      ],
+      "submitFont": "16px",
+      "fieldGaps": [],
+      "actionGap": 24,
+      "submitTop": 330.875,
+      "contrast": {
+        ".reset-title": 15.923775297667023,
+        ".reset-description": 9.357719562635204,
+        ".reset-adult-note": 9.357719562635204,
+        ".reset-label": 15.923775297667023,
+        ".reset-submit": 8.176495938166001,
+        ".reset-step-button": 8.98015130138188,
+        ".reset-login-button": 8.98015130138188
+      },
+      "targets": [
+        {
+          "top": 330.875,
+          "bottom": 380.875,
+          "width": 342,
+          "height": 50
+        },
+        {
+          "top": 392.875,
+          "bottom": 436.875,
+          "width": 139.578125,
+          "height": 44
+        },
+        {
+          "top": 481.875,
+          "bottom": 525.875,
+          "width": 111.015625,
+          "height": 44
+        }
+      ],
+      "errors": [],
+      "inputs": [
+        {
+          "name": "identifier",
+          "label": "Account",
+          "autocomplete": "username",
+          "invalid": null,
+          "description": null
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 390,
+      "locale": "en-US",
+      "requestedTheme": "dark",
+      "step": "confirm",
+      "route": "#/pages/reset-password/reset-password",
+      "title": "Reset password",
+      "theme": "dark",
+      "overflow": false,
+      "contentWidth": 342,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "labelFonts": [
+        "14px",
+        "14px",
+        "14px"
+      ],
+      "hintFont": "13px",
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "submitFont": "16px",
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "submitTop": 588.953125,
+      "contrast": {
+        ".reset-title": 15.923775297667023,
+        ".reset-description": 9.357719562635204,
+        ".reset-adult-note": 9.357719562635204,
+        ".reset-label": 15.923775297667023,
+        ".reset-submit": 8.176495938166001,
+        ".reset-step-button": 8.98015130138188,
+        ".reset-login-button": 8.98015130138188,
+        ".reset-password-hint": 9.357719562635204
+      },
+      "targets": [
+        {
+          "top": 490.15625,
+          "bottom": 534.15625,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 588.953125,
+          "bottom": 638.953125,
+          "width": 342,
+          "height": 50
+        },
+        {
+          "top": 650.953125,
+          "bottom": 694.953125,
+          "width": 167.78125,
+          "height": 44
+        },
+        {
+          "top": 739.953125,
+          "bottom": 783.953125,
+          "width": 111.015625,
+          "height": 44
+        }
+      ],
+      "errors": [],
+      "inputs": [
+        {
+          "name": "identifier",
+          "label": "Account",
+          "autocomplete": "username",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "token",
+          "label": "Reset code",
+          "autocomplete": "one-time-code",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "newPassword",
+          "label": "New password",
+          "autocomplete": "new-password",
+          "invalid": null,
+          "description": "mobile-reset-password-hint"
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 390,
+      "locale": "en-US",
+      "requestedTheme": "high-contrast",
+      "step": "request",
+      "route": "#/pages/reset-password/reset-password",
+      "title": "Reset password",
+      "theme": "high-contrast",
+      "overflow": false,
+      "contentWidth": 342,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "labelFonts": [
+        "14px"
+      ],
+      "hintFont": null,
+      "inputFonts": [
+        "16px"
+      ],
+      "submitFont": "16px",
+      "fieldGaps": [],
+      "actionGap": 24,
+      "submitTop": 330.875,
+      "contrast": {
+        ".reset-title": 21,
+        ".reset-description": 16.822650673503315,
+        ".reset-adult-note": 16.822650673503315,
+        ".reset-label": 21,
+        ".reset-submit": 11.31039533489464,
+        ".reset-step-button": 11.31039533489464,
+        ".reset-login-button": 11.31039533489464
+      },
+      "targets": [
+        {
+          "top": 330.875,
+          "bottom": 380.875,
+          "width": 342,
+          "height": 50
+        },
+        {
+          "top": 392.875,
+          "bottom": 436.875,
+          "width": 139.578125,
+          "height": 44
+        },
+        {
+          "top": 481.875,
+          "bottom": 525.875,
+          "width": 111.015625,
+          "height": 44
+        }
+      ],
+      "errors": [],
+      "inputs": [
+        {
+          "name": "identifier",
+          "label": "Account",
+          "autocomplete": "username",
+          "invalid": null,
+          "description": null
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 390,
+      "locale": "en-US",
+      "requestedTheme": "high-contrast",
+      "step": "confirm",
+      "route": "#/pages/reset-password/reset-password",
+      "title": "Reset password",
+      "theme": "high-contrast",
+      "overflow": false,
+      "contentWidth": 342,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "labelFonts": [
+        "14px",
+        "14px",
+        "14px"
+      ],
+      "hintFont": "13px",
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "submitFont": "16px",
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "submitTop": 588.953125,
+      "contrast": {
+        ".reset-title": 21,
+        ".reset-description": 16.822650673503315,
+        ".reset-adult-note": 16.822650673503315,
+        ".reset-label": 21,
+        ".reset-submit": 11.31039533489464,
+        ".reset-step-button": 11.31039533489464,
+        ".reset-login-button": 11.31039533489464,
+        ".reset-password-hint": 16.822650673503315
+      },
+      "targets": [
+        {
+          "top": 490.15625,
+          "bottom": 534.15625,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 588.953125,
+          "bottom": 638.953125,
+          "width": 342,
+          "height": 50
+        },
+        {
+          "top": 650.953125,
+          "bottom": 694.953125,
+          "width": 167.78125,
+          "height": 44
+        },
+        {
+          "top": 739.953125,
+          "bottom": 783.953125,
+          "width": 111.015625,
+          "height": 44
+        }
+      ],
+      "errors": [],
+      "inputs": [
+        {
+          "name": "identifier",
+          "label": "Account",
+          "autocomplete": "username",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "token",
+          "label": "Reset code",
+          "autocomplete": "one-time-code",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "newPassword",
+          "label": "New password",
+          "autocomplete": "new-password",
+          "invalid": null,
+          "description": "mobile-reset-password-hint"
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 390,
+      "locale": "en-US",
+      "requestedTheme": "system",
+      "step": "request",
+      "route": "#/pages/reset-password/reset-password",
+      "title": "Reset password",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 342,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "labelFonts": [
+        "14px"
+      ],
+      "hintFont": null,
+      "inputFonts": [
+        "16px"
+      ],
+      "submitFont": "16px",
+      "fieldGaps": [],
+      "actionGap": 24,
+      "submitTop": 330.875,
+      "contrast": {
+        ".reset-title": 14.171267244103936,
+        ".reset-description": 5.504103371100126,
+        ".reset-adult-note": 5.504103371100126,
+        ".reset-label": 14.171267244103936,
+        ".reset-submit": 7.996499985642157,
+        ".reset-step-button": 7.3582589983975835,
+        ".reset-login-button": 7.3582589983975835
+      },
+      "targets": [
+        {
+          "top": 330.875,
+          "bottom": 380.875,
+          "width": 342,
+          "height": 50
+        },
+        {
+          "top": 392.875,
+          "bottom": 436.875,
+          "width": 139.578125,
+          "height": 44
+        },
+        {
+          "top": 481.875,
+          "bottom": 525.875,
+          "width": 111.015625,
+          "height": 44
+        }
+      ],
+      "errors": [],
+      "inputs": [
+        {
+          "name": "identifier",
+          "label": "Account",
+          "autocomplete": "username",
+          "invalid": null,
+          "description": null
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 390,
+      "locale": "en-US",
+      "requestedTheme": "system",
+      "step": "confirm",
+      "route": "#/pages/reset-password/reset-password",
+      "title": "Reset password",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 342,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "labelFonts": [
+        "14px",
+        "14px",
+        "14px"
+      ],
+      "hintFont": "13px",
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "submitFont": "16px",
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "submitTop": 588.953125,
+      "contrast": {
+        ".reset-title": 14.171267244103936,
+        ".reset-description": 5.504103371100126,
+        ".reset-adult-note": 5.504103371100126,
+        ".reset-label": 14.171267244103936,
+        ".reset-submit": 7.996499985642157,
+        ".reset-step-button": 7.3582589983975835,
+        ".reset-login-button": 7.3582589983975835,
+        ".reset-password-hint": 5.504103371100126
+      },
+      "targets": [
+        {
+          "top": 490.15625,
+          "bottom": 534.15625,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 588.953125,
+          "bottom": 638.953125,
+          "width": 342,
+          "height": 50
+        },
+        {
+          "top": 650.953125,
+          "bottom": 694.953125,
+          "width": 167.78125,
+          "height": 44
+        },
+        {
+          "top": 739.953125,
+          "bottom": 783.953125,
+          "width": 111.015625,
+          "height": 44
+        }
+      ],
+      "errors": [],
+      "inputs": [
+        {
+          "name": "identifier",
+          "label": "Account",
+          "autocomplete": "username",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "token",
+          "label": "Reset code",
+          "autocomplete": "one-time-code",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "newPassword",
+          "label": "New password",
+          "autocomplete": "new-password",
+          "invalid": null,
+          "description": "mobile-reset-password-hint"
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 768,
+      "locale": "zh-CN",
+      "requestedTheme": "light",
+      "step": "request",
+      "route": "#/pages/reset-password/reset-password",
+      "title": "找回密码",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 420,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "labelFonts": [
+        "14px"
+      ],
+      "hintFont": null,
+      "inputFonts": [
+        "16px"
+      ],
+      "submitFont": "16px",
+      "fieldGaps": [],
+      "actionGap": 24,
+      "submitTop": 362.078125,
+      "contrast": {
+        ".reset-title": 14.171267244103936,
+        ".reset-description": 5.504103371100126,
+        ".reset-adult-note": 5.504103371100126,
+        ".reset-label": 14.171267244103936,
+        ".reset-submit": 7.996499985642157,
+        ".reset-step-button": 7.3582589983975835,
+        ".reset-login-button": 7.3582589983975835
+      },
+      "targets": [
+        {
+          "top": 362.078125,
+          "bottom": 412.078125,
+          "width": 420,
+          "height": 50
+        },
+        {
+          "top": 424.078125,
+          "bottom": 468.078125,
+          "width": 84,
+          "height": 44
+        },
+        {
+          "top": 513.078125,
+          "bottom": 557.078125,
+          "width": 56,
+          "height": 44
+        }
+      ],
+      "errors": [],
+      "inputs": [
+        {
+          "name": "identifier",
+          "label": "账号",
+          "autocomplete": "username",
+          "invalid": null,
+          "description": null
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 768,
+      "locale": "zh-CN",
+      "requestedTheme": "light",
+      "step": "confirm",
+      "route": "#/pages/reset-password/reset-password",
+      "title": "找回密码",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 420,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "labelFonts": [
+        "14px",
+        "14px",
+        "14px"
+      ],
+      "hintFont": "13px",
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "submitFont": "16px",
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "submitTop": 595.65625,
+      "contrast": {
+        ".reset-title": 14.171267244103936,
+        ".reset-description": 5.504103371100126,
+        ".reset-adult-note": 5.504103371100126,
+        ".reset-label": 14.171267244103936,
+        ".reset-submit": 7.996499985642157,
+        ".reset-step-button": 7.3582589983975835,
+        ".reset-login-button": 7.3582589983975835,
+        ".reset-password-hint": 5.504103371100126
+      },
+      "targets": [
+        {
+          "top": 496.859375,
+          "bottom": 540.859375,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 595.65625,
+          "bottom": 645.65625,
+          "width": 420,
+          "height": 50
+        },
+        {
+          "top": 657.65625,
+          "bottom": 701.65625,
+          "width": 84,
+          "height": 44
+        },
+        {
+          "top": 746.65625,
+          "bottom": 790.65625,
+          "width": 56,
+          "height": 44
+        }
+      ],
+      "errors": [],
+      "inputs": [
+        {
+          "name": "identifier",
+          "label": "账号",
+          "autocomplete": "username",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "token",
+          "label": "重置口令",
+          "autocomplete": "one-time-code",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "newPassword",
+          "label": "新密码",
+          "autocomplete": "new-password",
+          "invalid": null,
+          "description": "mobile-reset-password-hint"
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 768,
+      "locale": "zh-CN",
+      "requestedTheme": "dark",
+      "step": "request",
+      "route": "#/pages/reset-password/reset-password",
+      "title": "找回密码",
+      "theme": "dark",
+      "overflow": false,
+      "contentWidth": 420,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "labelFonts": [
+        "14px"
+      ],
+      "hintFont": null,
+      "inputFonts": [
+        "16px"
+      ],
+      "submitFont": "16px",
+      "fieldGaps": [],
+      "actionGap": 24,
+      "submitTop": 362.078125,
+      "contrast": {
+        ".reset-title": 15.923775297667023,
+        ".reset-description": 9.357719562635204,
+        ".reset-adult-note": 9.357719562635204,
+        ".reset-label": 15.923775297667023,
+        ".reset-submit": 8.176495938166001,
+        ".reset-step-button": 8.98015130138188,
+        ".reset-login-button": 8.98015130138188
+      },
+      "targets": [
+        {
+          "top": 362.078125,
+          "bottom": 412.078125,
+          "width": 420,
+          "height": 50
+        },
+        {
+          "top": 424.078125,
+          "bottom": 468.078125,
+          "width": 84,
+          "height": 44
+        },
+        {
+          "top": 513.078125,
+          "bottom": 557.078125,
+          "width": 56,
+          "height": 44
+        }
+      ],
+      "errors": [],
+      "inputs": [
+        {
+          "name": "identifier",
+          "label": "账号",
+          "autocomplete": "username",
+          "invalid": null,
+          "description": null
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 768,
+      "locale": "zh-CN",
+      "requestedTheme": "dark",
+      "step": "confirm",
+      "route": "#/pages/reset-password/reset-password",
+      "title": "找回密码",
+      "theme": "dark",
+      "overflow": false,
+      "contentWidth": 420,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "labelFonts": [
+        "14px",
+        "14px",
+        "14px"
+      ],
+      "hintFont": "13px",
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "submitFont": "16px",
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "submitTop": 595.65625,
+      "contrast": {
+        ".reset-title": 15.923775297667023,
+        ".reset-description": 9.357719562635204,
+        ".reset-adult-note": 9.357719562635204,
+        ".reset-label": 15.923775297667023,
+        ".reset-submit": 8.176495938166001,
+        ".reset-step-button": 8.98015130138188,
+        ".reset-login-button": 8.98015130138188,
+        ".reset-password-hint": 9.357719562635204
+      },
+      "targets": [
+        {
+          "top": 496.859375,
+          "bottom": 540.859375,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 595.65625,
+          "bottom": 645.65625,
+          "width": 420,
+          "height": 50
+        },
+        {
+          "top": 657.65625,
+          "bottom": 701.65625,
+          "width": 84,
+          "height": 44
+        },
+        {
+          "top": 746.65625,
+          "bottom": 790.65625,
+          "width": 56,
+          "height": 44
+        }
+      ],
+      "errors": [],
+      "inputs": [
+        {
+          "name": "identifier",
+          "label": "账号",
+          "autocomplete": "username",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "token",
+          "label": "重置口令",
+          "autocomplete": "one-time-code",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "newPassword",
+          "label": "新密码",
+          "autocomplete": "new-password",
+          "invalid": null,
+          "description": "mobile-reset-password-hint"
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 768,
+      "locale": "zh-CN",
+      "requestedTheme": "high-contrast",
+      "step": "request",
+      "route": "#/pages/reset-password/reset-password",
+      "title": "找回密码",
+      "theme": "high-contrast",
+      "overflow": false,
+      "contentWidth": 420,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "labelFonts": [
+        "14px"
+      ],
+      "hintFont": null,
+      "inputFonts": [
+        "16px"
+      ],
+      "submitFont": "16px",
+      "fieldGaps": [],
+      "actionGap": 24,
+      "submitTop": 362.078125,
+      "contrast": {
+        ".reset-title": 21,
+        ".reset-description": 16.822650673503315,
+        ".reset-adult-note": 16.822650673503315,
+        ".reset-label": 21,
+        ".reset-submit": 11.31039533489464,
+        ".reset-step-button": 11.31039533489464,
+        ".reset-login-button": 11.31039533489464
+      },
+      "targets": [
+        {
+          "top": 362.078125,
+          "bottom": 412.078125,
+          "width": 420,
+          "height": 50
+        },
+        {
+          "top": 424.078125,
+          "bottom": 468.078125,
+          "width": 84,
+          "height": 44
+        },
+        {
+          "top": 513.078125,
+          "bottom": 557.078125,
+          "width": 56,
+          "height": 44
+        }
+      ],
+      "errors": [],
+      "inputs": [
+        {
+          "name": "identifier",
+          "label": "账号",
+          "autocomplete": "username",
+          "invalid": null,
+          "description": null
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 768,
+      "locale": "zh-CN",
+      "requestedTheme": "high-contrast",
+      "step": "confirm",
+      "route": "#/pages/reset-password/reset-password",
+      "title": "找回密码",
+      "theme": "high-contrast",
+      "overflow": false,
+      "contentWidth": 420,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "labelFonts": [
+        "14px",
+        "14px",
+        "14px"
+      ],
+      "hintFont": "13px",
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "submitFont": "16px",
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "submitTop": 595.65625,
+      "contrast": {
+        ".reset-title": 21,
+        ".reset-description": 16.822650673503315,
+        ".reset-adult-note": 16.822650673503315,
+        ".reset-label": 21,
+        ".reset-submit": 11.31039533489464,
+        ".reset-step-button": 11.31039533489464,
+        ".reset-login-button": 11.31039533489464,
+        ".reset-password-hint": 16.822650673503315
+      },
+      "targets": [
+        {
+          "top": 496.859375,
+          "bottom": 540.859375,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 595.65625,
+          "bottom": 645.65625,
+          "width": 420,
+          "height": 50
+        },
+        {
+          "top": 657.65625,
+          "bottom": 701.65625,
+          "width": 84,
+          "height": 44
+        },
+        {
+          "top": 746.65625,
+          "bottom": 790.65625,
+          "width": 56,
+          "height": 44
+        }
+      ],
+      "errors": [],
+      "inputs": [
+        {
+          "name": "identifier",
+          "label": "账号",
+          "autocomplete": "username",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "token",
+          "label": "重置口令",
+          "autocomplete": "one-time-code",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "newPassword",
+          "label": "新密码",
+          "autocomplete": "new-password",
+          "invalid": null,
+          "description": "mobile-reset-password-hint"
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 768,
+      "locale": "zh-CN",
+      "requestedTheme": "system",
+      "step": "request",
+      "route": "#/pages/reset-password/reset-password",
+      "title": "找回密码",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 420,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "labelFonts": [
+        "14px"
+      ],
+      "hintFont": null,
+      "inputFonts": [
+        "16px"
+      ],
+      "submitFont": "16px",
+      "fieldGaps": [],
+      "actionGap": 24,
+      "submitTop": 362.078125,
+      "contrast": {
+        ".reset-title": 14.171267244103936,
+        ".reset-description": 5.504103371100126,
+        ".reset-adult-note": 5.504103371100126,
+        ".reset-label": 14.171267244103936,
+        ".reset-submit": 7.996499985642157,
+        ".reset-step-button": 7.3582589983975835,
+        ".reset-login-button": 7.3582589983975835
+      },
+      "targets": [
+        {
+          "top": 362.078125,
+          "bottom": 412.078125,
+          "width": 420,
+          "height": 50
+        },
+        {
+          "top": 424.078125,
+          "bottom": 468.078125,
+          "width": 84,
+          "height": 44
+        },
+        {
+          "top": 513.078125,
+          "bottom": 557.078125,
+          "width": 56,
+          "height": 44
+        }
+      ],
+      "errors": [],
+      "inputs": [
+        {
+          "name": "identifier",
+          "label": "账号",
+          "autocomplete": "username",
+          "invalid": null,
+          "description": null
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 768,
+      "locale": "zh-CN",
+      "requestedTheme": "system",
+      "step": "confirm",
+      "route": "#/pages/reset-password/reset-password",
+      "title": "找回密码",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 420,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "labelFonts": [
+        "14px",
+        "14px",
+        "14px"
+      ],
+      "hintFont": "13px",
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "submitFont": "16px",
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "submitTop": 595.65625,
+      "contrast": {
+        ".reset-title": 14.171267244103936,
+        ".reset-description": 5.504103371100126,
+        ".reset-adult-note": 5.504103371100126,
+        ".reset-label": 14.171267244103936,
+        ".reset-submit": 7.996499985642157,
+        ".reset-step-button": 7.3582589983975835,
+        ".reset-login-button": 7.3582589983975835,
+        ".reset-password-hint": 5.504103371100126
+      },
+      "targets": [
+        {
+          "top": 496.859375,
+          "bottom": 540.859375,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 595.65625,
+          "bottom": 645.65625,
+          "width": 420,
+          "height": 50
+        },
+        {
+          "top": 657.65625,
+          "bottom": 701.65625,
+          "width": 84,
+          "height": 44
+        },
+        {
+          "top": 746.65625,
+          "bottom": 790.65625,
+          "width": 56,
+          "height": 44
+        }
+      ],
+      "errors": [],
+      "inputs": [
+        {
+          "name": "identifier",
+          "label": "账号",
+          "autocomplete": "username",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "token",
+          "label": "重置口令",
+          "autocomplete": "one-time-code",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "newPassword",
+          "label": "新密码",
+          "autocomplete": "new-password",
+          "invalid": null,
+          "description": "mobile-reset-password-hint"
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 768,
+      "locale": "en-US",
+      "requestedTheme": "light",
+      "step": "request",
+      "route": "#/pages/reset-password/reset-password",
+      "title": "Reset password",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 420,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "labelFonts": [
+        "14px"
+      ],
+      "hintFont": null,
+      "inputFonts": [
+        "16px"
+      ],
+      "submitFont": "16px",
+      "fieldGaps": [],
+      "actionGap": 24,
+      "submitTop": 362.078125,
+      "contrast": {
+        ".reset-title": 14.171267244103936,
+        ".reset-description": 5.504103371100126,
+        ".reset-adult-note": 5.504103371100126,
+        ".reset-label": 14.171267244103936,
+        ".reset-submit": 7.996499985642157,
+        ".reset-step-button": 7.3582589983975835,
+        ".reset-login-button": 7.3582589983975835
+      },
+      "targets": [
+        {
+          "top": 362.078125,
+          "bottom": 412.078125,
+          "width": 420,
+          "height": 50
+        },
+        {
+          "top": 424.078125,
+          "bottom": 468.078125,
+          "width": 139.578125,
+          "height": 44
+        },
+        {
+          "top": 513.078125,
+          "bottom": 557.078125,
+          "width": 111.015625,
+          "height": 44
+        }
+      ],
+      "errors": [],
+      "inputs": [
+        {
+          "name": "identifier",
+          "label": "Account",
+          "autocomplete": "username",
+          "invalid": null,
+          "description": null
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 768,
+      "locale": "en-US",
+      "requestedTheme": "light",
+      "step": "confirm",
+      "route": "#/pages/reset-password/reset-password",
+      "title": "Reset password",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 420,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "labelFonts": [
+        "14px",
+        "14px",
+        "14px"
+      ],
+      "hintFont": "13px",
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "submitFont": "16px",
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "submitTop": 595.65625,
+      "contrast": {
+        ".reset-title": 14.171267244103936,
+        ".reset-description": 5.504103371100126,
+        ".reset-adult-note": 5.504103371100126,
+        ".reset-label": 14.171267244103936,
+        ".reset-submit": 7.996499985642157,
+        ".reset-step-button": 7.3582589983975835,
+        ".reset-login-button": 7.3582589983975835,
+        ".reset-password-hint": 5.504103371100126
+      },
+      "targets": [
+        {
+          "top": 496.859375,
+          "bottom": 540.859375,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 595.65625,
+          "bottom": 645.65625,
+          "width": 420,
+          "height": 50
+        },
+        {
+          "top": 657.65625,
+          "bottom": 701.65625,
+          "width": 167.78125,
+          "height": 44
+        },
+        {
+          "top": 746.65625,
+          "bottom": 790.65625,
+          "width": 111.015625,
+          "height": 44
+        }
+      ],
+      "errors": [],
+      "inputs": [
+        {
+          "name": "identifier",
+          "label": "Account",
+          "autocomplete": "username",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "token",
+          "label": "Reset code",
+          "autocomplete": "one-time-code",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "newPassword",
+          "label": "New password",
+          "autocomplete": "new-password",
+          "invalid": null,
+          "description": "mobile-reset-password-hint"
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 768,
+      "locale": "en-US",
+      "requestedTheme": "dark",
+      "step": "request",
+      "route": "#/pages/reset-password/reset-password",
+      "title": "Reset password",
+      "theme": "dark",
+      "overflow": false,
+      "contentWidth": 420,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "labelFonts": [
+        "14px"
+      ],
+      "hintFont": null,
+      "inputFonts": [
+        "16px"
+      ],
+      "submitFont": "16px",
+      "fieldGaps": [],
+      "actionGap": 24,
+      "submitTop": 362.078125,
+      "contrast": {
+        ".reset-title": 15.923775297667023,
+        ".reset-description": 9.357719562635204,
+        ".reset-adult-note": 9.357719562635204,
+        ".reset-label": 15.923775297667023,
+        ".reset-submit": 8.176495938166001,
+        ".reset-step-button": 8.98015130138188,
+        ".reset-login-button": 8.98015130138188
+      },
+      "targets": [
+        {
+          "top": 362.078125,
+          "bottom": 412.078125,
+          "width": 420,
+          "height": 50
+        },
+        {
+          "top": 424.078125,
+          "bottom": 468.078125,
+          "width": 139.578125,
+          "height": 44
+        },
+        {
+          "top": 513.078125,
+          "bottom": 557.078125,
+          "width": 111.015625,
+          "height": 44
+        }
+      ],
+      "errors": [],
+      "inputs": [
+        {
+          "name": "identifier",
+          "label": "Account",
+          "autocomplete": "username",
+          "invalid": null,
+          "description": null
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 768,
+      "locale": "en-US",
+      "requestedTheme": "dark",
+      "step": "confirm",
+      "route": "#/pages/reset-password/reset-password",
+      "title": "Reset password",
+      "theme": "dark",
+      "overflow": false,
+      "contentWidth": 420,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "labelFonts": [
+        "14px",
+        "14px",
+        "14px"
+      ],
+      "hintFont": "13px",
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "submitFont": "16px",
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "submitTop": 595.65625,
+      "contrast": {
+        ".reset-title": 15.923775297667023,
+        ".reset-description": 9.357719562635204,
+        ".reset-adult-note": 9.357719562635204,
+        ".reset-label": 15.923775297667023,
+        ".reset-submit": 8.176495938166001,
+        ".reset-step-button": 8.98015130138188,
+        ".reset-login-button": 8.98015130138188,
+        ".reset-password-hint": 9.357719562635204
+      },
+      "targets": [
+        {
+          "top": 496.859375,
+          "bottom": 540.859375,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 595.65625,
+          "bottom": 645.65625,
+          "width": 420,
+          "height": 50
+        },
+        {
+          "top": 657.65625,
+          "bottom": 701.65625,
+          "width": 167.78125,
+          "height": 44
+        },
+        {
+          "top": 746.65625,
+          "bottom": 790.65625,
+          "width": 111.015625,
+          "height": 44
+        }
+      ],
+      "errors": [],
+      "inputs": [
+        {
+          "name": "identifier",
+          "label": "Account",
+          "autocomplete": "username",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "token",
+          "label": "Reset code",
+          "autocomplete": "one-time-code",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "newPassword",
+          "label": "New password",
+          "autocomplete": "new-password",
+          "invalid": null,
+          "description": "mobile-reset-password-hint"
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 768,
+      "locale": "en-US",
+      "requestedTheme": "high-contrast",
+      "step": "request",
+      "route": "#/pages/reset-password/reset-password",
+      "title": "Reset password",
+      "theme": "high-contrast",
+      "overflow": false,
+      "contentWidth": 420,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "labelFonts": [
+        "14px"
+      ],
+      "hintFont": null,
+      "inputFonts": [
+        "16px"
+      ],
+      "submitFont": "16px",
+      "fieldGaps": [],
+      "actionGap": 24,
+      "submitTop": 362.078125,
+      "contrast": {
+        ".reset-title": 21,
+        ".reset-description": 16.822650673503315,
+        ".reset-adult-note": 16.822650673503315,
+        ".reset-label": 21,
+        ".reset-submit": 11.31039533489464,
+        ".reset-step-button": 11.31039533489464,
+        ".reset-login-button": 11.31039533489464
+      },
+      "targets": [
+        {
+          "top": 362.078125,
+          "bottom": 412.078125,
+          "width": 420,
+          "height": 50
+        },
+        {
+          "top": 424.078125,
+          "bottom": 468.078125,
+          "width": 139.578125,
+          "height": 44
+        },
+        {
+          "top": 513.078125,
+          "bottom": 557.078125,
+          "width": 111.015625,
+          "height": 44
+        }
+      ],
+      "errors": [],
+      "inputs": [
+        {
+          "name": "identifier",
+          "label": "Account",
+          "autocomplete": "username",
+          "invalid": null,
+          "description": null
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 768,
+      "locale": "en-US",
+      "requestedTheme": "high-contrast",
+      "step": "confirm",
+      "route": "#/pages/reset-password/reset-password",
+      "title": "Reset password",
+      "theme": "high-contrast",
+      "overflow": false,
+      "contentWidth": 420,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "labelFonts": [
+        "14px",
+        "14px",
+        "14px"
+      ],
+      "hintFont": "13px",
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "submitFont": "16px",
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "submitTop": 595.65625,
+      "contrast": {
+        ".reset-title": 21,
+        ".reset-description": 16.822650673503315,
+        ".reset-adult-note": 16.822650673503315,
+        ".reset-label": 21,
+        ".reset-submit": 11.31039533489464,
+        ".reset-step-button": 11.31039533489464,
+        ".reset-login-button": 11.31039533489464,
+        ".reset-password-hint": 16.822650673503315
+      },
+      "targets": [
+        {
+          "top": 496.859375,
+          "bottom": 540.859375,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 595.65625,
+          "bottom": 645.65625,
+          "width": 420,
+          "height": 50
+        },
+        {
+          "top": 657.65625,
+          "bottom": 701.65625,
+          "width": 167.78125,
+          "height": 44
+        },
+        {
+          "top": 746.65625,
+          "bottom": 790.65625,
+          "width": 111.015625,
+          "height": 44
+        }
+      ],
+      "errors": [],
+      "inputs": [
+        {
+          "name": "identifier",
+          "label": "Account",
+          "autocomplete": "username",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "token",
+          "label": "Reset code",
+          "autocomplete": "one-time-code",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "newPassword",
+          "label": "New password",
+          "autocomplete": "new-password",
+          "invalid": null,
+          "description": "mobile-reset-password-hint"
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 768,
+      "locale": "en-US",
+      "requestedTheme": "system",
+      "step": "request",
+      "route": "#/pages/reset-password/reset-password",
+      "title": "Reset password",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 420,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "labelFonts": [
+        "14px"
+      ],
+      "hintFont": null,
+      "inputFonts": [
+        "16px"
+      ],
+      "submitFont": "16px",
+      "fieldGaps": [],
+      "actionGap": 24,
+      "submitTop": 362.078125,
+      "contrast": {
+        ".reset-title": 14.171267244103936,
+        ".reset-description": 5.504103371100126,
+        ".reset-adult-note": 5.504103371100126,
+        ".reset-label": 14.171267244103936,
+        ".reset-submit": 7.996499985642157,
+        ".reset-step-button": 7.3582589983975835,
+        ".reset-login-button": 7.3582589983975835
+      },
+      "targets": [
+        {
+          "top": 362.078125,
+          "bottom": 412.078125,
+          "width": 420,
+          "height": 50
+        },
+        {
+          "top": 424.078125,
+          "bottom": 468.078125,
+          "width": 139.578125,
+          "height": 44
+        },
+        {
+          "top": 513.078125,
+          "bottom": 557.078125,
+          "width": 111.015625,
+          "height": 44
+        }
+      ],
+      "errors": [],
+      "inputs": [
+        {
+          "name": "identifier",
+          "label": "Account",
+          "autocomplete": "username",
+          "invalid": null,
+          "description": null
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 768,
+      "locale": "en-US",
+      "requestedTheme": "system",
+      "step": "confirm",
+      "route": "#/pages/reset-password/reset-password",
+      "title": "Reset password",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 420,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "labelFonts": [
+        "14px",
+        "14px",
+        "14px"
+      ],
+      "hintFont": "13px",
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "submitFont": "16px",
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "submitTop": 595.65625,
+      "contrast": {
+        ".reset-title": 14.171267244103936,
+        ".reset-description": 5.504103371100126,
+        ".reset-adult-note": 5.504103371100126,
+        ".reset-label": 14.171267244103936,
+        ".reset-submit": 7.996499985642157,
+        ".reset-step-button": 7.3582589983975835,
+        ".reset-login-button": 7.3582589983975835,
+        ".reset-password-hint": 5.504103371100126
+      },
+      "targets": [
+        {
+          "top": 496.859375,
+          "bottom": 540.859375,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 595.65625,
+          "bottom": 645.65625,
+          "width": 420,
+          "height": 50
+        },
+        {
+          "top": 657.65625,
+          "bottom": 701.65625,
+          "width": 167.78125,
+          "height": 44
+        },
+        {
+          "top": 746.65625,
+          "bottom": 790.65625,
+          "width": 111.015625,
+          "height": 44
+        }
+      ],
+      "errors": [],
+      "inputs": [
+        {
+          "name": "identifier",
+          "label": "Account",
+          "autocomplete": "username",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "token",
+          "label": "Reset code",
+          "autocomplete": "one-time-code",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "newPassword",
+          "label": "New password",
+          "autocomplete": "new-password",
+          "invalid": null,
+          "description": "mobile-reset-password-hint"
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 1280,
+      "locale": "zh-CN",
+      "requestedTheme": "light",
+      "step": "request",
+      "route": "#/pages/reset-password/reset-password",
+      "title": "找回密码",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 420,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "labelFonts": [
+        "14px"
+      ],
+      "hintFont": null,
+      "inputFonts": [
+        "16px"
+      ],
+      "submitFont": "16px",
+      "fieldGaps": [],
+      "actionGap": 24,
+      "submitTop": 362.078125,
+      "contrast": {
+        ".reset-title": 14.171267244103936,
+        ".reset-description": 5.504103371100126,
+        ".reset-adult-note": 5.504103371100126,
+        ".reset-label": 14.171267244103936,
+        ".reset-submit": 7.996499985642157,
+        ".reset-step-button": 7.3582589983975835,
+        ".reset-login-button": 7.3582589983975835
+      },
+      "targets": [
+        {
+          "top": 362.078125,
+          "bottom": 412.078125,
+          "width": 420,
+          "height": 50
+        },
+        {
+          "top": 424.078125,
+          "bottom": 468.078125,
+          "width": 84,
+          "height": 44
+        },
+        {
+          "top": 513.078125,
+          "bottom": 557.078125,
+          "width": 56,
+          "height": 44
+        }
+      ],
+      "errors": [],
+      "inputs": [
+        {
+          "name": "identifier",
+          "label": "账号",
+          "autocomplete": "username",
+          "invalid": null,
+          "description": null
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 1280,
+      "locale": "zh-CN",
+      "requestedTheme": "light",
+      "step": "confirm",
+      "route": "#/pages/reset-password/reset-password",
+      "title": "找回密码",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 420,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "labelFonts": [
+        "14px",
+        "14px",
+        "14px"
+      ],
+      "hintFont": "13px",
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "submitFont": "16px",
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "submitTop": 595.65625,
+      "contrast": {
+        ".reset-title": 14.171267244103936,
+        ".reset-description": 5.504103371100126,
+        ".reset-adult-note": 5.504103371100126,
+        ".reset-label": 14.171267244103936,
+        ".reset-submit": 7.996499985642157,
+        ".reset-step-button": 7.3582589983975835,
+        ".reset-login-button": 7.3582589983975835,
+        ".reset-password-hint": 5.504103371100126
+      },
+      "targets": [
+        {
+          "top": 496.859375,
+          "bottom": 540.859375,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 595.65625,
+          "bottom": 645.65625,
+          "width": 420,
+          "height": 50
+        },
+        {
+          "top": 657.65625,
+          "bottom": 701.65625,
+          "width": 84,
+          "height": 44
+        },
+        {
+          "top": 746.65625,
+          "bottom": 790.65625,
+          "width": 56,
+          "height": 44
+        }
+      ],
+      "errors": [],
+      "inputs": [
+        {
+          "name": "identifier",
+          "label": "账号",
+          "autocomplete": "username",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "token",
+          "label": "重置口令",
+          "autocomplete": "one-time-code",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "newPassword",
+          "label": "新密码",
+          "autocomplete": "new-password",
+          "invalid": null,
+          "description": "mobile-reset-password-hint"
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 1280,
+      "locale": "zh-CN",
+      "requestedTheme": "dark",
+      "step": "request",
+      "route": "#/pages/reset-password/reset-password",
+      "title": "找回密码",
+      "theme": "dark",
+      "overflow": false,
+      "contentWidth": 420,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "labelFonts": [
+        "14px"
+      ],
+      "hintFont": null,
+      "inputFonts": [
+        "16px"
+      ],
+      "submitFont": "16px",
+      "fieldGaps": [],
+      "actionGap": 24,
+      "submitTop": 362.078125,
+      "contrast": {
+        ".reset-title": 15.923775297667023,
+        ".reset-description": 9.357719562635204,
+        ".reset-adult-note": 9.357719562635204,
+        ".reset-label": 15.923775297667023,
+        ".reset-submit": 8.176495938166001,
+        ".reset-step-button": 8.98015130138188,
+        ".reset-login-button": 8.98015130138188
+      },
+      "targets": [
+        {
+          "top": 362.078125,
+          "bottom": 412.078125,
+          "width": 420,
+          "height": 50
+        },
+        {
+          "top": 424.078125,
+          "bottom": 468.078125,
+          "width": 84,
+          "height": 44
+        },
+        {
+          "top": 513.078125,
+          "bottom": 557.078125,
+          "width": 56,
+          "height": 44
+        }
+      ],
+      "errors": [],
+      "inputs": [
+        {
+          "name": "identifier",
+          "label": "账号",
+          "autocomplete": "username",
+          "invalid": null,
+          "description": null
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 1280,
+      "locale": "zh-CN",
+      "requestedTheme": "dark",
+      "step": "confirm",
+      "route": "#/pages/reset-password/reset-password",
+      "title": "找回密码",
+      "theme": "dark",
+      "overflow": false,
+      "contentWidth": 420,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "labelFonts": [
+        "14px",
+        "14px",
+        "14px"
+      ],
+      "hintFont": "13px",
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "submitFont": "16px",
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "submitTop": 595.65625,
+      "contrast": {
+        ".reset-title": 15.923775297667023,
+        ".reset-description": 9.357719562635204,
+        ".reset-adult-note": 9.357719562635204,
+        ".reset-label": 15.923775297667023,
+        ".reset-submit": 8.176495938166001,
+        ".reset-step-button": 8.98015130138188,
+        ".reset-login-button": 8.98015130138188,
+        ".reset-password-hint": 9.357719562635204
+      },
+      "targets": [
+        {
+          "top": 496.859375,
+          "bottom": 540.859375,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 595.65625,
+          "bottom": 645.65625,
+          "width": 420,
+          "height": 50
+        },
+        {
+          "top": 657.65625,
+          "bottom": 701.65625,
+          "width": 84,
+          "height": 44
+        },
+        {
+          "top": 746.65625,
+          "bottom": 790.65625,
+          "width": 56,
+          "height": 44
+        }
+      ],
+      "errors": [],
+      "inputs": [
+        {
+          "name": "identifier",
+          "label": "账号",
+          "autocomplete": "username",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "token",
+          "label": "重置口令",
+          "autocomplete": "one-time-code",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "newPassword",
+          "label": "新密码",
+          "autocomplete": "new-password",
+          "invalid": null,
+          "description": "mobile-reset-password-hint"
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 1280,
+      "locale": "zh-CN",
+      "requestedTheme": "high-contrast",
+      "step": "request",
+      "route": "#/pages/reset-password/reset-password",
+      "title": "找回密码",
+      "theme": "high-contrast",
+      "overflow": false,
+      "contentWidth": 420,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "labelFonts": [
+        "14px"
+      ],
+      "hintFont": null,
+      "inputFonts": [
+        "16px"
+      ],
+      "submitFont": "16px",
+      "fieldGaps": [],
+      "actionGap": 24,
+      "submitTop": 362.078125,
+      "contrast": {
+        ".reset-title": 21,
+        ".reset-description": 16.822650673503315,
+        ".reset-adult-note": 16.822650673503315,
+        ".reset-label": 21,
+        ".reset-submit": 11.31039533489464,
+        ".reset-step-button": 11.31039533489464,
+        ".reset-login-button": 11.31039533489464
+      },
+      "targets": [
+        {
+          "top": 362.078125,
+          "bottom": 412.078125,
+          "width": 420,
+          "height": 50
+        },
+        {
+          "top": 424.078125,
+          "bottom": 468.078125,
+          "width": 84,
+          "height": 44
+        },
+        {
+          "top": 513.078125,
+          "bottom": 557.078125,
+          "width": 56,
+          "height": 44
+        }
+      ],
+      "errors": [],
+      "inputs": [
+        {
+          "name": "identifier",
+          "label": "账号",
+          "autocomplete": "username",
+          "invalid": null,
+          "description": null
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 1280,
+      "locale": "zh-CN",
+      "requestedTheme": "high-contrast",
+      "step": "confirm",
+      "route": "#/pages/reset-password/reset-password",
+      "title": "找回密码",
+      "theme": "high-contrast",
+      "overflow": false,
+      "contentWidth": 420,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "labelFonts": [
+        "14px",
+        "14px",
+        "14px"
+      ],
+      "hintFont": "13px",
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "submitFont": "16px",
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "submitTop": 595.65625,
+      "contrast": {
+        ".reset-title": 21,
+        ".reset-description": 16.822650673503315,
+        ".reset-adult-note": 16.822650673503315,
+        ".reset-label": 21,
+        ".reset-submit": 11.31039533489464,
+        ".reset-step-button": 11.31039533489464,
+        ".reset-login-button": 11.31039533489464,
+        ".reset-password-hint": 16.822650673503315
+      },
+      "targets": [
+        {
+          "top": 496.859375,
+          "bottom": 540.859375,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 595.65625,
+          "bottom": 645.65625,
+          "width": 420,
+          "height": 50
+        },
+        {
+          "top": 657.65625,
+          "bottom": 701.65625,
+          "width": 84,
+          "height": 44
+        },
+        {
+          "top": 746.65625,
+          "bottom": 790.65625,
+          "width": 56,
+          "height": 44
+        }
+      ],
+      "errors": [],
+      "inputs": [
+        {
+          "name": "identifier",
+          "label": "账号",
+          "autocomplete": "username",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "token",
+          "label": "重置口令",
+          "autocomplete": "one-time-code",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "newPassword",
+          "label": "新密码",
+          "autocomplete": "new-password",
+          "invalid": null,
+          "description": "mobile-reset-password-hint"
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 1280,
+      "locale": "zh-CN",
+      "requestedTheme": "system",
+      "step": "request",
+      "route": "#/pages/reset-password/reset-password",
+      "title": "找回密码",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 420,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "labelFonts": [
+        "14px"
+      ],
+      "hintFont": null,
+      "inputFonts": [
+        "16px"
+      ],
+      "submitFont": "16px",
+      "fieldGaps": [],
+      "actionGap": 24,
+      "submitTop": 362.078125,
+      "contrast": {
+        ".reset-title": 14.171267244103936,
+        ".reset-description": 5.504103371100126,
+        ".reset-adult-note": 5.504103371100126,
+        ".reset-label": 14.171267244103936,
+        ".reset-submit": 7.996499985642157,
+        ".reset-step-button": 7.3582589983975835,
+        ".reset-login-button": 7.3582589983975835
+      },
+      "targets": [
+        {
+          "top": 362.078125,
+          "bottom": 412.078125,
+          "width": 420,
+          "height": 50
+        },
+        {
+          "top": 424.078125,
+          "bottom": 468.078125,
+          "width": 84,
+          "height": 44
+        },
+        {
+          "top": 513.078125,
+          "bottom": 557.078125,
+          "width": 56,
+          "height": 44
+        }
+      ],
+      "errors": [],
+      "inputs": [
+        {
+          "name": "identifier",
+          "label": "账号",
+          "autocomplete": "username",
+          "invalid": null,
+          "description": null
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 1280,
+      "locale": "zh-CN",
+      "requestedTheme": "system",
+      "step": "confirm",
+      "route": "#/pages/reset-password/reset-password",
+      "title": "找回密码",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 420,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "labelFonts": [
+        "14px",
+        "14px",
+        "14px"
+      ],
+      "hintFont": "13px",
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "submitFont": "16px",
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "submitTop": 595.65625,
+      "contrast": {
+        ".reset-title": 14.171267244103936,
+        ".reset-description": 5.504103371100126,
+        ".reset-adult-note": 5.504103371100126,
+        ".reset-label": 14.171267244103936,
+        ".reset-submit": 7.996499985642157,
+        ".reset-step-button": 7.3582589983975835,
+        ".reset-login-button": 7.3582589983975835,
+        ".reset-password-hint": 5.504103371100126
+      },
+      "targets": [
+        {
+          "top": 496.859375,
+          "bottom": 540.859375,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 595.65625,
+          "bottom": 645.65625,
+          "width": 420,
+          "height": 50
+        },
+        {
+          "top": 657.65625,
+          "bottom": 701.65625,
+          "width": 84,
+          "height": 44
+        },
+        {
+          "top": 746.65625,
+          "bottom": 790.65625,
+          "width": 56,
+          "height": 44
+        }
+      ],
+      "errors": [],
+      "inputs": [
+        {
+          "name": "identifier",
+          "label": "账号",
+          "autocomplete": "username",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "token",
+          "label": "重置口令",
+          "autocomplete": "one-time-code",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "newPassword",
+          "label": "新密码",
+          "autocomplete": "new-password",
+          "invalid": null,
+          "description": "mobile-reset-password-hint"
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 1280,
+      "locale": "en-US",
+      "requestedTheme": "light",
+      "step": "request",
+      "route": "#/pages/reset-password/reset-password",
+      "title": "Reset password",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 420,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "labelFonts": [
+        "14px"
+      ],
+      "hintFont": null,
+      "inputFonts": [
+        "16px"
+      ],
+      "submitFont": "16px",
+      "fieldGaps": [],
+      "actionGap": 24,
+      "submitTop": 362.078125,
+      "contrast": {
+        ".reset-title": 14.171267244103936,
+        ".reset-description": 5.504103371100126,
+        ".reset-adult-note": 5.504103371100126,
+        ".reset-label": 14.171267244103936,
+        ".reset-submit": 7.996499985642157,
+        ".reset-step-button": 7.3582589983975835,
+        ".reset-login-button": 7.3582589983975835
+      },
+      "targets": [
+        {
+          "top": 362.078125,
+          "bottom": 412.078125,
+          "width": 420,
+          "height": 50
+        },
+        {
+          "top": 424.078125,
+          "bottom": 468.078125,
+          "width": 139.578125,
+          "height": 44
+        },
+        {
+          "top": 513.078125,
+          "bottom": 557.078125,
+          "width": 111.015625,
+          "height": 44
+        }
+      ],
+      "errors": [],
+      "inputs": [
+        {
+          "name": "identifier",
+          "label": "Account",
+          "autocomplete": "username",
+          "invalid": null,
+          "description": null
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 1280,
+      "locale": "en-US",
+      "requestedTheme": "light",
+      "step": "confirm",
+      "route": "#/pages/reset-password/reset-password",
+      "title": "Reset password",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 420,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "labelFonts": [
+        "14px",
+        "14px",
+        "14px"
+      ],
+      "hintFont": "13px",
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "submitFont": "16px",
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "submitTop": 595.65625,
+      "contrast": {
+        ".reset-title": 14.171267244103936,
+        ".reset-description": 5.504103371100126,
+        ".reset-adult-note": 5.504103371100126,
+        ".reset-label": 14.171267244103936,
+        ".reset-submit": 7.996499985642157,
+        ".reset-step-button": 7.3582589983975835,
+        ".reset-login-button": 7.3582589983975835,
+        ".reset-password-hint": 5.504103371100126
+      },
+      "targets": [
+        {
+          "top": 496.859375,
+          "bottom": 540.859375,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 595.65625,
+          "bottom": 645.65625,
+          "width": 420,
+          "height": 50
+        },
+        {
+          "top": 657.65625,
+          "bottom": 701.65625,
+          "width": 167.78125,
+          "height": 44
+        },
+        {
+          "top": 746.65625,
+          "bottom": 790.65625,
+          "width": 111.015625,
+          "height": 44
+        }
+      ],
+      "errors": [],
+      "inputs": [
+        {
+          "name": "identifier",
+          "label": "Account",
+          "autocomplete": "username",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "token",
+          "label": "Reset code",
+          "autocomplete": "one-time-code",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "newPassword",
+          "label": "New password",
+          "autocomplete": "new-password",
+          "invalid": null,
+          "description": "mobile-reset-password-hint"
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 1280,
+      "locale": "en-US",
+      "requestedTheme": "dark",
+      "step": "request",
+      "route": "#/pages/reset-password/reset-password",
+      "title": "Reset password",
+      "theme": "dark",
+      "overflow": false,
+      "contentWidth": 420,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "labelFonts": [
+        "14px"
+      ],
+      "hintFont": null,
+      "inputFonts": [
+        "16px"
+      ],
+      "submitFont": "16px",
+      "fieldGaps": [],
+      "actionGap": 24,
+      "submitTop": 362.078125,
+      "contrast": {
+        ".reset-title": 15.923775297667023,
+        ".reset-description": 9.357719562635204,
+        ".reset-adult-note": 9.357719562635204,
+        ".reset-label": 15.923775297667023,
+        ".reset-submit": 8.176495938166001,
+        ".reset-step-button": 8.98015130138188,
+        ".reset-login-button": 8.98015130138188
+      },
+      "targets": [
+        {
+          "top": 362.078125,
+          "bottom": 412.078125,
+          "width": 420,
+          "height": 50
+        },
+        {
+          "top": 424.078125,
+          "bottom": 468.078125,
+          "width": 139.578125,
+          "height": 44
+        },
+        {
+          "top": 513.078125,
+          "bottom": 557.078125,
+          "width": 111.015625,
+          "height": 44
+        }
+      ],
+      "errors": [],
+      "inputs": [
+        {
+          "name": "identifier",
+          "label": "Account",
+          "autocomplete": "username",
+          "invalid": null,
+          "description": null
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 1280,
+      "locale": "en-US",
+      "requestedTheme": "dark",
+      "step": "confirm",
+      "route": "#/pages/reset-password/reset-password",
+      "title": "Reset password",
+      "theme": "dark",
+      "overflow": false,
+      "contentWidth": 420,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "labelFonts": [
+        "14px",
+        "14px",
+        "14px"
+      ],
+      "hintFont": "13px",
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "submitFont": "16px",
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "submitTop": 595.65625,
+      "contrast": {
+        ".reset-title": 15.923775297667023,
+        ".reset-description": 9.357719562635204,
+        ".reset-adult-note": 9.357719562635204,
+        ".reset-label": 15.923775297667023,
+        ".reset-submit": 8.176495938166001,
+        ".reset-step-button": 8.98015130138188,
+        ".reset-login-button": 8.98015130138188,
+        ".reset-password-hint": 9.357719562635204
+      },
+      "targets": [
+        {
+          "top": 496.859375,
+          "bottom": 540.859375,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 595.65625,
+          "bottom": 645.65625,
+          "width": 420,
+          "height": 50
+        },
+        {
+          "top": 657.65625,
+          "bottom": 701.65625,
+          "width": 167.78125,
+          "height": 44
+        },
+        {
+          "top": 746.65625,
+          "bottom": 790.65625,
+          "width": 111.015625,
+          "height": 44
+        }
+      ],
+      "errors": [],
+      "inputs": [
+        {
+          "name": "identifier",
+          "label": "Account",
+          "autocomplete": "username",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "token",
+          "label": "Reset code",
+          "autocomplete": "one-time-code",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "newPassword",
+          "label": "New password",
+          "autocomplete": "new-password",
+          "invalid": null,
+          "description": "mobile-reset-password-hint"
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 1280,
+      "locale": "en-US",
+      "requestedTheme": "high-contrast",
+      "step": "request",
+      "route": "#/pages/reset-password/reset-password",
+      "title": "Reset password",
+      "theme": "high-contrast",
+      "overflow": false,
+      "contentWidth": 420,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "labelFonts": [
+        "14px"
+      ],
+      "hintFont": null,
+      "inputFonts": [
+        "16px"
+      ],
+      "submitFont": "16px",
+      "fieldGaps": [],
+      "actionGap": 24,
+      "submitTop": 362.078125,
+      "contrast": {
+        ".reset-title": 21,
+        ".reset-description": 16.822650673503315,
+        ".reset-adult-note": 16.822650673503315,
+        ".reset-label": 21,
+        ".reset-submit": 11.31039533489464,
+        ".reset-step-button": 11.31039533489464,
+        ".reset-login-button": 11.31039533489464
+      },
+      "targets": [
+        {
+          "top": 362.078125,
+          "bottom": 412.078125,
+          "width": 420,
+          "height": 50
+        },
+        {
+          "top": 424.078125,
+          "bottom": 468.078125,
+          "width": 139.578125,
+          "height": 44
+        },
+        {
+          "top": 513.078125,
+          "bottom": 557.078125,
+          "width": 111.015625,
+          "height": 44
+        }
+      ],
+      "errors": [],
+      "inputs": [
+        {
+          "name": "identifier",
+          "label": "Account",
+          "autocomplete": "username",
+          "invalid": null,
+          "description": null
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 1280,
+      "locale": "en-US",
+      "requestedTheme": "high-contrast",
+      "step": "confirm",
+      "route": "#/pages/reset-password/reset-password",
+      "title": "Reset password",
+      "theme": "high-contrast",
+      "overflow": false,
+      "contentWidth": 420,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "labelFonts": [
+        "14px",
+        "14px",
+        "14px"
+      ],
+      "hintFont": "13px",
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "submitFont": "16px",
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "submitTop": 595.65625,
+      "contrast": {
+        ".reset-title": 21,
+        ".reset-description": 16.822650673503315,
+        ".reset-adult-note": 16.822650673503315,
+        ".reset-label": 21,
+        ".reset-submit": 11.31039533489464,
+        ".reset-step-button": 11.31039533489464,
+        ".reset-login-button": 11.31039533489464,
+        ".reset-password-hint": 16.822650673503315
+      },
+      "targets": [
+        {
+          "top": 496.859375,
+          "bottom": 540.859375,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 595.65625,
+          "bottom": 645.65625,
+          "width": 420,
+          "height": 50
+        },
+        {
+          "top": 657.65625,
+          "bottom": 701.65625,
+          "width": 167.78125,
+          "height": 44
+        },
+        {
+          "top": 746.65625,
+          "bottom": 790.65625,
+          "width": 111.015625,
+          "height": 44
+        }
+      ],
+      "errors": [],
+      "inputs": [
+        {
+          "name": "identifier",
+          "label": "Account",
+          "autocomplete": "username",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "token",
+          "label": "Reset code",
+          "autocomplete": "one-time-code",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "newPassword",
+          "label": "New password",
+          "autocomplete": "new-password",
+          "invalid": null,
+          "description": "mobile-reset-password-hint"
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 1280,
+      "locale": "en-US",
+      "requestedTheme": "system",
+      "step": "request",
+      "route": "#/pages/reset-password/reset-password",
+      "title": "Reset password",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 420,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "labelFonts": [
+        "14px"
+      ],
+      "hintFont": null,
+      "inputFonts": [
+        "16px"
+      ],
+      "submitFont": "16px",
+      "fieldGaps": [],
+      "actionGap": 24,
+      "submitTop": 362.078125,
+      "contrast": {
+        ".reset-title": 14.171267244103936,
+        ".reset-description": 5.504103371100126,
+        ".reset-adult-note": 5.504103371100126,
+        ".reset-label": 14.171267244103936,
+        ".reset-submit": 7.996499985642157,
+        ".reset-step-button": 7.3582589983975835,
+        ".reset-login-button": 7.3582589983975835
+      },
+      "targets": [
+        {
+          "top": 362.078125,
+          "bottom": 412.078125,
+          "width": 420,
+          "height": 50
+        },
+        {
+          "top": 424.078125,
+          "bottom": 468.078125,
+          "width": 139.578125,
+          "height": 44
+        },
+        {
+          "top": 513.078125,
+          "bottom": 557.078125,
+          "width": 111.015625,
+          "height": 44
+        }
+      ],
+      "errors": [],
+      "inputs": [
+        {
+          "name": "identifier",
+          "label": "Account",
+          "autocomplete": "username",
+          "invalid": null,
+          "description": null
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 1280,
+      "locale": "en-US",
+      "requestedTheme": "system",
+      "step": "confirm",
+      "route": "#/pages/reset-password/reset-password",
+      "title": "Reset password",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 420,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "labelFonts": [
+        "14px",
+        "14px",
+        "14px"
+      ],
+      "hintFont": "13px",
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "submitFont": "16px",
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "submitTop": 595.65625,
+      "contrast": {
+        ".reset-title": 14.171267244103936,
+        ".reset-description": 5.504103371100126,
+        ".reset-adult-note": 5.504103371100126,
+        ".reset-label": 14.171267244103936,
+        ".reset-submit": 7.996499985642157,
+        ".reset-step-button": 7.3582589983975835,
+        ".reset-login-button": 7.3582589983975835,
+        ".reset-password-hint": 5.504103371100126
+      },
+      "targets": [
+        {
+          "top": 496.859375,
+          "bottom": 540.859375,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 595.65625,
+          "bottom": 645.65625,
+          "width": 420,
+          "height": 50
+        },
+        {
+          "top": 657.65625,
+          "bottom": 701.65625,
+          "width": 167.78125,
+          "height": 44
+        },
+        {
+          "top": 746.65625,
+          "bottom": 790.65625,
+          "width": 111.015625,
+          "height": 44
+        }
+      ],
+      "errors": [],
+      "inputs": [
+        {
+          "name": "identifier",
+          "label": "Account",
+          "autocomplete": "username",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "token",
+          "label": "Reset code",
+          "autocomplete": "one-time-code",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "newPassword",
+          "label": "New password",
+          "autocomplete": "new-password",
+          "invalid": null,
+          "description": "mobile-reset-password-hint"
+        }
+      ],
+      "status": "PASS"
+    }
+  ],
+  "enlargedStates": [
+    {
+      "width": 320,
+      "locale": "en-US",
+      "step": "request",
+      "textScale": 2,
+      "before": {
+        "route": "#/pages/reset-password/reset-password",
+        "title": "Reset password",
+        "theme": "light",
+        "overflow": false,
+        "contentWidth": 272,
+        "titleFont": "56px",
+        "descriptionFont": "28px",
+        "labelFonts": [
+          "28px"
+        ],
+        "hintFont": null,
+        "inputFonts": [
+          "32px"
+        ],
+        "submitFont": "32px",
+        "fieldGaps": [],
+        "actionGap": 24,
+        "submitTop": 752.5625,
+        "contrast": {
+          ".reset-title": 14.171267244103936,
+          ".reset-description": 5.504103371100126,
+          ".reset-adult-note": 5.504103371100126,
+          ".reset-label": 14.171267244103936,
+          ".reset-submit": 7.996499985642157,
+          ".reset-step-button": 7.3582589983975835,
+          ".reset-login-button": 7.3582589983975835
+        },
+        "targets": [
+          {
+            "top": 752.5625,
+            "bottom": 874.5625,
+            "width": 272,
+            "height": 122
+          },
+          {
+            "top": 886.5625,
+            "bottom": 992.15625,
+            "width": 272,
+            "height": 105.59375
+          },
+          {
+            "top": 1037.15625,
+            "bottom": 1097.953125,
+            "width": 222.03125,
+            "height": 60.796875
+          }
+        ],
+        "errors": [
+          {
+            "height": 44.796875,
+            "hidden": "false",
+            "role": "alert",
+            "visibility": "visible",
+            "contrast": 5.956263209720332
+          }
+        ],
+        "inputs": [
+          {
+            "name": "identifier",
+            "label": "Account",
+            "autocomplete": "username",
+            "invalid": "true",
+            "description": "mobile-reset-identifier-error"
+          }
+        ]
+      },
+      "after": {
+        "route": "#/pages/reset-password/reset-password",
+        "title": "Reset password",
+        "theme": "light",
+        "overflow": false,
+        "contentWidth": 272,
+        "titleFont": "56px",
+        "descriptionFont": "28px",
+        "labelFonts": [
+          "28px"
+        ],
+        "hintFont": null,
+        "inputFonts": [
+          "32px"
+        ],
+        "submitFont": "32px",
+        "fieldGaps": [],
+        "actionGap": 24,
+        "submitTop": 752.5625,
+        "contrast": {
+          ".reset-title": 14.171267244103936,
+          ".reset-description": 5.504103371100126,
+          ".reset-adult-note": 5.504103371100126,
+          ".reset-label": 14.171267244103936,
+          ".reset-submit": 7.996499985642157,
+          ".reset-step-button": 7.3582589983975835,
+          ".reset-login-button": 7.3582589983975835
+        },
+        "targets": [
+          {
+            "top": 752.5625,
+            "bottom": 874.5625,
+            "width": 272,
+            "height": 122
+          },
+          {
+            "top": 886.5625,
+            "bottom": 992.15625,
+            "width": 272,
+            "height": 105.59375
+          },
+          {
+            "top": 1037.15625,
+            "bottom": 1097.953125,
+            "width": 222.03125,
+            "height": 60.796875
+          }
+        ],
+        "errors": [
+          {
+            "height": 44.796875,
+            "hidden": "true",
+            "role": null,
+            "visibility": "hidden",
+            "contrast": 5.956263209720332
+          }
+        ],
+        "inputs": [
+          {
+            "name": "identifier",
+            "label": "Account",
+            "autocomplete": "username",
+            "invalid": null,
+            "description": null
+          }
+        ]
+      },
+      "status": "PASS"
+    },
+    {
+      "width": 320,
+      "locale": "en-US",
+      "step": "confirm",
+      "textScale": 2,
+      "before": {
+        "route": "#/pages/reset-password/reset-password",
+        "title": "Reset password",
+        "theme": "light",
+        "overflow": false,
+        "contentWidth": 272,
+        "titleFont": "56px",
+        "descriptionFont": "28px",
+        "labelFonts": [
+          "28px",
+          "28px",
+          "28px"
+        ],
+        "hintFont": "26px",
+        "inputFonts": [
+          "32px",
+          "32px",
+          "32px"
+        ],
+        "submitFont": "32px",
+        "fieldGaps": [
+          24,
+          24
+        ],
+        "actionGap": 24,
+        "submitTop": 731.53125,
+        "contrast": {
+          ".reset-title": 14.171267244103936,
+          ".reset-description": 5.504103371100126,
+          ".reset-adult-note": 5.504103371100126,
+          ".reset-label": 14.171267244103936,
+          ".reset-submit": 7.996499985642157,
+          ".reset-step-button": 7.3582589983975835,
+          ".reset-login-button": 7.3582589983975835,
+          ".reset-password-hint": 5.504103371100126
+        },
+        "targets": [
+          {
+            "top": 460.75,
+            "bottom": 504.75,
+            "width": 44,
+            "height": 44
+          },
+          {
+            "top": 731.53125,
+            "bottom": 853.53125,
+            "width": 272,
+            "height": 122
+          },
+          {
+            "top": 865.53125,
+            "bottom": 971.125,
+            "width": 272,
+            "height": 105.59375
+          },
+          {
+            "top": 1016.125,
+            "bottom": 1076.921875,
+            "width": 222.03125,
+            "height": 60.796875
+          }
+        ],
+        "errors": [
+          {
+            "height": 44.796875,
+            "hidden": "false",
+            "role": "alert",
+            "visibility": "visible",
+            "contrast": 5.956263209720332
+          },
+          {
+            "height": 89.59375,
+            "hidden": "false",
+            "role": "alert",
+            "visibility": "visible",
+            "contrast": 5.956263209720332
+          },
+          {
+            "height": 89.59375,
+            "hidden": "false",
+            "role": "alert",
+            "visibility": "visible",
+            "contrast": 5.956263209720332
+          }
+        ],
+        "inputs": [
+          {
+            "name": "identifier",
+            "label": "Account",
+            "autocomplete": "username",
+            "invalid": "true",
+            "description": "mobile-reset-identifier-error"
+          },
+          {
+            "name": "token",
+            "label": "Reset code",
+            "autocomplete": "one-time-code",
+            "invalid": "true",
+            "description": "mobile-reset-token-error"
+          },
+          {
+            "name": "newPassword",
+            "label": "New password",
+            "autocomplete": "new-password",
+            "invalid": "true",
+            "description": "mobile-reset-password-hint mobile-reset-newPassword-error"
+          }
+        ]
+      },
+      "after": {
+        "route": "#/pages/reset-password/reset-password",
+        "title": "Reset password",
+        "theme": "light",
+        "overflow": false,
+        "contentWidth": 272,
+        "titleFont": "56px",
+        "descriptionFont": "28px",
+        "labelFonts": [
+          "28px",
+          "28px",
+          "28px"
+        ],
+        "hintFont": "26px",
+        "inputFonts": [
+          "32px",
+          "32px",
+          "32px"
+        ],
+        "submitFont": "32px",
+        "fieldGaps": [
+          24,
+          24
+        ],
+        "actionGap": 24,
+        "submitTop": 731.53125,
+        "contrast": {
+          ".reset-title": 14.171267244103936,
+          ".reset-description": 5.504103371100126,
+          ".reset-adult-note": 5.504103371100126,
+          ".reset-label": 14.171267244103936,
+          ".reset-submit": 7.996499985642157,
+          ".reset-step-button": 7.3582589983975835,
+          ".reset-login-button": 7.3582589983975835,
+          ".reset-password-hint": 5.504103371100126
+        },
+        "targets": [
+          {
+            "top": 460.75,
+            "bottom": 504.75,
+            "width": 44,
+            "height": 44
+          },
+          {
+            "top": 731.53125,
+            "bottom": 853.53125,
+            "width": 272,
+            "height": 122
+          },
+          {
+            "top": 865.53125,
+            "bottom": 971.125,
+            "width": 272,
+            "height": 105.59375
+          },
+          {
+            "top": 1016.125,
+            "bottom": 1076.921875,
+            "width": 222.03125,
+            "height": 60.796875
+          }
+        ],
+        "errors": [
+          {
+            "height": 44.796875,
+            "hidden": "true",
+            "role": null,
+            "visibility": "hidden",
+            "contrast": 5.956263209720332
+          },
+          {
+            "height": 89.59375,
+            "hidden": "true",
+            "role": null,
+            "visibility": "hidden",
+            "contrast": 5.956263209720332
+          },
+          {
+            "height": 89.59375,
+            "hidden": "true",
+            "role": null,
+            "visibility": "hidden",
+            "contrast": 5.956263209720332
+          }
+        ],
+        "inputs": [
+          {
+            "name": "identifier",
+            "label": "Account",
+            "autocomplete": "username",
+            "invalid": null,
+            "description": null
+          },
+          {
+            "name": "token",
+            "label": "Reset code",
+            "autocomplete": "one-time-code",
+            "invalid": null,
+            "description": null
+          },
+          {
+            "name": "newPassword",
+            "label": "New password",
+            "autocomplete": "new-password",
+            "invalid": null,
+            "description": "mobile-reset-password-hint"
+          }
+        ]
+      },
+      "status": "PASS"
+    },
+    {
+      "width": 390,
+      "locale": "en-US",
+      "step": "request",
+      "textScale": 2,
+      "before": {
+        "route": "#/pages/reset-password/reset-password",
+        "title": "Reset password",
+        "theme": "light",
+        "overflow": false,
+        "contentWidth": 342,
+        "titleFont": "56px",
+        "descriptionFont": "28px",
+        "labelFonts": [
+          "28px"
+        ],
+        "hintFont": null,
+        "inputFonts": [
+          "32px"
+        ],
+        "submitFont": "32px",
+        "fieldGaps": [],
+        "actionGap": 24,
+        "submitTop": 703.5625,
+        "contrast": {
+          ".reset-title": 14.171267244103936,
+          ".reset-description": 5.504103371100126,
+          ".reset-adult-note": 5.504103371100126,
+          ".reset-label": 14.171267244103936,
+          ".reset-submit": 7.996499985642157,
+          ".reset-step-button": 7.3582589983975835,
+          ".reset-login-button": 7.3582589983975835
+        },
+        "targets": [
+          {
+            "top": 703.5625,
+            "bottom": 825.5625,
+            "width": 342,
+            "height": 122
+          },
+          {
+            "top": 837.5625,
+            "bottom": 898.359375,
+            "width": 279.15625,
+            "height": 60.796875
+          },
+          {
+            "top": 943.359375,
+            "bottom": 1004.15625,
+            "width": 222.03125,
+            "height": 60.796875
+          }
+        ],
+        "errors": [
+          {
+            "height": 44.796875,
+            "hidden": "false",
+            "role": "alert",
+            "visibility": "visible",
+            "contrast": 5.956263209720332
+          }
+        ],
+        "inputs": [
+          {
+            "name": "identifier",
+            "label": "Account",
+            "autocomplete": "username",
+            "invalid": "true",
+            "description": "mobile-reset-identifier-error"
+          }
+        ]
+      },
+      "after": {
+        "route": "#/pages/reset-password/reset-password",
+        "title": "Reset password",
+        "theme": "light",
+        "overflow": false,
+        "contentWidth": 342,
+        "titleFont": "56px",
+        "descriptionFont": "28px",
+        "labelFonts": [
+          "28px"
+        ],
+        "hintFont": null,
+        "inputFonts": [
+          "32px"
+        ],
+        "submitFont": "32px",
+        "fieldGaps": [],
+        "actionGap": 24,
+        "submitTop": 703.5625,
+        "contrast": {
+          ".reset-title": 14.171267244103936,
+          ".reset-description": 5.504103371100126,
+          ".reset-adult-note": 5.504103371100126,
+          ".reset-label": 14.171267244103936,
+          ".reset-submit": 7.996499985642157,
+          ".reset-step-button": 7.3582589983975835,
+          ".reset-login-button": 7.3582589983975835
+        },
+        "targets": [
+          {
+            "top": 703.5625,
+            "bottom": 825.5625,
+            "width": 342,
+            "height": 122
+          },
+          {
+            "top": 837.5625,
+            "bottom": 898.359375,
+            "width": 279.15625,
+            "height": 60.796875
+          },
+          {
+            "top": 943.359375,
+            "bottom": 1004.15625,
+            "width": 222.03125,
+            "height": 60.796875
+          }
+        ],
+        "errors": [
+          {
+            "height": 44.796875,
+            "hidden": "true",
+            "role": null,
+            "visibility": "hidden",
+            "contrast": 5.956263209720332
+          }
+        ],
+        "inputs": [
+          {
+            "name": "identifier",
+            "label": "Account",
+            "autocomplete": "username",
+            "invalid": null,
+            "description": null
+          }
+        ]
+      },
+      "status": "PASS"
+    },
+    {
+      "width": 390,
+      "locale": "en-US",
+      "step": "confirm",
+      "textScale": 2,
+      "before": {
+        "route": "#/pages/reset-password/reset-password",
+        "title": "Reset password",
+        "theme": "light",
+        "overflow": false,
+        "contentWidth": 342,
+        "titleFont": "56px",
+        "descriptionFont": "28px",
+        "labelFonts": [
+          "28px",
+          "28px",
+          "28px"
+        ],
+        "hintFont": "26px",
+        "inputFonts": [
+          "32px",
+          "32px",
+          "32px"
+        ],
+        "submitFont": "32px",
+        "fieldGaps": [
+          24,
+          24
+        ],
+        "actionGap": 24,
+        "submitTop": 754.140625,
+        "contrast": {
+          ".reset-title": 14.171267244103936,
+          ".reset-description": 5.504103371100126,
+          ".reset-adult-note": 5.504103371100126,
+          ".reset-label": 14.171267244103936,
+          ".reset-submit": 7.996499985642157,
+          ".reset-step-button": 7.3582589983975835,
+          ".reset-login-button": 7.3582589983975835,
+          ".reset-password-hint": 5.504103371100126
+        },
+        "targets": [
+          {
+            "top": 524.953125,
+            "bottom": 568.953125,
+            "width": 44,
+            "height": 44
+          },
+          {
+            "top": 754.140625,
+            "bottom": 828.140625,
+            "width": 342,
+            "height": 74
+          },
+          {
+            "top": 840.140625,
+            "bottom": 900.9375,
+            "width": 335.5625,
+            "height": 60.796875
+          },
+          {
+            "top": 945.9375,
+            "bottom": 1006.734375,
+            "width": 222.03125,
+            "height": 60.796875
+          }
+        ],
+        "errors": [
+          {
+            "height": 44.796875,
+            "hidden": "false",
+            "role": "alert",
+            "visibility": "visible",
+            "contrast": 5.956263209720332
+          },
+          {
+            "height": 44.796875,
+            "hidden": "false",
+            "role": "alert",
+            "visibility": "visible",
+            "contrast": 5.956263209720332
+          },
+          {
+            "height": 89.59375,
+            "hidden": "false",
+            "role": "alert",
+            "visibility": "visible",
+            "contrast": 5.956263209720332
+          }
+        ],
+        "inputs": [
+          {
+            "name": "identifier",
+            "label": "Account",
+            "autocomplete": "username",
+            "invalid": "true",
+            "description": "mobile-reset-identifier-error"
+          },
+          {
+            "name": "token",
+            "label": "Reset code",
+            "autocomplete": "one-time-code",
+            "invalid": "true",
+            "description": "mobile-reset-token-error"
+          },
+          {
+            "name": "newPassword",
+            "label": "New password",
+            "autocomplete": "new-password",
+            "invalid": "true",
+            "description": "mobile-reset-password-hint mobile-reset-newPassword-error"
+          }
+        ]
+      },
+      "after": {
+        "route": "#/pages/reset-password/reset-password",
+        "title": "Reset password",
+        "theme": "light",
+        "overflow": false,
+        "contentWidth": 342,
+        "titleFont": "56px",
+        "descriptionFont": "28px",
+        "labelFonts": [
+          "28px",
+          "28px",
+          "28px"
+        ],
+        "hintFont": "26px",
+        "inputFonts": [
+          "32px",
+          "32px",
+          "32px"
+        ],
+        "submitFont": "32px",
+        "fieldGaps": [
+          24,
+          24
+        ],
+        "actionGap": 24,
+        "submitTop": 754.140625,
+        "contrast": {
+          ".reset-title": 14.171267244103936,
+          ".reset-description": 5.504103371100126,
+          ".reset-adult-note": 5.504103371100126,
+          ".reset-label": 14.171267244103936,
+          ".reset-submit": 7.996499985642157,
+          ".reset-step-button": 7.3582589983975835,
+          ".reset-login-button": 7.3582589983975835,
+          ".reset-password-hint": 5.504103371100126
+        },
+        "targets": [
+          {
+            "top": 524.953125,
+            "bottom": 568.953125,
+            "width": 44,
+            "height": 44
+          },
+          {
+            "top": 754.140625,
+            "bottom": 828.140625,
+            "width": 342,
+            "height": 74
+          },
+          {
+            "top": 840.140625,
+            "bottom": 900.9375,
+            "width": 335.5625,
+            "height": 60.796875
+          },
+          {
+            "top": 945.9375,
+            "bottom": 1006.734375,
+            "width": 222.03125,
+            "height": 60.796875
+          }
+        ],
+        "errors": [
+          {
+            "height": 44.796875,
+            "hidden": "true",
+            "role": null,
+            "visibility": "hidden",
+            "contrast": 5.956263209720332
+          },
+          {
+            "height": 44.796875,
+            "hidden": "true",
+            "role": null,
+            "visibility": "hidden",
+            "contrast": 5.956263209720332
+          },
+          {
+            "height": 89.59375,
+            "hidden": "true",
+            "role": null,
+            "visibility": "hidden",
+            "contrast": 5.956263209720332
+          }
+        ],
+        "inputs": [
+          {
+            "name": "identifier",
+            "label": "Account",
+            "autocomplete": "username",
+            "invalid": null,
+            "description": null
+          },
+          {
+            "name": "token",
+            "label": "Reset code",
+            "autocomplete": "one-time-code",
+            "invalid": null,
+            "description": null
+          },
+          {
+            "name": "newPassword",
+            "label": "New password",
+            "autocomplete": "new-password",
+            "invalid": null,
+            "description": "mobile-reset-password-hint"
+          }
+        ]
+      },
+      "status": "PASS"
+    }
+  ],
+  "shortViewport": [
+    {
+      "width": 320,
+      "height": 460,
+      "step": "request",
+      "route": "#/pages/reset-password/reset-password",
+      "title": "Reset password",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 272,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "labelFonts": [
+        "14px"
+      ],
+      "hintFont": null,
+      "inputFonts": [
+        "16px"
+      ],
+      "submitFont": "16px",
+      "fieldGaps": [],
+      "actionGap": 24,
+      "submitTop": 225.375,
+      "contrast": {
+        ".reset-title": 14.171267244103936,
+        ".reset-description": 5.504103371100126,
+        ".reset-adult-note": 5.504103371100126,
+        ".reset-label": 14.171267244103936,
+        ".reset-submit": 7.996499985642157,
+        ".reset-step-button": 7.3582589983975835,
+        ".reset-login-button": 7.3582589983975835
+      },
+      "targets": [
+        {
+          "top": 225.375,
+          "bottom": 275.375,
+          "width": 272,
+          "height": 50
+        },
+        {
+          "top": 287.375,
+          "bottom": 331.375,
+          "width": 139.578125,
+          "height": 44
+        },
+        {
+          "top": 376.375,
+          "bottom": 420.375,
+          "width": 111.015625,
+          "height": 44
+        }
+      ],
+      "errors": [],
+      "inputs": [
+        {
+          "name": "identifier",
+          "label": "Account",
+          "autocomplete": "username",
+          "invalid": null,
+          "description": null
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 320,
+      "height": 460,
+      "step": "confirm",
+      "route": "#/pages/reset-password/reset-password",
+      "title": "Reset password",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 272,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "labelFonts": [
+        "14px",
+        "14px",
+        "14px"
+      ],
+      "hintFont": "13px",
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "submitFont": "16px",
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "submitTop": 225.140625,
+      "contrast": {
+        ".reset-title": 14.171267244103936,
+        ".reset-description": 5.504103371100126,
+        ".reset-adult-note": 5.504103371100126,
+        ".reset-label": 14.171267244103936,
+        ".reset-submit": 7.996499985642157,
+        ".reset-step-button": 7.3582589983975835,
+        ".reset-login-button": 7.3582589983975835,
+        ".reset-password-hint": 5.504103371100126
+      },
+      "targets": [
+        {
+          "top": 126.34375,
+          "bottom": 170.34375,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 225.140625,
+          "bottom": 275.140625,
+          "width": 272,
+          "height": 50
+        },
+        {
+          "top": 287.140625,
+          "bottom": 331.140625,
+          "width": 167.78125,
+          "height": 44
+        },
+        {
+          "top": 376.140625,
+          "bottom": 420.140625,
+          "width": 111.015625,
+          "height": 44
+        }
+      ],
+      "errors": [],
+      "inputs": [
+        {
+          "name": "identifier",
+          "label": "Account",
+          "autocomplete": "username",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "token",
+          "label": "Reset code",
+          "autocomplete": "one-time-code",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "newPassword",
+          "label": "New password",
+          "autocomplete": "new-password",
+          "invalid": null,
+          "description": "mobile-reset-password-hint"
+        }
+      ],
+      "status": "PASS"
+    }
+  ],
+  "pageErrors": [],
+  "consoleErrors": [],
+  "apiRequestCount": 0,
+  "status": "PASS_INDEPENDENT_VISUAL_SCOPE"
+}

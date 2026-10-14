@@ -1,0 +1,70 @@
+{
+  "at": "2026-10-14T04:03:57.433Z",
+  "scope": "INDEPENDENT_MOBILE_RESET_H5_INTERACTION_ONLY",
+  "sourceHashBefore": "b3eebb09cf8e2194ed9355f5dce863786789ca870b25d47203022815bef7c361",
+  "cases": [
+    {
+      "test": "rapid-native-input",
+      "field": "identifier",
+      "kind": "clear",
+      "activation": "click",
+      "elapsedMs": 1.6000000014901161,
+      "staleModelWindow": true,
+      "nativeLength": 0,
+      "calls": []
+    },
+    {
+      "test": "rapid-native-input",
+      "field": "identifier",
+      "kind": "clear",
+      "activation": "Enter",
+      "elapsedMs": 1.5,
+      "staleModelWindow": true,
+      "nativeLength": 0,
+      "calls": []
+    },
+    {
+      "test": "rapid-native-input",
+      "field": "identifier",
+      "kind": "replace",
+      "activation": "click",
+      "elapsedMs": 1.5,
+      "staleModelWindow": true,
+      "nativeLength": 34,
+      "calls": [
+        {
+          "identifierMatches": true,
+          "codeMatches": true,
+          "passwordMatches": true,
+          "codeLength": null
+        }
+      ]
+    },
+    {
+      "test": "rapid-native-input",
+      "field": "identifier",
+      "kind": "replace",
+      "activation": "Enter",
+      "elapsedMs": 1.6000000014901161,
+      "staleModelWindow": true,
+      "nativeLength": 34,
+      "calls": [
+        {
+          "identifierMatches": true,
+          "codeMatches": true,
+          "passwordMatches": true,
+          "codeLength": null
+        }
+      ]
+    }
+  ],
+  "pageErrors": [],
+  "expectedConsoleErrors": 0,
+  "unexpectedConsoleErrors": 0,
+  "requests": [],
+  "result": "FAIL",
+  "failure": {
+    "name": "TimeoutError",
+    "message": "page.waitForFunction: Timeout 30000ms exceeded."
+  }
+}
