@@ -1,6 +1,6 @@
 # MB-001 root局部收口 — 主按钮键盘
 
-状态：UI_VERIFIED_PRIMARY_KEYBOARD_DELTA_H5，待单页提交。当前raw源码SHA-256为`1d347967146a38723ab0bf3ae0b1accca3b519ae6515e7c14f12297be1b80e19`。root已逐行检查Git差量：只为正式登录主按钮添加Enter/Space局部keydown prevent/stop和keyup调用既有submit，未改字段验证、样式、session或共享键盘模块。
+状态：PUSHED_SCOPED / UI_VERIFIED_PRIMARY_KEYBOARD_DELTA_H5，提交`70ad42f41c844708400ca18ec1a87c95976649f1`已推origin/dev-redesign且随后远程SHA与HEAD一致。当前raw源码SHA-256为`1d347967146a38723ab0bf3ae0b1accca3b519ae6515e7c14f12297be1b80e19`。root已逐行检查Git差量：只为正式登录主按钮添加Enter/Space局部keydown prevent/stop和keyup调用既有submit，未改字段验证、样式、session或共享键盘模块。
 
 原da5实际Enter首错跳password的FAIL保留。独立[17项报告](review.md)与summary逐项接受：空/单字段首错与ARIA、hold/repeat到keyup才提交、有效单请求、busy禁止重复与离页、快速清空/替换时最新blur同步值、Space短视口不滚动，以及原输入confirm链和mouse form流程。浏览器pageerror/非预期console均0，运行前后源码hash一致。作者5项仅为补充，不替代独立验收。
 
