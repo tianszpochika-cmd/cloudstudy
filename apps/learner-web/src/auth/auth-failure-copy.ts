@@ -102,7 +102,7 @@ export function learnerAuthFailureCopy(action: AuthFailureAction, failure: unkno
   }
   if (action === 'resetRequest') {
     if (marker === 'RATE_LIMITED' || marker === 'iam.login.rate_limited') return t('passwordReset.rateLimited')
-    return t('passwordReset.requestSent')
+    return t('passwordReset.requestFailed')
   }
   if (marker === 'RATE_LIMITED' || marker === 'iam.login.rate_limited') return t('passwordReset.rateLimited')
   if (marker === 'iam.password_reset.invalid') return t('passwordReset.invalidCode')

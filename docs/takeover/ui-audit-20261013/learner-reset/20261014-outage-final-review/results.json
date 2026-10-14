@@ -1,0 +1,387 @@
+{
+  "scope": "INDEPENDENT_WEB_RESET_OUTAGE_FOLLOWUP_UI_ONLY",
+  "at": "2026-10-14T03:54:42.926Z",
+  "sourceHashesBefore": {
+    "apps/learner-web/src/pages/PasswordResetPage.vue": "393aac74627e7774a5e86a4b195ccedd1c5eb338caf8718df7f7b18ec8fb1a60",
+    "apps/learner-web/src/auth/auth-failure-copy.ts": "218027c92cef95cbae311fbeb2421ded9b6557fa023e8d55d9207a38dc01b36a",
+    "apps/learner-web/tests/ui-reset.e2e.cjs": "fa6162f65ab9b084f4b5e913775b9d433878d9c8817e2035e418583a06bf7228"
+  },
+  "cases": [
+    {
+      "locale": "zh-CN",
+      "scenario": "accepted-202",
+      "observed": {
+        "feedback": "如果该账号可接收重置通知，我们会发送操作说明。",
+        "role": "status",
+        "errorClass": false,
+        "alertCount": 0,
+        "statusCount": 1,
+        "busy": "false",
+        "submitDisabled": false,
+        "invalidInputs": 0,
+        "route": "/reset-password"
+      },
+      "initialRequests": 1
+    },
+    {
+      "locale": "zh-CN",
+      "scenario": "service-503",
+      "observed": {
+        "feedback": "发送没有完成，请稍后再试。",
+        "role": "alert",
+        "errorClass": true,
+        "alertCount": 1,
+        "statusCount": 0,
+        "busy": "false",
+        "submitDisabled": false,
+        "invalidInputs": 0,
+        "route": "/reset-password"
+      },
+      "initialRequests": 1,
+      "retryPending": {
+        "feedback": null,
+        "role": null,
+        "errorClass": false,
+        "alertCount": 0,
+        "statusCount": 0,
+        "busy": "true",
+        "submitDisabled": true,
+        "invalidInputs": 0,
+        "route": "/reset-password"
+      },
+      "retryAccepted": {
+        "feedback": "如果该账号可接收重置通知，我们会发送操作说明。",
+        "role": "status",
+        "errorClass": false,
+        "alertCount": 0,
+        "statusCount": 1,
+        "busy": "false",
+        "submitDisabled": false,
+        "invalidInputs": 0,
+        "route": "/reset-password"
+      }
+    },
+    {
+      "locale": "zh-CN",
+      "scenario": "network-abort",
+      "observed": {
+        "feedback": "发送没有完成，请稍后再试。",
+        "role": "alert",
+        "errorClass": true,
+        "alertCount": 1,
+        "statusCount": 0,
+        "busy": "false",
+        "submitDisabled": false,
+        "invalidInputs": 0,
+        "route": "/reset-password"
+      },
+      "initialRequests": 1,
+      "retryPending": {
+        "feedback": null,
+        "role": null,
+        "errorClass": false,
+        "alertCount": 0,
+        "statusCount": 0,
+        "busy": "true",
+        "submitDisabled": true,
+        "invalidInputs": 0,
+        "route": "/reset-password"
+      },
+      "retryAccepted": {
+        "feedback": "如果该账号可接收重置通知，我们会发送操作说明。",
+        "role": "status",
+        "errorClass": false,
+        "alertCount": 0,
+        "statusCount": 1,
+        "busy": "false",
+        "submitDisabled": false,
+        "invalidInputs": 0,
+        "route": "/reset-password"
+      }
+    },
+    {
+      "locale": "zh-CN",
+      "scenario": "rate-429",
+      "observed": {
+        "feedback": "操作过于频繁，请稍后再试。",
+        "role": "alert",
+        "errorClass": true,
+        "alertCount": 1,
+        "statusCount": 0,
+        "busy": "false",
+        "submitDisabled": false,
+        "invalidInputs": 0,
+        "route": "/reset-password"
+      },
+      "initialRequests": 1,
+      "retryPending": {
+        "feedback": null,
+        "role": null,
+        "errorClass": false,
+        "alertCount": 0,
+        "statusCount": 0,
+        "busy": "true",
+        "submitDisabled": true,
+        "invalidInputs": 0,
+        "route": "/reset-password"
+      },
+      "retryAccepted": {
+        "feedback": "如果该账号可接收重置通知，我们会发送操作说明。",
+        "role": "status",
+        "errorClass": false,
+        "alertCount": 0,
+        "statusCount": 1,
+        "busy": "false",
+        "submitDisabled": false,
+        "invalidInputs": 0,
+        "route": "/reset-password"
+      }
+    },
+    {
+      "locale": "en-US",
+      "scenario": "accepted-202",
+      "observed": {
+        "feedback": "If this account can receive a reset notice, we will send instructions.",
+        "role": "status",
+        "errorClass": false,
+        "alertCount": 0,
+        "statusCount": 1,
+        "busy": "false",
+        "submitDisabled": false,
+        "invalidInputs": 0,
+        "route": "/reset-password"
+      },
+      "initialRequests": 1
+    },
+    {
+      "locale": "en-US",
+      "scenario": "service-503",
+      "observed": {
+        "feedback": "The request did not complete. Try again shortly.",
+        "role": "alert",
+        "errorClass": true,
+        "alertCount": 1,
+        "statusCount": 0,
+        "busy": "false",
+        "submitDisabled": false,
+        "invalidInputs": 0,
+        "route": "/reset-password"
+      },
+      "initialRequests": 1,
+      "retryPending": {
+        "feedback": null,
+        "role": null,
+        "errorClass": false,
+        "alertCount": 0,
+        "statusCount": 0,
+        "busy": "true",
+        "submitDisabled": true,
+        "invalidInputs": 0,
+        "route": "/reset-password"
+      },
+      "retryAccepted": {
+        "feedback": "If this account can receive a reset notice, we will send instructions.",
+        "role": "status",
+        "errorClass": false,
+        "alertCount": 0,
+        "statusCount": 1,
+        "busy": "false",
+        "submitDisabled": false,
+        "invalidInputs": 0,
+        "route": "/reset-password"
+      }
+    },
+    {
+      "locale": "en-US",
+      "scenario": "network-abort",
+      "observed": {
+        "feedback": "The request did not complete. Try again shortly.",
+        "role": "alert",
+        "errorClass": true,
+        "alertCount": 1,
+        "statusCount": 0,
+        "busy": "false",
+        "submitDisabled": false,
+        "invalidInputs": 0,
+        "route": "/reset-password"
+      },
+      "initialRequests": 1,
+      "retryPending": {
+        "feedback": null,
+        "role": null,
+        "errorClass": false,
+        "alertCount": 0,
+        "statusCount": 0,
+        "busy": "true",
+        "submitDisabled": true,
+        "invalidInputs": 0,
+        "route": "/reset-password"
+      },
+      "retryAccepted": {
+        "feedback": "If this account can receive a reset notice, we will send instructions.",
+        "role": "status",
+        "errorClass": false,
+        "alertCount": 0,
+        "statusCount": 1,
+        "busy": "false",
+        "submitDisabled": false,
+        "invalidInputs": 0,
+        "route": "/reset-password"
+      }
+    },
+    {
+      "locale": "en-US",
+      "scenario": "rate-429",
+      "observed": {
+        "feedback": "Too many requests. Try again later.",
+        "role": "alert",
+        "errorClass": true,
+        "alertCount": 1,
+        "statusCount": 0,
+        "busy": "false",
+        "submitDisabled": false,
+        "invalidInputs": 0,
+        "route": "/reset-password"
+      },
+      "initialRequests": 1,
+      "retryPending": {
+        "feedback": null,
+        "role": null,
+        "errorClass": false,
+        "alertCount": 0,
+        "statusCount": 0,
+        "busy": "true",
+        "submitDisabled": true,
+        "invalidInputs": 0,
+        "route": "/reset-password"
+      },
+      "retryAccepted": {
+        "feedback": "If this account can receive a reset notice, we will send instructions.",
+        "role": "status",
+        "errorClass": false,
+        "alertCount": 0,
+        "statusCount": 1,
+        "busy": "false",
+        "submitDisabled": false,
+        "invalidInputs": 0,
+        "route": "/reset-password"
+      }
+    }
+  ],
+  "pageErrors": [],
+  "expectedConsoleErrorCount": 6,
+  "unexpectedConsoleErrorCount": 0,
+  "requests": [
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/password-reset/request",
+      "scenario": "accepted-202",
+      "locale": "zh-CN"
+    },
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/password-reset/request",
+      "scenario": "service-503",
+      "locale": "zh-CN"
+    },
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/password-reset/request",
+      "scenario": "accepted-202",
+      "locale": "zh-CN"
+    },
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/password-reset/request",
+      "scenario": "network-abort",
+      "locale": "zh-CN"
+    },
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/password-reset/request",
+      "scenario": "accepted-202",
+      "locale": "zh-CN"
+    },
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/password-reset/request",
+      "scenario": "rate-429",
+      "locale": "zh-CN"
+    },
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/password-reset/request",
+      "scenario": "accepted-202",
+      "locale": "zh-CN"
+    },
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/password-reset/request",
+      "scenario": "accepted-202",
+      "locale": "en-US"
+    },
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/password-reset/request",
+      "scenario": "service-503",
+      "locale": "en-US"
+    },
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/password-reset/request",
+      "scenario": "accepted-202",
+      "locale": "en-US"
+    },
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/password-reset/request",
+      "scenario": "network-abort",
+      "locale": "en-US"
+    },
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/password-reset/request",
+      "scenario": "accepted-202",
+      "locale": "en-US"
+    },
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/password-reset/request",
+      "scenario": "rate-429",
+      "locale": "en-US"
+    },
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/password-reset/request",
+      "scenario": "accepted-202",
+      "locale": "en-US"
+    }
+  ],
+  "sourceHashesAfter": {
+    "apps/learner-web/src/pages/PasswordResetPage.vue": "393aac74627e7774a5e86a4b195ccedd1c5eb338caf8718df7f7b18ec8fb1a60",
+    "apps/learner-web/src/auth/auth-failure-copy.ts": "218027c92cef95cbae311fbeb2421ded9b6557fa023e8d55d9207a38dc01b36a",
+    "apps/learner-web/tests/ui-reset.e2e.cjs": "fa6162f65ab9b084f4b5e913775b9d433878d9c8817e2035e418583a06bf7228"
+  },
+  "result": "UI_SCOPE_PASS",
+  "noRealApiOrAccount": true,
+  "unverified": [
+    "real IAM/business reset delivery",
+    "native runtimes",
+    "mail delivery",
+    "screen reader"
+  ]
+}

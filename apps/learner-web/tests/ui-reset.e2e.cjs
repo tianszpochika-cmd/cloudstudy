@@ -10,7 +10,7 @@ const OUT = path.resolve(ROOT, process.env.UI_AUDIT_OUTPUT || '.git/codex-local-
 fs.mkdirSync(path.join(OUT, 'screenshots'), { recursive: true });
 const report = { at: new Date().toISOString(), scope: 'PASSWORD_RESET_UI_ONLY_SYNTHETIC_IAM_REJECTION', matrix: [], checks: [], pageErrors: [], consoleErrors: [] };
 report.sourceHashes = Object.fromEntries([
-  'apps/learner-web/src/pages/PasswordResetPage.vue', 'apps/learner-web/src/layouts/AuthLayout.vue',
+  'apps/learner-web/src/pages/PasswordResetPage.vue', 'apps/learner-web/src/auth/auth-failure-copy.ts', 'apps/learner-web/src/layouts/AuthLayout.vue',
   'packages/i18n/src/learner-base.ts', 'apps/learner-web/tests/ui-reset.e2e.cjs',
 ].map(file => [file, crypto.createHash('sha256').update(fs.readFileSync(path.join(ROOT, file))).digest('hex')]));
 let browser;
@@ -21,7 +21,7 @@ let browser;
   page.on('pageerror', error => report.pageErrors.push(error.message));
   page.on('console', message => { if (message.type() === 'error') report.consoleErrors.push(message.text()); });
   const counts = { request: 0, confirm: 0 };
-  let hold = false, pendingResponse, requestStatus = 503;
+  let hold = false, pendingResponse, requestStatus = 202, abortRequest = false;
   await context.route('**/api/v1/auth/**', async route => {
     const pathname = new URL(route.request().url()).pathname;
     const operation = pathname.endsWith('/password-reset/request') ? 'request' : pathname.endsWith('/password-reset/confirm') ? 'confirm' : null;
@@ -30,9 +30,10 @@ let browser;
       counts[operation]++;
       if (hold) await new Promise(resolve => { pendingResponse = resolve; });
     }
+    if (operation === 'request' && !preflight && abortRequest) { await route.abort('connectionfailed'); return; }
     await route.fulfill({ status: preflight ? 204 : operation === 'request' ? requestStatus : operation === 'confirm' ? 400 : 401,
       headers: { 'access-control-allow-origin': BASE, 'access-control-allow-credentials': 'true', 'access-control-allow-headers': 'content-type,idempotency-key,authorization', 'access-control-allow-methods': 'POST,OPTIONS' },
-      contentType: 'application/json', body: preflight ? '' : JSON.stringify({ code: operation === 'request' ? requestStatus === 429 ? 'RATE_LIMITED' : 'RESET_REQUEST_UNAVAILABLE' : operation === 'confirm' ? 'iam.password_reset.invalid' : 'iam.credentials.invalid' }) });
+      contentType: 'application/json', body: preflight ? '' : JSON.stringify(operation === 'request' && requestStatus === 202 ? { accepted: true } : { code: operation === 'request' ? requestStatus === 429 ? 'RATE_LIMITED' : 'RESET_REQUEST_UNAVAILABLE' : operation === 'confirm' ? 'iam.password_reset.invalid' : 'iam.credentials.invalid' }) });
   });
   for (const width of [320, 390, 768, 1280]) for (const theme of ['light', 'dark', 'high-contrast', 'system']) for (const locale of ['zh-CN', 'en-US']) for (const step of ['request', 'confirm']) {
     await page.setViewportSize({ width, height: 844 });
@@ -127,10 +128,22 @@ let browser;
   assert.equal(await page.locator('#reset-status').count(), 0);
   await submit(); await page.locator('form[aria-busy=true]').waitFor(); pendingResponse(); await page.locator('form[aria-busy=false]').waitFor();
   assert.equal(await page.getByRole('status').innerText(), receipt);
+  requestStatus = 503;
+  await submit(); await page.locator('form[aria-busy=true]').waitFor(); pendingResponse(); await page.locator('form[aria-busy=false]').waitFor();
+  assert.equal(await page.getByRole('status').count(), 0);
+  assert.equal(await page.getByRole('alert').isVisible(), true);
+  assert.notEqual(await page.getByRole('alert').innerText(), receipt);
+  await page.screenshot({ path: path.join(OUT, 'screenshots', 'reset-request-outage-390.png'), fullPage: true });
+  abortRequest = true;
+  await submit(); await page.locator('form[aria-busy=true]').waitFor(); pendingResponse(); await page.locator('form[aria-busy=false]').waitFor();
+  assert.equal(await page.getByRole('status').count(), 0);
+  assert.equal(await page.getByRole('alert').isVisible(), true);
+  await page.screenshot({ path: path.join(OUT, 'screenshots', 'reset-request-disconnected-390.png'), fullPage: true });
+  abortRequest = false;
   requestStatus = 429;
   await submit(); await page.locator('form[aria-busy=true]').waitFor(); pendingResponse(); await page.locator('form[aria-busy=false]').waitFor();
   assert.ok((await page.getByRole('alert').innerText()).includes('过于频繁'));
-  report.checks.push('Request fixture 503 preserves existing conditional anti-enumeration receipt for different synthetic identifiers; 429 explains waiting; editing clears an obsolete receipt');
+  report.checks.push('Actual 202 accepted fixtures show identical anti-enumeration receipt for different synthetic identifiers; 503 and disconnection show retry errors without success status; 429 explains waiting; editing clears an obsolete receipt');
   await page.locator('#reset-step-switch').click();
   assert.equal(await page.getByRole('alert').count(), 0);
   await page.getByRole('link', { name: '返回登录', exact: true }).click();
@@ -148,7 +161,7 @@ let browser;
   await page.screenshot({ path: path.join(OUT, 'screenshots', 'reset-confirm-390-english-text-200.png'), fullPage: true });
   report.checks.push('English with simulated 200% text sizing remains scrollable without horizontal overflow; this is not native browser zoom');
   assert.deepEqual(report.pageErrors, []);
-  const expected = /(?:400 \(Bad Request\)|401 \(Unauthorized\)|429 \(Too Many Requests\)|503 \(Service Unavailable\))/;
+  const expected = /(?:400 \(Bad Request\)|401 \(Unauthorized\)|429 \(Too Many Requests\)|503 \(Service Unavailable\)|net::ERR_CONNECTION_FAILED)/;
   report.expectedConsoleErrors = report.consoleErrors.filter(error => expected.test(error));
   assert.deepEqual(report.consoleErrors.filter(error => !expected.test(error)), []);
   report.requests = counts;

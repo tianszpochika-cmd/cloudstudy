@@ -1,0 +1,138 @@
+{
+  "scope": "READ_ONLY_WEB_RESET_TRANSPORT_FAILURE_FEEDBACK_DIAGNOSIS",
+  "at": "2026-10-14T03:43:49.525Z",
+  "sourceHashesBefore": {
+    "apps/learner-web/src/pages/PasswordResetPage.vue": "9f42e9bf0e9cfc2090aec7e348810484b9c120c8d6e9b22b26a8335e5947c302",
+    "apps/learner-web/src/auth/auth-failure-copy.ts": "cbc652a07a5602a2cded9ddd893713a9a1e2dac1d2a53b881375e593d6746fd7",
+    "apps/learner-web/src/stores/session.ts": "a8c10582dd375633b94e21ebf0abe51017e431ec881c506f88f49afadc3a7936",
+    "packages/contracts/fragments/b8/b8-auth-iam.openapi.json": "df44cfe09a1200626bc48e697bdd98f0bafe9e7192d3f681cf31c83c50919360"
+  },
+  "cases": [
+    {
+      "scenario": "accepted-202",
+      "locale": "zh-CN",
+      "resetCount": 1,
+      "observed": {
+        "heading": "找回密码",
+        "feedback": "如果该账号可接收重置通知，我们会发送操作说明。",
+        "feedbackRole": "status",
+        "errorClass": false,
+        "alertCount": 0,
+        "busy": "false",
+        "submitDisabled": false,
+        "submitText": "发送重置指引",
+        "invalidInputs": 0
+      }
+    },
+    {
+      "scenario": "service-503",
+      "locale": "zh-CN",
+      "resetCount": 1,
+      "observed": {
+        "heading": "找回密码",
+        "feedback": "如果该账号可接收重置通知，我们会发送操作说明。",
+        "feedbackRole": "status",
+        "errorClass": false,
+        "alertCount": 0,
+        "busy": "false",
+        "submitDisabled": false,
+        "submitText": "发送重置指引",
+        "invalidInputs": 0
+      }
+    },
+    {
+      "scenario": "network-abort",
+      "locale": "zh-CN",
+      "resetCount": 1,
+      "observed": {
+        "heading": "找回密码",
+        "feedback": "如果该账号可接收重置通知，我们会发送操作说明。",
+        "feedbackRole": "status",
+        "errorClass": false,
+        "alertCount": 0,
+        "busy": "false",
+        "submitDisabled": false,
+        "submitText": "发送重置指引",
+        "invalidInputs": 0
+      }
+    },
+    {
+      "scenario": "service-503",
+      "locale": "en-US",
+      "resetCount": 1,
+      "observed": {
+        "heading": "Reset your password",
+        "feedback": "If this account can receive a reset notice, we will send instructions.",
+        "feedbackRole": "status",
+        "errorClass": false,
+        "alertCount": 0,
+        "busy": "false",
+        "submitDisabled": false,
+        "submitText": "Send reset instructions",
+        "invalidInputs": 0
+      }
+    },
+    {
+      "scenario": "network-abort",
+      "locale": "en-US",
+      "resetCount": 1,
+      "observed": {
+        "heading": "Reset your password",
+        "feedback": "If this account can receive a reset notice, we will send instructions.",
+        "feedbackRole": "status",
+        "errorClass": false,
+        "alertCount": 0,
+        "busy": "false",
+        "submitDisabled": false,
+        "submitText": "Send reset instructions",
+        "invalidInputs": 0
+      }
+    }
+  ],
+  "pageErrors": [],
+  "requests": [
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/password-reset/request",
+      "scenario": "accepted-202",
+      "locale": "zh-CN"
+    },
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/password-reset/request",
+      "scenario": "service-503",
+      "locale": "zh-CN"
+    },
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/password-reset/request",
+      "scenario": "network-abort",
+      "locale": "zh-CN"
+    },
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/password-reset/request",
+      "scenario": "service-503",
+      "locale": "en-US"
+    },
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/password-reset/request",
+      "scenario": "network-abort",
+      "locale": "en-US"
+    }
+  ],
+  "sourceHashesAfter": {
+    "apps/learner-web/src/pages/PasswordResetPage.vue": "9f42e9bf0e9cfc2090aec7e348810484b9c120c8d6e9b22b26a8335e5947c302",
+    "apps/learner-web/src/auth/auth-failure-copy.ts": "cbc652a07a5602a2cded9ddd893713a9a1e2dac1d2a53b881375e593d6746fd7",
+    "apps/learner-web/src/stores/session.ts": "a8c10582dd375633b94e21ebf0abe51017e431ec881c506f88f49afadc3a7936",
+    "packages/contracts/fragments/b8/b8-auth-iam.openapi.json": "df44cfe09a1200626bc48e697bdd98f0bafe9e7192d3f681cf31c83c50919360"
+  },
+  "result": "CONFIRMED_TRANSPORT_FAILURE_USES_SUCCESS_PATH_FEEDBACK",
+  "noRealApiOrAccount": true
+}

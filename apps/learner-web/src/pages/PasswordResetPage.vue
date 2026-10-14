@@ -6,7 +6,7 @@ import { useExperienceText } from '../platform/experience-ui'
 import { useRoute, useRouter } from 'vue-router'
 import { authT } from '../auth/i18n'
 import { safeReturnTo } from '../auth/gateway-auth'
-import { learnerAuthFailureCopy, learnerAuthFailureMarker } from '../auth/auth-failure-copy'
+import { learnerAuthFailureCopy } from '../auth/auth-failure-copy'
 import { useSessionStore } from '../stores/session'
 
 const route = useRoute()
@@ -83,7 +83,7 @@ async function send(): Promise<void> {
   submitting.value = true
   try {
     const ok = await session.requestPasswordReset(identifier.value)
-    if (!ok && learnerAuthFailureMarker(session.lastError) === 'RATE_LIMITED') {
+    if (!ok) {
       requestSent.value = false
       error.value = learnerAuthFailureCopy('resetRequest', session.lastError, authT)
       errorKind.value = 'server'
