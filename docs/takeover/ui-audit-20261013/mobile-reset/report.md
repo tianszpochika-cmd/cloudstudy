@@ -1,10 +1,14 @@
 # MB-003 — Mobile 找回密码逐页重设计
 
-日期：2026-10-14。当前状态：`UI_VERIFIED / PUSH_PENDING`，最新正式源c9a6由[独立49项复签](20261014-c9a6-final-interaction/review.md)与[root收口](20261014-2239-root/final-review.md)接受具名H5 UI范围。正式入口为 `http://127.0.0.1:18183/#/pages/reset-password/reset-password`，申请与设置新密码是同一路由的两个步骤。
+日期：2026-10-14。当前状态：`PUSHED_SCOPED / UI_VERIFIED`，最新正式源c9a6由[独立49项复签](20261014-c9a6-final-interaction/review.md)与[root收口](20261014-2239-root/final-review.md)接受具名H5 UI范围。正式入口为 `http://127.0.0.1:18183/#/pages/reset-password/reset-password`，申请与设置新密码是同一路由的两个步骤。
 
-初版 `b3eebb09…` 的68矩阵通过只作历史。独立 [真实首次新错误 FAIL](20261014-final-interaction/pointer-new-error-results.json) 证明 blur 新建错误行令主按钮移动、trusted click=0；[run2/results.json](20261014-run2/results.json)、9729多行错误与e008键盘FAIL均完整保留。下文run3是当时作者PASS历史，[run4](20261014-resume-run4/results.json)为e008快照；当前正式源为`c9a6da864e9ce8933cb5a42b6743ff99551fa433eafe701ea470c760d88cc936`，helper6464不变。不能将旧失败重写为通过；本页尚待提交/推送收据。
+初版 `b3eebb09…` 的68矩阵通过只作历史。独立 [真实首次新错误 FAIL](20261014-final-interaction/pointer-new-error-results.json) 证明 blur 新建错误行令主按钮移动、trusted click=0；[run2/results.json](20261014-run2/results.json)、9729多行错误与e008键盘FAIL均完整保留。下文run3是当时作者PASS历史，[run4](20261014-resume-run4/results.json)为e008快照；当前正式源为`c9a6da864e9ce8933cb5a42b6743ff99551fa433eafe701ea470c760d88cc936`，helper6464不变。不能将旧失败重写为通过；本页推送收据见下文。
 
 追溯 R1-012 / BC-012 与 R1-015 / IC-054；UI owner 为 `apps/mobile`，密码重置事实 owner 为 IAM。继续使用既有 IAM TLS `/auth/password-reset/request`、`/auth/password-reset/confirm`、skipAuthRetry 与客户端 8000ms 超时，没有接口、存储或门禁改动。
+
+## 推送收据
+
+本页正式源/证据提交 `fe6e027c1332787171724442a197cf478d1f6289` 已推送 origin/dev-redesign，随后远程 refs/heads/dev-redesign 与本地 HEAD 均为该 SHA。此收据不表示部署或真实 IAM/mail/native 业务签收。
 
 ## 修改与保留证据
 

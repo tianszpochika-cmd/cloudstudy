@@ -1,6 +1,6 @@
 # MB-003 root收口 — 正式Mobile找回密码
 
-当前具名结论：**UI_VERIFIED / PUSH_PENDING**。正式页raw SHA-256 `c9a6da864e9ce8933cb5a42b6743ff99551fa433eafe701ea470c760d88cc936`，窄Mobile H5 helper `6464f4c1712b5a0f2fd4ab01d451d5bb6ffaa13bde486826a424511059ef6425`；root接受[最终独立动态复签](../20261014-c9a6-final-interaction/review.md)。不能把旧版本测试改写为本版通过。
+当前具名结论：**PUSHED_SCOPED / UI_VERIFIED**。正式页raw SHA-256 `c9a6da864e9ce8933cb5a42b6743ff99551fa433eafe701ea470c760d88cc936`，窄Mobile H5 helper `6464f4c1712b5a0f2fd4ab01d451d5bb6ffaa13bde486826a424511059ef6425`；root接受[最终独立动态复签](../20261014-c9a6-final-interaction/review.md)。不能把旧版本测试改写为本版通过。
 
 ## 最终实现与修复
 
@@ -26,3 +26,7 @@ root以view_image实际对照[已采用参照](../../learner-login-redesign/conc
 只接受正式H5的具名UI范围。真实IAM/反枚举事实、邮件送达、有效一次性口令、密码事实更新后的登录闭环、iOS/Android/iPad/小程序真机、物理键盘/软键盘/读屏和原生安全Refresh清理均NOT_RUN。session成功仍只返回true，不能用UI合成204关闭Keychain/Keystore清理GAP；不迁移R1/IT/业务签收。
 
 本页单独提交/推送并核对远程SHA后追加收据。其他登录/注册未签差量不混入本页提交；原56个预存文件hash复核变化0。
+
+## 正式推送收据
+
+本页正式源/证据提交 `fe6e027c1332787171724442a197cf478d1f6289` 已推送 origin/dev-redesign，随后远程 refs/heads/dev-redesign 与本地 HEAD 均为该 SHA。此收据不表示部署或真实 IAM/mail/native 业务签收。
