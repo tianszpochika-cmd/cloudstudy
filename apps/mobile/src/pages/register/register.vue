@@ -259,4 +259,3 @@ async function submit(event?: SubmitEvent): Promise<void> {
   .v2-register * { transition: none; animation: none; }
 }
 </style>
-

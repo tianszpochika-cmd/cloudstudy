@@ -2,7 +2,7 @@
 
 > 分支：`dev-redesign`。本轮拉取后的源码观察基线：`4990dd29`；R1 原有签收基线：`7a6ac0a2`。时间口径：Asia/Shanghai。
 > **2026-10-14 11:10续做**：实际额度已恢复（已用1%），错误的每天续跑设置已更正为每五小时检查；立即接续MB-001/MB-002最终独立复签，详见[续做记录](ui-audit-20261013/RESUME-20261014-1110.md)。
-> 用户已明确改为全部正式页面简约重设计。LW-001/LW-002/LW-003分别推送`182e106b`/`60858fbc`/`5cd40e35`且远程SHA一致。2026-10-14额度已恢复后续做，MB-001推送`c6208c0a`后发现快速编辑/提交的uni模型节流缺陷，已重新补审；MB-002在审，其余PENDING。见[续做交接](ui-audit-20261013/PAUSE-HANDOFF.md)。旧70c2623f仅为前轮缺陷修复。
+> 用户已明确改为全部正式页面简约重设计。Web三页分别推送`182e106b`/`60858fbc`/`5cd40e35`；Mobile登录即时值补修`46c5106d`、注册重设计`4968bc76`已独立复签并推送，远程SHA一致。接续MB-003正式找回密码，其余PENDING。旧FAIL与暂停记录保留，见[续做交接](ui-audit-20261013/PAUSE-HANDOFF.md)。
 > **2026-10-14 04:08额度暂停**：首次90%停工，根回读92%；08:22复查额度后续做。MB-001补修26矩阵/即时输入已由作者通过，MB-002作者34矩阵通过，最终独立复签与逐页推送尚未收口，见[准确断点](ui-audit-20261013/PAUSE-20261014-0408.md)。
 
 ## 1. 进度与证据边界
@@ -133,7 +133,7 @@
 | 审查编号 | 真实路由 | 页面源文件 | 本页需展开的场景 | 当前状态 | 证据 / 提交 / 远程收据 |
 |---|---|---|---|---|---|
 | MB-001 | `#/pages/login/login` | [apps/mobile/src/pages/login/login.vue](../../apps/mobile/src/pages/login/login.vue) | 登录 | PUSHED_SCOPED | 原范围c6208c0a；即时值补修[最终独立13组复签](ui-audit-20261013/mobile-login/20261014-final-review/review.md)通过，46c5106d远程SHA一致；旧FAIL保留 |
-| MB-002 | `#/pages/register/register` | [apps/mobile/src/pages/register/register.vue](../../apps/mobile/src/pages/register/register.vue) | 注册 | UI_VERIFIED | [作者34矩阵](ui-audit-20261013/mobile-register/report.md)、[最终独立32矩阵/多行纠错复签](ui-audit-20261013/mobile-register/20261014-final-review/review.md)通过；待本页推送收据 |
+| MB-002 | `#/pages/register/register` | [apps/mobile/src/pages/register/register.vue](../../apps/mobile/src/pages/register/register.vue) | 注册 | PUSHED_SCOPED | [作者34矩阵](ui-audit-20261013/mobile-register/report.md)、[最终独立32矩阵/多行纠错复签](ui-audit-20261013/mobile-register/20261014-final-review/review.md)通过；4968bc76远程SHA一致；根随后仅清理EOF空行，报告单列hash差异 |
 | MB-003 | `#/pages/reset-password/reset-password` | [apps/mobile/src/pages/reset-password/reset-password.vue](../../apps/mobile/src/pages/reset-password/reset-password.vue) | 请求/确认两步、完成态 | PENDING | — |
 | MB-004 | `#/pages/onboarding/onboarding` | [apps/mobile/src/pages/onboarding/onboarding.vue](../../apps/mobile/src/pages/onboarding/onboarding.vue) | 成人门、同意、目标、定级四幕 | PENDING | — |
 | MB-005 | `#/pages/forbidden/forbidden` | [apps/mobile/src/pages/forbidden/forbidden.vue](../../apps/mobile/src/pages/forbidden/forbidden.vue) | 限制说明、退出与可用出口 | PENDING | — |
