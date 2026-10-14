@@ -1,0 +1,350 @@
+{
+  "at": "2026-10-14T03:22:06.849Z",
+  "scope": "INDEPENDENT_MOBILE_LOGIN_H5_UI_ONLY",
+  "source": "apps/mobile/src/pages/login/login.vue",
+  "expectedSourceHash": "da5ad20851a4158ea0e23918adb27f1bcc7047ae67778add321aa8d397bb58be",
+  "sourceHashBefore": "da5ad20851a4158ea0e23918adb27f1bcc7047ae67778add321aa8d397bb58be",
+  "checks": [
+    "Six native rapid input cases prove stale-model-window click/Enter consumes current values; empty password causes zero action/API calls and correct native focus/errors; no-detail submit preserves fields.",
+    "Live required-state bridge, first-error focus, error clearing, account/password Enter, eye Enter/Space, 44px eye, live language labels and all busy exits verified; server rejection remains neutral to field syntax.",
+    "No feedback row initially or first legal busy; only a true error creates retained natural height. At English 200%, clearing hides alert/ARIA references while button document top and error height stay identical through busy.",
+    "At >10 seconds the two individually bounded intercepted stages remain busy without alert/duplicate submission; permissions 503 finally produces neutral failure and retains login route, without real authentication."
+  ],
+  "cases": [
+    {
+      "kind": "clear",
+      "activation": "click",
+      "elapsedMs": 1.0999999940395355,
+      "modelAlreadyCurrent": false,
+      "calls": []
+    },
+    {
+      "kind": "clear",
+      "activation": "Enter",
+      "elapsedMs": 0.7999999970197678,
+      "modelAlreadyCurrent": false,
+      "calls": []
+    },
+    {
+      "kind": "last-character",
+      "activation": "click",
+      "elapsedMs": 0.7999999970197678,
+      "modelAlreadyCurrent": false,
+      "calls": [
+        {
+          "identifierMatches": true,
+          "passwordMatchesLatest": true
+        }
+      ]
+    },
+    {
+      "kind": "last-character",
+      "activation": "Enter",
+      "elapsedMs": 0.6000000014901161,
+      "modelAlreadyCurrent": false,
+      "calls": [
+        {
+          "identifierMatches": true,
+          "passwordMatchesLatest": true
+        }
+      ]
+    },
+    {
+      "kind": "replacement",
+      "activation": "click",
+      "elapsedMs": 0.8000000044703484,
+      "modelAlreadyCurrent": false,
+      "calls": [
+        {
+          "identifierMatches": true,
+          "passwordMatchesLatest": true
+        }
+      ]
+    },
+    {
+      "kind": "replacement",
+      "activation": "Enter",
+      "elapsedMs": 0.6000000014901161,
+      "modelAlreadyCurrent": false,
+      "calls": [
+        {
+          "identifierMatches": true,
+          "passwordMatchesLatest": true
+        }
+      ]
+    },
+    {
+      "kind": "absent-submit-detail",
+      "calls": 1,
+      "matches": true,
+      "valuesPreserved": true
+    },
+    {
+      "kind": "default-geometry",
+      "width": 390,
+      "contentWidth": 342,
+      "overflow": false,
+      "titleFont": "28px",
+      "inputFonts": [
+        "16px",
+        "16px"
+      ],
+      "fieldGap": 24,
+      "submitDocumentTop": 481.265625,
+      "initialActionGap": 24,
+      "errorRows": 0,
+      "native": [
+        {
+          "kind": "identifier",
+          "tag": "INPUT",
+          "id": "mobile-login-identifier",
+          "name": "identifier",
+          "type": "text",
+          "autocomplete": "username",
+          "required": true,
+          "label": "账号",
+          "labelledby": "mobile-login-identifier-label",
+          "invalid": null,
+          "describedby": null
+        },
+        {
+          "kind": "password",
+          "tag": "INPUT",
+          "id": "mobile-login-password",
+          "name": "password",
+          "type": "password",
+          "autocomplete": "current-password",
+          "required": true,
+          "label": "密码",
+          "labelledby": "mobile-login-password-label",
+          "invalid": null,
+          "describedby": null
+        }
+      ]
+    },
+    {
+      "kind": "default-geometry",
+      "width": 1280,
+      "contentWidth": 420,
+      "overflow": false,
+      "titleFont": "28px",
+      "inputFonts": [
+        "16px",
+        "16px"
+      ],
+      "fieldGap": 24,
+      "submitDocumentTop": 512.46875,
+      "initialActionGap": 24,
+      "errorRows": 0,
+      "native": [
+        {
+          "kind": "identifier",
+          "tag": "INPUT",
+          "id": "mobile-login-identifier",
+          "name": "identifier",
+          "type": "text",
+          "autocomplete": "username",
+          "required": true,
+          "label": "账号",
+          "labelledby": "mobile-login-identifier-label",
+          "invalid": null,
+          "describedby": null
+        },
+        {
+          "kind": "password",
+          "tag": "INPUT",
+          "id": "mobile-login-password",
+          "name": "password",
+          "type": "password",
+          "autocomplete": "current-password",
+          "required": true,
+          "label": "密码",
+          "labelledby": "mobile-login-password-label",
+          "invalid": null,
+          "describedby": null
+        }
+      ]
+    },
+    {
+      "kind": "native-bridge-keyboard-busy",
+      "requiredNative": [
+        {
+          "kind": "identifier",
+          "tag": "INPUT",
+          "id": "mobile-login-identifier",
+          "name": "identifier",
+          "type": "text",
+          "autocomplete": "username",
+          "required": true,
+          "label": "账号",
+          "labelledby": "mobile-login-identifier-label",
+          "invalid": "true",
+          "describedby": "mobile-login-error"
+        },
+        {
+          "kind": "password",
+          "tag": "INPUT",
+          "id": "mobile-login-password",
+          "name": "password",
+          "type": "password",
+          "autocomplete": "current-password",
+          "required": true,
+          "label": "密码",
+          "labelledby": "mobile-login-password-label",
+          "invalid": "true",
+          "describedby": "mobile-login-error"
+        }
+      ],
+      "eyeTarget": {
+        "width": 44,
+        "height": 44
+      },
+      "loginRequests": 1,
+      "localeChangedNative": [
+        {
+          "kind": "identifier",
+          "tag": "INPUT",
+          "id": "mobile-login-identifier",
+          "name": "identifier",
+          "type": "text",
+          "autocomplete": "username",
+          "required": true,
+          "label": "Account",
+          "labelledby": "mobile-login-identifier-label",
+          "invalid": null,
+          "describedby": null
+        },
+        {
+          "kind": "password",
+          "tag": "INPUT",
+          "id": "mobile-login-password",
+          "name": "password",
+          "type": "password",
+          "autocomplete": "current-password",
+          "required": true,
+          "label": "Password",
+          "labelledby": "mobile-login-password-label",
+          "invalid": null,
+          "describedby": null
+        }
+      ]
+    },
+    {
+      "kind": "first-valid-busy-no-placeholder",
+      "before": {
+        "width": 390,
+        "contentWidth": 342,
+        "overflow": false,
+        "titleFont": "28px",
+        "inputFonts": [
+          "16px",
+          "16px"
+        ],
+        "fieldGap": 24,
+        "submitDocumentTop": 481.265625,
+        "initialActionGap": 24,
+        "errorRows": 0
+      },
+      "busy": {
+        "width": 390,
+        "contentWidth": 342,
+        "overflow": false,
+        "titleFont": "28px",
+        "inputFonts": [
+          "16px",
+          "16px"
+        ],
+        "fieldGap": 24,
+        "submitDocumentTop": 481.265625,
+        "initialActionGap": 24,
+        "errorRows": 0
+      }
+    },
+    {
+      "kind": "english-200-natural-error-height",
+      "methodology": "Snapshot computed font sizes then double once; dynamically created error font 14px -> 28px",
+      "zoomFacts": {
+        "width": 390,
+        "contentWidth": 342,
+        "overflow": false,
+        "titleFont": "56px",
+        "inputFonts": [
+          "32px",
+          "32px"
+        ],
+        "fieldGap": 24,
+        "submitDocumentTop": 864.359375,
+        "initialActionGap": 24,
+        "errorRows": 0
+      },
+      "before": {
+        "errorHeight": 89.59375,
+        "buttonTop": 977.953125,
+        "font": "28px",
+        "visibility": "visible"
+      },
+      "cleared": {
+        "errorHeight": 89.59375,
+        "buttonTop": 977.953125,
+        "visibility": "hidden",
+        "ariaHidden": "true",
+        "id": "",
+        "role": null,
+        "inputErrorsAbsent": true,
+        "overflow": false
+      },
+      "busyTop": 977.953125
+    },
+    {
+      "kind": "two-stage-no-early-race",
+      "fixture": "5100ms synthetic-invalid login response + 5900ms permissions 503",
+      "observedAtMs": 10209,
+      "elapsedMs": 11082,
+      "finalMessage": "登录没有完成，请稍后重试。",
+      "loginRequests": 1
+    }
+  ],
+  "pageErrors": [],
+  "expectedHttpErrorCount": 4,
+  "unexpectedConsoleErrorCount": 0,
+  "requests": [
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login",
+      "scenario": "reject"
+    },
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login",
+      "scenario": "reject"
+    },
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login",
+      "scenario": "reject"
+    },
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login",
+      "scenario": "two-stage"
+    },
+    {
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/permissions",
+      "scenario": "two-stage"
+    }
+  ],
+  "sourceHashAfter": "da5ad20851a4158ea0e23918adb27f1bcc7047ae67778add321aa8d397bb58be",
+  "result": "UI_SCOPE_PASS",
+  "unverified": [
+    "real IAM/business acceptance",
+    "native iOS/Android/iPad builds and input behavior",
+    "WeChat mini-program",
+    "physical keyboard/screen reader"
+  ]
+}

@@ -1,5 +1,7 @@
 # Changelog
 
+- [MB-001-INPUT-20261014] 正式Mobile登录补齐uni输入节流边界：具名表单及blur/confirm即时值参与校验，快速清空/替换不再提交旧值；真实错误解除后保留自然高度，首次合法等待不插入空反馈区。作者26矩阵/6即时用例与最终独立13组复签通过，见`mobile-login/20261014-final-review/review.md`；真实IAM/native边界仍单列。
+
 - [MB-001-REDESIGN-20261014] 正式Mobile登录全面简约重排：开放单列、统一品牌与字号、缩短提示、重排找回/注册出口，移除装饰卡和默认等待框。修正uni-form真实间距与原生输入语义更新，保留uni密码行为和客户端超时。26组H5矩阵、键盘/错误/busy/两阶段延迟失败及独立复审通过；原生设备与真实登录成功另列，见`docs/takeover/ui-audit-20261013/mobile-login/`。
 
 - [LW-003-REDESIGN-20261013] 正式找回密码页简约重排：请求/设置两步独立标题，取消默认状态大框，单主按钮和文本换步/返回出口；逐字段错误/焦点、切步清理、pending防切/防重，保留IAM反枚举语义。64组浏览器矩阵、根Agent复验、typecheck和认证专项通过，见`docs/takeover/ui-audit-20261013/learner-reset/report.md`。

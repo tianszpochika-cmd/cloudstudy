@@ -44,7 +44,7 @@ async function newPage(width = 390, theme = 'light', locale = 'zh-CN', height = 
     }
     if (scenario === 'two-stage-unavailable' && request.method() === 'GET' && url.pathname === '/api/v1/iam/permissions') {
       permissionStarted = Date.now();
-      await new Promise(resolve => setTimeout(resolve, 5100));
+      await new Promise(resolve => setTimeout(resolve, 5900));
       await route.fulfill({ status: 503, headers, body: JSON.stringify({ code: 'SERVICE_UNAVAILABLE', message: 'Synthetic permission outage' }) });
       return;
     }
@@ -96,8 +96,66 @@ async function facts(page) {
     };
   });
 }
+async function immediateInputCase(kind, activation) {
+  const current = await newPage(), { page } = current;
+  const observed = await page.evaluate(({ kind, activation }) => {
+    let instance = document.querySelector('.v2-login').__vueParentComponent;
+    while (instance && !('password' in instance.setupState)) instance = instance.parent;
+    if (!instance) throw new Error('Login page state not found');
+    const state = instance.setupState;
+    const account = document.querySelector('#mobile-login-identifier');
+    const password = document.querySelector('#mobile-login-password');
+    const expectedAccount = 'ui-input-synthetic-account';
+    const first = 'ui-input-synthetic-first';
+    const expectedPassword = kind === 'clear' ? '' : kind === 'last-character' ? first + '-final' : 'ui-input-synthetic-replacement';
+    const calls = [];
+    // Replace only this isolated page's action before transport. No request body,
+    // credential storage, token or authenticated session is inspected or created.
+    state.session.login = async (identifier, value) => {
+      calls.push({ identifierMatches: identifier === expectedAccount, passwordMatchesLatest: value === expectedPassword });
+      state.session.lastError = 'iam.credentials.invalid';
+      return false;
+    };
+    account.value = expectedAccount;
+    account.dispatchEvent(new InputEvent('input', { bubbles: true, inputType: 'insertText' }));
+    password.focus();
+    const started = performance.now();
+    password.value = first;
+    password.dispatchEvent(new InputEvent('input', { bubbles: true, inputType: 'insertText' }));
+    password.value = expectedPassword;
+    password.dispatchEvent(new InputEvent('input', { bubbles: true, inputType: kind === 'clear' ? 'deleteContentBackward' : 'insertText' }));
+    const modelAlreadyCurrent = state.password === expectedPassword;
+    if (activation === 'Enter') password.dispatchEvent(new KeyboardEvent('keyup', { key: 'Enter', bubbles: true }));
+    else {
+      password.blur();
+      document.querySelector('.login-submit').click();
+    }
+    return { kind, activation, elapsedMs: performance.now() - started, modelAlreadyCurrent, calls };
+  }, { kind, activation });
+  assert.ok(observed.elapsedMs < 100, 'Exercise submission before uni model throttle can expire');
+  assert.equal(observed.modelAlreadyCurrent, false, 'The reproduction must enter the stale model window');
+  if (kind === 'clear') {
+    assert.equal(observed.calls.length, 0, 'Cleared password must not reach login');
+    await page.getByRole('alert').waitFor();
+    await page.waitForFunction(() => document.activeElement.id === 'mobile-login-password');
+    assert.equal(await page.getByLabel('密码', { exact: true }).getAttribute('aria-invalid'), 'true');
+    await page.screenshot({ path: path.join(OUT, 'login-immediate-clear-required.png'), fullPage: true });
+  } else {
+    assert.equal(observed.calls.length, 1);
+    assert.ok(observed.calls.every(call => call.identifierMatches && call.passwordMatchesLatest), 'Login consumes the current event value');
+    await page.getByRole('alert').waitFor();
+  }
+  assert.equal(current.count(), 0, 'Pure action stub must not reach IAM');
+  (report.inputTiming ||= []).push(observed);
+  save();
+  await current.context.close();
+}
 (async () => {
   browser = await chromium.launch();
+  for (const kind of ['clear', 'last-character', 'replacement']) {
+    for (const activation of ['click', 'Enter']) await immediateInputCase(kind, activation);
+  }
+  report.checks.push('Six sub-100ms native input cases: clearing blocks login and focuses password; final character/replacement with click or Enter consumes the current event value; boolean-only isolated action stubs make zero IAM requests');
   for (const width of [320, 390, 768]) {
     for (const locale of ['zh-CN', 'en-US']) {
       for (const theme of ['light', 'dark', 'high-contrast', 'system']) {
@@ -227,8 +285,12 @@ async function facts(page) {
   await delayed.page.getByRole('textbox', { name: '账号', exact: true }).fill('ui-login-slow-synthetic');
   await delayed.page.getByLabel('密码', { exact: true }).fill('SyntheticOnly123');
   delayed.hold();
+  const firstValidSubmitTop = (await delayed.page.getByRole('button', { name: '登录', exact: true }).boundingBox()).y;
   await delayed.page.getByRole('button', { name: '登录', exact: true }).click();
   await delayed.page.waitForFunction(() => document.querySelector('.login-form').getAttribute('aria-busy') === 'true');
+  const firstValidBusyTop = (await delayed.page.locator('.login-submit').boundingBox()).y;
+  assert.equal(firstValidBusyTop, firstValidSubmitTop, 'First valid submission adds no hidden feedback row or button movement');
+  report.firstValidBusyGeometry = { beforeTop: firstValidSubmitTop, busyTop: firstValidBusyTop };
   await delayed.page.waitForTimeout(6000);
   assert.equal(await delayed.page.locator('.login-form').getAttribute('aria-busy'), 'true');
   assert.equal(await delayed.page.getByRole('alert').count(), 0);
@@ -257,9 +319,9 @@ async function facts(page) {
   assert.ok(finalMessage.length > 0 && !/(账号或密码不正确|账号不存在|未注册)/.test(finalMessage), 'Permission outage keeps a neutral error');
   assert.equal(sequential.count(), 1);
   assert.equal(new URL(sequential.page.url()).hash.split('?')[0], '#/pages/login/login');
-  report.twoStageDelay = { fixture: '5100ms login response then 5100ms permission 503; no real credential or authenticated session', observedAtMs, elapsedMs: Date.now() - sequential.latency().loginStarted, finalMessage };
+  report.twoStageDelay = { fixture: '5100ms login response then 5900ms permission 503; no real credential or authenticated session', observedAtMs, elapsedMs: Date.now() - sequential.latency().loginStarted, finalMessage };
   await sequential.page.screenshot({ path: path.join(OUT, 'login-two-stage-neutral-error.png'), fullPage: true });
-  report.checks.push('Two-stage synthetic 5.1s + 5.1s permission outage remains busy beyond ten seconds then shows neutral failure; no early page race');
+  report.checks.push('Two-stage synthetic 5.1s + 5.9s permission outage remains busy beyond ten seconds then shows neutral failure; no early page race');
   await sequential.context.close();
   for (const locale of ['zh-CN', 'en-US']) {
     const enlarged = await newPage(390, 'light', locale);

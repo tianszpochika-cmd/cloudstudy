@@ -1,0 +1,183 @@
+{
+  "at": "2026-10-14T03:18:46.035Z",
+  "scope": "INDEPENDENT_MOBILE_LOGIN_H5_UI_ONLY",
+  "source": "apps/mobile/src/pages/login/login.vue",
+  "expectedSourceHash": "da5ad20851a4158ea0e23918adb27f1bcc7047ae67778add321aa8d397bb58be",
+  "sourceHashBefore": "da5ad20851a4158ea0e23918adb27f1bcc7047ae67778add321aa8d397bb58be",
+  "checks": [
+    "Six native rapid input cases prove stale-model-window click/Enter consumes current values; empty password causes zero action/API calls and correct native focus/errors; no-detail submit preserves fields."
+  ],
+  "cases": [
+    {
+      "kind": "clear",
+      "activation": "click",
+      "elapsedMs": 0.9000000059604645,
+      "modelAlreadyCurrent": false,
+      "calls": []
+    },
+    {
+      "kind": "clear",
+      "activation": "Enter",
+      "elapsedMs": 0.6999999955296516,
+      "modelAlreadyCurrent": false,
+      "calls": []
+    },
+    {
+      "kind": "last-character",
+      "activation": "click",
+      "elapsedMs": 1,
+      "modelAlreadyCurrent": false,
+      "calls": [
+        {
+          "identifierMatches": true,
+          "passwordMatchesLatest": true
+        }
+      ]
+    },
+    {
+      "kind": "last-character",
+      "activation": "Enter",
+      "elapsedMs": 0.6999999955296516,
+      "modelAlreadyCurrent": false,
+      "calls": [
+        {
+          "identifierMatches": true,
+          "passwordMatchesLatest": true
+        }
+      ]
+    },
+    {
+      "kind": "replacement",
+      "activation": "click",
+      "elapsedMs": 0.7999999970197678,
+      "modelAlreadyCurrent": false,
+      "calls": [
+        {
+          "identifierMatches": true,
+          "passwordMatchesLatest": true
+        }
+      ]
+    },
+    {
+      "kind": "replacement",
+      "activation": "Enter",
+      "elapsedMs": 1.3999999985098839,
+      "modelAlreadyCurrent": false,
+      "calls": [
+        {
+          "identifierMatches": true,
+          "passwordMatchesLatest": true
+        }
+      ]
+    },
+    {
+      "kind": "absent-submit-detail",
+      "calls": 1,
+      "matches": true,
+      "valuesPreserved": true
+    },
+    {
+      "kind": "default-geometry",
+      "width": 390,
+      "contentWidth": 342,
+      "overflow": false,
+      "titleFont": "28px",
+      "inputFonts": [
+        "16px",
+        "16px"
+      ],
+      "fieldGap": 24,
+      "submitDocumentTop": 481.265625,
+      "initialActionGap": 24,
+      "errorRows": 0,
+      "native": [
+        {
+          "kind": "identifier",
+          "tag": "INPUT",
+          "id": "mobile-login-identifier",
+          "name": "identifier",
+          "type": "text",
+          "autocomplete": "username",
+          "required": true,
+          "label": "账号",
+          "labelledby": "mobile-login-identifier-label",
+          "invalid": null,
+          "describedby": null
+        },
+        {
+          "kind": "password",
+          "tag": "INPUT",
+          "id": "mobile-login-password",
+          "name": "password",
+          "type": "password",
+          "autocomplete": "current-password",
+          "required": true,
+          "label": "密码",
+          "labelledby": "mobile-login-password-label",
+          "invalid": null,
+          "describedby": null
+        }
+      ]
+    },
+    {
+      "kind": "default-geometry",
+      "width": 1280,
+      "contentWidth": 420,
+      "overflow": false,
+      "titleFont": "28px",
+      "inputFonts": [
+        "16px",
+        "16px"
+      ],
+      "fieldGap": 24,
+      "submitDocumentTop": 512.46875,
+      "initialActionGap": 24,
+      "errorRows": 0,
+      "native": [
+        {
+          "kind": "identifier",
+          "tag": "INPUT",
+          "id": "mobile-login-identifier",
+          "name": "identifier",
+          "type": "text",
+          "autocomplete": "username",
+          "required": true,
+          "label": "账号",
+          "labelledby": "mobile-login-identifier-label",
+          "invalid": null,
+          "describedby": null
+        },
+        {
+          "kind": "password",
+          "tag": "INPUT",
+          "id": "mobile-login-password",
+          "name": "password",
+          "type": "password",
+          "autocomplete": "current-password",
+          "required": true,
+          "label": "密码",
+          "labelledby": "mobile-login-password-label",
+          "invalid": null,
+          "describedby": null
+        }
+      ]
+    }
+  ],
+  "pageErrors": [],
+  "expectedHttpErrorCount": 1,
+  "unexpectedConsoleErrorCount": 0,
+  "requests": [
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login",
+      "scenario": "reject"
+    }
+  ],
+  "result": "FAIL",
+  "failure": {
+    "name": "TimeoutError",
+    "message": "locator.getAttribute: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByLabel('密码', { exact: true })\u001b[22m\n",
+    "stack": "locator.getAttribute: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByLabel('密码', { exact: true })\u001b[22m\n\n    at C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-login\\20261014-final-review\\independent-review.cjs:136:92"
+  }
+}

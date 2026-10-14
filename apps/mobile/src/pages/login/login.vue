@@ -12,6 +12,9 @@ import { useSessionStore } from '../../stores/session'
 
 const { experienceStyle, experienceMotion } = useMobileExperience()
 const session = useSessionStore()
+type Field = 'identifier' | 'password'
+type FieldEvent = { detail?: { value?: string } }
+type SubmitEvent = { detail?: { value?: Partial<Record<Field, string>> } }
 const showPassword = ref(false)
 const identifier = ref('')
 const password = ref('')
@@ -19,6 +22,7 @@ const returnTo = ref('/pages/home/home')
 const submitting = ref(false)
 const initialized = ref(false)
 const error = ref<string | null>(null)
+const lastErrorText = ref<string | null>(null)
 const requiredError = ref(false)
 const validationAttempted = ref(false)
 const identifierMissing = computed(() => validationAttempted.value && !identifier.value.trim())
@@ -27,6 +31,7 @@ const identifierFocused = ref(false)
 const passwordFocused = ref(false)
 const identifierField = ref<{ $el?: HTMLElement } | null>(null)
 const passwordField = ref<{ $el?: HTMLElement } | null>(null)
+watch(error, (value) => { if (value) lastErrorText.value = value }, { flush: 'sync' })
 let passwordControls = 'mobile-login-password-host'
 // #ifdef H5
 passwordControls = 'mobile-login-password'
@@ -130,8 +135,33 @@ function togglePassword(): void {
   if (!submitting.value) showPassword.value = !showPassword.value
 }
 
-async function submit(): Promise<void> {
+function syncField(kind: Field, value: unknown): void {
+  if (submitting.value || typeof value !== 'string') return
+  if (kind === 'identifier') identifier.value = value
+  else password.value = value
+}
+
+function blurField(kind: Field, event: FieldEvent): void {
+  // Uni's model update may be throttled; its field events carry the current value.
+  syncField(kind, event.detail?.value)
+  if (kind === 'identifier') identifierFocused.value = false
+  else passwordFocused.value = false
+}
+
+function confirmNext(event: FieldEvent): void {
+  syncField('identifier', event.detail?.value)
+  void focusField('password')
+}
+
+async function confirmSubmit(event: FieldEvent): Promise<void> {
+  syncField('password', event.detail?.value)
+  await submit()
+}
+
+async function submit(event?: SubmitEvent): Promise<void> {
   if (submitting.value) return
+  // Named uni-form values are current even before a pending model update arrives.
+  for (const kind of ['identifier', 'password'] as const) syncField(kind, event?.detail?.value?.[kind])
   validationAttempted.value = true
   error.value = null
   requiredError.value = false
@@ -190,8 +220,8 @@ async function submit(): Promise<void> {
             :aria-invalid="identifierMissing || undefined"
             :aria-describedby="identifierMissing && error ? 'mobile-login-error' : undefined"
             @focus="identifierFocused = true"
-            @blur="identifierFocused = false"
-            @confirm="focusField('password')"
+            @blur="blurField('identifier', $event)"
+            @confirm="confirmNext"
           />
         </view>
         <view class="login-field">
@@ -214,8 +244,8 @@ async function submit(): Promise<void> {
               :aria-invalid="passwordMissing || undefined"
               :aria-describedby="passwordMissing && error ? 'mobile-login-error' : undefined"
               @focus="passwordFocused = true"
-              @blur="passwordFocused = false"
-              @confirm="submit"
+              @blur="blurField('password', $event)"
+              @confirm="confirmSubmit"
             />
             <button
               class="login-password-toggle"
@@ -231,7 +261,7 @@ async function submit(): Promise<void> {
           </view>
           <view class="login-recovery"><button class="login-text-button" tabindex="0" role="button" :disabled="submitting" :aria-disabled="submitting" @click="navigate('/pages/reset-password/reset-password')">{{ mobileT('forgot') }}</button></view>
         </view>
-        <text v-if="error" id="mobile-login-error" class="login-error" role="alert">{{ error }}</text>
+        <text v-if="lastErrorText" :id="error ? 'mobile-login-error' : undefined" class="login-error" :class="{ 'is-cleared': !error }" :role="error ? 'alert' : undefined" :aria-hidden="!error || undefined">{{ error || lastErrorText }}</text>
         <button class="login-submit" tabindex="0" role="button" form-type="submit" :disabled="submitting" :aria-disabled="submitting">{{ submitting ? authT('login.submitting') : mobileT('auth.login.start') }}</button>
         </view>
       </form>
@@ -274,6 +304,7 @@ async function submit(): Promise<void> {
 .login-recovery { display: flex; justify-content: flex-end; margin-top: -4px; }
 .v2-login .login-text-button { display: inline-flex; width: auto; min-width: 44px; min-height: 44px; margin: 0; padding: 8px 0; align-items: center; justify-content: center; border: 0; border-radius: 0; background: transparent; color: var(--v2-brand); font-size: 14px; line-height: 1.6; font-weight: 500; text-align: center; }
 .login-error { display: block; color: var(--v2-bad); font-size: 14px; line-height: 1.6; overflow-wrap: anywhere; }
+.login-error.is-cleared { visibility: hidden; }
 .v2-login .login-submit { display: flex; width: 100%; min-height: 48px; margin: 0; padding: 12px 20px; align-items: center; justify-content: center; border: 1px solid transparent; border-radius: 10px; background: var(--v2-brand); color: var(--v2-inverse); box-shadow: none; font-size: 16px; line-height: 1.5; font-weight: 600; }
 .v2-login .login-submit:active:not([disabled]) { transform: none; background: var(--v2-brand2); }
 .v2-login button[disabled] { cursor: default; }
