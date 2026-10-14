@@ -1,8 +1,8 @@
 # MB-003 — Mobile 找回密码逐页重设计
 
-日期：2026-10-14。当前状态：`IN_REVIEW / POINTER_FOLLOWUP_FAILED`。独立复审发现此前作者矩阵遗漏真实指针窗口，当前源未签收，不能推送为完成。正式入口为 `http://127.0.0.1:18183/#/pages/reset-password/reset-password`，申请与设置新密码是同一路由的两个步骤。
+日期：2026-10-14。当前状态：`UI_VERIFIED / PUSH_PENDING`，最新正式源c9a6由[独立49项复签](20261014-c9a6-final-interaction/review.md)与[root收口](20261014-2239-root/final-review.md)接受具名H5 UI范围。正式入口为 `http://127.0.0.1:18183/#/pages/reset-password/reset-password`，申请与设置新密码是同一路由的两个步骤。
 
-最新断点：初版 `b3eebb09…` 的68矩阵通过仅是历史作者结果。独立 [真实首次新错误 FAIL](20261014-final-interaction/pointer-new-error-results.json) 证明 blur 新建错误行令主按钮移动、trusted click=0。当前 H5 反馈快照修稿 SHA-256 为 `3e7b9fc8f8f7b45d78e06fed83f6045afffc98ce9b21168624dd48a4b2a92623`；typecheck 通过，但 [run2/results.json](20261014-run2/results.json) 在160ms真实手势断言仍 FAIL（按钮625.234375→655.625）。需继续定位快照没有稳定布局的原因，再复验 click、拖离、cancel、长按和键盘；尚未签本页，未改 MB002。
+初版 `b3eebb09…` 的68矩阵通过只作历史。独立 [真实首次新错误 FAIL](20261014-final-interaction/pointer-new-error-results.json) 证明 blur 新建错误行令主按钮移动、trusted click=0；[run2/results.json](20261014-run2/results.json)、9729多行错误与e008键盘FAIL均完整保留。下文run3是当时作者PASS历史，[run4](20261014-resume-run4/results.json)为e008快照；当前正式源为`c9a6da864e9ce8933cb5a42b6743ff99551fa433eafe701ea470c760d88cc936`，helper6464不变。不能将旧失败重写为通过；本页尚待提交/推送收据。
 
 追溯 R1-012 / BC-012 与 R1-015 / IC-054；UI owner 为 `apps/mobile`，密码重置事实 owner 为 IAM。继续使用既有 IAM TLS `/auth/password-reset/request`、`/auth/password-reset/confirm`、skipAuthRetry 与客户端 8000ms 超时，没有接口、存储或门禁改动。
 
@@ -22,6 +22,16 @@
 
 ## 验证
 
+### 指针续修与精确根因
+
+首次新错误行原先会在字段仍聚焦、uni 模型100ms发射时插入。[同 suite 顺序的事件诊断](20261014-resume-run3/before-suite-order-event-timeline.json) 确认 run2 对应窗口里实际 pointerdown 已命中 `reset-fields`，此时按钮先从625.234375移到655.625，快照未开始；window blur 取消记录为空。另一初始化顺序的 [原始事件序列](20261014-resume-run3/before-event-timeline.json) 则显示命中按钮时快照可保持160ms。诊断文件曾因重复输出名复用，before 观察从原工具输出恢复并注明 archiveNote；修后完整事件另存 [after 序列](20261014-resume-run3/after-suite-order-event-timeline.json)。run1/run2与独审原 FAIL 未受影响。
+
+当前首次尚未报告错误的字段仍聚焦时不新增视觉行，在真实 blur 或明确 submit 时报告；原始字段数据与长度校验一直即时。已报错误继续实时反馈、修正后保留自然行高。只延迟首次视觉反馈，不延迟提交校验；密码 Enter 直接提交的新错误也立即报告和首焦点。
+
+H5 的反馈布局快照提取到窄型 `platform/pointer-feedback.ts`：只负责本实例 root/action 命中、pointer 生命周期、快照与释放回调，不抽离认证、文案或校验。真实 down 到 click 的期间固定当前/历史字段反馈、服务错误和回执；拖离、原生 pointercancel、窗口中断解除，释放后 nextTick 更新 ARIA，unmount 移除全部监听。其他平台快照为空，键盘不建立手势。window blur 仅对真实窗口目标解除是事件边界防护，本次未证实字段 blur 导致窗口取消。
+
+新脚本先把鼠标移至原动作位置，再建立快速输入窗口，并断言实际 down 命中动作、快照确实存在。160ms 按住期间主按钮保持625.234375；真实 click 后才显示首次错误并聚焦账号，0请求。拖离和 Chromium 原生 touchCancel 均0点击/0请求、快照解除，普通 blur 无 click 也可报告错误。旧「合成 pointercancel 后同处 mouse.up」不等于真实取消，新版不使用此模拟。
+
 Browser 插件不可用，使用现有 Playwright Chromium 隔离上下文；TLS 保持严格默认验证。全部 API 请求拦截，未使用真实账号、邮件或有效口令，不读取敏感存储、Cookie、请求 body/header 或认证 Token。结果 URL 不记录重置口令；长口令用纯合成内容，仅保存长度/布尔。
 
 | 检查 | 证据与结果 |
@@ -34,13 +44,13 @@ Browser 插件不可用，使用现有 Playwright Chromium 隔离上下文；TLS
 | 放大/短屏/深链 | 中英文 × 两步 200% 字号共四组 PASS，矩阵总计 68；320×460 英文确认可纵向到达出口。口令深链、单/双编码合法 returnTo 和外部 URL 回退通过。 |
 | 工程检查 | Mobile typecheck、H5 build PASS；IAM transport、public handoff、password-reset-failure-marker、成人 Gate/consent 共 18/18 PASS。构建只有既有配置加载、Sass @import、动态 chunk 和插件计时警告。 |
 
-最终 [results.json](20261014-run1/results.json) 为 PASS，pageerror **0**，console 只有 fixture 的一次 429、一次 503、两次 401。初次共享文案缓存导致标题断言失败的版本保存在同一目录 `results-failed-*.json`，不以旧缓存当当前结果。核对本人旧 PID9820 后仅重启本项目 Mobile 服务一次并用官方 `--force` 刷新预 bundle。
+最终 [results.json](20261014-resume-run3/results.json) 为 PASS，pageerror **0**，console 只有 fixture 的一次 429、一次 503、两次 401；其 pointer 数组记录真实 click/drag/native cancel 的几何、命中与请求数。初次共享文案缓存失败保留在run1；旧pointer失败保留在run2与独审目录。本次恢复只核对并复用 PID29808，没有再次重启服务。
 
 ## 设计对应与交接
 
-作者共同查看 [设计方向](../DESIGN-DIRECTION.md)、[正式 Web 确认截图](../learner-reset/screenshots/reset-confirm-390-light.png) 与本轮 [申请亮色](20261014-run1/reset-request-390-zh-CN-light.png)、[确认亮色](20261014-run1/reset-confirm-390-zh-CN-light.png)、[确认高对比](20261014-run1/reset-confirm-390-zh-CN-high-contrast.png)、[英文 200%](20261014-run1/reset-confirm-390-en-US-text-200.png)：开放单列/420px 上限、28/14/16 字号、25px 品牌/19px 眼睛、共享紫色与高对比、主任务→换步→返回顺序均保持同一设计体系。Mobile 密码规则单独靠近输入；成功后明确返回登录，不声称自动进入学习。390px 中文申请/确认主按钮底部分别约 **380.88/614.45px**；标题/说明/主按钮最小对比分别 **14.17/5.50/8.00**。放大后单行输入可横向承载文本，标签和说明完整、页面可纵向滚动。
+作者共同查看 [设计方向](../DESIGN-DIRECTION.md)、[正式 Web 确认截图](../learner-reset/screenshots/reset-confirm-390-light.png) 与新版 [申请亮色](20261014-resume-run3/reset-request-390-zh-CN-light.png)、[确认亮色](20261014-resume-run3/reset-confirm-390-zh-CN-light.png)、[确认高对比](20261014-resume-run3/reset-confirm-390-zh-CN-high-contrast.png)、[英文 200%](20261014-resume-run3/reset-confirm-390-en-US-text-200.png)：开放单列/420px 上限、28/14/16 字号、25px 品牌/19px 眼睛、共享紫色与高对比、主任务→换步→返回顺序均保持同一设计体系。Mobile 密码规则单独靠近输入；成功后明确返回登录，不声称自动进入学习。390px 中文申请/确认主按钮底部分别约 **380.88/614.45px**；标题/说明/主按钮最小对比分别 **14.17/5.50/8.00**。放大后单行输入可横向承载文本，标签和说明完整、页面可纵向滚动。
 
-最终页面 SHA-256：`b3eebb09cf8e2194ed9355f5dce863786789ca870b25d47203022815bef7c361`。最终结果记录十项源/共享依赖/脚本哈希并与当前文件核对一致。脚本默认输出 `.git/codex-local-backups/mobile-reset-<timestamp>`；本轮指定本页 `20261014-run1`，没有覆盖已签其它页面。
+最终页面 SHA-256：`9729e8140c0e70fa99308f1be8543949e7dbf67a1aef7650596c7b38153cefa6`；指针 composable 为 `6464f4c1712b5a0f2fd4ab01d451d5bb6ffaa13bde486826a424511059ef6425`。最终结果记录十一项源/共享依赖/脚本哈希。新版 typecheck、H5 build及18专项均通过。白名单为reset页、ui-reset脚本、pointer-feedback.ts和本目录，未修改MB002或其它页面。脚本默认输出 `.git/codex-local-backups/mobile-reset-<timestamp>`；本轮指定 `20261014-resume-run3`，没有覆盖前两版和已签其它页面。
 
 本人服务保留：session **99926** / PID **29808**，固定 `127.0.0.1:18183`，uni H5 strictPort + force。未停止其它共享服务，未操作 Git/index/CHANGELOG。
 

@@ -1,0 +1,90 @@
+{
+  "at": "2026-10-14T15:19:17.120Z",
+  "scope": "INDEPENDENT_MB003_REQUEST_BUSY_AND_SUCCESS_TERMINAL_H5",
+  "sourceHashesBefore": {
+    "apps/mobile/src/pages/reset-password/reset-password.vue": "e00853df5fb3dfdc0d79a824f2f751035a8c3319697910d92115334dbb42031b",
+    "apps/mobile/src/platform/pointer-feedback.ts": "6464f4c1712b5a0f2fd4ab01d451d5bb6ffaa13bde486826a424511059ef6425"
+  },
+  "cases": [
+    {
+      "test": "request-pending-real-and-programmatic-controls-guarded",
+      "nativeDisabled": [
+        {
+          "disabled": true,
+          "ariaDisabled": null
+        },
+        {
+          "disabled": true,
+          "ariaDisabled": "true"
+        },
+        {
+          "disabled": true,
+          "ariaDisabled": "true"
+        },
+        {
+          "disabled": true,
+          "ariaDisabled": "true"
+        }
+      ],
+      "pendingGuard": {
+        "requestStep": true,
+        "submitting": true,
+        "accountRetained": true,
+        "codeEmpty": true,
+        "passwordEmpty": true,
+        "route": "#/pages/reset-password/reset-password"
+      },
+      "requests": {
+        "request": 1,
+        "confirm": 0
+      }
+    },
+    {
+      "test": "synthetic-success-is-terminal-after-repeat-submit-or-switch",
+      "terminal": {
+        "before": {
+          "completed": true,
+          "accountCleared": true,
+          "codeCleared": true,
+          "passwordCleared": true,
+          "showCleared": true,
+          "forms": 0
+        },
+        "after": {
+          "completed": true,
+          "accountCleared": true,
+          "codeCleared": true,
+          "passwordCleared": true,
+          "showCleared": true,
+          "forms": 0,
+          "successVisible": true
+        }
+      },
+      "requests": {
+        "request": 1,
+        "confirm": 1
+      }
+    }
+  ],
+  "requests": [
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/password-reset/request"
+    },
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/password-reset/confirm"
+    }
+  ],
+  "pageErrors": [],
+  "expectedConsoleErrors": 1,
+  "unexpectedConsoleErrors": 0,
+  "returnRoute": "#/pages/login/login",
+  "sourceHashesAfter": {
+    "apps/mobile/src/pages/reset-password/reset-password.vue": "e00853df5fb3dfdc0d79a824f2f751035a8c3319697910d92115334dbb42031b",
+    "apps/mobile/src/platform/pointer-feedback.ts": "6464f4c1712b5a0f2fd4ab01d451d5bb6ffaa13bde486826a424511059ef6425"
+  },
+  "result": "TERMINAL_GUARD_SCOPE_PASS"
+}

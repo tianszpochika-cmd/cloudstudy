@@ -1,0 +1,354 @@
+{
+  "scope": "INDEPENDENT_MB003_CURRENT_HASH_POINTER_H5",
+  "browserAvailability": "Browser plugin not available",
+  "browserFallback": "Playwright 1.63.0; listed browser skill absent",
+  "expectedConsoleErrors": 2,
+  "unexpectedConsoleErrors": 0,
+  "at": "2026-10-14T15:29:35.508Z",
+  "sourceHashesBefore": {
+    "apps/mobile/src/pages/reset-password/reset-password.vue": "c9a6da864e9ce8933cb5a42b6743ff99551fa433eafe701ea470c760d88cc936",
+    "apps/mobile/src/platform/pointer-feedback.ts": "6464f4c1712b5a0f2fd4ab01d451d5bb6ffaa13bde486826a424511059ef6425"
+  },
+  "cases": [
+    {
+      "test": "first-new-error-real-gesture",
+      "ending": "click",
+      "holdMs": 0,
+      "before": {
+        "x": 195,
+        "y": 650.234375,
+        "top": 625.234375,
+        "errorHeight": 0
+      },
+      "held": {
+        "trustedClicks": 0,
+        "downTargetAction": true,
+        "staleAtDown": true,
+        "downMs": 2.400000002235174,
+        "top": 625.234375,
+        "feedbackCaptured": true,
+        "errorHeight": 0,
+        "focus": "",
+        "invalid": null,
+        "errorText": null,
+        "errorVisibility": null,
+        "errorAriaHidden": null
+      },
+      "after": {
+        "trustedClicks": 1,
+        "downTargetAction": true,
+        "staleAtDown": true,
+        "downMs": 2.400000002235174,
+        "top": 655.625,
+        "feedbackCaptured": false,
+        "errorHeight": 22.390625,
+        "focus": "mobile-reset-identifier",
+        "invalid": "true",
+        "errorText": "账号长度需为 3 至 128 位。",
+        "errorVisibility": "visible",
+        "errorAriaHidden": "false"
+      },
+      "requests": 0
+    },
+    {
+      "test": "first-new-error-real-gesture",
+      "ending": "long-press",
+      "holdMs": 160,
+      "before": {
+        "x": 195,
+        "y": 650.234375,
+        "top": 625.234375,
+        "errorHeight": 0
+      },
+      "held": {
+        "trustedClicks": 0,
+        "downTargetAction": true,
+        "staleAtDown": true,
+        "downMs": 1.800000000745058,
+        "top": 625.234375,
+        "feedbackCaptured": true,
+        "errorHeight": 0,
+        "focus": "",
+        "invalid": null,
+        "errorText": null,
+        "errorVisibility": null,
+        "errorAriaHidden": null
+      },
+      "after": {
+        "trustedClicks": 1,
+        "downTargetAction": true,
+        "staleAtDown": true,
+        "downMs": 1.800000000745058,
+        "top": 655.625,
+        "feedbackCaptured": false,
+        "errorHeight": 22.390625,
+        "focus": "mobile-reset-identifier",
+        "invalid": "true",
+        "errorText": "账号长度需为 3 至 128 位。",
+        "errorVisibility": "visible",
+        "errorAriaHidden": "false"
+      },
+      "requests": 0
+    },
+    {
+      "test": "first-new-error-real-gesture",
+      "ending": "drag-away",
+      "holdMs": 160,
+      "before": {
+        "x": 195,
+        "y": 650.234375,
+        "top": 625.234375,
+        "errorHeight": 0
+      },
+      "held": {
+        "trustedClicks": 0,
+        "downTargetAction": true,
+        "staleAtDown": true,
+        "downMs": 1.5999999977648258,
+        "top": 625.234375,
+        "feedbackCaptured": true,
+        "errorHeight": 0,
+        "focus": "",
+        "invalid": null,
+        "errorText": null,
+        "errorVisibility": null,
+        "errorAriaHidden": null
+      },
+      "after": {
+        "trustedClicks": 0,
+        "downTargetAction": true,
+        "staleAtDown": true,
+        "downMs": 1.5999999977648258,
+        "top": 655.625,
+        "feedbackCaptured": false,
+        "errorHeight": 22.390625,
+        "focus": "",
+        "invalid": "true",
+        "errorText": "账号长度需为 3 至 128 位。",
+        "errorVisibility": "visible",
+        "errorAriaHidden": "false"
+      },
+      "requests": 0
+    },
+    {
+      "test": "first-new-error-real-gesture",
+      "ending": "touch-cancel",
+      "holdMs": 160,
+      "before": {
+        "x": 195,
+        "y": 650.234375,
+        "top": 625.234375,
+        "errorHeight": 0
+      },
+      "held": {
+        "trustedClicks": 0,
+        "downTargetAction": true,
+        "staleAtDown": true,
+        "downMs": 17,
+        "top": 625.234375,
+        "feedbackCaptured": true,
+        "errorHeight": 0,
+        "focus": "mobile-reset-identifier",
+        "invalid": null,
+        "errorText": null,
+        "errorVisibility": null,
+        "errorAriaHidden": null
+      },
+      "afterNativeCancel": {
+        "trustedClicks": 0,
+        "downTargetAction": true,
+        "staleAtDown": true,
+        "downMs": 17,
+        "top": 625.234375,
+        "feedbackCaptured": false,
+        "errorHeight": 0,
+        "focus": "mobile-reset-identifier",
+        "invalid": null,
+        "errorText": null,
+        "errorVisibility": null,
+        "errorAriaHidden": null
+      },
+      "after": {
+        "trustedClicks": 0,
+        "downTargetAction": true,
+        "staleAtDown": true,
+        "downMs": 17,
+        "top": 655.625,
+        "feedbackCaptured": false,
+        "errorHeight": 22.390625,
+        "focus": "",
+        "invalid": "true",
+        "errorText": "账号长度需为 3 至 128 位。",
+        "errorVisibility": "visible",
+        "errorAriaHidden": "false"
+      },
+      "requests": 0
+    },
+    {
+      "test": "english200-reported-error-real-gesture",
+      "kind": "long-to-empty",
+      "beforePressDelayMs": 0,
+      "before": {
+        "x": 195,
+        "y": 685.546875,
+        "top": 1144.546875,
+        "errorHeight": 89.59375
+      },
+      "held": {
+        "trustedClicks": 0,
+        "downTargetAction": true,
+        "staleAtDown": true,
+        "downMs": 1.699999999254942,
+        "top": 1144.546875,
+        "feedbackCaptured": true,
+        "errorHeight": 89.59375,
+        "focus": "",
+        "invalid": "true",
+        "errorText": "Use an account with 3 to 128 characters.",
+        "errorVisibility": "visible",
+        "errorAriaHidden": "false"
+      },
+      "after": {
+        "trustedClicks": 1,
+        "downTargetAction": true,
+        "staleAtDown": true,
+        "downMs": 1.699999999254942,
+        "top": 1099.75,
+        "feedbackCaptured": false,
+        "errorHeight": 44.796875,
+        "focus": "mobile-reset-identifier",
+        "invalid": "true",
+        "errorText": "Enter your account.",
+        "errorVisibility": "visible",
+        "errorAriaHidden": "false"
+      },
+      "requests": 0
+    },
+    {
+      "test": "english200-reported-error-real-gesture",
+      "kind": "long-to-empty",
+      "beforePressDelayMs": 160,
+      "before": {
+        "x": 195,
+        "y": 685.546875,
+        "top": 1144.546875,
+        "errorHeight": 89.59375
+      },
+      "held": {
+        "trustedClicks": 0,
+        "downTargetAction": true,
+        "staleAtDown": false,
+        "downMs": 169.69999999925494,
+        "top": 1144.546875,
+        "feedbackCaptured": true,
+        "errorHeight": 89.59375,
+        "focus": "",
+        "invalid": "true",
+        "errorText": "Use an account with 3 to 128 characters.",
+        "errorVisibility": "visible",
+        "errorAriaHidden": "false"
+      },
+      "after": {
+        "trustedClicks": 1,
+        "downTargetAction": true,
+        "staleAtDown": false,
+        "downMs": 169.69999999925494,
+        "top": 1099.75,
+        "feedbackCaptured": false,
+        "errorHeight": 44.796875,
+        "focus": "mobile-reset-identifier",
+        "invalid": "true",
+        "errorText": "Enter your account.",
+        "errorVisibility": "visible",
+        "errorAriaHidden": "false"
+      },
+      "requests": 0
+    },
+    {
+      "test": "english200-reported-error-real-gesture",
+      "kind": "empty-to-valid",
+      "beforePressDelayMs": 0,
+      "before": {
+        "x": 195,
+        "y": 640.75,
+        "top": 1099.75,
+        "errorHeight": 44.796875
+      },
+      "held": {
+        "trustedClicks": 0,
+        "downTargetAction": true,
+        "staleAtDown": true,
+        "downMs": 1.800000000745058,
+        "top": 1099.75,
+        "feedbackCaptured": true,
+        "errorHeight": 44.796875,
+        "focus": "",
+        "invalid": "true",
+        "errorText": "Enter your account.",
+        "errorVisibility": "visible",
+        "errorAriaHidden": "false"
+      },
+      "after": {
+        "trustedClicks": 1,
+        "downTargetAction": true,
+        "staleAtDown": true,
+        "downMs": 1.800000000745058,
+        "top": 1258.140625,
+        "feedbackCaptured": false,
+        "errorHeight": 44.796875,
+        "focus": "",
+        "invalid": null,
+        "errorText": "Enter your account.",
+        "errorVisibility": "hidden",
+        "errorAriaHidden": "true"
+      },
+      "requests": 1
+    },
+    {
+      "test": "english200-reported-error-real-gesture",
+      "kind": "empty-to-valid",
+      "beforePressDelayMs": 160,
+      "before": {
+        "x": 195,
+        "y": 640.75,
+        "top": 1099.75,
+        "errorHeight": 44.796875
+      },
+      "held": {
+        "trustedClicks": 0,
+        "downTargetAction": true,
+        "staleAtDown": false,
+        "downMs": 173.69999999925494,
+        "top": 1099.75,
+        "feedbackCaptured": true,
+        "errorHeight": 44.796875,
+        "focus": "",
+        "invalid": null,
+        "errorText": "Enter your account.",
+        "errorVisibility": "hidden",
+        "errorAriaHidden": "true"
+      },
+      "after": {
+        "trustedClicks": 1,
+        "downTargetAction": true,
+        "staleAtDown": false,
+        "downMs": 173.69999999925494,
+        "top": 1258.140625,
+        "feedbackCaptured": false,
+        "errorHeight": 44.796875,
+        "focus": "",
+        "invalid": null,
+        "errorText": "Enter your account.",
+        "errorVisibility": "hidden",
+        "errorAriaHidden": "true"
+      },
+      "requests": 1
+    }
+  ],
+  "pageErrors": [],
+  "sourceHashesAfter": {
+    "apps/mobile/src/pages/reset-password/reset-password.vue": "c9a6da864e9ce8933cb5a42b6743ff99551fa433eafe701ea470c760d88cc936",
+    "apps/mobile/src/platform/pointer-feedback.ts": "6464f4c1712b5a0f2fd4ab01d451d5bb6ffaa13bde486826a424511059ef6425"
+  },
+  "result": "POINTER_SCOPE_PASS"
+}

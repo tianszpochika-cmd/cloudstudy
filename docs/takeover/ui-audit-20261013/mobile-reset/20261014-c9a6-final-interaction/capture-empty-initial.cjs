@@ -1,0 +1,12 @@
+// Two empty-state display captures only; no credentials or code deep link.
+const { chromium } = require('playwright'), fs = require('node:fs'), path = require('node:path'), crypto = require('node:crypto'), assert = require('node:assert/strict');
+const ROOT = path.resolve(__dirname, '../../../../..'), BASE = 'http://127.0.0.1:18183', EXPECTED = 'c9a6da864e9ce8933cb5a42b6743ff99551fa433eafe701ea470c760d88cc936';
+const hash = () => crypto.createHash('sha256').update(fs.readFileSync(path.join(ROOT, 'apps/mobile/src/pages/reset-password/reset-password.vue'))).digest('hex');
+(async () => {
+  const report = { scope: 'EMPTY_INITIAL_VISUAL_CAPTURE_ONLY', sourceHashBefore: hash(), cases: [], requests: [], pageErrors: [] }; assert.equal(report.sourceHashBefore, EXPECTED); const b = await chromium.launch();
+  try { for (const confirm of [false, true]) { const c = await b.newContext({ viewport: { width: 390, height: 844 } }); await c.route('**/api/v1/**', async r => { const q = r.request(), u = new URL(q.url()); report.requests.push({ method: q.method(), origin: u.origin, path: u.pathname }); await r.fulfill({ status: 401, contentType: 'application/json', body: '{"code":"UNSPECIFIED_FAILURE"}' }); }); const p = await c.newPage(); p.on('pageerror', e => report.pageErrors.push(e.name)); await p.goto(`${BASE}/#/pages/reset-password/reset-password?theme=light&uiLocale=zh-CN`, { waitUntil: 'networkidle' }); await p.locator('#mobile-reset-identifier').waitFor(); if (confirm) { await p.locator('.reset-step-button').click(); await p.locator('#mobile-reset-token').waitFor(); }
+    const empty = await p.locator('.reset-input input').evaluateAll(es => es.every(e => e.value.length === 0)); assert.equal(empty, true); assert.equal(await p.locator('.reset-field-error,.reset-server-error,.reset-receipt').count(), 0);
+    const filename = `reset-${confirm ? 'confirm' : 'request'}-390-light-initial-empty.png`; await p.screenshot({ path: path.join(__dirname, filename), fullPage: true }); report.cases.push({ step: confirm ? 'confirm' : 'request', allFieldsEmpty: empty, filename }); await c.close(); }
+    report.sourceHashAfter = hash(); assert.equal(report.sourceHashAfter, EXPECTED); assert.equal(report.pageErrors.length, 0); report.result = 'CAPTURE_COMPLETE'; fs.writeFileSync(path.join(__dirname, 'empty-initial-capture-results.json'), JSON.stringify(report, null, 2)); console.log(JSON.stringify({ result: report.result, captures: report.cases.length }));
+  } finally { await b.close(); }
+})().catch(e => { console.error(e.name); process.exitCode = 1; });

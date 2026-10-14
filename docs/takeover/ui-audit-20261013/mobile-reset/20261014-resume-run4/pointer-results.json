@@ -1,0 +1,50 @@
+{
+  "scope": "INDEPENDENT_MB003_POINTER_ONLY_SYNTHETIC_H5",
+  "at": "2026-10-14T09:33:20.162Z",
+  "sourceHashesBefore": {
+    "apps/mobile/src/pages/reset-password/reset-password.vue": "211bbda44d44e6f41af49cf0f3939ac2e9bb0611e7c794f5ffe2c35a7f62cba9",
+    "apps/mobile/src/platform/pointer-feedback.ts": "6464f4c1712b5a0f2fd4ab01d451d5bb6ffaa13bde486826a424511059ef6425"
+  },
+  "cases": [
+    {
+      "test": "english200-reported-error-real-gesture",
+      "kind": "long-to-empty",
+      "beforePressDelayMs": 160,
+      "before": {
+        "x": 195,
+        "y": 685.546875,
+        "top": 1144.546875,
+        "errorHeight": 89.59375
+      },
+      "held": {
+        "trustedClicks": 0,
+        "downTargetAction": true,
+        "staleAtDown": false,
+        "downMs": 164,
+        "top": 1144.546875,
+        "feedbackCaptured": true,
+        "errorHeight": 89.59375,
+        "focus": "",
+        "invalid": "true"
+      },
+      "after": {
+        "trustedClicks": 1,
+        "downTargetAction": true,
+        "staleAtDown": false,
+        "downMs": 164,
+        "top": 1099.75,
+        "feedbackCaptured": false,
+        "errorHeight": 44.796875,
+        "focus": "mobile-reset-identifier",
+        "invalid": "true"
+      },
+      "requests": 0
+    }
+  ],
+  "pageErrors": [],
+  "sourceHashesAfter": {
+    "apps/mobile/src/pages/reset-password/reset-password.vue": "211bbda44d44e6f41af49cf0f3939ac2e9bb0611e7c794f5ffe2c35a7f62cba9",
+    "apps/mobile/src/platform/pointer-feedback.ts": "6464f4c1712b5a0f2fd4ab01d451d5bb6ffaa13bde486826a424511059ef6425"
+  },
+  "result": "POINTER_SCOPE_PASS"
+}

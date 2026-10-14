@@ -218,7 +218,7 @@ export const useSessionStore = defineStore('session', () => {
       await adapter().requestPasswordReset({ identifier: identifier.trim() })
       return true
     } catch (error) {
-      lastError.value = error instanceof Error ? error.message : 'RESET_REQUEST_FAILED'
+      lastError.value = mobileAuthFailureMarker(error)
       return false
     }
   }
@@ -228,7 +228,7 @@ export const useSessionStore = defineStore('session', () => {
       await adapter().confirmPasswordReset({ identifier: identifier.trim(), resetToken: token.trim(), newPassword })
       return true
     } catch (error) {
-      lastError.value = error instanceof Error ? error.message : 'RESET_CONFIRM_FAILED'
+      lastError.value = mobileAuthFailureMarker(error)
       return false
     }
   }

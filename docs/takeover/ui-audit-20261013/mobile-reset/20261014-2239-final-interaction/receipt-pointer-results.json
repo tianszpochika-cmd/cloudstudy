@@ -1,0 +1,350 @@
+{
+  "at": "2026-10-14T15:17:31.981Z",
+  "scope": "INDEPENDENT_MB003_CURRENT_HASH_RECEIPT_POINTER_H5",
+  "browserAvailability": "Browser plugin not available",
+  "sourceHashesBefore": {
+    "apps/mobile/src/pages/reset-password/reset-password.vue": "e00853df5fb3dfdc0d79a824f2f751035a8c3319697910d92115334dbb42031b",
+    "apps/mobile/src/platform/pointer-feedback.ts": "6464f4c1712b5a0f2fd4ab01d451d5bb6ffaa13bde486826a424511059ef6425"
+  },
+  "cases": [
+    {
+      "test": "accepted-receipt-edit-real-pointer",
+      "english200": false,
+      "editDelayMs": 0,
+      "holdMs": 160,
+      "identity": {
+        "route": "#/pages/reset-password/reset-password",
+        "title": "找回密码",
+        "heading": "找回密码",
+        "inputCount": 1,
+        "overlayCount": 0
+      },
+      "before": {
+        "trustedClicks": 0,
+        "downTargetAction": false,
+        "downTrusted": false,
+        "receiptDOMCount": 1,
+        "receiptVisibility": "visible",
+        "receiptAriaHidden": "false",
+        "receiptRole": "status",
+        "receiptHeight": 24.5,
+        "buttonTop": 379.375,
+        "feedbackCaptured": false,
+        "heading": "找回密码",
+        "route": "#/pages/reset-password/reset-password"
+      },
+      "edited": {
+        "trustedClicks": 0,
+        "downTargetAction": false,
+        "downTrusted": false,
+        "receiptDOMCount": 1,
+        "receiptVisibility": "hidden",
+        "receiptAriaHidden": "true",
+        "receiptRole": null,
+        "receiptHeight": 24.5,
+        "buttonTop": 379.375,
+        "feedbackCaptured": false,
+        "heading": "找回密码",
+        "route": "#/pages/reset-password/reset-password",
+        "visibleCount": 0
+      },
+      "held": {
+        "trustedClicks": 0,
+        "downTargetAction": true,
+        "downTrusted": true,
+        "receiptDOMCount": 1,
+        "receiptVisibility": "hidden",
+        "receiptAriaHidden": "true",
+        "receiptRole": null,
+        "receiptHeight": 24.5,
+        "buttonTop": 379.375,
+        "feedbackCaptured": true,
+        "heading": "找回密码",
+        "route": "#/pages/reset-password/reset-password"
+      },
+      "after": {
+        "trustedClicks": 1,
+        "downTargetAction": true,
+        "downTrusted": true,
+        "receiptDOMCount": 1,
+        "receiptVisibility": "visible",
+        "receiptAriaHidden": "false",
+        "receiptRole": "status",
+        "receiptHeight": 24.5,
+        "buttonTop": 379.375,
+        "feedbackCaptured": false,
+        "heading": "找回密码",
+        "route": "#/pages/reset-password/reset-password"
+      },
+      "requests": 2
+    },
+    {
+      "test": "accepted-receipt-edit-real-pointer",
+      "english200": false,
+      "editDelayMs": 160,
+      "holdMs": 160,
+      "identity": {
+        "route": "#/pages/reset-password/reset-password",
+        "title": "找回密码",
+        "heading": "找回密码",
+        "inputCount": 1,
+        "overlayCount": 0
+      },
+      "before": {
+        "trustedClicks": 0,
+        "downTargetAction": false,
+        "downTrusted": false,
+        "receiptDOMCount": 1,
+        "receiptVisibility": "visible",
+        "receiptAriaHidden": "false",
+        "receiptRole": "status",
+        "receiptHeight": 24.5,
+        "buttonTop": 379.375,
+        "feedbackCaptured": false,
+        "heading": "找回密码",
+        "route": "#/pages/reset-password/reset-password"
+      },
+      "edited": {
+        "trustedClicks": 0,
+        "downTargetAction": false,
+        "downTrusted": false,
+        "receiptDOMCount": 1,
+        "receiptVisibility": "hidden",
+        "receiptAriaHidden": "true",
+        "receiptRole": null,
+        "receiptHeight": 24.5,
+        "buttonTop": 379.375,
+        "feedbackCaptured": false,
+        "heading": "找回密码",
+        "route": "#/pages/reset-password/reset-password",
+        "visibleCount": 0
+      },
+      "held": {
+        "trustedClicks": 0,
+        "downTargetAction": true,
+        "downTrusted": true,
+        "receiptDOMCount": 1,
+        "receiptVisibility": "hidden",
+        "receiptAriaHidden": "true",
+        "receiptRole": null,
+        "receiptHeight": 24.5,
+        "buttonTop": 379.375,
+        "feedbackCaptured": true,
+        "heading": "找回密码",
+        "route": "#/pages/reset-password/reset-password"
+      },
+      "after": {
+        "trustedClicks": 1,
+        "downTargetAction": true,
+        "downTrusted": true,
+        "receiptDOMCount": 1,
+        "receiptVisibility": "visible",
+        "receiptAriaHidden": "false",
+        "receiptRole": "status",
+        "receiptHeight": 24.5,
+        "buttonTop": 379.375,
+        "feedbackCaptured": false,
+        "heading": "找回密码",
+        "route": "#/pages/reset-password/reset-password"
+      },
+      "requests": 2
+    },
+    {
+      "test": "accepted-receipt-edit-real-pointer",
+      "english200": true,
+      "editDelayMs": 0,
+      "holdMs": 160,
+      "identity": {
+        "route": "#/pages/reset-password/reset-password",
+        "title": "Reset password",
+        "heading": "Reset password",
+        "inputCount": 1,
+        "overlayCount": 0
+      },
+      "before": {
+        "trustedClicks": 0,
+        "downTargetAction": false,
+        "downTrusted": false,
+        "receiptDOMCount": 1,
+        "receiptVisibility": "visible",
+        "receiptAriaHidden": "false",
+        "receiptRole": "status",
+        "receiptHeight": 147,
+        "buttonTop": 821.765625,
+        "feedbackCaptured": false,
+        "heading": "Reset password",
+        "route": "#/pages/reset-password/reset-password"
+      },
+      "edited": {
+        "trustedClicks": 0,
+        "downTargetAction": false,
+        "downTrusted": false,
+        "receiptDOMCount": 1,
+        "receiptVisibility": "hidden",
+        "receiptAriaHidden": "true",
+        "receiptRole": null,
+        "receiptHeight": 147,
+        "buttonTop": 821.765625,
+        "feedbackCaptured": false,
+        "heading": "Reset password",
+        "route": "#/pages/reset-password/reset-password",
+        "visibleCount": 0
+      },
+      "held": {
+        "trustedClicks": 0,
+        "downTargetAction": true,
+        "downTrusted": true,
+        "receiptDOMCount": 1,
+        "receiptVisibility": "hidden",
+        "receiptAriaHidden": "true",
+        "receiptRole": null,
+        "receiptHeight": 147,
+        "buttonTop": 821.765625,
+        "feedbackCaptured": true,
+        "heading": "Reset password",
+        "route": "#/pages/reset-password/reset-password"
+      },
+      "after": {
+        "trustedClicks": 1,
+        "downTargetAction": true,
+        "downTrusted": true,
+        "receiptDOMCount": 1,
+        "receiptVisibility": "visible",
+        "receiptAriaHidden": "false",
+        "receiptRole": "status",
+        "receiptHeight": 147,
+        "buttonTop": 821.765625,
+        "feedbackCaptured": false,
+        "heading": "Reset password",
+        "route": "#/pages/reset-password/reset-password"
+      },
+      "requests": 2
+    },
+    {
+      "test": "accepted-receipt-edit-real-pointer",
+      "english200": true,
+      "editDelayMs": 160,
+      "holdMs": 160,
+      "identity": {
+        "route": "#/pages/reset-password/reset-password",
+        "title": "Reset password",
+        "heading": "Reset password",
+        "inputCount": 1,
+        "overlayCount": 0
+      },
+      "before": {
+        "trustedClicks": 0,
+        "downTargetAction": false,
+        "downTrusted": false,
+        "receiptDOMCount": 1,
+        "receiptVisibility": "visible",
+        "receiptAriaHidden": "false",
+        "receiptRole": "status",
+        "receiptHeight": 147,
+        "buttonTop": 821.765625,
+        "feedbackCaptured": false,
+        "heading": "Reset password",
+        "route": "#/pages/reset-password/reset-password"
+      },
+      "edited": {
+        "trustedClicks": 0,
+        "downTargetAction": false,
+        "downTrusted": false,
+        "receiptDOMCount": 1,
+        "receiptVisibility": "hidden",
+        "receiptAriaHidden": "true",
+        "receiptRole": null,
+        "receiptHeight": 147,
+        "buttonTop": 821.765625,
+        "feedbackCaptured": false,
+        "heading": "Reset password",
+        "route": "#/pages/reset-password/reset-password",
+        "visibleCount": 0
+      },
+      "held": {
+        "trustedClicks": 0,
+        "downTargetAction": true,
+        "downTrusted": true,
+        "receiptDOMCount": 1,
+        "receiptVisibility": "hidden",
+        "receiptAriaHidden": "true",
+        "receiptRole": null,
+        "receiptHeight": 147,
+        "buttonTop": 821.765625,
+        "feedbackCaptured": true,
+        "heading": "Reset password",
+        "route": "#/pages/reset-password/reset-password"
+      },
+      "after": {
+        "trustedClicks": 1,
+        "downTargetAction": true,
+        "downTrusted": true,
+        "receiptDOMCount": 1,
+        "receiptVisibility": "visible",
+        "receiptAriaHidden": "false",
+        "receiptRole": "status",
+        "receiptHeight": 147,
+        "buttonTop": 821.765625,
+        "feedbackCaptured": false,
+        "heading": "Reset password",
+        "route": "#/pages/reset-password/reset-password"
+      },
+      "requests": 2
+    }
+  ],
+  "pageErrors": [],
+  "expectedConsoleErrors": 0,
+  "unexpectedConsoleErrors": 0,
+  "requests": [
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/password-reset/request"
+    },
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/password-reset/request"
+    },
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/password-reset/request"
+    },
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/password-reset/request"
+    },
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/password-reset/request"
+    },
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/password-reset/request"
+    },
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/password-reset/request"
+    },
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/password-reset/request"
+    }
+  ],
+  "sourceHashesAfter": {
+    "apps/mobile/src/pages/reset-password/reset-password.vue": "e00853df5fb3dfdc0d79a824f2f751035a8c3319697910d92115334dbb42031b",
+    "apps/mobile/src/platform/pointer-feedback.ts": "6464f4c1712b5a0f2fd4ab01d451d5bb6ffaa13bde486826a424511059ef6425"
+  },
+  "result": "RECEIPT_POINTER_SCOPE_PASS",
+  "unverified": [
+    "real IAM/accounts/mail/business reset",
+    "native credential storage or platform UI",
+    "physical keyboard/screen reader"
+  ]
+}

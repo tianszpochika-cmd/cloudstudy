@@ -1,0 +1,102 @@
+{
+  "at": "2026-10-14T15:32:32.5997338Z",
+  "reviewer": "/root/mb003_final",
+  "result": "UI_PASS",
+  "scope": "CURRENT_HASH_FORMAL_MOBILE_H5_DYNAMIC_INTERACTION_ONLY",
+  "sourceHash": "c9a6da864e9ce8933cb5a42b6743ff99551fa433eafe701ea470c760d88cc936",
+  "helperHash": "6464f4c1712b5a0f2fd4ab01d451d5bb6ffaa13bde486826a424511059ef6425",
+  "stages": [
+    {
+      "unexpectedConsoleErrors": 0,
+      "result": "UI_SCOPE_PASS",
+      "pageErrors": 0,
+      "name": "dynamic",
+      "cases": 27,
+      "expectedConsoleErrors": 5
+    },
+    {
+      "unexpectedConsoleErrors": 0,
+      "result": "POINTER_SCOPE_PASS",
+      "pageErrors": 0,
+      "name": "pointer",
+      "cases": 8,
+      "expectedConsoleErrors": 2
+    },
+    {
+      "unexpectedConsoleErrors": 0,
+      "result": "RECEIPT_POINTER_SCOPE_PASS",
+      "pageErrors": 0,
+      "name": "receipt-pointer",
+      "cases": 4,
+      "expectedConsoleErrors": 0
+    },
+    {
+      "unexpectedConsoleErrors": 0,
+      "result": "TERMINAL_GUARD_SCOPE_PASS",
+      "pageErrors": 0,
+      "name": "terminal-guard",
+      "cases": 2,
+      "expectedConsoleErrors": 1
+    },
+    {
+      "unexpectedConsoleErrors": 0,
+      "result": "KEYBOARD_SCOPE_PASS",
+      "pageErrors": 0,
+      "name": "button-keyboard",
+      "cases": 8,
+      "expectedConsoleErrors": 4
+    }
+  ],
+  "totalCheckRecords": 49,
+  "ordinary64VisualMatrixRepeated": false,
+  "oldEvidencePreserved": [
+    "../resume-final-interaction/dynamic-results.json",
+    "../20261014-2239-final-interaction/dynamic-results.json",
+    "../20261014-2239-final-interaction/button-keyboard-results.json"
+  ],
+  "latestKeyboard": {
+    "emptyRequestAndConfirmEnterSpaceFirstInvalidFocus": "mobile-reset-identifier",
+    "emptyApiCalls": 0,
+    "cases": 8,
+    "result": "PASS",
+    "validRequestAndConfirmEnterSpaceApiCalls": 1
+  },
+  "sourceAndSharedMutatedByReviewer": false,
+  "service": {
+    "port": 18183,
+    "host": "127.0.0.1",
+    "pid": 19892,
+    "leftRunningFor": "MB002 same-round reuse",
+    "session": 77625
+  },
+  "usage": {
+    "regression": {
+      "primaryUsedPercent": 31,
+      "secondaryUsedPercent": 70
+    },
+    "preKeyboard": {
+      "primaryUsedPercent": 29,
+      "secondaryUsedPercent": 70
+    },
+    "close": {
+      "primaryUsedPercent": 33,
+      "secondaryUsedPercent": 71
+    }
+  },
+  "unverified": [
+    "real IAM/account/mail/password fact/business reset",
+    "native App/mini-program/platform acceptance",
+    "physical keyboard/screen reader",
+    "Keychain/Keystore or refresh-token clearing",
+    "window blur/contextmenu interruption"
+  ],
+  "relatedReadOnlyFinding": {
+    "apiCalls": 0,
+    "page": "MB001",
+    "sourceHash": "da5ad20851a4158ea0e23918adb27f1bcc7047ae67778add321aa8d397bb58be",
+    "focus": "mobile-login-password",
+    "result": "FAIL",
+    "evidence": "../../mobile-login/20261014-2239-keyboard-diagnostic/button-keyboard-results.json",
+    "case": "Empty primary-button real Enter"
+  }
+}

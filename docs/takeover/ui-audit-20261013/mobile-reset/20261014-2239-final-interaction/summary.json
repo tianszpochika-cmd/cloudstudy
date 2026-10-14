@@ -1,0 +1,115 @@
+{
+  "at": "2026-10-14T15:22:13.98948Z",
+  "reviewer": "/root/mb003_final",
+  "result": "FAIL",
+  "scope": "CURRENT_HASH_H5_DYNAMIC_INTERACTION_ONLY",
+  "route": "http://127.0.0.1:18183/#/pages/reset-password/reset-password",
+  "sourceHash": "e00853df5fb3dfdc0d79a824f2f751035a8c3319697910d92115334dbb42031b",
+  "helperHash": "6464f4c1712b5a0f2fd4ab01d451d5bb6ffaa13bde486826a424511059ef6425",
+  "stages": [
+    {
+      "cases": 27,
+      "result": "UI_SCOPE_PASS",
+      "expectedConsoleErrors": 5,
+      "name": "dynamic",
+      "pageErrors": 0,
+      "unexpectedConsoleErrors": 0
+    },
+    {
+      "cases": 8,
+      "result": "POINTER_SCOPE_PASS",
+      "expectedConsoleErrors": 2,
+      "name": "pointer",
+      "pageErrors": 0,
+      "unexpectedConsoleErrors": 0
+    },
+    {
+      "cases": 4,
+      "result": "RECEIPT_POINTER_SCOPE_PASS",
+      "expectedConsoleErrors": 0,
+      "name": "receipt-pointer",
+      "pageErrors": 0,
+      "unexpectedConsoleErrors": 0
+    },
+    {
+      "cases": 2,
+      "result": "TERMINAL_GUARD_SCOPE_PASS",
+      "expectedConsoleErrors": 1,
+      "name": "terminal-guard",
+      "pageErrors": 0,
+      "unexpectedConsoleErrors": 0
+    },
+    {
+      "apiCalls": 0,
+      "passes": 3,
+      "pageErrors": 0,
+      "name": "button-keyboard",
+      "failures": 1,
+      "result": "FAIL",
+      "cases": 4
+    }
+  ],
+  "totalCheckRecords": 45,
+  "ordinary64VisualMatrixRepeated": false,
+  "oldFailPreserved": true,
+  "oldFailure": {
+    "line": 105,
+    "actual": "DOM 1; visible 0; visibility hidden; aria-hidden true; role null; geometry retained",
+    "script": "resume-final-interaction/dynamic-review.cjs",
+    "reason": "Outdated zero-DOM assertion after accepted receipt edit"
+  },
+  "service": {
+    "pid": 19892,
+    "leftRunningFor": "MB-002 same-round reuse",
+    "host": "127.0.0.1",
+    "session": 77625,
+    "port": 18183
+  },
+  "usage": {
+    "start": {
+      "secondaryUsedPercent": 67,
+      "primaryUsedPercent": 7
+    },
+    "postDynamic": {
+      "secondaryUsedPercent": 68,
+      "primaryUsedPercent": 14
+    },
+    "screenshotReview": {
+      "secondaryUsedPercent": 68,
+      "primaryUsedPercent": 18
+    },
+    "close": {
+      "secondaryUsedPercent": 69,
+      "primaryUsedPercent": 20
+    },
+    "buttonKeyboard": {
+      "secondaryUsedPercent": 69,
+      "primaryUsedPercent": 24
+    }
+  },
+  "unverified": [
+    "real IAM/account/mail/password fact/business reset",
+    "native App/mini-program/platform acceptance",
+    "physical keyboard/screen reader",
+    "Keychain/Keystore or refresh-token clearing",
+    "window blur/contextmenu interruption"
+  ],
+  "scriptLineage": {
+    "pointer": "new copy of immutable 20261014-resume-run4/author-pointer-replay.cjs, current hash plus separate quick and 160ms click and metadata console checks",
+    "dynamic": "new copy of immutable resume-final-interaction/dynamic-review.cjs with receipt assertion updated to actual visible and accessibility requirements",
+    "receipt": "new independent real-coordinate accepted receipt edit checks",
+    "terminal": "new independent request pending and success terminal guards"
+  },
+  "passedCheckRecords": 44,
+  "failedCheckRecords": 1,
+  "currentFailure": {
+    "test": "confirm empty primary button real Enter",
+    "evidence": "button-keyboard-results.json",
+    "screenshot": "keyboard-empty-confirm-Enter.png",
+    "scope": "Requires local source fix and new-hash independent keyboard recheck",
+    "apiCalls": 0,
+    "sourceLine": "reset-password.vue:171-174",
+    "expectedFirstInvalidFocus": "mobile-reset-identifier",
+    "focusAfterKeyup": "mobile-reset-token"
+  }
+}

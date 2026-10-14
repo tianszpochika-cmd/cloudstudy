@@ -1,0 +1,50 @@
+{
+  "scope": "INDEPENDENT_MB003_POINTER_ONLY_SYNTHETIC_H5",
+  "at": "2026-10-14T09:20:50.952Z",
+  "sourceHashesBefore": {
+    "apps/mobile/src/pages/reset-password/reset-password.vue": "9729e8140c0e70fa99308f1be8543949e7dbf67a1aef7650596c7b38153cefa6",
+    "apps/mobile/src/platform/pointer-feedback.ts": "6464f4c1712b5a0f2fd4ab01d451d5bb6ffaa13bde486826a424511059ef6425"
+  },
+  "cases": [
+    {
+      "test": "english200-reported-error-real-gesture",
+      "kind": "long-to-empty",
+      "beforePressDelayMs": 160,
+      "before": {
+        "x": 195,
+        "y": 685.546875,
+        "top": 1144.546875,
+        "errorHeight": 89.59375
+      },
+      "held": {
+        "trustedClicks": 0,
+        "downTargetAction": false,
+        "staleAtDown": false,
+        "downMs": 172,
+        "top": 1099.75,
+        "feedbackCaptured": false,
+        "errorHeight": 44.796875,
+        "focus": "",
+        "invalid": "true"
+      },
+      "after": {
+        "trustedClicks": 0,
+        "downTargetAction": false,
+        "staleAtDown": false,
+        "downMs": 172,
+        "top": 1099.75,
+        "feedbackCaptured": false,
+        "errorHeight": 44.796875,
+        "focus": "",
+        "invalid": "true"
+      },
+      "requests": 0
+    }
+  ],
+  "pageErrors": [],
+  "result": "FAIL",
+  "failure": {
+    "name": "AssertionError",
+    "message": "Old center must still hit the real button after reported error changes\n\nfalse !== true\n"
+  }
+}

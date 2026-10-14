@@ -1,0 +1,39 @@
+{
+  "scope": "SYNTHETIC_202_RECEIPT_EDIT_POINTER_ONLY",
+  "sourceHashesBefore": [
+    "e00853df5fb3dfdc0d79a824f2f751035a8c3319697910d92115334dbb42031b",
+    "6464f4c1712b5a0f2fd4ab01d451d5bb6ffaa13bde486826a424511059ef6425"
+  ],
+  "pageErrors": [],
+  "before": {
+    "top": 379.375,
+    "x": 195,
+    "y": 404.375,
+    "receiptTrue": true
+  },
+  "edited": {
+    "top": 379.375,
+    "receiptFalse": true,
+    "modelMatchesLatest": true,
+    "statusCount": 0
+  },
+  "held": {
+    "clicks": 0,
+    "downTargetAction": true,
+    "downMs": 178.09999999403954,
+    "top": 379.375
+  },
+  "after": {
+    "clicks": 1,
+    "downTargetAction": true,
+    "downMs": 178.09999999403954,
+    "top": 379.375,
+    "focus": ""
+  },
+  "requests": 2,
+  "sourceHashesAfter": [
+    "e00853df5fb3dfdc0d79a824f2f751035a8c3319697910d92115334dbb42031b",
+    "6464f4c1712b5a0f2fd4ab01d451d5bb6ffaa13bde486826a424511059ef6425"
+  ],
+  "result": "RECEIPT_POINTER_SCOPE_PASS"
+}

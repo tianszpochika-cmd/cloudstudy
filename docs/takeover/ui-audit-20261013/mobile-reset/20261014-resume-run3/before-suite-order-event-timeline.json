@@ -1,0 +1,13 @@
+{
+  "scope": "POINTER_EVENT_DIAGNOSIS_ONLY_NO_CREDENTIAL_READS",
+  "sourceSha256": "3e7b9fc8f8f7b45d78e06fed83f6045afffc98ce9b21168624dd48a4b2a92623",
+  "archiveNote": "Exact observed fields recovered from the prior tool output after the diagnostic filename was accidentally reused; full original event output remains in the task record.",
+  "before": {"x":195,"y":650.234375,"stale":true,"top":625.234375},
+  "held": {"snapshot":false,"visualLast":true,"visualInvalid":true,"liveInvalid":true,"top":655.625,"focused":""},
+  "after": {
+    "windowBlur": [],
+    "pointerDownCapture": {"primary":true,"button":0,"target":"reset-fields","snapshot":false,"visualLast":true,"visualInvalid":true,"liveInvalid":true,"top":655.625,"focused":"mobile-reset-identifier"},
+    "state": {"snapshot":false,"visualLast":true,"visualInvalid":true,"liveInvalid":true,"top":655.625,"focused":""}
+  },
+  "api":0
+}

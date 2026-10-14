@@ -1,0 +1,262 @@
+{
+  "scope": "INDEPENDENT_MB003_POINTER_ONLY_SYNTHETIC_H5",
+  "at": "2026-10-14T09:38:43.208Z",
+  "sourceHashesBefore": {
+    "apps/mobile/src/pages/reset-password/reset-password.vue": "e00853df5fb3dfdc0d79a824f2f751035a8c3319697910d92115334dbb42031b",
+    "apps/mobile/src/platform/pointer-feedback.ts": "6464f4c1712b5a0f2fd4ab01d451d5bb6ffaa13bde486826a424511059ef6425"
+  },
+  "cases": [
+    {
+      "test": "first-new-error-real-gesture",
+      "ending": "click",
+      "before": {
+        "x": 195,
+        "y": 650.234375,
+        "top": 625.234375,
+        "errorHeight": 0
+      },
+      "held": {
+        "trustedClicks": 0,
+        "downTargetAction": true,
+        "staleAtDown": true,
+        "downMs": 3.3999999910593033,
+        "top": 625.234375,
+        "feedbackCaptured": true,
+        "errorHeight": 0,
+        "focus": "",
+        "invalid": null
+      },
+      "after": {
+        "trustedClicks": 1,
+        "downTargetAction": true,
+        "staleAtDown": true,
+        "downMs": 3.3999999910593033,
+        "top": 655.625,
+        "feedbackCaptured": false,
+        "errorHeight": 22.390625,
+        "focus": "mobile-reset-identifier",
+        "invalid": "true"
+      },
+      "requests": 0
+    },
+    {
+      "test": "first-new-error-real-gesture",
+      "ending": "drag-away",
+      "before": {
+        "x": 195,
+        "y": 650.234375,
+        "top": 625.234375,
+        "errorHeight": 0
+      },
+      "held": {
+        "trustedClicks": 0,
+        "downTargetAction": true,
+        "staleAtDown": true,
+        "downMs": 1.7999999970197678,
+        "top": 625.234375,
+        "feedbackCaptured": true,
+        "errorHeight": 0,
+        "focus": "",
+        "invalid": null
+      },
+      "after": {
+        "trustedClicks": 0,
+        "downTargetAction": true,
+        "staleAtDown": true,
+        "downMs": 1.7999999970197678,
+        "top": 655.625,
+        "feedbackCaptured": false,
+        "errorHeight": 22.390625,
+        "focus": "",
+        "invalid": "true"
+      },
+      "requests": 0
+    },
+    {
+      "test": "first-new-error-real-gesture",
+      "ending": "touch-cancel",
+      "before": {
+        "x": 195,
+        "y": 650.234375,
+        "top": 625.234375,
+        "errorHeight": 0
+      },
+      "held": {
+        "trustedClicks": 0,
+        "downTargetAction": true,
+        "staleAtDown": true,
+        "downMs": 17.400000005960464,
+        "top": 625.234375,
+        "feedbackCaptured": true,
+        "errorHeight": 0,
+        "focus": "mobile-reset-identifier",
+        "invalid": null
+      },
+      "afterNativeCancel": {
+        "trustedClicks": 0,
+        "downTargetAction": true,
+        "staleAtDown": true,
+        "downMs": 17.400000005960464,
+        "top": 625.234375,
+        "feedbackCaptured": false,
+        "errorHeight": 0,
+        "focus": "mobile-reset-identifier",
+        "invalid": null
+      },
+      "after": {
+        "trustedClicks": 0,
+        "downTargetAction": true,
+        "staleAtDown": true,
+        "downMs": 17.400000005960464,
+        "top": 655.625,
+        "feedbackCaptured": false,
+        "errorHeight": 22.390625,
+        "focus": "",
+        "invalid": "true"
+      },
+      "requests": 0
+    },
+    {
+      "test": "english200-reported-error-real-gesture",
+      "kind": "long-to-empty",
+      "beforePressDelayMs": 0,
+      "before": {
+        "x": 195,
+        "y": 685.546875,
+        "top": 1144.546875,
+        "errorHeight": 89.59375
+      },
+      "held": {
+        "trustedClicks": 0,
+        "downTargetAction": true,
+        "staleAtDown": true,
+        "downMs": 2.0999999940395355,
+        "top": 1144.546875,
+        "feedbackCaptured": true,
+        "errorHeight": 89.59375,
+        "focus": "",
+        "invalid": "true"
+      },
+      "after": {
+        "trustedClicks": 1,
+        "downTargetAction": true,
+        "staleAtDown": true,
+        "downMs": 2.0999999940395355,
+        "top": 1099.75,
+        "feedbackCaptured": false,
+        "errorHeight": 44.796875,
+        "focus": "mobile-reset-identifier",
+        "invalid": "true"
+      },
+      "requests": 0
+    },
+    {
+      "test": "english200-reported-error-real-gesture",
+      "kind": "long-to-empty",
+      "beforePressDelayMs": 160,
+      "before": {
+        "x": 195,
+        "y": 685.546875,
+        "top": 1144.546875,
+        "errorHeight": 89.59375
+      },
+      "held": {
+        "trustedClicks": 0,
+        "downTargetAction": true,
+        "staleAtDown": false,
+        "downMs": 167.29999999701977,
+        "top": 1144.546875,
+        "feedbackCaptured": true,
+        "errorHeight": 89.59375,
+        "focus": "",
+        "invalid": "true"
+      },
+      "after": {
+        "trustedClicks": 1,
+        "downTargetAction": true,
+        "staleAtDown": false,
+        "downMs": 167.29999999701977,
+        "top": 1099.75,
+        "feedbackCaptured": false,
+        "errorHeight": 44.796875,
+        "focus": "mobile-reset-identifier",
+        "invalid": "true"
+      },
+      "requests": 0
+    },
+    {
+      "test": "english200-reported-error-real-gesture",
+      "kind": "empty-to-valid",
+      "beforePressDelayMs": 0,
+      "before": {
+        "x": 195,
+        "y": 640.75,
+        "top": 1099.75,
+        "errorHeight": 44.796875
+      },
+      "held": {
+        "trustedClicks": 0,
+        "downTargetAction": true,
+        "staleAtDown": true,
+        "downMs": 1.8999999910593033,
+        "top": 1099.75,
+        "feedbackCaptured": true,
+        "errorHeight": 44.796875,
+        "focus": "",
+        "invalid": "true"
+      },
+      "after": {
+        "trustedClicks": 1,
+        "downTargetAction": true,
+        "staleAtDown": true,
+        "downMs": 1.8999999910593033,
+        "top": 1258.140625,
+        "feedbackCaptured": false,
+        "errorHeight": 44.796875,
+        "focus": "",
+        "invalid": null
+      },
+      "requests": 1
+    },
+    {
+      "test": "english200-reported-error-real-gesture",
+      "kind": "empty-to-valid",
+      "beforePressDelayMs": 160,
+      "before": {
+        "x": 195,
+        "y": 640.75,
+        "top": 1099.75,
+        "errorHeight": 44.796875
+      },
+      "held": {
+        "trustedClicks": 0,
+        "downTargetAction": true,
+        "staleAtDown": false,
+        "downMs": 174.5,
+        "top": 1099.75,
+        "feedbackCaptured": true,
+        "errorHeight": 44.796875,
+        "focus": "",
+        "invalid": null
+      },
+      "after": {
+        "trustedClicks": 1,
+        "downTargetAction": true,
+        "staleAtDown": false,
+        "downMs": 174.5,
+        "top": 1258.140625,
+        "feedbackCaptured": false,
+        "errorHeight": 44.796875,
+        "focus": "",
+        "invalid": null
+      },
+      "requests": 1
+    }
+  ],
+  "pageErrors": [],
+  "sourceHashesAfter": {
+    "apps/mobile/src/pages/reset-password/reset-password.vue": "e00853df5fb3dfdc0d79a824f2f751035a8c3319697910d92115334dbb42031b",
+    "apps/mobile/src/platform/pointer-feedback.ts": "6464f4c1712b5a0f2fd4ab01d451d5bb6ffaa13bde486826a424511059ef6425"
+  },
+  "result": "POINTER_SCOPE_PASS"
+}

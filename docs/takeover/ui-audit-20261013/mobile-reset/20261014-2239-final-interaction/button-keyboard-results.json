@@ -1,0 +1,241 @@
+{
+  "at": "2026-10-14T15:23:16.506Z",
+  "scope": "INDEPENDENT_MB003_EMPTY_PRIMARY_BUTTON_REAL_KEYBOARD",
+  "sourceHashesBefore": {
+    "apps/mobile/src/pages/reset-password/reset-password.vue": "e00853df5fb3dfdc0d79a824f2f751035a8c3319697910d92115334dbb42031b",
+    "apps/mobile/src/platform/pointer-feedback.ts": "6464f4c1712b5a0f2fd4ab01d451d5bb6ffaa13bde486826a424511059ef6425"
+  },
+  "expectedHashes": {
+    "apps/mobile/src/pages/reset-password/reset-password.vue": "e00853df5fb3dfdc0d79a824f2f751035a8c3319697910d92115334dbb42031b",
+    "apps/mobile/src/platform/pointer-feedback.ts": "6464f4c1712b5a0f2fd4ab01d451d5bb6ffaa13bde486826a424511059ef6425"
+  },
+  "cases": [
+    {
+      "test": "empty-primary-button-real-key",
+      "step": "request",
+      "key": "Enter",
+      "before": {
+        "focusClass": "reset-submit",
+        "focusId": ""
+      },
+      "after": {
+        "focusId": "mobile-reset-identifier",
+        "identifierInvalid": "true",
+        "identifierErrorVisible": true,
+        "route": "#/pages/reset-password/reset-password",
+        "trace": [
+          {
+            "type": "keydown",
+            "key": "Enter",
+            "targetId": "",
+            "targetClass": "reset-submit",
+            "trusted": true,
+            "focusId": ""
+          },
+          {
+            "type": "click",
+            "key": null,
+            "targetId": "",
+            "targetClass": "reset-submit",
+            "trusted": false,
+            "focusId": ""
+          },
+          {
+            "type": "focusin",
+            "key": null,
+            "targetId": "mobile-reset-identifier",
+            "targetClass": "uni-input-input",
+            "trusted": true,
+            "focusId": "mobile-reset-identifier"
+          },
+          {
+            "type": "keyup",
+            "key": "Enter",
+            "targetId": "mobile-reset-identifier",
+            "targetClass": "uni-input-input",
+            "trusted": true,
+            "focusId": "mobile-reset-identifier"
+          },
+          {
+            "type": "focusin",
+            "key": null,
+            "targetId": "mobile-reset-identifier",
+            "targetClass": "uni-input-input",
+            "trusted": true,
+            "focusId": "mobile-reset-identifier"
+          }
+        ]
+      },
+      "apiCalls": 0,
+      "result": "PASS"
+    },
+    {
+      "test": "empty-primary-button-real-key",
+      "step": "request",
+      "key": "Space",
+      "before": {
+        "focusClass": "reset-submit",
+        "focusId": ""
+      },
+      "after": {
+        "focusId": "mobile-reset-identifier",
+        "identifierInvalid": "true",
+        "identifierErrorVisible": true,
+        "route": "#/pages/reset-password/reset-password",
+        "trace": [
+          {
+            "type": "keydown",
+            "key": " ",
+            "targetId": "",
+            "targetClass": "reset-submit",
+            "trusted": true,
+            "focusId": ""
+          },
+          {
+            "type": "click",
+            "key": null,
+            "targetId": "",
+            "targetClass": "reset-submit",
+            "trusted": false,
+            "focusId": ""
+          },
+          {
+            "type": "focusin",
+            "key": null,
+            "targetId": "mobile-reset-identifier",
+            "targetClass": "uni-input-input",
+            "trusted": true,
+            "focusId": "mobile-reset-identifier"
+          },
+          {
+            "type": "keyup",
+            "key": " ",
+            "targetId": "mobile-reset-identifier",
+            "targetClass": "uni-input-input",
+            "trusted": true,
+            "focusId": "mobile-reset-identifier"
+          }
+        ]
+      },
+      "apiCalls": 0,
+      "result": "PASS"
+    },
+    {
+      "test": "empty-primary-button-real-key",
+      "step": "confirm",
+      "key": "Enter",
+      "before": {
+        "focusClass": "reset-submit",
+        "focusId": ""
+      },
+      "after": {
+        "focusId": "mobile-reset-token",
+        "identifierInvalid": "true",
+        "identifierErrorVisible": true,
+        "route": "#/pages/reset-password/reset-password",
+        "trace": [
+          {
+            "type": "keydown",
+            "key": "Enter",
+            "targetId": "",
+            "targetClass": "reset-submit",
+            "trusted": true,
+            "focusId": ""
+          },
+          {
+            "type": "click",
+            "key": null,
+            "targetId": "",
+            "targetClass": "reset-submit",
+            "trusted": false,
+            "focusId": ""
+          },
+          {
+            "type": "focusin",
+            "key": null,
+            "targetId": "mobile-reset-identifier",
+            "targetClass": "uni-input-input",
+            "trusted": true,
+            "focusId": "mobile-reset-identifier"
+          },
+          {
+            "type": "keyup",
+            "key": "Enter",
+            "targetId": "mobile-reset-identifier",
+            "targetClass": "uni-input-input",
+            "trusted": true,
+            "focusId": "mobile-reset-identifier"
+          },
+          {
+            "type": "focusin",
+            "key": null,
+            "targetId": "mobile-reset-token",
+            "targetClass": "uni-input-input",
+            "trusted": true,
+            "focusId": "mobile-reset-token"
+          }
+        ]
+      },
+      "apiCalls": 0,
+      "result": "FAIL"
+    },
+    {
+      "test": "empty-primary-button-real-key",
+      "step": "confirm",
+      "key": "Space",
+      "before": {
+        "focusClass": "reset-submit",
+        "focusId": ""
+      },
+      "after": {
+        "focusId": "mobile-reset-identifier",
+        "identifierInvalid": "true",
+        "identifierErrorVisible": true,
+        "route": "#/pages/reset-password/reset-password",
+        "trace": [
+          {
+            "type": "keydown",
+            "key": " ",
+            "targetId": "",
+            "targetClass": "reset-submit",
+            "trusted": true,
+            "focusId": ""
+          },
+          {
+            "type": "click",
+            "key": null,
+            "targetId": "",
+            "targetClass": "reset-submit",
+            "trusted": false,
+            "focusId": ""
+          },
+          {
+            "type": "focusin",
+            "key": null,
+            "targetId": "mobile-reset-identifier",
+            "targetClass": "uni-input-input",
+            "trusted": true,
+            "focusId": "mobile-reset-identifier"
+          },
+          {
+            "type": "keyup",
+            "key": " ",
+            "targetId": "mobile-reset-identifier",
+            "targetClass": "uni-input-input",
+            "trusted": true,
+            "focusId": "mobile-reset-identifier"
+          }
+        ]
+      },
+      "apiCalls": 0,
+      "result": "PASS"
+    }
+  ],
+  "requests": [],
+  "pageErrors": [],
+  "sourceHashesAfter": {
+    "apps/mobile/src/pages/reset-password/reset-password.vue": "e00853df5fb3dfdc0d79a824f2f751035a8c3319697910d92115334dbb42031b",
+    "apps/mobile/src/platform/pointer-feedback.ts": "6464f4c1712b5a0f2fd4ab01d451d5bb6ffaa13bde486826a424511059ef6425"
+  },
+  "result": "FAIL"
+}

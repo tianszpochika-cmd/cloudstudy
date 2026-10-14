@@ -1,0 +1,119 @@
+{
+  "at": "2026-10-14T15:26:32.783Z",
+  "scope": "READ_ONLY_MB001_RELATED_PRIMARY_EMPTY_KEYBOARD_DIAGNOSTIC",
+  "sourceHashBefore": "da5ad20851a4158ea0e23918adb27f1bcc7047ae67778add321aa8d397bb58be",
+  "cases": [
+    {
+      "test": "empty-primary-button-real-key",
+      "key": "Enter",
+      "before": {
+        "focusClass": "login-submit",
+        "focusId": ""
+      },
+      "after": {
+        "focusId": "mobile-login-password",
+        "identifierInvalid": "true",
+        "errorVisible": true,
+        "route": "#/pages/login/login",
+        "trace": [
+          {
+            "type": "keydown",
+            "key": "Enter",
+            "targetId": "",
+            "targetClass": "login-submit",
+            "trusted": true,
+            "focusId": ""
+          },
+          {
+            "type": "click",
+            "key": null,
+            "targetId": "",
+            "targetClass": "login-submit",
+            "trusted": false,
+            "focusId": ""
+          },
+          {
+            "type": "focusin",
+            "key": null,
+            "targetId": "mobile-login-identifier",
+            "targetClass": "uni-input-input",
+            "trusted": true,
+            "focusId": "mobile-login-identifier"
+          },
+          {
+            "type": "keyup",
+            "key": "Enter",
+            "targetId": "mobile-login-identifier",
+            "targetClass": "uni-input-input",
+            "trusted": true,
+            "focusId": "mobile-login-identifier"
+          },
+          {
+            "type": "focusin",
+            "key": null,
+            "targetId": "mobile-login-password",
+            "targetClass": "uni-input-input",
+            "trusted": true,
+            "focusId": "mobile-login-password"
+          }
+        ]
+      },
+      "apiCalls": 0,
+      "result": "FAIL"
+    },
+    {
+      "test": "empty-primary-button-real-key",
+      "key": "Space",
+      "before": {
+        "focusClass": "login-submit",
+        "focusId": ""
+      },
+      "after": {
+        "focusId": "mobile-login-identifier",
+        "identifierInvalid": "true",
+        "errorVisible": true,
+        "route": "#/pages/login/login",
+        "trace": [
+          {
+            "type": "keydown",
+            "key": " ",
+            "targetId": "",
+            "targetClass": "login-submit",
+            "trusted": true,
+            "focusId": ""
+          },
+          {
+            "type": "click",
+            "key": null,
+            "targetId": "",
+            "targetClass": "login-submit",
+            "trusted": false,
+            "focusId": ""
+          },
+          {
+            "type": "focusin",
+            "key": null,
+            "targetId": "mobile-login-identifier",
+            "targetClass": "uni-input-input",
+            "trusted": true,
+            "focusId": "mobile-login-identifier"
+          },
+          {
+            "type": "keyup",
+            "key": " ",
+            "targetId": "mobile-login-identifier",
+            "targetClass": "uni-input-input",
+            "trusted": true,
+            "focusId": "mobile-login-identifier"
+          }
+        ]
+      },
+      "apiCalls": 0,
+      "result": "PASS"
+    }
+  ],
+  "requests": [],
+  "pageErrors": [],
+  "sourceHashAfter": "da5ad20851a4158ea0e23918adb27f1bcc7047ae67778add321aa8d397bb58be",
+  "result": "FAIL"
+}

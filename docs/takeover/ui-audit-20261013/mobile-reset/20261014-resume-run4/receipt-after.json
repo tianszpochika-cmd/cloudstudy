@@ -1,0 +1,18 @@
+{
+  "scope": "AUTHOR_RECEIPT_REAL_POINTER_UI_ONLY",
+  "before": {
+    "x": 195,
+    "y": 404.375,
+    "top": 379.375
+  },
+  "settled": {
+    "top": 379.375,
+    "receiptVisible": true
+  },
+  "after": {
+    "clicks": 1,
+    "downTarget": "reset-submit",
+    "heading": "找回密码"
+  },
+  "requests": 2
+}

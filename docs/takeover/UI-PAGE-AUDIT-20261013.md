@@ -1,5 +1,9 @@
 # V2 UI 逐页审查索引 — 2026-10-13
 
+> **2026-10-14 22:39续做（最新）**：Plus实读4%，MB-003 c9a6当前49项独审/UI_VERIFIED待单页收据；MB-001新主按钮Enter首错FAIL局部补修在审，MB-002指针及长度契约仍IN_REVIEW。见[本轮记录](ui-audit-20261013/RESUME-20261014-2239.md)。以下旧“已推/待审/暂停”仅保留对应范围，不能覆盖新FAIL。
+
+> **2026-10-14 16:46已恢复续做**：额度实读1%、fetch后067ef187一致，原56文件hash无变化。[本轮记录](ui-audit-20261013/RESUME-20261014-1646.md)；MB-003/MB-002仍在独立复审，旧正常矩阵不代替指针/多行错误通过。
+
 > **2026-10-14 12:27最新**：五小时已用90%即暂停，根回读92%；定时已纠正为每五小时。LW-003补修2a352cf7已推；MB-003未提交指针修稿仍FAIL，MB-002新首次错误指针FAIL已重新打开。准确未完范围见[暂停断点](ui-audit-20261013/PAUSE-20261014-1227.md)。下面“注册已推/其余PENDING”等早期描述只作历史，不覆盖本次重新IN_REVIEW。
 
 > 分支：`dev-redesign`。本轮拉取后的源码观察基线：`4990dd29`；R1 原有签收基线：`7a6ac0a2`。时间口径：Asia/Shanghai。
@@ -134,9 +138,9 @@
 
 | 审查编号 | 真实路由 | 页面源文件 | 本页需展开的场景 | 当前状态 | 证据 / 提交 / 远程收据 |
 |---|---|---|---|---|---|
-| MB-001 | `#/pages/login/login` | [apps/mobile/src/pages/login/login.vue](../../apps/mobile/src/pages/login/login.vue) | 登录 | PUSHED_SCOPED | 原范围c6208c0a；即时值补修[最终独立13组复签](ui-audit-20261013/mobile-login/20261014-final-review/review.md)通过，46c5106d远程SHA一致；旧FAIL保留 |
-| MB-002 | `#/pages/register/register` | [apps/mobile/src/pages/register/register.vue](../../apps/mobile/src/pages/register/register.vue) | 注册 | IN_REVIEW | 原重设计4968bc76已推且SHA一致；旧34/32矩阵与多行纠错PASS保留。新[首次错误指针FAIL](ui-audit-20261013/mobile-register/20261014-pointer-followup/before/results.json)已复现，按钮移位丢点击；未补修，不能凭旧PASS放行 |
-| MB-003 | `#/pages/reset-password/reset-password` | [apps/mobile/src/pages/reset-password/reset-password.vue](../../apps/mobile/src/pages/reset-password/reset-password.vue) | 请求/确认两步、完成态 | IN_REVIEW | [正式两步全面重排及版本报告](ui-audit-20261013/mobile-reset/report.md)；旧68矩阵/独立视觉PASS，新源3e7b9fc8指针修稿仍FAIL，未提交；[暂停断点](ui-audit-20261013/PAUSE-20261014-1227.md)，IAM/native GAP保留 |
+| MB-001 | `#/pages/login/login` | [apps/mobile/src/pages/login/login.vue](../../apps/mobile/src/pages/login/login.vue) | 登录 | IN_REVIEW | 原设计c6208c0a/即时值46c5106d已推；新[主按钮Enter首错跳过FAIL](ui-audit-20261013/mobile-login/20261014-2239-keyboard-diagnostic/review.md)独立确认，局部补修1d347967作者已过，待独审/收据；旧PASS/FAIL保留 |
+| MB-002 | `#/pages/register/register` | [apps/mobile/src/pages/register/register.vue](../../apps/mobile/src/pages/register/register.vue) | 注册 | IN_REVIEW | 原重设计4968bc76已推，旧34/32矩阵保留；[首次错误指针FAIL](ui-audit-20261013/mobile-register/20261014-pointer-followup/before/results.json)与新键盘关切局部修稿作者已过，待长度契约/默认140检查及最终独审，不能凭旧PASS关闭 |
+| MB-003 | `#/pages/reset-password/reset-password` | [apps/mobile/src/pages/reset-password/reset-password.vue](../../apps/mobile/src/pages/reset-password/reset-password.vue) | 请求/确认两步、完成态 | UI_VERIFIED | [正式两步重设计报告](ui-audit-20261013/mobile-reset/report.md)、[当前c9a6独立49项复签](ui-audit-20261013/mobile-reset/20261014-c9a6-final-interaction/review.md)及[root视觉/工程收口](ui-audit-20261013/mobile-reset/20261014-2239-root/final-review.md)通过；待本页收据，旧FAIL/IAM/native GAP保留 |
 | MB-004 | `#/pages/onboarding/onboarding` | [apps/mobile/src/pages/onboarding/onboarding.vue](../../apps/mobile/src/pages/onboarding/onboarding.vue) | 成人门、同意、目标、定级四幕 | PENDING | — |
 | MB-005 | `#/pages/forbidden/forbidden` | [apps/mobile/src/pages/forbidden/forbidden.vue](../../apps/mobile/src/pages/forbidden/forbidden.vue) | 限制说明、退出与可用出口 | PENDING | — |
 | MB-006 | `#/pages/assessment/assessment` | [apps/mobile/src/pages/assessment/assessment.vue](../../apps/mobile/src/pages/assessment/assessment.vue) | 开场、作答、反馈、结果与重测 | PENDING | — |

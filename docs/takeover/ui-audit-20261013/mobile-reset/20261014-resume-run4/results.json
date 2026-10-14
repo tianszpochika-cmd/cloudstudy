@@ -1,0 +1,3431 @@
+{
+  "scope": "MOBILE_RESET_H5_UI_ONLY_SYNTHETIC_FIXTURES",
+  "at": "2026-10-14T09:37:39.843Z",
+  "browserPlugin": "unavailable; Playwright Chromium",
+  "matrix": [
+    {
+      "width": 320,
+      "locale": "zh-CN",
+      "requestedTheme": "light",
+      "step": "request",
+      "route": "#/pages/reset-password/reset-password",
+      "uiLocale": "zh-CN",
+      "title": "找回密码",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 272,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "titleContrast": 14.171267244103936,
+      "descriptionContrast": 5.504103371100126,
+      "submitContrast": 7.996499985642157,
+      "submitFont": "16px",
+      "submitBottom": 380.875,
+      "inputFonts": [
+        "16px"
+      ],
+      "fieldGaps": [],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "发送重置指引",
+          "width": 272,
+          "height": 50
+        },
+        {
+          "label": "我已收到口令",
+          "width": 84,
+          "height": 44
+        },
+        {
+          "label": "返回登录",
+          "width": 56,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 320,
+      "locale": "zh-CN",
+      "requestedTheme": "light",
+      "step": "confirm",
+      "route": "#/pages/reset-password/reset-password",
+      "uiLocale": "zh-CN",
+      "title": "找回密码",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 272,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "titleContrast": 14.171267244103936,
+      "descriptionContrast": 5.504103371100126,
+      "submitContrast": 7.996499985642157,
+      "submitFont": "16px",
+      "submitBottom": 614.453125,
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "显示新密码",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "设置新密码",
+          "width": 272,
+          "height": 50
+        },
+        {
+          "label": "重新申请指引",
+          "width": 84,
+          "height": 44
+        },
+        {
+          "label": "返回登录",
+          "width": 56,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 320,
+      "locale": "zh-CN",
+      "requestedTheme": "dark",
+      "step": "request",
+      "route": "#/pages/reset-password/reset-password",
+      "uiLocale": "zh-CN",
+      "title": "找回密码",
+      "theme": "dark",
+      "overflow": false,
+      "contentWidth": 272,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "titleContrast": 15.923775297667023,
+      "descriptionContrast": 9.357719562635204,
+      "submitContrast": 8.176495938166001,
+      "submitFont": "16px",
+      "submitBottom": 380.875,
+      "inputFonts": [
+        "16px"
+      ],
+      "fieldGaps": [],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "发送重置指引",
+          "width": 272,
+          "height": 50
+        },
+        {
+          "label": "我已收到口令",
+          "width": 84,
+          "height": 44
+        },
+        {
+          "label": "返回登录",
+          "width": 56,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 320,
+      "locale": "zh-CN",
+      "requestedTheme": "dark",
+      "step": "confirm",
+      "route": "#/pages/reset-password/reset-password",
+      "uiLocale": "zh-CN",
+      "title": "找回密码",
+      "theme": "dark",
+      "overflow": false,
+      "contentWidth": 272,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "titleContrast": 15.923775297667023,
+      "descriptionContrast": 9.357719562635204,
+      "submitContrast": 8.176495938166001,
+      "submitFont": "16px",
+      "submitBottom": 614.453125,
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "显示新密码",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "设置新密码",
+          "width": 272,
+          "height": 50
+        },
+        {
+          "label": "重新申请指引",
+          "width": 84,
+          "height": 44
+        },
+        {
+          "label": "返回登录",
+          "width": 56,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 320,
+      "locale": "zh-CN",
+      "requestedTheme": "high-contrast",
+      "step": "request",
+      "route": "#/pages/reset-password/reset-password",
+      "uiLocale": "zh-CN",
+      "title": "找回密码",
+      "theme": "high-contrast",
+      "overflow": false,
+      "contentWidth": 272,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "titleContrast": 21,
+      "descriptionContrast": 16.822650673503315,
+      "submitContrast": 11.31039533489464,
+      "submitFont": "16px",
+      "submitBottom": 380.875,
+      "inputFonts": [
+        "16px"
+      ],
+      "fieldGaps": [],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "发送重置指引",
+          "width": 272,
+          "height": 50
+        },
+        {
+          "label": "我已收到口令",
+          "width": 84,
+          "height": 44
+        },
+        {
+          "label": "返回登录",
+          "width": 56,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 320,
+      "locale": "zh-CN",
+      "requestedTheme": "high-contrast",
+      "step": "confirm",
+      "route": "#/pages/reset-password/reset-password",
+      "uiLocale": "zh-CN",
+      "title": "找回密码",
+      "theme": "high-contrast",
+      "overflow": false,
+      "contentWidth": 272,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "titleContrast": 21,
+      "descriptionContrast": 16.822650673503315,
+      "submitContrast": 11.31039533489464,
+      "submitFont": "16px",
+      "submitBottom": 614.453125,
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "显示新密码",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "设置新密码",
+          "width": 272,
+          "height": 50
+        },
+        {
+          "label": "重新申请指引",
+          "width": 84,
+          "height": 44
+        },
+        {
+          "label": "返回登录",
+          "width": 56,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 320,
+      "locale": "zh-CN",
+      "requestedTheme": "system",
+      "step": "request",
+      "route": "#/pages/reset-password/reset-password",
+      "uiLocale": "zh-CN",
+      "title": "找回密码",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 272,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "titleContrast": 14.171267244103936,
+      "descriptionContrast": 5.504103371100126,
+      "submitContrast": 7.996499985642157,
+      "submitFont": "16px",
+      "submitBottom": 380.875,
+      "inputFonts": [
+        "16px"
+      ],
+      "fieldGaps": [],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "发送重置指引",
+          "width": 272,
+          "height": 50
+        },
+        {
+          "label": "我已收到口令",
+          "width": 84,
+          "height": 44
+        },
+        {
+          "label": "返回登录",
+          "width": 56,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 320,
+      "locale": "zh-CN",
+      "requestedTheme": "system",
+      "step": "confirm",
+      "route": "#/pages/reset-password/reset-password",
+      "uiLocale": "zh-CN",
+      "title": "找回密码",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 272,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "titleContrast": 14.171267244103936,
+      "descriptionContrast": 5.504103371100126,
+      "submitContrast": 7.996499985642157,
+      "submitFont": "16px",
+      "submitBottom": 614.453125,
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "显示新密码",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "设置新密码",
+          "width": 272,
+          "height": 50
+        },
+        {
+          "label": "重新申请指引",
+          "width": 84,
+          "height": 44
+        },
+        {
+          "label": "返回登录",
+          "width": 56,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 320,
+      "locale": "en-US",
+      "requestedTheme": "light",
+      "step": "request",
+      "route": "#/pages/reset-password/reset-password",
+      "uiLocale": "en-US",
+      "title": "Reset password",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 272,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "titleContrast": 14.171267244103936,
+      "descriptionContrast": 5.504103371100126,
+      "submitContrast": 7.996499985642157,
+      "submitFont": "16px",
+      "submitBottom": 405.375,
+      "inputFonts": [
+        "16px"
+      ],
+      "fieldGaps": [],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "Send reset instructions",
+          "width": 272,
+          "height": 50
+        },
+        {
+          "label": "I have the reset code",
+          "width": 139.578125,
+          "height": 44
+        },
+        {
+          "label": "Return to sign in",
+          "width": 111.015625,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 320,
+      "locale": "en-US",
+      "requestedTheme": "light",
+      "step": "confirm",
+      "route": "#/pages/reset-password/reset-password",
+      "uiLocale": "en-US",
+      "title": "Reset password",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 272,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "titleContrast": 14.171267244103936,
+      "descriptionContrast": 5.504103371100126,
+      "submitContrast": 7.996499985642157,
+      "submitFont": "16px",
+      "submitBottom": 678.140625,
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "Show new password",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "Set new password",
+          "width": 272,
+          "height": 50
+        },
+        {
+          "label": "Request new instructions",
+          "width": 167.78125,
+          "height": 44
+        },
+        {
+          "label": "Return to sign in",
+          "width": 111.015625,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 320,
+      "locale": "en-US",
+      "requestedTheme": "dark",
+      "step": "request",
+      "route": "#/pages/reset-password/reset-password",
+      "uiLocale": "en-US",
+      "title": "Reset password",
+      "theme": "dark",
+      "overflow": false,
+      "contentWidth": 272,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "titleContrast": 15.923775297667023,
+      "descriptionContrast": 9.357719562635204,
+      "submitContrast": 8.176495938166001,
+      "submitFont": "16px",
+      "submitBottom": 405.375,
+      "inputFonts": [
+        "16px"
+      ],
+      "fieldGaps": [],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "Send reset instructions",
+          "width": 272,
+          "height": 50
+        },
+        {
+          "label": "I have the reset code",
+          "width": 139.578125,
+          "height": 44
+        },
+        {
+          "label": "Return to sign in",
+          "width": 111.015625,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 320,
+      "locale": "en-US",
+      "requestedTheme": "dark",
+      "step": "confirm",
+      "route": "#/pages/reset-password/reset-password",
+      "uiLocale": "en-US",
+      "title": "Reset password",
+      "theme": "dark",
+      "overflow": false,
+      "contentWidth": 272,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "titleContrast": 15.923775297667023,
+      "descriptionContrast": 9.357719562635204,
+      "submitContrast": 8.176495938166001,
+      "submitFont": "16px",
+      "submitBottom": 678.140625,
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "Show new password",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "Set new password",
+          "width": 272,
+          "height": 50
+        },
+        {
+          "label": "Request new instructions",
+          "width": 167.78125,
+          "height": 44
+        },
+        {
+          "label": "Return to sign in",
+          "width": 111.015625,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 320,
+      "locale": "en-US",
+      "requestedTheme": "high-contrast",
+      "step": "request",
+      "route": "#/pages/reset-password/reset-password",
+      "uiLocale": "en-US",
+      "title": "Reset password",
+      "theme": "high-contrast",
+      "overflow": false,
+      "contentWidth": 272,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "titleContrast": 21,
+      "descriptionContrast": 16.822650673503315,
+      "submitContrast": 11.31039533489464,
+      "submitFont": "16px",
+      "submitBottom": 405.375,
+      "inputFonts": [
+        "16px"
+      ],
+      "fieldGaps": [],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "Send reset instructions",
+          "width": 272,
+          "height": 50
+        },
+        {
+          "label": "I have the reset code",
+          "width": 139.578125,
+          "height": 44
+        },
+        {
+          "label": "Return to sign in",
+          "width": 111.015625,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 320,
+      "locale": "en-US",
+      "requestedTheme": "high-contrast",
+      "step": "confirm",
+      "route": "#/pages/reset-password/reset-password",
+      "uiLocale": "en-US",
+      "title": "Reset password",
+      "theme": "high-contrast",
+      "overflow": false,
+      "contentWidth": 272,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "titleContrast": 21,
+      "descriptionContrast": 16.822650673503315,
+      "submitContrast": 11.31039533489464,
+      "submitFont": "16px",
+      "submitBottom": 678.140625,
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "Show new password",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "Set new password",
+          "width": 272,
+          "height": 50
+        },
+        {
+          "label": "Request new instructions",
+          "width": 167.78125,
+          "height": 44
+        },
+        {
+          "label": "Return to sign in",
+          "width": 111.015625,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 320,
+      "locale": "en-US",
+      "requestedTheme": "system",
+      "step": "request",
+      "route": "#/pages/reset-password/reset-password",
+      "uiLocale": "en-US",
+      "title": "Reset password",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 272,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "titleContrast": 14.171267244103936,
+      "descriptionContrast": 5.504103371100126,
+      "submitContrast": 7.996499985642157,
+      "submitFont": "16px",
+      "submitBottom": 405.375,
+      "inputFonts": [
+        "16px"
+      ],
+      "fieldGaps": [],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "Send reset instructions",
+          "width": 272,
+          "height": 50
+        },
+        {
+          "label": "I have the reset code",
+          "width": 139.578125,
+          "height": 44
+        },
+        {
+          "label": "Return to sign in",
+          "width": 111.015625,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 320,
+      "locale": "en-US",
+      "requestedTheme": "system",
+      "step": "confirm",
+      "route": "#/pages/reset-password/reset-password",
+      "uiLocale": "en-US",
+      "title": "Reset password",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 272,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "titleContrast": 14.171267244103936,
+      "descriptionContrast": 5.504103371100126,
+      "submitContrast": 7.996499985642157,
+      "submitFont": "16px",
+      "submitBottom": 678.140625,
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "Show new password",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "Set new password",
+          "width": 272,
+          "height": 50
+        },
+        {
+          "label": "Request new instructions",
+          "width": 167.78125,
+          "height": 44
+        },
+        {
+          "label": "Return to sign in",
+          "width": 111.015625,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 390,
+      "locale": "zh-CN",
+      "requestedTheme": "light",
+      "step": "request",
+      "route": "#/pages/reset-password/reset-password",
+      "uiLocale": "zh-CN",
+      "title": "找回密码",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 342,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "titleContrast": 14.171267244103936,
+      "descriptionContrast": 5.504103371100126,
+      "submitContrast": 7.996499985642157,
+      "submitFont": "16px",
+      "submitBottom": 380.875,
+      "inputFonts": [
+        "16px"
+      ],
+      "fieldGaps": [],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "发送重置指引",
+          "width": 342,
+          "height": 50
+        },
+        {
+          "label": "我已收到口令",
+          "width": 84,
+          "height": 44
+        },
+        {
+          "label": "返回登录",
+          "width": 56,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 390,
+      "locale": "zh-CN",
+      "requestedTheme": "light",
+      "step": "confirm",
+      "route": "#/pages/reset-password/reset-password",
+      "uiLocale": "zh-CN",
+      "title": "找回密码",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 342,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "titleContrast": 14.171267244103936,
+      "descriptionContrast": 5.504103371100126,
+      "submitContrast": 7.996499985642157,
+      "submitFont": "16px",
+      "submitBottom": 614.453125,
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "显示新密码",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "设置新密码",
+          "width": 342,
+          "height": 50
+        },
+        {
+          "label": "重新申请指引",
+          "width": 84,
+          "height": 44
+        },
+        {
+          "label": "返回登录",
+          "width": 56,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 390,
+      "locale": "zh-CN",
+      "requestedTheme": "dark",
+      "step": "request",
+      "route": "#/pages/reset-password/reset-password",
+      "uiLocale": "zh-CN",
+      "title": "找回密码",
+      "theme": "dark",
+      "overflow": false,
+      "contentWidth": 342,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "titleContrast": 15.923775297667023,
+      "descriptionContrast": 9.357719562635204,
+      "submitContrast": 8.176495938166001,
+      "submitFont": "16px",
+      "submitBottom": 380.875,
+      "inputFonts": [
+        "16px"
+      ],
+      "fieldGaps": [],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "发送重置指引",
+          "width": 342,
+          "height": 50
+        },
+        {
+          "label": "我已收到口令",
+          "width": 84,
+          "height": 44
+        },
+        {
+          "label": "返回登录",
+          "width": 56,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 390,
+      "locale": "zh-CN",
+      "requestedTheme": "dark",
+      "step": "confirm",
+      "route": "#/pages/reset-password/reset-password",
+      "uiLocale": "zh-CN",
+      "title": "找回密码",
+      "theme": "dark",
+      "overflow": false,
+      "contentWidth": 342,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "titleContrast": 15.923775297667023,
+      "descriptionContrast": 9.357719562635204,
+      "submitContrast": 8.176495938166001,
+      "submitFont": "16px",
+      "submitBottom": 614.453125,
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "显示新密码",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "设置新密码",
+          "width": 342,
+          "height": 50
+        },
+        {
+          "label": "重新申请指引",
+          "width": 84,
+          "height": 44
+        },
+        {
+          "label": "返回登录",
+          "width": 56,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 390,
+      "locale": "zh-CN",
+      "requestedTheme": "high-contrast",
+      "step": "request",
+      "route": "#/pages/reset-password/reset-password",
+      "uiLocale": "zh-CN",
+      "title": "找回密码",
+      "theme": "high-contrast",
+      "overflow": false,
+      "contentWidth": 342,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "titleContrast": 21,
+      "descriptionContrast": 16.822650673503315,
+      "submitContrast": 11.31039533489464,
+      "submitFont": "16px",
+      "submitBottom": 380.875,
+      "inputFonts": [
+        "16px"
+      ],
+      "fieldGaps": [],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "发送重置指引",
+          "width": 342,
+          "height": 50
+        },
+        {
+          "label": "我已收到口令",
+          "width": 84,
+          "height": 44
+        },
+        {
+          "label": "返回登录",
+          "width": 56,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 390,
+      "locale": "zh-CN",
+      "requestedTheme": "high-contrast",
+      "step": "confirm",
+      "route": "#/pages/reset-password/reset-password",
+      "uiLocale": "zh-CN",
+      "title": "找回密码",
+      "theme": "high-contrast",
+      "overflow": false,
+      "contentWidth": 342,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "titleContrast": 21,
+      "descriptionContrast": 16.822650673503315,
+      "submitContrast": 11.31039533489464,
+      "submitFont": "16px",
+      "submitBottom": 614.453125,
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "显示新密码",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "设置新密码",
+          "width": 342,
+          "height": 50
+        },
+        {
+          "label": "重新申请指引",
+          "width": 84,
+          "height": 44
+        },
+        {
+          "label": "返回登录",
+          "width": 56,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 390,
+      "locale": "zh-CN",
+      "requestedTheme": "system",
+      "step": "request",
+      "route": "#/pages/reset-password/reset-password",
+      "uiLocale": "zh-CN",
+      "title": "找回密码",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 342,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "titleContrast": 14.171267244103936,
+      "descriptionContrast": 5.504103371100126,
+      "submitContrast": 7.996499985642157,
+      "submitFont": "16px",
+      "submitBottom": 380.875,
+      "inputFonts": [
+        "16px"
+      ],
+      "fieldGaps": [],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "发送重置指引",
+          "width": 342,
+          "height": 50
+        },
+        {
+          "label": "我已收到口令",
+          "width": 84,
+          "height": 44
+        },
+        {
+          "label": "返回登录",
+          "width": 56,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 390,
+      "locale": "zh-CN",
+      "requestedTheme": "system",
+      "step": "confirm",
+      "route": "#/pages/reset-password/reset-password",
+      "uiLocale": "zh-CN",
+      "title": "找回密码",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 342,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "titleContrast": 14.171267244103936,
+      "descriptionContrast": 5.504103371100126,
+      "submitContrast": 7.996499985642157,
+      "submitFont": "16px",
+      "submitBottom": 614.453125,
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "显示新密码",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "设置新密码",
+          "width": 342,
+          "height": 50
+        },
+        {
+          "label": "重新申请指引",
+          "width": 84,
+          "height": 44
+        },
+        {
+          "label": "返回登录",
+          "width": 56,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 390,
+      "locale": "en-US",
+      "requestedTheme": "light",
+      "step": "request",
+      "route": "#/pages/reset-password/reset-password",
+      "uiLocale": "en-US",
+      "title": "Reset password",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 342,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "titleContrast": 14.171267244103936,
+      "descriptionContrast": 5.504103371100126,
+      "submitContrast": 7.996499985642157,
+      "submitFont": "16px",
+      "submitBottom": 380.875,
+      "inputFonts": [
+        "16px"
+      ],
+      "fieldGaps": [],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "Send reset instructions",
+          "width": 342,
+          "height": 50
+        },
+        {
+          "label": "I have the reset code",
+          "width": 139.578125,
+          "height": 44
+        },
+        {
+          "label": "Return to sign in",
+          "width": 111.015625,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 390,
+      "locale": "en-US",
+      "requestedTheme": "light",
+      "step": "confirm",
+      "route": "#/pages/reset-password/reset-password",
+      "uiLocale": "en-US",
+      "title": "Reset password",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 342,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "titleContrast": 14.171267244103936,
+      "descriptionContrast": 5.504103371100126,
+      "submitContrast": 7.996499985642157,
+      "submitFont": "16px",
+      "submitBottom": 638.953125,
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "Show new password",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "Set new password",
+          "width": 342,
+          "height": 50
+        },
+        {
+          "label": "Request new instructions",
+          "width": 167.78125,
+          "height": 44
+        },
+        {
+          "label": "Return to sign in",
+          "width": 111.015625,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 390,
+      "locale": "en-US",
+      "requestedTheme": "dark",
+      "step": "request",
+      "route": "#/pages/reset-password/reset-password",
+      "uiLocale": "en-US",
+      "title": "Reset password",
+      "theme": "dark",
+      "overflow": false,
+      "contentWidth": 342,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "titleContrast": 15.923775297667023,
+      "descriptionContrast": 9.357719562635204,
+      "submitContrast": 8.176495938166001,
+      "submitFont": "16px",
+      "submitBottom": 380.875,
+      "inputFonts": [
+        "16px"
+      ],
+      "fieldGaps": [],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "Send reset instructions",
+          "width": 342,
+          "height": 50
+        },
+        {
+          "label": "I have the reset code",
+          "width": 139.578125,
+          "height": 44
+        },
+        {
+          "label": "Return to sign in",
+          "width": 111.015625,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 390,
+      "locale": "en-US",
+      "requestedTheme": "dark",
+      "step": "confirm",
+      "route": "#/pages/reset-password/reset-password",
+      "uiLocale": "en-US",
+      "title": "Reset password",
+      "theme": "dark",
+      "overflow": false,
+      "contentWidth": 342,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "titleContrast": 15.923775297667023,
+      "descriptionContrast": 9.357719562635204,
+      "submitContrast": 8.176495938166001,
+      "submitFont": "16px",
+      "submitBottom": 638.953125,
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "Show new password",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "Set new password",
+          "width": 342,
+          "height": 50
+        },
+        {
+          "label": "Request new instructions",
+          "width": 167.78125,
+          "height": 44
+        },
+        {
+          "label": "Return to sign in",
+          "width": 111.015625,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 390,
+      "locale": "en-US",
+      "requestedTheme": "high-contrast",
+      "step": "request",
+      "route": "#/pages/reset-password/reset-password",
+      "uiLocale": "en-US",
+      "title": "Reset password",
+      "theme": "high-contrast",
+      "overflow": false,
+      "contentWidth": 342,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "titleContrast": 21,
+      "descriptionContrast": 16.822650673503315,
+      "submitContrast": 11.31039533489464,
+      "submitFont": "16px",
+      "submitBottom": 380.875,
+      "inputFonts": [
+        "16px"
+      ],
+      "fieldGaps": [],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "Send reset instructions",
+          "width": 342,
+          "height": 50
+        },
+        {
+          "label": "I have the reset code",
+          "width": 139.578125,
+          "height": 44
+        },
+        {
+          "label": "Return to sign in",
+          "width": 111.015625,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 390,
+      "locale": "en-US",
+      "requestedTheme": "high-contrast",
+      "step": "confirm",
+      "route": "#/pages/reset-password/reset-password",
+      "uiLocale": "en-US",
+      "title": "Reset password",
+      "theme": "high-contrast",
+      "overflow": false,
+      "contentWidth": 342,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "titleContrast": 21,
+      "descriptionContrast": 16.822650673503315,
+      "submitContrast": 11.31039533489464,
+      "submitFont": "16px",
+      "submitBottom": 638.953125,
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "Show new password",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "Set new password",
+          "width": 342,
+          "height": 50
+        },
+        {
+          "label": "Request new instructions",
+          "width": 167.78125,
+          "height": 44
+        },
+        {
+          "label": "Return to sign in",
+          "width": 111.015625,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 390,
+      "locale": "en-US",
+      "requestedTheme": "system",
+      "step": "request",
+      "route": "#/pages/reset-password/reset-password",
+      "uiLocale": "en-US",
+      "title": "Reset password",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 342,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "titleContrast": 14.171267244103936,
+      "descriptionContrast": 5.504103371100126,
+      "submitContrast": 7.996499985642157,
+      "submitFont": "16px",
+      "submitBottom": 380.875,
+      "inputFonts": [
+        "16px"
+      ],
+      "fieldGaps": [],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "Send reset instructions",
+          "width": 342,
+          "height": 50
+        },
+        {
+          "label": "I have the reset code",
+          "width": 139.578125,
+          "height": 44
+        },
+        {
+          "label": "Return to sign in",
+          "width": 111.015625,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 390,
+      "locale": "en-US",
+      "requestedTheme": "system",
+      "step": "confirm",
+      "route": "#/pages/reset-password/reset-password",
+      "uiLocale": "en-US",
+      "title": "Reset password",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 342,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "titleContrast": 14.171267244103936,
+      "descriptionContrast": 5.504103371100126,
+      "submitContrast": 7.996499985642157,
+      "submitFont": "16px",
+      "submitBottom": 638.953125,
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "Show new password",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "Set new password",
+          "width": 342,
+          "height": 50
+        },
+        {
+          "label": "Request new instructions",
+          "width": 167.78125,
+          "height": 44
+        },
+        {
+          "label": "Return to sign in",
+          "width": 111.015625,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 768,
+      "locale": "zh-CN",
+      "requestedTheme": "light",
+      "step": "request",
+      "route": "#/pages/reset-password/reset-password",
+      "uiLocale": "zh-CN",
+      "title": "找回密码",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 420,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "titleContrast": 14.171267244103936,
+      "descriptionContrast": 5.504103371100126,
+      "submitContrast": 7.996499985642157,
+      "submitFont": "16px",
+      "submitBottom": 412.078125,
+      "inputFonts": [
+        "16px"
+      ],
+      "fieldGaps": [],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "发送重置指引",
+          "width": 420,
+          "height": 50
+        },
+        {
+          "label": "我已收到口令",
+          "width": 84,
+          "height": 44
+        },
+        {
+          "label": "返回登录",
+          "width": 56,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 768,
+      "locale": "zh-CN",
+      "requestedTheme": "light",
+      "step": "confirm",
+      "route": "#/pages/reset-password/reset-password",
+      "uiLocale": "zh-CN",
+      "title": "找回密码",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 420,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "titleContrast": 14.171267244103936,
+      "descriptionContrast": 5.504103371100126,
+      "submitContrast": 7.996499985642157,
+      "submitFont": "16px",
+      "submitBottom": 645.65625,
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "显示新密码",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "设置新密码",
+          "width": 420,
+          "height": 50
+        },
+        {
+          "label": "重新申请指引",
+          "width": 84,
+          "height": 44
+        },
+        {
+          "label": "返回登录",
+          "width": 56,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 768,
+      "locale": "zh-CN",
+      "requestedTheme": "dark",
+      "step": "request",
+      "route": "#/pages/reset-password/reset-password",
+      "uiLocale": "zh-CN",
+      "title": "找回密码",
+      "theme": "dark",
+      "overflow": false,
+      "contentWidth": 420,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "titleContrast": 15.923775297667023,
+      "descriptionContrast": 9.357719562635204,
+      "submitContrast": 8.176495938166001,
+      "submitFont": "16px",
+      "submitBottom": 412.078125,
+      "inputFonts": [
+        "16px"
+      ],
+      "fieldGaps": [],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "发送重置指引",
+          "width": 420,
+          "height": 50
+        },
+        {
+          "label": "我已收到口令",
+          "width": 84,
+          "height": 44
+        },
+        {
+          "label": "返回登录",
+          "width": 56,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 768,
+      "locale": "zh-CN",
+      "requestedTheme": "dark",
+      "step": "confirm",
+      "route": "#/pages/reset-password/reset-password",
+      "uiLocale": "zh-CN",
+      "title": "找回密码",
+      "theme": "dark",
+      "overflow": false,
+      "contentWidth": 420,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "titleContrast": 15.923775297667023,
+      "descriptionContrast": 9.357719562635204,
+      "submitContrast": 8.176495938166001,
+      "submitFont": "16px",
+      "submitBottom": 645.65625,
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "显示新密码",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "设置新密码",
+          "width": 420,
+          "height": 50
+        },
+        {
+          "label": "重新申请指引",
+          "width": 84,
+          "height": 44
+        },
+        {
+          "label": "返回登录",
+          "width": 56,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 768,
+      "locale": "zh-CN",
+      "requestedTheme": "high-contrast",
+      "step": "request",
+      "route": "#/pages/reset-password/reset-password",
+      "uiLocale": "zh-CN",
+      "title": "找回密码",
+      "theme": "high-contrast",
+      "overflow": false,
+      "contentWidth": 420,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "titleContrast": 21,
+      "descriptionContrast": 16.822650673503315,
+      "submitContrast": 11.31039533489464,
+      "submitFont": "16px",
+      "submitBottom": 412.078125,
+      "inputFonts": [
+        "16px"
+      ],
+      "fieldGaps": [],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "发送重置指引",
+          "width": 420,
+          "height": 50
+        },
+        {
+          "label": "我已收到口令",
+          "width": 84,
+          "height": 44
+        },
+        {
+          "label": "返回登录",
+          "width": 56,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 768,
+      "locale": "zh-CN",
+      "requestedTheme": "high-contrast",
+      "step": "confirm",
+      "route": "#/pages/reset-password/reset-password",
+      "uiLocale": "zh-CN",
+      "title": "找回密码",
+      "theme": "high-contrast",
+      "overflow": false,
+      "contentWidth": 420,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "titleContrast": 21,
+      "descriptionContrast": 16.822650673503315,
+      "submitContrast": 11.31039533489464,
+      "submitFont": "16px",
+      "submitBottom": 645.65625,
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "显示新密码",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "设置新密码",
+          "width": 420,
+          "height": 50
+        },
+        {
+          "label": "重新申请指引",
+          "width": 84,
+          "height": 44
+        },
+        {
+          "label": "返回登录",
+          "width": 56,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 768,
+      "locale": "zh-CN",
+      "requestedTheme": "system",
+      "step": "request",
+      "route": "#/pages/reset-password/reset-password",
+      "uiLocale": "zh-CN",
+      "title": "找回密码",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 420,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "titleContrast": 14.171267244103936,
+      "descriptionContrast": 5.504103371100126,
+      "submitContrast": 7.996499985642157,
+      "submitFont": "16px",
+      "submitBottom": 412.078125,
+      "inputFonts": [
+        "16px"
+      ],
+      "fieldGaps": [],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "发送重置指引",
+          "width": 420,
+          "height": 50
+        },
+        {
+          "label": "我已收到口令",
+          "width": 84,
+          "height": 44
+        },
+        {
+          "label": "返回登录",
+          "width": 56,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 768,
+      "locale": "zh-CN",
+      "requestedTheme": "system",
+      "step": "confirm",
+      "route": "#/pages/reset-password/reset-password",
+      "uiLocale": "zh-CN",
+      "title": "找回密码",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 420,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "titleContrast": 14.171267244103936,
+      "descriptionContrast": 5.504103371100126,
+      "submitContrast": 7.996499985642157,
+      "submitFont": "16px",
+      "submitBottom": 645.65625,
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "显示新密码",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "设置新密码",
+          "width": 420,
+          "height": 50
+        },
+        {
+          "label": "重新申请指引",
+          "width": 84,
+          "height": 44
+        },
+        {
+          "label": "返回登录",
+          "width": 56,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 768,
+      "locale": "en-US",
+      "requestedTheme": "light",
+      "step": "request",
+      "route": "#/pages/reset-password/reset-password",
+      "uiLocale": "en-US",
+      "title": "Reset password",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 420,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "titleContrast": 14.171267244103936,
+      "descriptionContrast": 5.504103371100126,
+      "submitContrast": 7.996499985642157,
+      "submitFont": "16px",
+      "submitBottom": 412.078125,
+      "inputFonts": [
+        "16px"
+      ],
+      "fieldGaps": [],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "Send reset instructions",
+          "width": 420,
+          "height": 50
+        },
+        {
+          "label": "I have the reset code",
+          "width": 139.578125,
+          "height": 44
+        },
+        {
+          "label": "Return to sign in",
+          "width": 111.015625,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 768,
+      "locale": "en-US",
+      "requestedTheme": "light",
+      "step": "confirm",
+      "route": "#/pages/reset-password/reset-password",
+      "uiLocale": "en-US",
+      "title": "Reset password",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 420,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "titleContrast": 14.171267244103936,
+      "descriptionContrast": 5.504103371100126,
+      "submitContrast": 7.996499985642157,
+      "submitFont": "16px",
+      "submitBottom": 645.65625,
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "Show new password",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "Set new password",
+          "width": 420,
+          "height": 50
+        },
+        {
+          "label": "Request new instructions",
+          "width": 167.78125,
+          "height": 44
+        },
+        {
+          "label": "Return to sign in",
+          "width": 111.015625,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 768,
+      "locale": "en-US",
+      "requestedTheme": "dark",
+      "step": "request",
+      "route": "#/pages/reset-password/reset-password",
+      "uiLocale": "en-US",
+      "title": "Reset password",
+      "theme": "dark",
+      "overflow": false,
+      "contentWidth": 420,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "titleContrast": 15.923775297667023,
+      "descriptionContrast": 9.357719562635204,
+      "submitContrast": 8.176495938166001,
+      "submitFont": "16px",
+      "submitBottom": 412.078125,
+      "inputFonts": [
+        "16px"
+      ],
+      "fieldGaps": [],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "Send reset instructions",
+          "width": 420,
+          "height": 50
+        },
+        {
+          "label": "I have the reset code",
+          "width": 139.578125,
+          "height": 44
+        },
+        {
+          "label": "Return to sign in",
+          "width": 111.015625,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 768,
+      "locale": "en-US",
+      "requestedTheme": "dark",
+      "step": "confirm",
+      "route": "#/pages/reset-password/reset-password",
+      "uiLocale": "en-US",
+      "title": "Reset password",
+      "theme": "dark",
+      "overflow": false,
+      "contentWidth": 420,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "titleContrast": 15.923775297667023,
+      "descriptionContrast": 9.357719562635204,
+      "submitContrast": 8.176495938166001,
+      "submitFont": "16px",
+      "submitBottom": 645.65625,
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "Show new password",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "Set new password",
+          "width": 420,
+          "height": 50
+        },
+        {
+          "label": "Request new instructions",
+          "width": 167.78125,
+          "height": 44
+        },
+        {
+          "label": "Return to sign in",
+          "width": 111.015625,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 768,
+      "locale": "en-US",
+      "requestedTheme": "high-contrast",
+      "step": "request",
+      "route": "#/pages/reset-password/reset-password",
+      "uiLocale": "en-US",
+      "title": "Reset password",
+      "theme": "high-contrast",
+      "overflow": false,
+      "contentWidth": 420,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "titleContrast": 21,
+      "descriptionContrast": 16.822650673503315,
+      "submitContrast": 11.31039533489464,
+      "submitFont": "16px",
+      "submitBottom": 412.078125,
+      "inputFonts": [
+        "16px"
+      ],
+      "fieldGaps": [],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "Send reset instructions",
+          "width": 420,
+          "height": 50
+        },
+        {
+          "label": "I have the reset code",
+          "width": 139.578125,
+          "height": 44
+        },
+        {
+          "label": "Return to sign in",
+          "width": 111.015625,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 768,
+      "locale": "en-US",
+      "requestedTheme": "high-contrast",
+      "step": "confirm",
+      "route": "#/pages/reset-password/reset-password",
+      "uiLocale": "en-US",
+      "title": "Reset password",
+      "theme": "high-contrast",
+      "overflow": false,
+      "contentWidth": 420,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "titleContrast": 21,
+      "descriptionContrast": 16.822650673503315,
+      "submitContrast": 11.31039533489464,
+      "submitFont": "16px",
+      "submitBottom": 645.65625,
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "Show new password",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "Set new password",
+          "width": 420,
+          "height": 50
+        },
+        {
+          "label": "Request new instructions",
+          "width": 167.78125,
+          "height": 44
+        },
+        {
+          "label": "Return to sign in",
+          "width": 111.015625,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 768,
+      "locale": "en-US",
+      "requestedTheme": "system",
+      "step": "request",
+      "route": "#/pages/reset-password/reset-password",
+      "uiLocale": "en-US",
+      "title": "Reset password",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 420,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "titleContrast": 14.171267244103936,
+      "descriptionContrast": 5.504103371100126,
+      "submitContrast": 7.996499985642157,
+      "submitFont": "16px",
+      "submitBottom": 412.078125,
+      "inputFonts": [
+        "16px"
+      ],
+      "fieldGaps": [],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "Send reset instructions",
+          "width": 420,
+          "height": 50
+        },
+        {
+          "label": "I have the reset code",
+          "width": 139.578125,
+          "height": 44
+        },
+        {
+          "label": "Return to sign in",
+          "width": 111.015625,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 768,
+      "locale": "en-US",
+      "requestedTheme": "system",
+      "step": "confirm",
+      "route": "#/pages/reset-password/reset-password",
+      "uiLocale": "en-US",
+      "title": "Reset password",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 420,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "titleContrast": 14.171267244103936,
+      "descriptionContrast": 5.504103371100126,
+      "submitContrast": 7.996499985642157,
+      "submitFont": "16px",
+      "submitBottom": 645.65625,
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "Show new password",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "Set new password",
+          "width": 420,
+          "height": 50
+        },
+        {
+          "label": "Request new instructions",
+          "width": 167.78125,
+          "height": 44
+        },
+        {
+          "label": "Return to sign in",
+          "width": 111.015625,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 1280,
+      "locale": "zh-CN",
+      "requestedTheme": "light",
+      "step": "request",
+      "route": "#/pages/reset-password/reset-password",
+      "uiLocale": "zh-CN",
+      "title": "找回密码",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 420,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "titleContrast": 14.171267244103936,
+      "descriptionContrast": 5.504103371100126,
+      "submitContrast": 7.996499985642157,
+      "submitFont": "16px",
+      "submitBottom": 412.078125,
+      "inputFonts": [
+        "16px"
+      ],
+      "fieldGaps": [],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "发送重置指引",
+          "width": 420,
+          "height": 50
+        },
+        {
+          "label": "我已收到口令",
+          "width": 84,
+          "height": 44
+        },
+        {
+          "label": "返回登录",
+          "width": 56,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 1280,
+      "locale": "zh-CN",
+      "requestedTheme": "light",
+      "step": "confirm",
+      "route": "#/pages/reset-password/reset-password",
+      "uiLocale": "zh-CN",
+      "title": "找回密码",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 420,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "titleContrast": 14.171267244103936,
+      "descriptionContrast": 5.504103371100126,
+      "submitContrast": 7.996499985642157,
+      "submitFont": "16px",
+      "submitBottom": 645.65625,
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "显示新密码",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "设置新密码",
+          "width": 420,
+          "height": 50
+        },
+        {
+          "label": "重新申请指引",
+          "width": 84,
+          "height": 44
+        },
+        {
+          "label": "返回登录",
+          "width": 56,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 1280,
+      "locale": "zh-CN",
+      "requestedTheme": "dark",
+      "step": "request",
+      "route": "#/pages/reset-password/reset-password",
+      "uiLocale": "zh-CN",
+      "title": "找回密码",
+      "theme": "dark",
+      "overflow": false,
+      "contentWidth": 420,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "titleContrast": 15.923775297667023,
+      "descriptionContrast": 9.357719562635204,
+      "submitContrast": 8.176495938166001,
+      "submitFont": "16px",
+      "submitBottom": 412.078125,
+      "inputFonts": [
+        "16px"
+      ],
+      "fieldGaps": [],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "发送重置指引",
+          "width": 420,
+          "height": 50
+        },
+        {
+          "label": "我已收到口令",
+          "width": 84,
+          "height": 44
+        },
+        {
+          "label": "返回登录",
+          "width": 56,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 1280,
+      "locale": "zh-CN",
+      "requestedTheme": "dark",
+      "step": "confirm",
+      "route": "#/pages/reset-password/reset-password",
+      "uiLocale": "zh-CN",
+      "title": "找回密码",
+      "theme": "dark",
+      "overflow": false,
+      "contentWidth": 420,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "titleContrast": 15.923775297667023,
+      "descriptionContrast": 9.357719562635204,
+      "submitContrast": 8.176495938166001,
+      "submitFont": "16px",
+      "submitBottom": 645.65625,
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "显示新密码",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "设置新密码",
+          "width": 420,
+          "height": 50
+        },
+        {
+          "label": "重新申请指引",
+          "width": 84,
+          "height": 44
+        },
+        {
+          "label": "返回登录",
+          "width": 56,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 1280,
+      "locale": "zh-CN",
+      "requestedTheme": "high-contrast",
+      "step": "request",
+      "route": "#/pages/reset-password/reset-password",
+      "uiLocale": "zh-CN",
+      "title": "找回密码",
+      "theme": "high-contrast",
+      "overflow": false,
+      "contentWidth": 420,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "titleContrast": 21,
+      "descriptionContrast": 16.822650673503315,
+      "submitContrast": 11.31039533489464,
+      "submitFont": "16px",
+      "submitBottom": 412.078125,
+      "inputFonts": [
+        "16px"
+      ],
+      "fieldGaps": [],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "发送重置指引",
+          "width": 420,
+          "height": 50
+        },
+        {
+          "label": "我已收到口令",
+          "width": 84,
+          "height": 44
+        },
+        {
+          "label": "返回登录",
+          "width": 56,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 1280,
+      "locale": "zh-CN",
+      "requestedTheme": "high-contrast",
+      "step": "confirm",
+      "route": "#/pages/reset-password/reset-password",
+      "uiLocale": "zh-CN",
+      "title": "找回密码",
+      "theme": "high-contrast",
+      "overflow": false,
+      "contentWidth": 420,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "titleContrast": 21,
+      "descriptionContrast": 16.822650673503315,
+      "submitContrast": 11.31039533489464,
+      "submitFont": "16px",
+      "submitBottom": 645.65625,
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "显示新密码",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "设置新密码",
+          "width": 420,
+          "height": 50
+        },
+        {
+          "label": "重新申请指引",
+          "width": 84,
+          "height": 44
+        },
+        {
+          "label": "返回登录",
+          "width": 56,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 1280,
+      "locale": "zh-CN",
+      "requestedTheme": "system",
+      "step": "request",
+      "route": "#/pages/reset-password/reset-password",
+      "uiLocale": "zh-CN",
+      "title": "找回密码",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 420,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "titleContrast": 14.171267244103936,
+      "descriptionContrast": 5.504103371100126,
+      "submitContrast": 7.996499985642157,
+      "submitFont": "16px",
+      "submitBottom": 412.078125,
+      "inputFonts": [
+        "16px"
+      ],
+      "fieldGaps": [],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "发送重置指引",
+          "width": 420,
+          "height": 50
+        },
+        {
+          "label": "我已收到口令",
+          "width": 84,
+          "height": 44
+        },
+        {
+          "label": "返回登录",
+          "width": 56,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 1280,
+      "locale": "zh-CN",
+      "requestedTheme": "system",
+      "step": "confirm",
+      "route": "#/pages/reset-password/reset-password",
+      "uiLocale": "zh-CN",
+      "title": "找回密码",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 420,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "titleContrast": 14.171267244103936,
+      "descriptionContrast": 5.504103371100126,
+      "submitContrast": 7.996499985642157,
+      "submitFont": "16px",
+      "submitBottom": 645.65625,
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "显示新密码",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "设置新密码",
+          "width": 420,
+          "height": 50
+        },
+        {
+          "label": "重新申请指引",
+          "width": 84,
+          "height": 44
+        },
+        {
+          "label": "返回登录",
+          "width": 56,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 1280,
+      "locale": "en-US",
+      "requestedTheme": "light",
+      "step": "request",
+      "route": "#/pages/reset-password/reset-password",
+      "uiLocale": "en-US",
+      "title": "Reset password",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 420,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "titleContrast": 14.171267244103936,
+      "descriptionContrast": 5.504103371100126,
+      "submitContrast": 7.996499985642157,
+      "submitFont": "16px",
+      "submitBottom": 412.078125,
+      "inputFonts": [
+        "16px"
+      ],
+      "fieldGaps": [],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "Send reset instructions",
+          "width": 420,
+          "height": 50
+        },
+        {
+          "label": "I have the reset code",
+          "width": 139.578125,
+          "height": 44
+        },
+        {
+          "label": "Return to sign in",
+          "width": 111.015625,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 1280,
+      "locale": "en-US",
+      "requestedTheme": "light",
+      "step": "confirm",
+      "route": "#/pages/reset-password/reset-password",
+      "uiLocale": "en-US",
+      "title": "Reset password",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 420,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "titleContrast": 14.171267244103936,
+      "descriptionContrast": 5.504103371100126,
+      "submitContrast": 7.996499985642157,
+      "submitFont": "16px",
+      "submitBottom": 645.65625,
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "Show new password",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "Set new password",
+          "width": 420,
+          "height": 50
+        },
+        {
+          "label": "Request new instructions",
+          "width": 167.78125,
+          "height": 44
+        },
+        {
+          "label": "Return to sign in",
+          "width": 111.015625,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 1280,
+      "locale": "en-US",
+      "requestedTheme": "dark",
+      "step": "request",
+      "route": "#/pages/reset-password/reset-password",
+      "uiLocale": "en-US",
+      "title": "Reset password",
+      "theme": "dark",
+      "overflow": false,
+      "contentWidth": 420,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "titleContrast": 15.923775297667023,
+      "descriptionContrast": 9.357719562635204,
+      "submitContrast": 8.176495938166001,
+      "submitFont": "16px",
+      "submitBottom": 412.078125,
+      "inputFonts": [
+        "16px"
+      ],
+      "fieldGaps": [],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "Send reset instructions",
+          "width": 420,
+          "height": 50
+        },
+        {
+          "label": "I have the reset code",
+          "width": 139.578125,
+          "height": 44
+        },
+        {
+          "label": "Return to sign in",
+          "width": 111.015625,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 1280,
+      "locale": "en-US",
+      "requestedTheme": "dark",
+      "step": "confirm",
+      "route": "#/pages/reset-password/reset-password",
+      "uiLocale": "en-US",
+      "title": "Reset password",
+      "theme": "dark",
+      "overflow": false,
+      "contentWidth": 420,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "titleContrast": 15.923775297667023,
+      "descriptionContrast": 9.357719562635204,
+      "submitContrast": 8.176495938166001,
+      "submitFont": "16px",
+      "submitBottom": 645.65625,
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "Show new password",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "Set new password",
+          "width": 420,
+          "height": 50
+        },
+        {
+          "label": "Request new instructions",
+          "width": 167.78125,
+          "height": 44
+        },
+        {
+          "label": "Return to sign in",
+          "width": 111.015625,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 1280,
+      "locale": "en-US",
+      "requestedTheme": "high-contrast",
+      "step": "request",
+      "route": "#/pages/reset-password/reset-password",
+      "uiLocale": "en-US",
+      "title": "Reset password",
+      "theme": "high-contrast",
+      "overflow": false,
+      "contentWidth": 420,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "titleContrast": 21,
+      "descriptionContrast": 16.822650673503315,
+      "submitContrast": 11.31039533489464,
+      "submitFont": "16px",
+      "submitBottom": 412.078125,
+      "inputFonts": [
+        "16px"
+      ],
+      "fieldGaps": [],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "Send reset instructions",
+          "width": 420,
+          "height": 50
+        },
+        {
+          "label": "I have the reset code",
+          "width": 139.578125,
+          "height": 44
+        },
+        {
+          "label": "Return to sign in",
+          "width": 111.015625,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 1280,
+      "locale": "en-US",
+      "requestedTheme": "high-contrast",
+      "step": "confirm",
+      "route": "#/pages/reset-password/reset-password",
+      "uiLocale": "en-US",
+      "title": "Reset password",
+      "theme": "high-contrast",
+      "overflow": false,
+      "contentWidth": 420,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "titleContrast": 21,
+      "descriptionContrast": 16.822650673503315,
+      "submitContrast": 11.31039533489464,
+      "submitFont": "16px",
+      "submitBottom": 645.65625,
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "Show new password",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "Set new password",
+          "width": 420,
+          "height": 50
+        },
+        {
+          "label": "Request new instructions",
+          "width": 167.78125,
+          "height": 44
+        },
+        {
+          "label": "Return to sign in",
+          "width": 111.015625,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 1280,
+      "locale": "en-US",
+      "requestedTheme": "system",
+      "step": "request",
+      "route": "#/pages/reset-password/reset-password",
+      "uiLocale": "en-US",
+      "title": "Reset password",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 420,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "titleContrast": 14.171267244103936,
+      "descriptionContrast": 5.504103371100126,
+      "submitContrast": 7.996499985642157,
+      "submitFont": "16px",
+      "submitBottom": 412.078125,
+      "inputFonts": [
+        "16px"
+      ],
+      "fieldGaps": [],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "Send reset instructions",
+          "width": 420,
+          "height": 50
+        },
+        {
+          "label": "I have the reset code",
+          "width": 139.578125,
+          "height": 44
+        },
+        {
+          "label": "Return to sign in",
+          "width": 111.015625,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 1280,
+      "locale": "en-US",
+      "requestedTheme": "system",
+      "step": "confirm",
+      "route": "#/pages/reset-password/reset-password",
+      "uiLocale": "en-US",
+      "title": "Reset password",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 420,
+      "titleFont": "28px",
+      "descriptionFont": "14px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "titleContrast": 14.171267244103936,
+      "descriptionContrast": 5.504103371100126,
+      "submitContrast": 7.996499985642157,
+      "submitFont": "16px",
+      "submitBottom": 645.65625,
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "Show new password",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "Set new password",
+          "width": 420,
+          "height": 50
+        },
+        {
+          "label": "Request new instructions",
+          "width": 167.78125,
+          "height": 44
+        },
+        {
+          "label": "Return to sign in",
+          "width": 111.015625,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 390,
+      "locale": "zh-CN",
+      "requestedTheme": "light",
+      "step": "request",
+      "textScale": 2,
+      "route": "#/pages/reset-password/reset-password",
+      "uiLocale": "zh-CN",
+      "title": "找回密码",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 342,
+      "titleFont": "56px",
+      "descriptionFont": "28px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "titleContrast": 14.171267244103936,
+      "descriptionContrast": 5.504103371100126,
+      "submitContrast": 7.996499985642157,
+      "submitFont": "32px",
+      "submitBottom": 555.78125,
+      "inputFonts": [
+        "32px"
+      ],
+      "fieldGaps": [],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "发送重置指引",
+          "width": 342,
+          "height": 74
+        },
+        {
+          "label": "我已收到口令",
+          "width": 168,
+          "height": 60.796875
+        },
+        {
+          "label": "返回登录",
+          "width": 112,
+          "height": 60.796875
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 390,
+      "locale": "en-US",
+      "requestedTheme": "light",
+      "step": "request",
+      "textScale": 2,
+      "route": "#/pages/reset-password/reset-password",
+      "uiLocale": "en-US",
+      "title": "Reset password",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 342,
+      "titleFont": "56px",
+      "descriptionFont": "28px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "titleContrast": 14.171267244103936,
+      "descriptionContrast": 5.504103371100126,
+      "submitContrast": 7.996499985642157,
+      "submitFont": "32px",
+      "submitBottom": 772.765625,
+      "inputFonts": [
+        "32px"
+      ],
+      "fieldGaps": [],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "Send reset instructions",
+          "width": 342,
+          "height": 122
+        },
+        {
+          "label": "I have the reset code",
+          "width": 279.15625,
+          "height": 60.796875
+        },
+        {
+          "label": "Return to sign in",
+          "width": 222.03125,
+          "height": 60.796875
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 390,
+      "locale": "zh-CN",
+      "requestedTheme": "light",
+      "step": "confirm",
+      "textScale": 2,
+      "route": "#/pages/reset-password/reset-password",
+      "uiLocale": "zh-CN",
+      "title": "找回密码",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 342,
+      "titleFont": "56px",
+      "descriptionFont": "28px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "titleContrast": 14.171267244103936,
+      "descriptionContrast": 5.504103371100126,
+      "submitContrast": 7.996499985642157,
+      "submitFont": "32px",
+      "submitBottom": 951.96875,
+      "inputFonts": [
+        "32px",
+        "32px",
+        "32px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "显示新密码",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "设置新密码",
+          "width": 342,
+          "height": 74
+        },
+        {
+          "label": "重新申请指引",
+          "width": 168,
+          "height": 60.796875
+        },
+        {
+          "label": "返回登录",
+          "width": 112,
+          "height": 60.796875
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 390,
+      "locale": "en-US",
+      "requestedTheme": "light",
+      "step": "confirm",
+      "textScale": 2,
+      "route": "#/pages/reset-password/reset-password",
+      "uiLocale": "en-US",
+      "title": "Reset password",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 342,
+      "titleFont": "56px",
+      "descriptionFont": "28px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "titleContrast": 14.171267244103936,
+      "descriptionContrast": 5.504103371100126,
+      "submitContrast": 7.996499985642157,
+      "submitFont": "32px",
+      "submitBottom": 1120.953125,
+      "inputFonts": [
+        "32px",
+        "32px",
+        "32px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "Show new password",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "Set new password",
+          "width": 342,
+          "height": 74
+        },
+        {
+          "label": "Request new instructions",
+          "width": 335.5625,
+          "height": 60.796875
+        },
+        {
+          "label": "Return to sign in",
+          "width": 222.03125,
+          "height": 60.796875
+        }
+      ],
+      "status": "PASS"
+    }
+  ],
+  "checks": [
+    "64 isolated two-step width/locale/theme combinations; actual 16px inputs, 24px gaps, 44px targets, contrast and live system preference",
+    "Request blank/rapid clear/Enter, busy direct-dispatch guards, single request, 202 conditional receipt, edited-account receipt cleanup and 429/503 truthful failures",
+    "Confirm required/short/maximum contract bounds and immediate corrections/clears, true 512-character code preservation, keyboard flow and eye semantics",
+    "Allowlisted invalid-code 401 differs from unknown401; pending direct clicks cannot switch/leave/duplicate; back clears code/password/show/errors; synthetic204 completes and removes inputs",
+    "Two-step Chinese/English 200% text and short screen scrolling, reset-code deep link, safe single/double encoded return and external fallback; no raw reset code in result URLs",
+    "True old-center 160ms press hits action with first new error deferred; click reports/focuses it, drag-away and native touchCancel release without submit; ordinary blur and direct password Enter still report errors",
+    "English200 existing error long/short/valid changes preserve geometry after160ms before actual down and during160ms hold; edited accepted receipt hides truthfully while preserving natural space, and old center sends another request rather than switching step"
+  ],
+  "pageErrors": [],
+  "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 429 (Too Many Requests)",
+    "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 503 (Service Unavailable)"
+  ],
+  "fixtureRequests": [
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/password-reset/request"
+    },
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/password-reset/request"
+    },
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/password-reset/request"
+    },
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/password-reset/confirm"
+    },
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/password-reset/confirm"
+    },
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/password-reset/confirm"
+    },
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/password-reset/confirm"
+    },
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/password-reset/request"
+    },
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/password-reset/request"
+    }
+  ],
+  "sourceHashes": {
+    "apps/mobile/src/pages/reset-password/reset-password.vue": "e00853df5fb3dfdc0d79a824f2f751035a8c3319697910d92115334dbb42031b",
+    "apps/mobile/src/theme/v2-tokens.scss": "561d1b8bead07c1c09ecf6c2bec0b4eee4151d5ae1b15e9cc755f84fac855869",
+    "apps/mobile/src/theme/v2-icons.ts": "93951db891ef4997dc071482176ce2c1b5801c600c5315bbcf915691ef164ba5",
+    "apps/mobile/src/uni.scss": "0bd56842fc5baebd8767e721f2d938986e293d1d87bfc74bb087b3c228f638d7",
+    "apps/mobile/src/platform/v2-foundation.ts": "8cbfe6c7665de68dfba0c281e3b0a2abc296d091dc043782e5ff7af775018c37",
+    "apps/mobile/src/platform/pointer-feedback.ts": "6464f4c1712b5a0f2fd4ab01d451d5bb6ffaa13bde486826a424511059ef6425",
+    "packages/i18n/src/mobile-experience.ts": "f772bccef324eeac99e3f7b31292040d1353557387aaf6f05d309b74d7ad947d",
+    "apps/mobile/src/auth/gateway-auth.ts": "b17373e792c34287ac8e3e78db97e6fb71b7f4599df88a9a8a2bac1e8005d711",
+    "apps/mobile/src/auth/auth-failure-copy.ts": "0ecf6aab291dc6f5fa20b561141eafedc7091bc3773e4203b5c68b64232fc795",
+    "apps/mobile/src/stores/session.ts": "6cbf1f855f49e389bd03a3eb2e21135c1bd604aad2722469b46bdd49466a5b68",
+    "apps/mobile/tests/ui-reset.e2e.cjs": "fa55aac909f70a3b680921dd15d7ab811324dce87be725d1ae69699fe3223115"
+  },
+  "longCode": {
+    "characters": 512,
+    "preserved": true,
+    "default140Truncation": false
+  },
+  "pointer": [
+    {
+      "ending": "click",
+      "actualPressOnAction": true,
+      "heldMs": 160,
+      "beforeTop": 625.234375,
+      "heldTop": 625.234375,
+      "trustedClicks": 1,
+      "snapshotReleased": true,
+      "requests": 0
+    },
+    {
+      "ending": "drag-away",
+      "actualPressOnAction": true,
+      "heldMs": 160,
+      "beforeTop": 625.234375,
+      "heldTop": 625.234375,
+      "trustedClicks": 0,
+      "snapshotReleased": true,
+      "requests": 0
+    },
+    {
+      "ending": "cancel",
+      "actualPressOnAction": true,
+      "heldMs": 160,
+      "beforeTop": 625.234375,
+      "heldTop": 625.234375,
+      "trustedClicks": 0,
+      "snapshotReleased": true,
+      "requests": 0
+    }
+  ],
+  "reportedErrorPointer": [
+    {
+      "kind": "long-to-empty",
+      "textScale": 2,
+      "settleMs": 160,
+      "holdMs": 160,
+      "beforeTop": 1144.546875,
+      "settledTop": 1144.546875,
+      "trustedClicks": 1,
+      "requests": 0
+    },
+    {
+      "kind": "empty-to-long",
+      "textScale": 2,
+      "settleMs": 160,
+      "holdMs": 160,
+      "beforeTop": 1099.75,
+      "settledTop": 1099.75,
+      "trustedClicks": 1,
+      "requests": 0
+    },
+    {
+      "kind": "empty-to-valid",
+      "textScale": 2,
+      "settleMs": 160,
+      "holdMs": 160,
+      "beforeTop": 1099.75,
+      "settledTop": 1099.75,
+      "trustedClicks": 1,
+      "requests": 1
+    }
+  ],
+  "receiptPointer": {
+    "settleMs": 160,
+    "holdMs": 160,
+    "beforeTop": 379.375,
+    "oldReceiptHidden": true,
+    "trustedClicks": 1,
+    "requests": 2,
+    "remainedOnRequest": true
+  },
+  "status": "PASS_UI_SCOPED_NOT_BUSINESS_ACCEPTANCE"
+}

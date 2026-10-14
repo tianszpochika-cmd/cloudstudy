@@ -1,0 +1,197 @@
+{
+  "scope": "POINTER_EVENT_DIAGNOSIS_ONLY_NO_CREDENTIAL_READS",
+  "before": {
+    "x": 195,
+    "y": 650.234375,
+    "stale": true,
+    "top": 625.234375
+  },
+  "held": {
+    "snapshot": true,
+    "visualLast": false,
+    "visualInvalid": false,
+    "liveInvalid": true,
+    "top": 625.234375,
+    "focused": ""
+  },
+  "after": {
+    "registrations": [
+      {
+        "type": "pointerdown",
+        "name": "startGesture",
+        "capture": true
+      },
+      {
+        "type": "pointerup",
+        "name": "endGesture",
+        "capture": true
+      },
+      {
+        "type": "pointercancel",
+        "name": "cancelGesture",
+        "capture": true
+      },
+      {
+        "type": "click",
+        "name": "finishClick",
+        "capture": false
+      },
+      {
+        "type": "contextmenu",
+        "name": "cancelGesture",
+        "capture": true
+      },
+      {
+        "type": "dragstart",
+        "name": "cancelGesture",
+        "capture": true
+      }
+    ],
+    "trace": [
+      {
+        "type": "pointerdown",
+        "phase": "capture",
+        "primary": true,
+        "button": 0,
+        "target": "button-hover reset-submit",
+        "snapshot": true,
+        "visualLast": false,
+        "visualInvalid": false,
+        "liveInvalid": false,
+        "top": 625.234375,
+        "focused": "mobile-reset-identifier"
+      },
+      {
+        "type": "pointerdown",
+        "phase": "bubble",
+        "snapshot": true,
+        "visualLast": false,
+        "visualInvalid": false,
+        "liveInvalid": false,
+        "top": 625.234375,
+        "focused": "mobile-reset-identifier"
+      },
+      {
+        "type": "mousedown",
+        "phase": "capture",
+        "button": 0,
+        "target": "button-hover reset-submit",
+        "snapshot": true,
+        "visualLast": false,
+        "visualInvalid": false,
+        "liveInvalid": false,
+        "top": 625.234375,
+        "focused": "mobile-reset-identifier"
+      },
+      {
+        "type": "mousedown",
+        "phase": "bubble",
+        "snapshot": true,
+        "visualLast": false,
+        "visualInvalid": false,
+        "liveInvalid": false,
+        "top": 625.234375,
+        "focused": "mobile-reset-identifier"
+      },
+      {
+        "type": "blur",
+        "phase": "capture",
+        "target": "uni-input-input",
+        "snapshot": true,
+        "visualLast": false,
+        "visualInvalid": false,
+        "liveInvalid": false,
+        "top": 625.234375,
+        "focused": ""
+      },
+      {
+        "type": "pointerup",
+        "phase": "capture",
+        "primary": true,
+        "button": 0,
+        "target": "reset-submit",
+        "snapshot": true,
+        "visualLast": false,
+        "visualInvalid": false,
+        "liveInvalid": true,
+        "top": 625.234375,
+        "focused": ""
+      },
+      {
+        "type": "pointerup",
+        "phase": "bubble",
+        "snapshot": true,
+        "visualLast": false,
+        "visualInvalid": false,
+        "liveInvalid": true,
+        "top": 625.234375,
+        "focused": ""
+      },
+      {
+        "type": "mouseup",
+        "phase": "capture",
+        "button": 0,
+        "target": "reset-submit",
+        "snapshot": true,
+        "visualLast": false,
+        "visualInvalid": false,
+        "liveInvalid": true,
+        "top": 625.234375,
+        "focused": ""
+      },
+      {
+        "type": "mouseup",
+        "phase": "bubble",
+        "snapshot": true,
+        "visualLast": false,
+        "visualInvalid": false,
+        "liveInvalid": true,
+        "top": 625.234375,
+        "focused": ""
+      },
+      {
+        "type": "click",
+        "phase": "capture",
+        "primary": false,
+        "button": 0,
+        "target": "reset-submit",
+        "snapshot": true,
+        "visualLast": false,
+        "visualInvalid": false,
+        "liveInvalid": true,
+        "top": 625.234375,
+        "focused": ""
+      },
+      {
+        "type": "blur",
+        "phase": "capture",
+        "target": "reset-submit",
+        "snapshot": true,
+        "visualLast": false,
+        "visualInvalid": false,
+        "liveInvalid": true,
+        "top": 625.234375,
+        "focused": ""
+      },
+      {
+        "type": "click",
+        "phase": "bubble",
+        "snapshot": false,
+        "visualLast": true,
+        "visualInvalid": true,
+        "liveInvalid": true,
+        "top": 655.625,
+        "focused": "mobile-reset-identifier"
+      }
+    ],
+    "state": {
+      "snapshot": false,
+      "visualLast": true,
+      "visualInvalid": true,
+      "liveInvalid": true,
+      "top": 655.625,
+      "focused": "mobile-reset-identifier"
+    }
+  },
+  "api": 0
+}

@@ -1,0 +1,38 @@
+[
+  {
+    "file": "apps/mobile/src/pages/reset-password/reset-password.vue",
+    "reviewedWorkingSha256": "c9a6da864e9ce8933cb5a42b6743ff99551fa433eafe701ea470c760d88cc936",
+    "stagedCanonicalSha256": "f45049f61dbadd5d0ae3353ad3ffa0e7af74238deb1d875d54b2d6f937eb9e97",
+    "onlyRepositoryLFNormalization": true
+  },
+  {
+    "file": "apps/mobile/src/platform/pointer-feedback.ts",
+    "reviewedWorkingSha256": "6464f4c1712b5a0f2fd4ab01d451d5bb6ffaa13bde486826a424511059ef6425",
+    "stagedCanonicalSha256": "6464f4c1712b5a0f2fd4ab01d451d5bb6ffaa13bde486826a424511059ef6425",
+    "onlyRepositoryLFNormalization": false
+  },
+  {
+    "file": "apps/mobile/src/stores/session.ts",
+    "reviewedWorkingSha256": "6cbf1f855f49e389bd03a3eb2e21135c1bd604aad2722469b46bdd49466a5b68",
+    "stagedCanonicalSha256": "6cbf1f855f49e389bd03a3eb2e21135c1bd604aad2722469b46bdd49466a5b68",
+    "onlyRepositoryLFNormalization": false
+  },
+  {
+    "file": "packages/i18n/src/mobile-experience.ts",
+    "reviewedWorkingSha256": "f772bccef324eeac99e3f7b31292040d1353557387aaf6f05d309b74d7ad947d",
+    "stagedCanonicalSha256": "f772bccef324eeac99e3f7b31292040d1353557387aaf6f05d309b74d7ad947d",
+    "onlyRepositoryLFNormalization": false
+  },
+  {
+    "file": "apps/mobile/tests/ui-reset.e2e.cjs",
+    "reviewedWorkingSha256": "fa55aac909f70a3b680921dd15d7ab811324dce87be725d1ae69699fe3223115",
+    "stagedCanonicalSha256": "83f8879f50ba9bc6ec09140a34a93268973eeb32a829293ae63680c5a6bcac99",
+    "onlyRepositoryLFNormalization": true
+  },
+  {
+    "file": "apps/mobile/tests/password-reset-failure-marker.test.mjs",
+    "reviewedWorkingSha256": "64ee2782a15daa1e10d457e09948deb988f6a53251c878ec7b80dba0fda0fe46",
+    "stagedCanonicalSha256": "64ee2782a15daa1e10d457e09948deb988f6a53251c878ec7b80dba0fda0fe46",
+    "onlyRepositoryLFNormalization": false
+  }
+]

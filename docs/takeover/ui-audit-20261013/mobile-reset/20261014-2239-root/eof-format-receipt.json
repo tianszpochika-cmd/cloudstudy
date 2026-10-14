@@ -1,0 +1,37 @@
+[
+  {
+    "file": "docs/takeover/ui-audit-20261013/mobile-reset/20261014-2239-final-interaction/pointer-review.cjs",
+    "beforeSha256": "620ef3008892be13ae475042277a25ca7e31b591e9e34605894b4ee58442d829",
+    "afterSha256": "32b67b8e5de63a319db5316ea7d2888a1b7f51e3615f7ea60424f10a1c914abe",
+    "effectiveCodeUnchanged": true,
+    "change": "Only surplus empty EOF lines removed; original bytes retained in Git-private backup; historical results not rewritten"
+  },
+  {
+    "file": "docs/takeover/ui-audit-20261013/mobile-reset/20261014-c9a6-final-interaction/pointer-review.cjs",
+    "beforeSha256": "3b1751e7e18dfee25dfac71f3bc9b81c926817e7b973e7dfaa02aa1c9c46314d",
+    "afterSha256": "e1a72a0c2d6e99e64f443472410fd1b4fd6e2afa9e6f752a4c5f96e04a11cefb",
+    "effectiveCodeUnchanged": true,
+    "change": "Only surplus empty EOF lines removed; original bytes retained in Git-private backup; historical results not rewritten"
+  },
+  {
+    "file": "docs/takeover/ui-audit-20261013/mobile-reset/20261014-candidate-e008-short-visual/audit.cjs",
+    "beforeSha256": "1fd4a135584138339682699316146d946bc5b9c5dcd892a205c95570c4cc1a26",
+    "afterSha256": "206f319b04c578f5e92e193c966df0a2db3a5f207b95d0034624578d4b698862",
+    "effectiveCodeUnchanged": true,
+    "change": "Only surplus empty EOF lines removed; original bytes retained in Git-private backup; historical results not rewritten"
+  },
+  {
+    "file": "docs/takeover/ui-audit-20261013/mobile-reset/20261014-resume-run3/suite-order-gesture-diagnosis.cjs",
+    "beforeSha256": "e0a8ec6c962165cc13024cdeb798cf5cab14e9e606bf34956ab3337b78733e3d",
+    "afterSha256": "c0cb96236f0b627ddd83afa2540a662fe96902c36ec8d1d9e943793bb08a7274",
+    "effectiveCodeUnchanged": true,
+    "change": "Only surplus empty EOF lines removed; original bytes retained in Git-private backup; historical results not rewritten"
+  },
+  {
+    "file": "docs/takeover/ui-audit-20261013/mobile-reset/20261014-resume-run4/author-pointer-replay.cjs",
+    "beforeSha256": "f42cc299a5898e2981c7685414a625daefba6164ad1dfc5535e2901ebe323020",
+    "afterSha256": "7c5aa48275341aa99c28176ed787f3e4f82e0f5fe09215820d020504113dab28",
+    "effectiveCodeUnchanged": true,
+    "change": "Only surplus empty EOF lines removed; original bytes retained in Git-private backup; historical results not rewritten"
+  }
+]

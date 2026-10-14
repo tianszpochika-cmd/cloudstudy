@@ -1,0 +1,20 @@
+{
+  "scope": "EMPTY_INITIAL_VISUAL_CAPTURE_ONLY",
+  "sourceHashBefore": "c9a6da864e9ce8933cb5a42b6743ff99551fa433eafe701ea470c760d88cc936",
+  "cases": [
+    {
+      "step": "request",
+      "allFieldsEmpty": true,
+      "filename": "reset-request-390-light-initial-empty.png"
+    },
+    {
+      "step": "confirm",
+      "allFieldsEmpty": true,
+      "filename": "reset-confirm-390-light-initial-empty.png"
+    }
+  ],
+  "requests": [],
+  "pageErrors": [],
+  "sourceHashAfter": "c9a6da864e9ce8933cb5a42b6743ff99551fa433eafe701ea470c760d88cc936",
+  "result": "CAPTURE_COMPLETE"
+}

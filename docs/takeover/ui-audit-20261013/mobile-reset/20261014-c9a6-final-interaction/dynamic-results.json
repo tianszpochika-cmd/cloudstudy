@@ -1,0 +1,495 @@
+{
+  "helperHashBefore": "6464f4c1712b5a0f2fd4ab01d451d5bb6ffaa13bde486826a424511059ef6425",
+  "at": "2026-10-14T15:29:05.183Z",
+  "scope": "INDEPENDENT_MB003_CURRENT_HASH_DYNAMIC_H5",
+  "browserAvailability": "Browser plugin not available",
+  "browserFallback": "Playwright 1.63.0; listed browser skill absent",
+  "oldFailureDiagnosis": {
+    "file": "resume-final-interaction/dynamic-review.cjs",
+    "line": 105,
+    "assertion": "receipt DOM count zero",
+    "replacement": "visibility hidden, aria-hidden true, role null, visible count zero, natural height and stable button position"
+  },
+  "sourceHashBefore": "c9a6da864e9ce8933cb5a42b6743ff99551fa433eafe701ea470c760d88cc936",
+  "cases": [
+    {
+      "test": "rapid-native-input",
+      "field": "identifier",
+      "kind": "clear",
+      "activation": "click",
+      "elapsedMs": 0.8000000007450581,
+      "staleModelWindow": true,
+      "nativeLength": 0,
+      "calls": []
+    },
+    {
+      "test": "rapid-native-input",
+      "field": "identifier",
+      "kind": "clear",
+      "activation": "Enter",
+      "elapsedMs": 0.5,
+      "staleModelWindow": true,
+      "nativeLength": 0,
+      "calls": []
+    },
+    {
+      "test": "rapid-native-input",
+      "field": "identifier",
+      "kind": "replace",
+      "activation": "click",
+      "elapsedMs": 0.8999999985098839,
+      "staleModelWindow": true,
+      "nativeLength": 34,
+      "calls": [
+        {
+          "identifierMatches": true,
+          "codeMatches": true,
+          "passwordMatches": true,
+          "codeLength": null
+        }
+      ]
+    },
+    {
+      "test": "rapid-native-input",
+      "field": "identifier",
+      "kind": "replace",
+      "activation": "Enter",
+      "elapsedMs": 0.6000000014901161,
+      "staleModelWindow": true,
+      "nativeLength": 34,
+      "calls": [
+        {
+          "identifierMatches": true,
+          "codeMatches": true,
+          "passwordMatches": true,
+          "codeLength": null
+        }
+      ]
+    },
+    {
+      "test": "rapid-native-input",
+      "field": "token",
+      "kind": "clear",
+      "activation": "click",
+      "elapsedMs": 0.5,
+      "staleModelWindow": true,
+      "nativeLength": 0,
+      "calls": []
+    },
+    {
+      "test": "rapid-native-input",
+      "field": "token",
+      "kind": "clear",
+      "activation": "Enter",
+      "elapsedMs": 0.3999999985098839,
+      "staleModelWindow": true,
+      "nativeLength": 0,
+      "calls": []
+    },
+    {
+      "test": "rapid-native-input",
+      "field": "token",
+      "kind": "replace",
+      "activation": "click",
+      "elapsedMs": 0.8000000007450581,
+      "staleModelWindow": true,
+      "nativeLength": 512,
+      "calls": [
+        {
+          "identifierMatches": true,
+          "codeMatches": true,
+          "passwordMatches": true,
+          "codeLength": 512
+        }
+      ]
+    },
+    {
+      "test": "rapid-native-input",
+      "field": "token",
+      "kind": "replace",
+      "activation": "Enter",
+      "elapsedMs": 0.6999999992549419,
+      "staleModelWindow": true,
+      "nativeLength": 512,
+      "calls": [
+        {
+          "identifierMatches": true,
+          "codeMatches": true,
+          "passwordMatches": true,
+          "codeLength": 512
+        }
+      ]
+    },
+    {
+      "test": "rapid-native-input",
+      "field": "newPassword",
+      "kind": "clear",
+      "activation": "click",
+      "elapsedMs": 0.5999999977648258,
+      "staleModelWindow": true,
+      "nativeLength": 0,
+      "calls": []
+    },
+    {
+      "test": "rapid-native-input",
+      "field": "newPassword",
+      "kind": "clear",
+      "activation": "Enter",
+      "elapsedMs": 0.5,
+      "staleModelWindow": true,
+      "nativeLength": 0,
+      "calls": []
+    },
+    {
+      "test": "rapid-native-input",
+      "field": "newPassword",
+      "kind": "replace",
+      "activation": "click",
+      "elapsedMs": 0.5,
+      "staleModelWindow": true,
+      "nativeLength": 35,
+      "calls": [
+        {
+          "identifierMatches": true,
+          "codeMatches": true,
+          "passwordMatches": true,
+          "codeLength": 32
+        }
+      ]
+    },
+    {
+      "test": "rapid-native-input",
+      "field": "newPassword",
+      "kind": "replace",
+      "activation": "Enter",
+      "elapsedMs": 0.5,
+      "staleModelWindow": true,
+      "nativeLength": 35,
+      "calls": [
+        {
+          "identifierMatches": true,
+          "codeMatches": true,
+          "passwordMatches": true,
+          "codeLength": 32
+        }
+      ]
+    },
+    {
+      "test": "upper-bound-not-truncated",
+      "field": "token",
+      "actualLength": 513,
+      "limit": 512,
+      "requests": 0
+    },
+    {
+      "test": "upper-bound-not-truncated",
+      "field": "newPassword",
+      "actualLength": 129,
+      "limit": 128,
+      "requests": 0
+    },
+    {
+      "test": "upper-bound-not-truncated",
+      "field": "identifier",
+      "actualLength": 129,
+      "limit": 128,
+      "requests": 0
+    },
+    {
+      "test": "step-language-native-lifecycle",
+      "initial": [
+        {
+          "id": "mobile-reset-identifier",
+          "name": "identifier",
+          "autocomplete": "username",
+          "type": "text",
+          "label": "账号",
+          "labelledby": "mobile-reset-identifier-label",
+          "invalid": null,
+          "describedby": null,
+          "maxLength": -1
+        }
+      ],
+      "mounted": [
+        {
+          "id": "mobile-reset-identifier",
+          "name": "identifier",
+          "autocomplete": "username",
+          "type": "text",
+          "label": "账号",
+          "labelledby": "mobile-reset-identifier-label",
+          "invalid": null,
+          "describedby": null,
+          "maxLength": -1
+        },
+        {
+          "id": "mobile-reset-token",
+          "name": "token",
+          "autocomplete": "one-time-code",
+          "type": "text",
+          "label": "重置口令",
+          "labelledby": "mobile-reset-token-label",
+          "invalid": null,
+          "describedby": null,
+          "maxLength": -1
+        },
+        {
+          "id": "mobile-reset-newPassword",
+          "name": "newPassword",
+          "autocomplete": "new-password",
+          "type": "password",
+          "label": "新密码",
+          "labelledby": "mobile-reset-newPassword-label",
+          "invalid": null,
+          "describedby": "mobile-reset-password-hint",
+          "maxLength": -1
+        }
+      ],
+      "english": [
+        {
+          "id": "mobile-reset-identifier",
+          "name": "identifier",
+          "autocomplete": "username",
+          "type": "text",
+          "label": "Account",
+          "labelledby": "mobile-reset-identifier-label",
+          "invalid": null,
+          "describedby": null,
+          "maxLength": -1
+        },
+        {
+          "id": "mobile-reset-token",
+          "name": "token",
+          "autocomplete": "one-time-code",
+          "type": "text",
+          "label": "Reset code",
+          "labelledby": "mobile-reset-token-label",
+          "invalid": null,
+          "describedby": null,
+          "maxLength": -1
+        },
+        {
+          "id": "mobile-reset-newPassword",
+          "name": "newPassword",
+          "autocomplete": "new-password",
+          "type": "password",
+          "label": "New password",
+          "labelledby": "mobile-reset-newPassword-label",
+          "invalid": null,
+          "describedby": "mobile-reset-password-hint",
+          "maxLength": -1
+        }
+      ],
+      "remounted": [
+        {
+          "id": "mobile-reset-identifier",
+          "name": "identifier",
+          "autocomplete": "username",
+          "type": "text",
+          "label": "Account",
+          "labelledby": "mobile-reset-identifier-label",
+          "invalid": null,
+          "describedby": null,
+          "maxLength": -1
+        },
+        {
+          "id": "mobile-reset-token",
+          "name": "token",
+          "autocomplete": "one-time-code",
+          "type": "text",
+          "label": "Reset code",
+          "labelledby": "mobile-reset-token-label",
+          "invalid": null,
+          "describedby": null,
+          "maxLength": -1
+        },
+        {
+          "id": "mobile-reset-newPassword",
+          "name": "newPassword",
+          "autocomplete": "new-password",
+          "type": "password",
+          "label": "New password",
+          "labelledby": "mobile-reset-newPassword-label",
+          "invalid": null,
+          "describedby": "mobile-reset-password-hint",
+          "maxLength": -1
+        }
+      ],
+      "cleared": {
+        "accountRetained": true,
+        "codeEmpty": true,
+        "passwordEmpty": true,
+        "showFalse": true,
+        "errors": 0
+      }
+    },
+    {
+      "test": "real-pointer-correction",
+      "before": {
+        "buttonTop": 594.84375,
+        "errorHeight": 22.390625
+      },
+      "after": {
+        "calls": 1,
+        "matches": true,
+        "trustedPointer": true,
+        "staleAtPointer": true,
+        "elapsedMs": 1.8999999985098839,
+        "buttonTop": 641.234375,
+        "errorHeight": 22.390625,
+        "rowHidden": true,
+        "rowAriaHidden": true,
+        "describedBy": "mobile-reset-password-hint"
+      }
+    },
+    {
+      "test": "request-fixture",
+      "scenario": "202",
+      "message": "申请已受理。若收到重置邮件，请按邮件指引操作。",
+      "counts": {
+        "request": 1,
+        "confirm": 0
+      }
+    },
+    {
+      "test": "accepted-receipt-edit-withdraws-visible-state-keeps-natural-space",
+      "oldHarnessLine": 105,
+      "beforeButtonTop": 379.375,
+      "after": {
+        "domCount": 1,
+        "visibility": "hidden",
+        "ariaHidden": "true",
+        "role": null,
+        "height": 24.5,
+        "buttonTop": 379.375,
+        "visibleCount": 0
+      }
+    },
+    {
+      "test": "request-fixture",
+      "scenario": "429",
+      "message": "操作过于频繁，请稍后再试。",
+      "counts": {
+        "request": 2,
+        "confirm": 0
+      }
+    },
+    {
+      "test": "request-fixture",
+      "scenario": "503",
+      "message": "发送没有完成，请稍后再试。",
+      "counts": {
+        "request": 3,
+        "confirm": 0
+      }
+    },
+    {
+      "test": "request-fixture",
+      "scenario": "abort",
+      "message": "发送没有完成，请稍后再试。",
+      "counts": {
+        "request": 4,
+        "confirm": 0
+      }
+    },
+    {
+      "test": "confirm-busy-guard-and-marker-distinction",
+      "protectedState": {
+        "stepUnchanged": true,
+        "showUnchanged": true,
+        "fieldsPreserved": true,
+        "route": "#/pages/reset-password/reset-password"
+      },
+      "unknown401Neutral": true,
+      "explicitInvalid401": true,
+      "confirmRequests": 2
+    },
+    {
+      "test": "synthetic204-clears-fields-and-return",
+      "accountCleared": true,
+      "codeCleared": true,
+      "passwordCleared": true,
+      "showCleared": true,
+      "inputsRemoved": true,
+      "message": "密码已重置。请返回登录，使用新密码继续学习。",
+      "route": "#/pages/login/login"
+    },
+    {
+      "test": "code-deep-link-safe-return",
+      "encoding": "single",
+      "codeLength": 32,
+      "returnMatches": true,
+      "route": "#/pages/login/login"
+    },
+    {
+      "test": "code-deep-link-safe-return",
+      "encoding": "double",
+      "codeLength": 32,
+      "returnMatches": true,
+      "route": "#/pages/login/login"
+    },
+    {
+      "test": "code-deep-link-safe-return",
+      "encoding": "external",
+      "codeLength": 32,
+      "returnMatches": true,
+      "route": "#/pages/login/login"
+    }
+  ],
+  "pageErrors": [],
+  "expectedConsoleErrors": 5,
+  "unexpectedConsoleErrors": 0,
+  "requests": [
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/password-reset/request",
+      "scenario": "202"
+    },
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/password-reset/request",
+      "scenario": "429"
+    },
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/password-reset/request",
+      "scenario": "503"
+    },
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/password-reset/request",
+      "scenario": "abort"
+    },
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/password-reset/confirm",
+      "scenario": "unknown401"
+    },
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/password-reset/confirm",
+      "scenario": "invalid401"
+    },
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/password-reset/confirm",
+      "scenario": "204"
+    }
+  ],
+  "helperHashAfter": "6464f4c1712b5a0f2fd4ab01d451d5bb6ffaa13bde486826a424511059ef6425",
+  "sourceHashAfter": "c9a6da864e9ce8933cb5a42b6743ff99551fa433eafe701ea470c760d88cc936",
+  "result": "UI_SCOPE_PASS",
+  "unverified": [
+    "real IAM/accounts/mail/business reset",
+    "native iOS/Android/iPad and mini-program",
+    "physical screen reader/keyboard",
+    "native credential clearing"
+  ]
+}
