@@ -1,0 +1,12 @@
+{
+  "scenario": "short to valid, immediate real Playwright pointer click after correction",
+  "beforeTop": 625.234375,
+  "submitObservedTop": 625.234375,
+  "fieldGaps": [
+    24,
+    24
+  ],
+  "apiRequests": 1,
+  "invalid": null,
+  "status": "PASS_REAL_POINTER_CORRECTION"
+}

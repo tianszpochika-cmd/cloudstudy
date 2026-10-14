@@ -4,6 +4,8 @@
 
 **11:10额度恢复后的收口**：冻结源码哈希一致，独立审者已完成[最终复签](../20261014-final-review/review.md)，`UI_SCOPE_PASS`。6组0.6–1.1ms即时输入、无detail保值、原生语义/busy、初次合法等待无占位、英文精确200%错误高度与超过10秒等待，共13独立分组通过。根Agent实际查看最终390等待与英文200%清理截图，接受本页具名UI范围；推送收据随后记录。以上追加不改暂停时的历史状态或旧FAIL。
 
+补修单页提交`46c5106d10f66fceb1fdcaff65e2af85c4f676e2`已推送origin/dev-redesign，随即ls-remote核对同一SHA。该收据只覆盖本页具名UI差量，不表示部署或真实后台重签。
+
 ## 实际问题与补修
 
 MB-002 发现 uni-h5 原生输入向页面 v-model 的更新节流100ms，随后对已推 MB-001 实际复现同族问题：两个原生 input 事件、blur、提交在1.2ms内完成；登录 action 收到 leading 旧值，未消费最终输入。隔离 action stub 仅记录相等布尔值；同期 uni-form `detail.value.password` 与 blur `detail.value` 均是最新输入。没有读取请求 body、Token、Cookie、认证存储或真实凭据。

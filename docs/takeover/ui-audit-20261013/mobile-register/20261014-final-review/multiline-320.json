@@ -1,0 +1,55 @@
+{
+  "width": 320,
+  "locale": "en-US",
+  "textScale": 2,
+  "before": {
+    "errorRows": [
+      {
+        "height": 41.59375,
+        "hidden": "false",
+        "role": "alert",
+        "visibility": "visible"
+      },
+      {
+        "height": 41.59375,
+        "hidden": "false",
+        "role": "alert",
+        "visibility": "visible"
+      },
+      {
+        "height": 83.1875,
+        "hidden": "false",
+        "role": "alert",
+        "visibility": "visible"
+      }
+    ],
+    "buttonTop": 673.921875,
+    "overflow": false
+  },
+  "after": {
+    "errorRows": [
+      {
+        "height": 41.59375,
+        "hidden": "true",
+        "role": null,
+        "visibility": "hidden"
+      },
+      {
+        "height": 41.59375,
+        "hidden": "true",
+        "role": null,
+        "visibility": "hidden"
+      },
+      {
+        "height": 83.1875,
+        "hidden": "true",
+        "role": null,
+        "visibility": "hidden"
+      }
+    ],
+    "buttonTop": 673.921875,
+    "overflow": false
+  },
+  "apiRequests": 0,
+  "status": "PASS_MULTILINE_NATURAL_HEIGHT"
+}

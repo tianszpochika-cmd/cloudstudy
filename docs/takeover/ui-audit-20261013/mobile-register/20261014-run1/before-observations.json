@@ -1,0 +1,36 @@
+{
+  "at": "2026-10-13T19:46:32.970Z",
+  "url": "http://127.0.0.1:18183/#/pages/register/register?theme=light&uiLocale=zh-CN",
+  "api": "fully intercepted rejection; no real backend calls",
+  "before": {
+    "nativeInputs": [
+      {
+        "type": "text",
+        "id": "",
+        "name": "",
+        "autocomplete": "off",
+        "ariaLabel": null,
+        "ariaInvalid": null
+      },
+      {
+        "type": "password",
+        "id": "",
+        "name": "",
+        "autocomplete": "off",
+        "ariaLabel": null,
+        "ariaInvalid": null
+      },
+      {
+        "type": "password",
+        "id": "",
+        "name": "",
+        "autocomplete": "off",
+        "ariaLabel": null,
+        "ariaInvalid": null
+      }
+    ],
+    "emptySubmitFocus": "UNI-BUTTON",
+    "emptySubmitAlert": "请输入账号和密码。",
+    "visual": "decorative hero, repeated brand/title/hints; main action below 800px"
+  }
+}

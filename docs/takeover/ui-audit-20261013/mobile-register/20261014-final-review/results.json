@@ -1,0 +1,3118 @@
+{
+  "scope": "MB002_INDEPENDENT_FINAL_UI_REVIEW",
+  "at": "2026-10-14T03:16:12.499Z",
+  "browser": "Playwright Chromium; Browser plugin/skill unavailable",
+  "sourceHashes": {
+    "apps/mobile/src/pages/register/register.vue": "46171faacf15f103dd3063568cd0f903d10825ca283bd7dc674571c0073d76bd",
+    "packages/i18n/src/mobile-experience.ts": "c2a883b5ec6bb7b2efe79f3e820c675895a397bf123951481514543963dddb18",
+    "apps/mobile/src/theme/v2-tokens.scss": "561d1b8bead07c1c09ecf6c2bec0b4eee4151d5ae1b15e9cc755f84fac855869",
+    "apps/mobile/src/theme/v2-icons.ts": "93951db891ef4997dc071482176ce2c1b5801c600c5315bbcf915691ef164ba5",
+    "apps/mobile/src/uni.scss": "0bd56842fc5baebd8767e721f2d938986e293d1d87bfc74bb087b3c228f638d7"
+  },
+  "matrix": [
+    {
+      "width": 320,
+      "locale": "zh-CN",
+      "requestedTheme": "light",
+      "url": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=light",
+      "title": "创建账号",
+      "theme": "light",
+      "overflow": false,
+      "formWidth": 272,
+      "titleFont": "28px",
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "submitTop": 564.453125,
+      "contrasts": {
+        ".register-title": 14.171267244103936,
+        ".register-description": 5.504103371100126,
+        ".register-adult-note": 5.504103371100126,
+        ".register-password-hint": 5.504103371100126,
+        ".register-label": 14.171267244103936,
+        ".register-text-button": 7.3582589983975835,
+        ".register-submit": 7.996499985642157
+      },
+      "errorRows": [],
+      "targets": [
+        {
+          "top": 363.265625,
+          "bottom": 407.265625,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 494.453125,
+          "bottom": 538.453125,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 564.453125,
+          "bottom": 614.453125,
+          "width": 272,
+          "height": 50
+        },
+        {
+          "top": 659.453125,
+          "bottom": 703.453125,
+          "width": 44,
+          "height": 44
+        }
+      ],
+      "inputs": [
+        {
+          "name": "identifier",
+          "autocomplete": "username",
+          "label": "账号",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "password",
+          "autocomplete": "new-password",
+          "label": "密码",
+          "invalid": null,
+          "description": "mobile-register-password-hint"
+        },
+        {
+          "name": "confirm",
+          "autocomplete": "new-password",
+          "label": "确认密码",
+          "invalid": null,
+          "description": null
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 320,
+      "locale": "zh-CN",
+      "requestedTheme": "dark",
+      "url": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=dark",
+      "title": "创建账号",
+      "theme": "dark",
+      "overflow": false,
+      "formWidth": 272,
+      "titleFont": "28px",
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "submitTop": 564.453125,
+      "contrasts": {
+        ".register-title": 15.923775297667023,
+        ".register-description": 9.357719562635204,
+        ".register-adult-note": 9.357719562635204,
+        ".register-password-hint": 9.357719562635204,
+        ".register-label": 15.923775297667023,
+        ".register-text-button": 8.98015130138188,
+        ".register-submit": 8.176495938166001
+      },
+      "errorRows": [],
+      "targets": [
+        {
+          "top": 363.265625,
+          "bottom": 407.265625,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 494.453125,
+          "bottom": 538.453125,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 564.453125,
+          "bottom": 614.453125,
+          "width": 272,
+          "height": 50
+        },
+        {
+          "top": 659.453125,
+          "bottom": 703.453125,
+          "width": 44,
+          "height": 44
+        }
+      ],
+      "inputs": [
+        {
+          "name": "identifier",
+          "autocomplete": "username",
+          "label": "账号",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "password",
+          "autocomplete": "new-password",
+          "label": "密码",
+          "invalid": null,
+          "description": "mobile-register-password-hint"
+        },
+        {
+          "name": "confirm",
+          "autocomplete": "new-password",
+          "label": "确认密码",
+          "invalid": null,
+          "description": null
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 320,
+      "locale": "zh-CN",
+      "requestedTheme": "high-contrast",
+      "url": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=high-contrast",
+      "title": "创建账号",
+      "theme": "high-contrast",
+      "overflow": false,
+      "formWidth": 272,
+      "titleFont": "28px",
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "submitTop": 564.453125,
+      "contrasts": {
+        ".register-title": 21,
+        ".register-description": 16.822650673503315,
+        ".register-adult-note": 16.822650673503315,
+        ".register-password-hint": 16.822650673503315,
+        ".register-label": 21,
+        ".register-text-button": 11.31039533489464,
+        ".register-submit": 11.31039533489464
+      },
+      "errorRows": [],
+      "targets": [
+        {
+          "top": 363.265625,
+          "bottom": 407.265625,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 494.453125,
+          "bottom": 538.453125,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 564.453125,
+          "bottom": 614.453125,
+          "width": 272,
+          "height": 50
+        },
+        {
+          "top": 659.453125,
+          "bottom": 703.453125,
+          "width": 44,
+          "height": 44
+        }
+      ],
+      "inputs": [
+        {
+          "name": "identifier",
+          "autocomplete": "username",
+          "label": "账号",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "password",
+          "autocomplete": "new-password",
+          "label": "密码",
+          "invalid": null,
+          "description": "mobile-register-password-hint"
+        },
+        {
+          "name": "confirm",
+          "autocomplete": "new-password",
+          "label": "确认密码",
+          "invalid": null,
+          "description": null
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 320,
+      "locale": "zh-CN",
+      "requestedTheme": "system",
+      "url": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=system",
+      "title": "创建账号",
+      "theme": "light",
+      "overflow": false,
+      "formWidth": 272,
+      "titleFont": "28px",
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "submitTop": 564.453125,
+      "contrasts": {
+        ".register-title": 14.171267244103936,
+        ".register-description": 5.504103371100126,
+        ".register-adult-note": 5.504103371100126,
+        ".register-password-hint": 5.504103371100126,
+        ".register-label": 14.171267244103936,
+        ".register-text-button": 7.3582589983975835,
+        ".register-submit": 7.996499985642157
+      },
+      "errorRows": [],
+      "targets": [
+        {
+          "top": 363.265625,
+          "bottom": 407.265625,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 494.453125,
+          "bottom": 538.453125,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 564.453125,
+          "bottom": 614.453125,
+          "width": 272,
+          "height": 50
+        },
+        {
+          "top": 659.453125,
+          "bottom": 703.453125,
+          "width": 44,
+          "height": 44
+        }
+      ],
+      "inputs": [
+        {
+          "name": "identifier",
+          "autocomplete": "username",
+          "label": "账号",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "password",
+          "autocomplete": "new-password",
+          "label": "密码",
+          "invalid": null,
+          "description": "mobile-register-password-hint"
+        },
+        {
+          "name": "confirm",
+          "autocomplete": "new-password",
+          "label": "确认密码",
+          "invalid": null,
+          "description": null
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 320,
+      "locale": "en-US",
+      "requestedTheme": "light",
+      "url": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=en-US&theme=light",
+      "title": "Create account",
+      "theme": "light",
+      "overflow": false,
+      "formWidth": 272,
+      "titleFont": "28px",
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "submitTop": 588.953125,
+      "contrasts": {
+        ".register-title": 14.171267244103936,
+        ".register-description": 5.504103371100126,
+        ".register-adult-note": 5.504103371100126,
+        ".register-password-hint": 5.504103371100126,
+        ".register-label": 14.171267244103936,
+        ".register-text-button": 7.3582589983975835,
+        ".register-submit": 7.996499985642157
+      },
+      "errorRows": [],
+      "targets": [
+        {
+          "top": 387.765625,
+          "bottom": 431.765625,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 518.953125,
+          "bottom": 562.953125,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 588.953125,
+          "bottom": 638.953125,
+          "width": 272,
+          "height": 50
+        },
+        {
+          "top": 683.953125,
+          "bottom": 727.953125,
+          "width": 45.890625,
+          "height": 44
+        }
+      ],
+      "inputs": [
+        {
+          "name": "identifier",
+          "autocomplete": "username",
+          "label": "Account",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "password",
+          "autocomplete": "new-password",
+          "label": "Password",
+          "invalid": null,
+          "description": "mobile-register-password-hint"
+        },
+        {
+          "name": "confirm",
+          "autocomplete": "new-password",
+          "label": "Confirm password",
+          "invalid": null,
+          "description": null
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 320,
+      "locale": "en-US",
+      "requestedTheme": "dark",
+      "url": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=en-US&theme=dark",
+      "title": "Create account",
+      "theme": "dark",
+      "overflow": false,
+      "formWidth": 272,
+      "titleFont": "28px",
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "submitTop": 588.953125,
+      "contrasts": {
+        ".register-title": 15.923775297667023,
+        ".register-description": 9.357719562635204,
+        ".register-adult-note": 9.357719562635204,
+        ".register-password-hint": 9.357719562635204,
+        ".register-label": 15.923775297667023,
+        ".register-text-button": 8.98015130138188,
+        ".register-submit": 8.176495938166001
+      },
+      "errorRows": [],
+      "targets": [
+        {
+          "top": 387.765625,
+          "bottom": 431.765625,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 518.953125,
+          "bottom": 562.953125,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 588.953125,
+          "bottom": 638.953125,
+          "width": 272,
+          "height": 50
+        },
+        {
+          "top": 683.953125,
+          "bottom": 727.953125,
+          "width": 45.890625,
+          "height": 44
+        }
+      ],
+      "inputs": [
+        {
+          "name": "identifier",
+          "autocomplete": "username",
+          "label": "Account",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "password",
+          "autocomplete": "new-password",
+          "label": "Password",
+          "invalid": null,
+          "description": "mobile-register-password-hint"
+        },
+        {
+          "name": "confirm",
+          "autocomplete": "new-password",
+          "label": "Confirm password",
+          "invalid": null,
+          "description": null
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 320,
+      "locale": "en-US",
+      "requestedTheme": "high-contrast",
+      "url": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=en-US&theme=high-contrast",
+      "title": "Create account",
+      "theme": "high-contrast",
+      "overflow": false,
+      "formWidth": 272,
+      "titleFont": "28px",
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "submitTop": 588.953125,
+      "contrasts": {
+        ".register-title": 21,
+        ".register-description": 16.822650673503315,
+        ".register-adult-note": 16.822650673503315,
+        ".register-password-hint": 16.822650673503315,
+        ".register-label": 21,
+        ".register-text-button": 11.31039533489464,
+        ".register-submit": 11.31039533489464
+      },
+      "errorRows": [],
+      "targets": [
+        {
+          "top": 387.765625,
+          "bottom": 431.765625,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 518.953125,
+          "bottom": 562.953125,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 588.953125,
+          "bottom": 638.953125,
+          "width": 272,
+          "height": 50
+        },
+        {
+          "top": 683.953125,
+          "bottom": 727.953125,
+          "width": 45.890625,
+          "height": 44
+        }
+      ],
+      "inputs": [
+        {
+          "name": "identifier",
+          "autocomplete": "username",
+          "label": "Account",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "password",
+          "autocomplete": "new-password",
+          "label": "Password",
+          "invalid": null,
+          "description": "mobile-register-password-hint"
+        },
+        {
+          "name": "confirm",
+          "autocomplete": "new-password",
+          "label": "Confirm password",
+          "invalid": null,
+          "description": null
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 320,
+      "locale": "en-US",
+      "requestedTheme": "system",
+      "url": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=en-US&theme=system",
+      "title": "Create account",
+      "theme": "light",
+      "overflow": false,
+      "formWidth": 272,
+      "titleFont": "28px",
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "submitTop": 588.953125,
+      "contrasts": {
+        ".register-title": 14.171267244103936,
+        ".register-description": 5.504103371100126,
+        ".register-adult-note": 5.504103371100126,
+        ".register-password-hint": 5.504103371100126,
+        ".register-label": 14.171267244103936,
+        ".register-text-button": 7.3582589983975835,
+        ".register-submit": 7.996499985642157
+      },
+      "errorRows": [],
+      "targets": [
+        {
+          "top": 387.765625,
+          "bottom": 431.765625,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 518.953125,
+          "bottom": 562.953125,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 588.953125,
+          "bottom": 638.953125,
+          "width": 272,
+          "height": 50
+        },
+        {
+          "top": 683.953125,
+          "bottom": 727.953125,
+          "width": 45.890625,
+          "height": 44
+        }
+      ],
+      "inputs": [
+        {
+          "name": "identifier",
+          "autocomplete": "username",
+          "label": "Account",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "password",
+          "autocomplete": "new-password",
+          "label": "Password",
+          "invalid": null,
+          "description": "mobile-register-password-hint"
+        },
+        {
+          "name": "confirm",
+          "autocomplete": "new-password",
+          "label": "Confirm password",
+          "invalid": null,
+          "description": null
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 390,
+      "locale": "zh-CN",
+      "requestedTheme": "light",
+      "url": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=light",
+      "title": "创建账号",
+      "theme": "light",
+      "overflow": false,
+      "formWidth": 342,
+      "titleFont": "28px",
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "submitTop": 564.453125,
+      "contrasts": {
+        ".register-title": 14.171267244103936,
+        ".register-description": 5.504103371100126,
+        ".register-adult-note": 5.504103371100126,
+        ".register-password-hint": 5.504103371100126,
+        ".register-label": 14.171267244103936,
+        ".register-text-button": 7.3582589983975835,
+        ".register-submit": 7.996499985642157
+      },
+      "errorRows": [],
+      "targets": [
+        {
+          "top": 363.265625,
+          "bottom": 407.265625,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 494.453125,
+          "bottom": 538.453125,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 564.453125,
+          "bottom": 614.453125,
+          "width": 342,
+          "height": 50
+        },
+        {
+          "top": 659.453125,
+          "bottom": 703.453125,
+          "width": 44,
+          "height": 44
+        }
+      ],
+      "inputs": [
+        {
+          "name": "identifier",
+          "autocomplete": "username",
+          "label": "账号",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "password",
+          "autocomplete": "new-password",
+          "label": "密码",
+          "invalid": null,
+          "description": "mobile-register-password-hint"
+        },
+        {
+          "name": "confirm",
+          "autocomplete": "new-password",
+          "label": "确认密码",
+          "invalid": null,
+          "description": null
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 390,
+      "locale": "zh-CN",
+      "requestedTheme": "dark",
+      "url": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=dark",
+      "title": "创建账号",
+      "theme": "dark",
+      "overflow": false,
+      "formWidth": 342,
+      "titleFont": "28px",
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "submitTop": 564.453125,
+      "contrasts": {
+        ".register-title": 15.923775297667023,
+        ".register-description": 9.357719562635204,
+        ".register-adult-note": 9.357719562635204,
+        ".register-password-hint": 9.357719562635204,
+        ".register-label": 15.923775297667023,
+        ".register-text-button": 8.98015130138188,
+        ".register-submit": 8.176495938166001
+      },
+      "errorRows": [],
+      "targets": [
+        {
+          "top": 363.265625,
+          "bottom": 407.265625,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 494.453125,
+          "bottom": 538.453125,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 564.453125,
+          "bottom": 614.453125,
+          "width": 342,
+          "height": 50
+        },
+        {
+          "top": 659.453125,
+          "bottom": 703.453125,
+          "width": 44,
+          "height": 44
+        }
+      ],
+      "inputs": [
+        {
+          "name": "identifier",
+          "autocomplete": "username",
+          "label": "账号",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "password",
+          "autocomplete": "new-password",
+          "label": "密码",
+          "invalid": null,
+          "description": "mobile-register-password-hint"
+        },
+        {
+          "name": "confirm",
+          "autocomplete": "new-password",
+          "label": "确认密码",
+          "invalid": null,
+          "description": null
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 390,
+      "locale": "zh-CN",
+      "requestedTheme": "high-contrast",
+      "url": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=high-contrast",
+      "title": "创建账号",
+      "theme": "high-contrast",
+      "overflow": false,
+      "formWidth": 342,
+      "titleFont": "28px",
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "submitTop": 564.453125,
+      "contrasts": {
+        ".register-title": 21,
+        ".register-description": 16.822650673503315,
+        ".register-adult-note": 16.822650673503315,
+        ".register-password-hint": 16.822650673503315,
+        ".register-label": 21,
+        ".register-text-button": 11.31039533489464,
+        ".register-submit": 11.31039533489464
+      },
+      "errorRows": [],
+      "targets": [
+        {
+          "top": 363.265625,
+          "bottom": 407.265625,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 494.453125,
+          "bottom": 538.453125,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 564.453125,
+          "bottom": 614.453125,
+          "width": 342,
+          "height": 50
+        },
+        {
+          "top": 659.453125,
+          "bottom": 703.453125,
+          "width": 44,
+          "height": 44
+        }
+      ],
+      "inputs": [
+        {
+          "name": "identifier",
+          "autocomplete": "username",
+          "label": "账号",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "password",
+          "autocomplete": "new-password",
+          "label": "密码",
+          "invalid": null,
+          "description": "mobile-register-password-hint"
+        },
+        {
+          "name": "confirm",
+          "autocomplete": "new-password",
+          "label": "确认密码",
+          "invalid": null,
+          "description": null
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 390,
+      "locale": "zh-CN",
+      "requestedTheme": "system",
+      "url": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=system",
+      "title": "创建账号",
+      "theme": "light",
+      "overflow": false,
+      "formWidth": 342,
+      "titleFont": "28px",
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "submitTop": 564.453125,
+      "contrasts": {
+        ".register-title": 14.171267244103936,
+        ".register-description": 5.504103371100126,
+        ".register-adult-note": 5.504103371100126,
+        ".register-password-hint": 5.504103371100126,
+        ".register-label": 14.171267244103936,
+        ".register-text-button": 7.3582589983975835,
+        ".register-submit": 7.996499985642157
+      },
+      "errorRows": [],
+      "targets": [
+        {
+          "top": 363.265625,
+          "bottom": 407.265625,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 494.453125,
+          "bottom": 538.453125,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 564.453125,
+          "bottom": 614.453125,
+          "width": 342,
+          "height": 50
+        },
+        {
+          "top": 659.453125,
+          "bottom": 703.453125,
+          "width": 44,
+          "height": 44
+        }
+      ],
+      "inputs": [
+        {
+          "name": "identifier",
+          "autocomplete": "username",
+          "label": "账号",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "password",
+          "autocomplete": "new-password",
+          "label": "密码",
+          "invalid": null,
+          "description": "mobile-register-password-hint"
+        },
+        {
+          "name": "confirm",
+          "autocomplete": "new-password",
+          "label": "确认密码",
+          "invalid": null,
+          "description": null
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 390,
+      "locale": "en-US",
+      "requestedTheme": "light",
+      "url": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=en-US&theme=light",
+      "title": "Create account",
+      "theme": "light",
+      "overflow": false,
+      "formWidth": 342,
+      "titleFont": "28px",
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "submitTop": 564.453125,
+      "contrasts": {
+        ".register-title": 14.171267244103936,
+        ".register-description": 5.504103371100126,
+        ".register-adult-note": 5.504103371100126,
+        ".register-password-hint": 5.504103371100126,
+        ".register-label": 14.171267244103936,
+        ".register-text-button": 7.3582589983975835,
+        ".register-submit": 7.996499985642157
+      },
+      "errorRows": [],
+      "targets": [
+        {
+          "top": 363.265625,
+          "bottom": 407.265625,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 494.453125,
+          "bottom": 538.453125,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 564.453125,
+          "bottom": 614.453125,
+          "width": 342,
+          "height": 50
+        },
+        {
+          "top": 659.453125,
+          "bottom": 703.453125,
+          "width": 45.890625,
+          "height": 44
+        }
+      ],
+      "inputs": [
+        {
+          "name": "identifier",
+          "autocomplete": "username",
+          "label": "Account",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "password",
+          "autocomplete": "new-password",
+          "label": "Password",
+          "invalid": null,
+          "description": "mobile-register-password-hint"
+        },
+        {
+          "name": "confirm",
+          "autocomplete": "new-password",
+          "label": "Confirm password",
+          "invalid": null,
+          "description": null
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 390,
+      "locale": "en-US",
+      "requestedTheme": "dark",
+      "url": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=en-US&theme=dark",
+      "title": "Create account",
+      "theme": "dark",
+      "overflow": false,
+      "formWidth": 342,
+      "titleFont": "28px",
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "submitTop": 564.453125,
+      "contrasts": {
+        ".register-title": 15.923775297667023,
+        ".register-description": 9.357719562635204,
+        ".register-adult-note": 9.357719562635204,
+        ".register-password-hint": 9.357719562635204,
+        ".register-label": 15.923775297667023,
+        ".register-text-button": 8.98015130138188,
+        ".register-submit": 8.176495938166001
+      },
+      "errorRows": [],
+      "targets": [
+        {
+          "top": 363.265625,
+          "bottom": 407.265625,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 494.453125,
+          "bottom": 538.453125,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 564.453125,
+          "bottom": 614.453125,
+          "width": 342,
+          "height": 50
+        },
+        {
+          "top": 659.453125,
+          "bottom": 703.453125,
+          "width": 45.890625,
+          "height": 44
+        }
+      ],
+      "inputs": [
+        {
+          "name": "identifier",
+          "autocomplete": "username",
+          "label": "Account",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "password",
+          "autocomplete": "new-password",
+          "label": "Password",
+          "invalid": null,
+          "description": "mobile-register-password-hint"
+        },
+        {
+          "name": "confirm",
+          "autocomplete": "new-password",
+          "label": "Confirm password",
+          "invalid": null,
+          "description": null
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 390,
+      "locale": "en-US",
+      "requestedTheme": "high-contrast",
+      "url": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=en-US&theme=high-contrast",
+      "title": "Create account",
+      "theme": "high-contrast",
+      "overflow": false,
+      "formWidth": 342,
+      "titleFont": "28px",
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "submitTop": 564.453125,
+      "contrasts": {
+        ".register-title": 21,
+        ".register-description": 16.822650673503315,
+        ".register-adult-note": 16.822650673503315,
+        ".register-password-hint": 16.822650673503315,
+        ".register-label": 21,
+        ".register-text-button": 11.31039533489464,
+        ".register-submit": 11.31039533489464
+      },
+      "errorRows": [],
+      "targets": [
+        {
+          "top": 363.265625,
+          "bottom": 407.265625,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 494.453125,
+          "bottom": 538.453125,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 564.453125,
+          "bottom": 614.453125,
+          "width": 342,
+          "height": 50
+        },
+        {
+          "top": 659.453125,
+          "bottom": 703.453125,
+          "width": 45.890625,
+          "height": 44
+        }
+      ],
+      "inputs": [
+        {
+          "name": "identifier",
+          "autocomplete": "username",
+          "label": "Account",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "password",
+          "autocomplete": "new-password",
+          "label": "Password",
+          "invalid": null,
+          "description": "mobile-register-password-hint"
+        },
+        {
+          "name": "confirm",
+          "autocomplete": "new-password",
+          "label": "Confirm password",
+          "invalid": null,
+          "description": null
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 390,
+      "locale": "en-US",
+      "requestedTheme": "system",
+      "url": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=en-US&theme=system",
+      "title": "Create account",
+      "theme": "light",
+      "overflow": false,
+      "formWidth": 342,
+      "titleFont": "28px",
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "submitTop": 564.453125,
+      "contrasts": {
+        ".register-title": 14.171267244103936,
+        ".register-description": 5.504103371100126,
+        ".register-adult-note": 5.504103371100126,
+        ".register-password-hint": 5.504103371100126,
+        ".register-label": 14.171267244103936,
+        ".register-text-button": 7.3582589983975835,
+        ".register-submit": 7.996499985642157
+      },
+      "errorRows": [],
+      "targets": [
+        {
+          "top": 363.265625,
+          "bottom": 407.265625,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 494.453125,
+          "bottom": 538.453125,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 564.453125,
+          "bottom": 614.453125,
+          "width": 342,
+          "height": 50
+        },
+        {
+          "top": 659.453125,
+          "bottom": 703.453125,
+          "width": 45.890625,
+          "height": 44
+        }
+      ],
+      "inputs": [
+        {
+          "name": "identifier",
+          "autocomplete": "username",
+          "label": "Account",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "password",
+          "autocomplete": "new-password",
+          "label": "Password",
+          "invalid": null,
+          "description": "mobile-register-password-hint"
+        },
+        {
+          "name": "confirm",
+          "autocomplete": "new-password",
+          "label": "Confirm password",
+          "invalid": null,
+          "description": null
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 768,
+      "locale": "zh-CN",
+      "requestedTheme": "light",
+      "url": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=light",
+      "title": "创建账号",
+      "theme": "light",
+      "overflow": false,
+      "formWidth": 420,
+      "titleFont": "28px",
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "submitTop": 595.65625,
+      "contrasts": {
+        ".register-title": 14.171267244103936,
+        ".register-description": 5.504103371100126,
+        ".register-adult-note": 5.504103371100126,
+        ".register-password-hint": 5.504103371100126,
+        ".register-label": 14.171267244103936,
+        ".register-text-button": 7.3582589983975835,
+        ".register-submit": 7.996499985642157
+      },
+      "errorRows": [],
+      "targets": [
+        {
+          "top": 394.46875,
+          "bottom": 438.46875,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 525.65625,
+          "bottom": 569.65625,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 595.65625,
+          "bottom": 645.65625,
+          "width": 420,
+          "height": 50
+        },
+        {
+          "top": 690.65625,
+          "bottom": 734.65625,
+          "width": 44,
+          "height": 44
+        }
+      ],
+      "inputs": [
+        {
+          "name": "identifier",
+          "autocomplete": "username",
+          "label": "账号",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "password",
+          "autocomplete": "new-password",
+          "label": "密码",
+          "invalid": null,
+          "description": "mobile-register-password-hint"
+        },
+        {
+          "name": "confirm",
+          "autocomplete": "new-password",
+          "label": "确认密码",
+          "invalid": null,
+          "description": null
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 768,
+      "locale": "zh-CN",
+      "requestedTheme": "dark",
+      "url": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=dark",
+      "title": "创建账号",
+      "theme": "dark",
+      "overflow": false,
+      "formWidth": 420,
+      "titleFont": "28px",
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "submitTop": 595.65625,
+      "contrasts": {
+        ".register-title": 15.923775297667023,
+        ".register-description": 9.357719562635204,
+        ".register-adult-note": 9.357719562635204,
+        ".register-password-hint": 9.357719562635204,
+        ".register-label": 15.923775297667023,
+        ".register-text-button": 8.98015130138188,
+        ".register-submit": 8.176495938166001
+      },
+      "errorRows": [],
+      "targets": [
+        {
+          "top": 394.46875,
+          "bottom": 438.46875,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 525.65625,
+          "bottom": 569.65625,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 595.65625,
+          "bottom": 645.65625,
+          "width": 420,
+          "height": 50
+        },
+        {
+          "top": 690.65625,
+          "bottom": 734.65625,
+          "width": 44,
+          "height": 44
+        }
+      ],
+      "inputs": [
+        {
+          "name": "identifier",
+          "autocomplete": "username",
+          "label": "账号",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "password",
+          "autocomplete": "new-password",
+          "label": "密码",
+          "invalid": null,
+          "description": "mobile-register-password-hint"
+        },
+        {
+          "name": "confirm",
+          "autocomplete": "new-password",
+          "label": "确认密码",
+          "invalid": null,
+          "description": null
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 768,
+      "locale": "zh-CN",
+      "requestedTheme": "high-contrast",
+      "url": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=high-contrast",
+      "title": "创建账号",
+      "theme": "high-contrast",
+      "overflow": false,
+      "formWidth": 420,
+      "titleFont": "28px",
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "submitTop": 595.65625,
+      "contrasts": {
+        ".register-title": 21,
+        ".register-description": 16.822650673503315,
+        ".register-adult-note": 16.822650673503315,
+        ".register-password-hint": 16.822650673503315,
+        ".register-label": 21,
+        ".register-text-button": 11.31039533489464,
+        ".register-submit": 11.31039533489464
+      },
+      "errorRows": [],
+      "targets": [
+        {
+          "top": 394.46875,
+          "bottom": 438.46875,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 525.65625,
+          "bottom": 569.65625,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 595.65625,
+          "bottom": 645.65625,
+          "width": 420,
+          "height": 50
+        },
+        {
+          "top": 690.65625,
+          "bottom": 734.65625,
+          "width": 44,
+          "height": 44
+        }
+      ],
+      "inputs": [
+        {
+          "name": "identifier",
+          "autocomplete": "username",
+          "label": "账号",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "password",
+          "autocomplete": "new-password",
+          "label": "密码",
+          "invalid": null,
+          "description": "mobile-register-password-hint"
+        },
+        {
+          "name": "confirm",
+          "autocomplete": "new-password",
+          "label": "确认密码",
+          "invalid": null,
+          "description": null
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 768,
+      "locale": "zh-CN",
+      "requestedTheme": "system",
+      "url": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=system",
+      "title": "创建账号",
+      "theme": "light",
+      "overflow": false,
+      "formWidth": 420,
+      "titleFont": "28px",
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "submitTop": 595.65625,
+      "contrasts": {
+        ".register-title": 14.171267244103936,
+        ".register-description": 5.504103371100126,
+        ".register-adult-note": 5.504103371100126,
+        ".register-password-hint": 5.504103371100126,
+        ".register-label": 14.171267244103936,
+        ".register-text-button": 7.3582589983975835,
+        ".register-submit": 7.996499985642157
+      },
+      "errorRows": [],
+      "targets": [
+        {
+          "top": 394.46875,
+          "bottom": 438.46875,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 525.65625,
+          "bottom": 569.65625,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 595.65625,
+          "bottom": 645.65625,
+          "width": 420,
+          "height": 50
+        },
+        {
+          "top": 690.65625,
+          "bottom": 734.65625,
+          "width": 44,
+          "height": 44
+        }
+      ],
+      "inputs": [
+        {
+          "name": "identifier",
+          "autocomplete": "username",
+          "label": "账号",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "password",
+          "autocomplete": "new-password",
+          "label": "密码",
+          "invalid": null,
+          "description": "mobile-register-password-hint"
+        },
+        {
+          "name": "confirm",
+          "autocomplete": "new-password",
+          "label": "确认密码",
+          "invalid": null,
+          "description": null
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 768,
+      "locale": "en-US",
+      "requestedTheme": "light",
+      "url": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=en-US&theme=light",
+      "title": "Create account",
+      "theme": "light",
+      "overflow": false,
+      "formWidth": 420,
+      "titleFont": "28px",
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "submitTop": 595.65625,
+      "contrasts": {
+        ".register-title": 14.171267244103936,
+        ".register-description": 5.504103371100126,
+        ".register-adult-note": 5.504103371100126,
+        ".register-password-hint": 5.504103371100126,
+        ".register-label": 14.171267244103936,
+        ".register-text-button": 7.3582589983975835,
+        ".register-submit": 7.996499985642157
+      },
+      "errorRows": [],
+      "targets": [
+        {
+          "top": 394.46875,
+          "bottom": 438.46875,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 525.65625,
+          "bottom": 569.65625,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 595.65625,
+          "bottom": 645.65625,
+          "width": 420,
+          "height": 50
+        },
+        {
+          "top": 690.65625,
+          "bottom": 734.65625,
+          "width": 45.890625,
+          "height": 44
+        }
+      ],
+      "inputs": [
+        {
+          "name": "identifier",
+          "autocomplete": "username",
+          "label": "Account",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "password",
+          "autocomplete": "new-password",
+          "label": "Password",
+          "invalid": null,
+          "description": "mobile-register-password-hint"
+        },
+        {
+          "name": "confirm",
+          "autocomplete": "new-password",
+          "label": "Confirm password",
+          "invalid": null,
+          "description": null
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 768,
+      "locale": "en-US",
+      "requestedTheme": "dark",
+      "url": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=en-US&theme=dark",
+      "title": "Create account",
+      "theme": "dark",
+      "overflow": false,
+      "formWidth": 420,
+      "titleFont": "28px",
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "submitTop": 595.65625,
+      "contrasts": {
+        ".register-title": 15.923775297667023,
+        ".register-description": 9.357719562635204,
+        ".register-adult-note": 9.357719562635204,
+        ".register-password-hint": 9.357719562635204,
+        ".register-label": 15.923775297667023,
+        ".register-text-button": 8.98015130138188,
+        ".register-submit": 8.176495938166001
+      },
+      "errorRows": [],
+      "targets": [
+        {
+          "top": 394.46875,
+          "bottom": 438.46875,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 525.65625,
+          "bottom": 569.65625,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 595.65625,
+          "bottom": 645.65625,
+          "width": 420,
+          "height": 50
+        },
+        {
+          "top": 690.65625,
+          "bottom": 734.65625,
+          "width": 45.890625,
+          "height": 44
+        }
+      ],
+      "inputs": [
+        {
+          "name": "identifier",
+          "autocomplete": "username",
+          "label": "Account",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "password",
+          "autocomplete": "new-password",
+          "label": "Password",
+          "invalid": null,
+          "description": "mobile-register-password-hint"
+        },
+        {
+          "name": "confirm",
+          "autocomplete": "new-password",
+          "label": "Confirm password",
+          "invalid": null,
+          "description": null
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 768,
+      "locale": "en-US",
+      "requestedTheme": "high-contrast",
+      "url": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=en-US&theme=high-contrast",
+      "title": "Create account",
+      "theme": "high-contrast",
+      "overflow": false,
+      "formWidth": 420,
+      "titleFont": "28px",
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "submitTop": 595.65625,
+      "contrasts": {
+        ".register-title": 21,
+        ".register-description": 16.822650673503315,
+        ".register-adult-note": 16.822650673503315,
+        ".register-password-hint": 16.822650673503315,
+        ".register-label": 21,
+        ".register-text-button": 11.31039533489464,
+        ".register-submit": 11.31039533489464
+      },
+      "errorRows": [],
+      "targets": [
+        {
+          "top": 394.46875,
+          "bottom": 438.46875,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 525.65625,
+          "bottom": 569.65625,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 595.65625,
+          "bottom": 645.65625,
+          "width": 420,
+          "height": 50
+        },
+        {
+          "top": 690.65625,
+          "bottom": 734.65625,
+          "width": 45.890625,
+          "height": 44
+        }
+      ],
+      "inputs": [
+        {
+          "name": "identifier",
+          "autocomplete": "username",
+          "label": "Account",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "password",
+          "autocomplete": "new-password",
+          "label": "Password",
+          "invalid": null,
+          "description": "mobile-register-password-hint"
+        },
+        {
+          "name": "confirm",
+          "autocomplete": "new-password",
+          "label": "Confirm password",
+          "invalid": null,
+          "description": null
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 768,
+      "locale": "en-US",
+      "requestedTheme": "system",
+      "url": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=en-US&theme=system",
+      "title": "Create account",
+      "theme": "light",
+      "overflow": false,
+      "formWidth": 420,
+      "titleFont": "28px",
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "submitTop": 595.65625,
+      "contrasts": {
+        ".register-title": 14.171267244103936,
+        ".register-description": 5.504103371100126,
+        ".register-adult-note": 5.504103371100126,
+        ".register-password-hint": 5.504103371100126,
+        ".register-label": 14.171267244103936,
+        ".register-text-button": 7.3582589983975835,
+        ".register-submit": 7.996499985642157
+      },
+      "errorRows": [],
+      "targets": [
+        {
+          "top": 394.46875,
+          "bottom": 438.46875,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 525.65625,
+          "bottom": 569.65625,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 595.65625,
+          "bottom": 645.65625,
+          "width": 420,
+          "height": 50
+        },
+        {
+          "top": 690.65625,
+          "bottom": 734.65625,
+          "width": 45.890625,
+          "height": 44
+        }
+      ],
+      "inputs": [
+        {
+          "name": "identifier",
+          "autocomplete": "username",
+          "label": "Account",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "password",
+          "autocomplete": "new-password",
+          "label": "Password",
+          "invalid": null,
+          "description": "mobile-register-password-hint"
+        },
+        {
+          "name": "confirm",
+          "autocomplete": "new-password",
+          "label": "Confirm password",
+          "invalid": null,
+          "description": null
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 1280,
+      "locale": "zh-CN",
+      "requestedTheme": "light",
+      "url": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=light",
+      "title": "创建账号",
+      "theme": "light",
+      "overflow": false,
+      "formWidth": 420,
+      "titleFont": "28px",
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "submitTop": 595.65625,
+      "contrasts": {
+        ".register-title": 14.171267244103936,
+        ".register-description": 5.504103371100126,
+        ".register-adult-note": 5.504103371100126,
+        ".register-password-hint": 5.504103371100126,
+        ".register-label": 14.171267244103936,
+        ".register-text-button": 7.3582589983975835,
+        ".register-submit": 7.996499985642157
+      },
+      "errorRows": [],
+      "targets": [
+        {
+          "top": 394.46875,
+          "bottom": 438.46875,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 525.65625,
+          "bottom": 569.65625,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 595.65625,
+          "bottom": 645.65625,
+          "width": 420,
+          "height": 50
+        },
+        {
+          "top": 690.65625,
+          "bottom": 734.65625,
+          "width": 44,
+          "height": 44
+        }
+      ],
+      "inputs": [
+        {
+          "name": "identifier",
+          "autocomplete": "username",
+          "label": "账号",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "password",
+          "autocomplete": "new-password",
+          "label": "密码",
+          "invalid": null,
+          "description": "mobile-register-password-hint"
+        },
+        {
+          "name": "confirm",
+          "autocomplete": "new-password",
+          "label": "确认密码",
+          "invalid": null,
+          "description": null
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 1280,
+      "locale": "zh-CN",
+      "requestedTheme": "dark",
+      "url": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=dark",
+      "title": "创建账号",
+      "theme": "dark",
+      "overflow": false,
+      "formWidth": 420,
+      "titleFont": "28px",
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "submitTop": 595.65625,
+      "contrasts": {
+        ".register-title": 15.923775297667023,
+        ".register-description": 9.357719562635204,
+        ".register-adult-note": 9.357719562635204,
+        ".register-password-hint": 9.357719562635204,
+        ".register-label": 15.923775297667023,
+        ".register-text-button": 8.98015130138188,
+        ".register-submit": 8.176495938166001
+      },
+      "errorRows": [],
+      "targets": [
+        {
+          "top": 394.46875,
+          "bottom": 438.46875,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 525.65625,
+          "bottom": 569.65625,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 595.65625,
+          "bottom": 645.65625,
+          "width": 420,
+          "height": 50
+        },
+        {
+          "top": 690.65625,
+          "bottom": 734.65625,
+          "width": 44,
+          "height": 44
+        }
+      ],
+      "inputs": [
+        {
+          "name": "identifier",
+          "autocomplete": "username",
+          "label": "账号",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "password",
+          "autocomplete": "new-password",
+          "label": "密码",
+          "invalid": null,
+          "description": "mobile-register-password-hint"
+        },
+        {
+          "name": "confirm",
+          "autocomplete": "new-password",
+          "label": "确认密码",
+          "invalid": null,
+          "description": null
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 1280,
+      "locale": "zh-CN",
+      "requestedTheme": "high-contrast",
+      "url": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=high-contrast",
+      "title": "创建账号",
+      "theme": "high-contrast",
+      "overflow": false,
+      "formWidth": 420,
+      "titleFont": "28px",
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "submitTop": 595.65625,
+      "contrasts": {
+        ".register-title": 21,
+        ".register-description": 16.822650673503315,
+        ".register-adult-note": 16.822650673503315,
+        ".register-password-hint": 16.822650673503315,
+        ".register-label": 21,
+        ".register-text-button": 11.31039533489464,
+        ".register-submit": 11.31039533489464
+      },
+      "errorRows": [],
+      "targets": [
+        {
+          "top": 394.46875,
+          "bottom": 438.46875,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 525.65625,
+          "bottom": 569.65625,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 595.65625,
+          "bottom": 645.65625,
+          "width": 420,
+          "height": 50
+        },
+        {
+          "top": 690.65625,
+          "bottom": 734.65625,
+          "width": 44,
+          "height": 44
+        }
+      ],
+      "inputs": [
+        {
+          "name": "identifier",
+          "autocomplete": "username",
+          "label": "账号",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "password",
+          "autocomplete": "new-password",
+          "label": "密码",
+          "invalid": null,
+          "description": "mobile-register-password-hint"
+        },
+        {
+          "name": "confirm",
+          "autocomplete": "new-password",
+          "label": "确认密码",
+          "invalid": null,
+          "description": null
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 1280,
+      "locale": "zh-CN",
+      "requestedTheme": "system",
+      "url": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=system",
+      "title": "创建账号",
+      "theme": "light",
+      "overflow": false,
+      "formWidth": 420,
+      "titleFont": "28px",
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "submitTop": 595.65625,
+      "contrasts": {
+        ".register-title": 14.171267244103936,
+        ".register-description": 5.504103371100126,
+        ".register-adult-note": 5.504103371100126,
+        ".register-password-hint": 5.504103371100126,
+        ".register-label": 14.171267244103936,
+        ".register-text-button": 7.3582589983975835,
+        ".register-submit": 7.996499985642157
+      },
+      "errorRows": [],
+      "targets": [
+        {
+          "top": 394.46875,
+          "bottom": 438.46875,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 525.65625,
+          "bottom": 569.65625,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 595.65625,
+          "bottom": 645.65625,
+          "width": 420,
+          "height": 50
+        },
+        {
+          "top": 690.65625,
+          "bottom": 734.65625,
+          "width": 44,
+          "height": 44
+        }
+      ],
+      "inputs": [
+        {
+          "name": "identifier",
+          "autocomplete": "username",
+          "label": "账号",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "password",
+          "autocomplete": "new-password",
+          "label": "密码",
+          "invalid": null,
+          "description": "mobile-register-password-hint"
+        },
+        {
+          "name": "confirm",
+          "autocomplete": "new-password",
+          "label": "确认密码",
+          "invalid": null,
+          "description": null
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 1280,
+      "locale": "en-US",
+      "requestedTheme": "light",
+      "url": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=en-US&theme=light",
+      "title": "Create account",
+      "theme": "light",
+      "overflow": false,
+      "formWidth": 420,
+      "titleFont": "28px",
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "submitTop": 595.65625,
+      "contrasts": {
+        ".register-title": 14.171267244103936,
+        ".register-description": 5.504103371100126,
+        ".register-adult-note": 5.504103371100126,
+        ".register-password-hint": 5.504103371100126,
+        ".register-label": 14.171267244103936,
+        ".register-text-button": 7.3582589983975835,
+        ".register-submit": 7.996499985642157
+      },
+      "errorRows": [],
+      "targets": [
+        {
+          "top": 394.46875,
+          "bottom": 438.46875,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 525.65625,
+          "bottom": 569.65625,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 595.65625,
+          "bottom": 645.65625,
+          "width": 420,
+          "height": 50
+        },
+        {
+          "top": 690.65625,
+          "bottom": 734.65625,
+          "width": 45.890625,
+          "height": 44
+        }
+      ],
+      "inputs": [
+        {
+          "name": "identifier",
+          "autocomplete": "username",
+          "label": "Account",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "password",
+          "autocomplete": "new-password",
+          "label": "Password",
+          "invalid": null,
+          "description": "mobile-register-password-hint"
+        },
+        {
+          "name": "confirm",
+          "autocomplete": "new-password",
+          "label": "Confirm password",
+          "invalid": null,
+          "description": null
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 1280,
+      "locale": "en-US",
+      "requestedTheme": "dark",
+      "url": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=en-US&theme=dark",
+      "title": "Create account",
+      "theme": "dark",
+      "overflow": false,
+      "formWidth": 420,
+      "titleFont": "28px",
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "submitTop": 595.65625,
+      "contrasts": {
+        ".register-title": 15.923775297667023,
+        ".register-description": 9.357719562635204,
+        ".register-adult-note": 9.357719562635204,
+        ".register-password-hint": 9.357719562635204,
+        ".register-label": 15.923775297667023,
+        ".register-text-button": 8.98015130138188,
+        ".register-submit": 8.176495938166001
+      },
+      "errorRows": [],
+      "targets": [
+        {
+          "top": 394.46875,
+          "bottom": 438.46875,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 525.65625,
+          "bottom": 569.65625,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 595.65625,
+          "bottom": 645.65625,
+          "width": 420,
+          "height": 50
+        },
+        {
+          "top": 690.65625,
+          "bottom": 734.65625,
+          "width": 45.890625,
+          "height": 44
+        }
+      ],
+      "inputs": [
+        {
+          "name": "identifier",
+          "autocomplete": "username",
+          "label": "Account",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "password",
+          "autocomplete": "new-password",
+          "label": "Password",
+          "invalid": null,
+          "description": "mobile-register-password-hint"
+        },
+        {
+          "name": "confirm",
+          "autocomplete": "new-password",
+          "label": "Confirm password",
+          "invalid": null,
+          "description": null
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 1280,
+      "locale": "en-US",
+      "requestedTheme": "high-contrast",
+      "url": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=en-US&theme=high-contrast",
+      "title": "Create account",
+      "theme": "high-contrast",
+      "overflow": false,
+      "formWidth": 420,
+      "titleFont": "28px",
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "submitTop": 595.65625,
+      "contrasts": {
+        ".register-title": 21,
+        ".register-description": 16.822650673503315,
+        ".register-adult-note": 16.822650673503315,
+        ".register-password-hint": 16.822650673503315,
+        ".register-label": 21,
+        ".register-text-button": 11.31039533489464,
+        ".register-submit": 11.31039533489464
+      },
+      "errorRows": [],
+      "targets": [
+        {
+          "top": 394.46875,
+          "bottom": 438.46875,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 525.65625,
+          "bottom": 569.65625,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 595.65625,
+          "bottom": 645.65625,
+          "width": 420,
+          "height": 50
+        },
+        {
+          "top": 690.65625,
+          "bottom": 734.65625,
+          "width": 45.890625,
+          "height": 44
+        }
+      ],
+      "inputs": [
+        {
+          "name": "identifier",
+          "autocomplete": "username",
+          "label": "Account",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "password",
+          "autocomplete": "new-password",
+          "label": "Password",
+          "invalid": null,
+          "description": "mobile-register-password-hint"
+        },
+        {
+          "name": "confirm",
+          "autocomplete": "new-password",
+          "label": "Confirm password",
+          "invalid": null,
+          "description": null
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 1280,
+      "locale": "en-US",
+      "requestedTheme": "system",
+      "url": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=en-US&theme=system",
+      "title": "Create account",
+      "theme": "light",
+      "overflow": false,
+      "formWidth": 420,
+      "titleFont": "28px",
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "submitTop": 595.65625,
+      "contrasts": {
+        ".register-title": 14.171267244103936,
+        ".register-description": 5.504103371100126,
+        ".register-adult-note": 5.504103371100126,
+        ".register-password-hint": 5.504103371100126,
+        ".register-label": 14.171267244103936,
+        ".register-text-button": 7.3582589983975835,
+        ".register-submit": 7.996499985642157
+      },
+      "errorRows": [],
+      "targets": [
+        {
+          "top": 394.46875,
+          "bottom": 438.46875,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 525.65625,
+          "bottom": 569.65625,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "top": 595.65625,
+          "bottom": 645.65625,
+          "width": 420,
+          "height": 50
+        },
+        {
+          "top": 690.65625,
+          "bottom": 734.65625,
+          "width": 45.890625,
+          "height": 44
+        }
+      ],
+      "inputs": [
+        {
+          "name": "identifier",
+          "autocomplete": "username",
+          "label": "Account",
+          "invalid": null,
+          "description": null
+        },
+        {
+          "name": "password",
+          "autocomplete": "new-password",
+          "label": "Password",
+          "invalid": null,
+          "description": "mobile-register-password-hint"
+        },
+        {
+          "name": "confirm",
+          "autocomplete": "new-password",
+          "label": "Confirm password",
+          "invalid": null,
+          "description": null
+        }
+      ],
+      "status": "PASS"
+    }
+  ],
+  "states": [
+    {
+      "locale": "zh-CN",
+      "textScale": 2,
+      "before": {
+        "url": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=light",
+        "title": "创建账号",
+        "theme": "light",
+        "overflow": false,
+        "formWidth": 342,
+        "titleFont": "56px",
+        "inputFonts": [
+          "32px",
+          "32px",
+          "32px"
+        ],
+        "fieldGaps": [
+          24,
+          24
+        ],
+        "actionGap": 24,
+        "submitTop": 772.75,
+        "contrasts": {
+          ".register-title": 14.171267244103936,
+          ".register-description": 5.504103371100126,
+          ".register-adult-note": 5.504103371100126,
+          ".register-password-hint": 5.504103371100126,
+          ".register-label": 14.171267244103936,
+          ".register-text-button": 7.3582589983975835,
+          ".register-submit": 7.996499985642157
+        },
+        "errorRows": [
+          {
+            "top": 260.78125,
+            "bottom": 302.375,
+            "width": 342,
+            "height": 41.59375,
+            "hidden": "false",
+            "role": "alert",
+            "visibility": "visible",
+            "contrast": 5.956263209720332
+          },
+          {
+            "top": 508.765625,
+            "bottom": 550.359375,
+            "width": 342,
+            "height": 41.59375,
+            "hidden": "false",
+            "role": "alert",
+            "visibility": "visible",
+            "contrast": 5.956263209720332
+          },
+          {
+            "top": 707.15625,
+            "bottom": 748.75,
+            "width": 342,
+            "height": 41.59375,
+            "hidden": "false",
+            "role": "alert",
+            "visibility": "visible",
+            "contrast": 5.956263209720332
+          }
+        ],
+        "targets": [
+          {
+            "top": 393.171875,
+            "bottom": 437.171875,
+            "width": 44,
+            "height": 44
+          },
+          {
+            "top": 641.15625,
+            "bottom": 685.15625,
+            "width": 44,
+            "height": 44
+          },
+          {
+            "top": 772.75,
+            "bottom": 846.75,
+            "width": 342,
+            "height": 74
+          },
+          {
+            "top": 891.75,
+            "bottom": 952.546875,
+            "width": 56,
+            "height": 60.796875
+          }
+        ],
+        "inputs": [
+          {
+            "name": "identifier",
+            "autocomplete": "username",
+            "label": "账号",
+            "invalid": "true",
+            "description": "mobile-register-identifier-error"
+          },
+          {
+            "name": "password",
+            "autocomplete": "new-password",
+            "label": "密码",
+            "invalid": "true",
+            "description": "mobile-register-password-hint mobile-register-password-error"
+          },
+          {
+            "name": "confirm",
+            "autocomplete": "new-password",
+            "label": "确认密码",
+            "invalid": "true",
+            "description": "mobile-register-confirm-error"
+          }
+        ]
+      },
+      "after": {
+        "url": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=light",
+        "title": "创建账号",
+        "theme": "light",
+        "overflow": false,
+        "formWidth": 342,
+        "titleFont": "56px",
+        "inputFonts": [
+          "32px",
+          "32px",
+          "32px"
+        ],
+        "fieldGaps": [
+          24,
+          24
+        ],
+        "actionGap": 24,
+        "submitTop": 772.75,
+        "contrasts": {
+          ".register-title": 14.171267244103936,
+          ".register-description": 5.504103371100126,
+          ".register-adult-note": 5.504103371100126,
+          ".register-password-hint": 5.504103371100126,
+          ".register-label": 14.171267244103936,
+          ".register-text-button": 7.3582589983975835,
+          ".register-submit": 7.996499985642157
+        },
+        "errorRows": [
+          {
+            "top": 260.78125,
+            "bottom": 302.375,
+            "width": 342,
+            "height": 41.59375,
+            "hidden": "true",
+            "role": null,
+            "visibility": "hidden",
+            "contrast": 5.956263209720332
+          },
+          {
+            "top": 508.765625,
+            "bottom": 550.359375,
+            "width": 342,
+            "height": 41.59375,
+            "hidden": "true",
+            "role": null,
+            "visibility": "hidden",
+            "contrast": 5.956263209720332
+          },
+          {
+            "top": 707.15625,
+            "bottom": 748.75,
+            "width": 342,
+            "height": 41.59375,
+            "hidden": "true",
+            "role": null,
+            "visibility": "hidden",
+            "contrast": 5.956263209720332
+          }
+        ],
+        "targets": [
+          {
+            "top": 393.171875,
+            "bottom": 437.171875,
+            "width": 44,
+            "height": 44
+          },
+          {
+            "top": 641.15625,
+            "bottom": 685.15625,
+            "width": 44,
+            "height": 44
+          },
+          {
+            "top": 772.75,
+            "bottom": 846.75,
+            "width": 342,
+            "height": 74
+          },
+          {
+            "top": 891.75,
+            "bottom": 952.546875,
+            "width": 56,
+            "height": 60.796875
+          }
+        ],
+        "inputs": [
+          {
+            "name": "identifier",
+            "autocomplete": "username",
+            "label": "账号",
+            "invalid": null,
+            "description": null
+          },
+          {
+            "name": "password",
+            "autocomplete": "new-password",
+            "label": "密码",
+            "invalid": null,
+            "description": "mobile-register-password-hint"
+          },
+          {
+            "name": "confirm",
+            "autocomplete": "new-password",
+            "label": "确认密码",
+            "invalid": null,
+            "description": null
+          }
+        ]
+      },
+      "zeroApiRequests": true,
+      "status": "PASS"
+    },
+    {
+      "locale": "en-US",
+      "textScale": 2,
+      "before": {
+        "url": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=en-US&theme=light",
+        "title": "Create account",
+        "theme": "light",
+        "overflow": false,
+        "formWidth": 342,
+        "titleFont": "56px",
+        "inputFonts": [
+          "32px",
+          "32px",
+          "32px"
+        ],
+        "fieldGaps": [
+          24,
+          24
+        ],
+        "actionGap": 24,
+        "submitTop": 723.734375,
+        "contrasts": {
+          ".register-title": 14.171267244103936,
+          ".register-description": 5.504103371100126,
+          ".register-adult-note": 5.504103371100126,
+          ".register-password-hint": 5.504103371100126,
+          ".register-label": 14.171267244103936,
+          ".register-text-button": 7.3582589983975835,
+          ".register-submit": 7.996499985642157
+        },
+        "errorRows": [
+          {
+            "top": 211.765625,
+            "bottom": 253.359375,
+            "width": 342,
+            "height": 41.59375,
+            "hidden": "false",
+            "role": "alert",
+            "visibility": "visible",
+            "contrast": 5.956263209720332
+          },
+          {
+            "top": 459.75,
+            "bottom": 501.34375,
+            "width": 342,
+            "height": 41.59375,
+            "hidden": "false",
+            "role": "alert",
+            "visibility": "visible",
+            "contrast": 5.956263209720332
+          },
+          {
+            "top": 658.140625,
+            "bottom": 699.734375,
+            "width": 342,
+            "height": 41.59375,
+            "hidden": "false",
+            "role": "alert",
+            "visibility": "visible",
+            "contrast": 5.956263209720332
+          }
+        ],
+        "targets": [
+          {
+            "top": 344.15625,
+            "bottom": 388.15625,
+            "width": 44,
+            "height": 44
+          },
+          {
+            "top": 592.140625,
+            "bottom": 636.140625,
+            "width": 44,
+            "height": 44
+          },
+          {
+            "top": 723.734375,
+            "bottom": 797.734375,
+            "width": 342,
+            "height": 74
+          },
+          {
+            "top": 891.53125,
+            "bottom": 952.328125,
+            "width": 91.765625,
+            "height": 60.796875
+          }
+        ],
+        "inputs": [
+          {
+            "name": "identifier",
+            "autocomplete": "username",
+            "label": "Account",
+            "invalid": "true",
+            "description": "mobile-register-identifier-error"
+          },
+          {
+            "name": "password",
+            "autocomplete": "new-password",
+            "label": "Password",
+            "invalid": "true",
+            "description": "mobile-register-password-hint mobile-register-password-error"
+          },
+          {
+            "name": "confirm",
+            "autocomplete": "new-password",
+            "label": "Confirm password",
+            "invalid": "true",
+            "description": "mobile-register-confirm-error"
+          }
+        ]
+      },
+      "after": {
+        "url": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=en-US&theme=light",
+        "title": "Create account",
+        "theme": "light",
+        "overflow": false,
+        "formWidth": 342,
+        "titleFont": "56px",
+        "inputFonts": [
+          "32px",
+          "32px",
+          "32px"
+        ],
+        "fieldGaps": [
+          24,
+          24
+        ],
+        "actionGap": 24,
+        "submitTop": 723.734375,
+        "contrasts": {
+          ".register-title": 14.171267244103936,
+          ".register-description": 5.504103371100126,
+          ".register-adult-note": 5.504103371100126,
+          ".register-password-hint": 5.504103371100126,
+          ".register-label": 14.171267244103936,
+          ".register-text-button": 7.3582589983975835,
+          ".register-submit": 7.996499985642157
+        },
+        "errorRows": [
+          {
+            "top": 211.765625,
+            "bottom": 253.359375,
+            "width": 342,
+            "height": 41.59375,
+            "hidden": "true",
+            "role": null,
+            "visibility": "hidden",
+            "contrast": 5.956263209720332
+          },
+          {
+            "top": 459.75,
+            "bottom": 501.34375,
+            "width": 342,
+            "height": 41.59375,
+            "hidden": "true",
+            "role": null,
+            "visibility": "hidden",
+            "contrast": 5.956263209720332
+          },
+          {
+            "top": 658.140625,
+            "bottom": 699.734375,
+            "width": 342,
+            "height": 41.59375,
+            "hidden": "true",
+            "role": null,
+            "visibility": "hidden",
+            "contrast": 5.956263209720332
+          }
+        ],
+        "targets": [
+          {
+            "top": 344.15625,
+            "bottom": 388.15625,
+            "width": 44,
+            "height": 44
+          },
+          {
+            "top": 592.140625,
+            "bottom": 636.140625,
+            "width": 44,
+            "height": 44
+          },
+          {
+            "top": 723.734375,
+            "bottom": 797.734375,
+            "width": 342,
+            "height": 74
+          },
+          {
+            "top": 891.53125,
+            "bottom": 952.328125,
+            "width": 91.765625,
+            "height": 60.796875
+          }
+        ],
+        "inputs": [
+          {
+            "name": "identifier",
+            "autocomplete": "username",
+            "label": "Account",
+            "invalid": null,
+            "description": null
+          },
+          {
+            "name": "password",
+            "autocomplete": "new-password",
+            "label": "Password",
+            "invalid": null,
+            "description": "mobile-register-password-hint"
+          },
+          {
+            "name": "confirm",
+            "autocomplete": "new-password",
+            "label": "Confirm password",
+            "invalid": null,
+            "description": null
+          }
+        ]
+      },
+      "zeroApiRequests": true,
+      "status": "PASS"
+    }
+  ],
+  "quickInput": [
+    {
+      "activation": "click",
+      "elapsedMs": 0.7000000029802322,
+      "modelStillOld": true,
+      "calls": [
+        {
+          "identifierMatches": true,
+          "latestPasswordConsumed": true
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "activation": "Enter",
+      "elapsedMs": 0.6000000014901161,
+      "modelStillOld": true,
+      "calls": [
+        {
+          "identifierMatches": true,
+          "latestPasswordConsumed": true
+        }
+      ],
+      "status": "PASS"
+    }
+  ],
+  "pageErrors": [],
+  "consoleErrors": [],
+  "apiRequests": [],
+  "status": "PASS_INDEPENDENT_UI_SCOPE"
+}
