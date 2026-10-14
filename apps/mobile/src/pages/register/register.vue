@@ -4,6 +4,7 @@ import { openUniPage } from '../../platform/uni-runtime'
 import { mobileT, useMobileExperience } from '../../platform/experience'
 import { onLoad, onShow } from '@dcloudio/uni-app'
 import { computed, nextTick, onMounted, ref, watch } from 'vue'
+import { usePointerFeedback } from '../../platform/pointer-feedback'
 import { continueAfterLogin } from '../../auth/navigation'
 import { safeMobileRouteReturnTo } from '../../auth/gateway-auth'
 import { mobileAuthFailureCopy } from '../../auth/auth-failure-copy'
@@ -29,26 +30,59 @@ const submitting = ref(false)
 const validationAttempted = ref(false)
 const serverFailure = ref<unknown | null>(null)
 const serverError = computed(() => serverFailure.value === null ? null : mobileAuthFailureCopy('register', serverFailure.value, mobileT))
-const identifierError = computed(() => validationAttempted.value && !identifier.value.trim() ? mobileT('auth.register.requiredIdentifier') : null)
+const identifierError = computed(() => {
+  if (!validationAttempted.value) return null
+  const length = identifier.value.trim().length
+  if (!length) return mobileT('auth.register.requiredIdentifier')
+  return length < 3 || length > 128 ? mobileT('auth.register.identifierLength') : null
+})
 const passwordError = computed(() => {
   if (!validationAttempted.value) return null
   if (!password.value) return mobileT('auth.register.requiredPassword')
-  return password.value.length < 12 ? mobileT('auth.register.shortPassword') : null
+  if (password.value.length < 12) return mobileT('auth.register.shortPassword')
+  return password.value.length > 128 ? mobileT('auth.register.passwordLength') : null
 })
 const confirmError = computed(() => {
   if (!validationAttempted.value) return null
   if (!confirm.value) return mobileT('auth.register.requiredConfirm')
   return password.value !== confirm.value ? mobileT('auth.register.mismatch') : null
 })
-// Preserve each reported error line's natural space while the user corrects it.
-// A blur can flush uni's input value between pointerdown and click; removing
-// that line immediately would move the submit button out from under the pointer.
+// Keep reported errors at their natural height during editing. Blur or submit
+// reports current messages; corrected fields hide text while retaining space.
 const lastIdentifierError = ref('')
 const lastPasswordError = ref('')
 const lastConfirmError = ref('')
-watch(identifierError, (value) => { if (value) lastIdentifierError.value = value })
-watch(passwordError, (value) => { if (value) lastPasswordError.value = value })
-watch(confirmError, (value) => { if (value) lastConfirmError.value = value })
+function reportFieldErrors(): void {
+  if (submitting.value) return
+  if (identifierError.value) lastIdentifierError.value = identifierError.value
+  if (passwordError.value) lastPasswordError.value = passwordError.value
+  if (confirmError.value) lastConfirmError.value = confirmError.value
+}
+watch([identifierError, passwordError, confirmError], () => { if (focusedField.value === null) reportFieldErrors() })
+function currentFeedback() {
+  return {
+    active: validationAttempted.value,
+    fields: {
+      identifier: { current: identifierError.value ? lastIdentifierError.value || null : null, last: lastIdentifierError.value },
+      password: { current: passwordError.value ? lastPasswordError.value || null : null, last: lastPasswordError.value },
+      confirm: { current: confirmError.value ? lastConfirmError.value || null : null, last: lastConfirmError.value },
+    },
+    server: serverError.value,
+  }
+}
+const pageRoot = ref<{ $el?: HTMLElement } | null>(null)
+const pointerFeedback = usePointerFeedback({
+  root: () => pageRoot.value?.$el ?? null,
+  actions: '.register-submit,.register-text-button,.register-password-toggle',
+  capture: currentFeedback,
+  disabled: () => submitting.value,
+  afterRelease: () => {
+    // #ifdef H5
+    syncNativeInputs()
+    // #endif
+  },
+})
+const visualFeedback = computed(() => pointerFeedback.value ?? currentFeedback())
 let passwordControls = 'mobile-register-password-host'
 let confirmControls = 'mobile-register-confirm-host'
 // #ifdef H5
@@ -60,7 +94,7 @@ confirmControls = 'mobile-register-confirm'
 function syncNativeInput(host: { $el?: HTMLElement } | null, kind: Field): void {
   const input = host?.$el?.querySelector<HTMLInputElement>('.uni-input-input')
   if (!input) return
-  const fieldError = kind === 'identifier' ? identifierError.value : kind === 'password' ? passwordError.value : confirmError.value
+  const fieldError = visualFeedback.value.fields[kind].current
   const description = [kind === 'password' ? 'mobile-register-password-hint' : null, fieldError ? `mobile-register-${kind}-error` : null].filter(Boolean).join(' ')
   const attributes: Record<string, string | null> = {
     id: `mobile-register-${kind}`,
@@ -69,7 +103,7 @@ function syncNativeInput(host: { $el?: HTMLElement } | null, kind: Field): void 
     autocapitalize: 'none',
     spellcheck: 'false',
     required: '',
-    minlength: kind === 'password' ? '12' : null,
+    minlength: kind === 'identifier' ? '3' : kind === 'password' ? '12' : null,
     'aria-label': mobileT(`auth.register.${kind === 'confirm' ? 'confirmPassword' : kind}`),
     'aria-labelledby': `mobile-register-${kind}-label`,
     'aria-invalid': fieldError ? 'true' : null,
@@ -87,7 +121,7 @@ function syncNativeInputs(): void {
 }
 watch([
   identifier, password, confirm, identifierError, passwordError, confirmError,
-  showPassword, showConfirm, focusedField, submitting,
+  showPassword, showConfirm, focusedField, submitting, visualFeedback,
   () => mobileT('auth.register.identifier'), () => mobileT('auth.register.password'), () => mobileT('auth.register.confirmPassword'),
 ], async () => { await nextTick(); syncNativeInputs() }, { flush: 'post' })
 // #endif
@@ -126,6 +160,7 @@ function blurField(kind: Field, event: FieldEvent): void {
   // the current component value, even when the user submits immediately.
   syncField(kind, event.detail?.value)
   if (focusedField.value === kind) focusedField.value = null
+  reportFieldErrors()
 }
 function confirmNext(kind: Field, next: Field, event: FieldEvent): void {
   syncField(kind, event.detail?.value)
@@ -148,6 +183,7 @@ async function submit(event?: SubmitEvent): Promise<void> {
   for (const kind of ['identifier', 'password', 'confirm'] as const) syncField(kind, event?.detail?.value?.[kind])
   validationAttempted.value = true
   serverFailure.value = null
+  reportFieldErrors()
   const firstError = identifierError.value ? 'identifier' : passwordError.value ? 'password' : confirmError.value ? 'confirm' : null
   if (firstError) { await focusField(firstError); return }
   submitting.value = true
@@ -169,7 +205,7 @@ async function submit(event?: SubmitEvent): Promise<void> {
 </script>
 
 <template>
-  <view class="yx-page v2-register" :style="experienceStyle" :data-motion="experienceMotion">
+  <view ref="pageRoot" class="yx-page v2-register" :style="experienceStyle" :data-motion="experienceMotion">
     <view class="register-topline">
       <view class="register-brand"><AppIcon name="brand" :size="25" /><text>{{ mobileT('brand') }}</text></view>
       <text class="register-adult-note">{{ mobileT('auth.register.note') }}</text>
@@ -181,28 +217,28 @@ async function submit(event?: SubmitEvent): Promise<void> {
         <view class="register-fields">
           <view class="register-field">
             <label id="mobile-register-identifier-label" class="register-label" for="mobile-register-identifier-host" @click="focusField('identifier')">{{ mobileT('auth.register.identifier') }}</label>
-            <input id="mobile-register-identifier-host" ref="identifierField" v-model="identifier" name="identifier" class="register-input" :class="{ 'is-invalid': identifierError, 'is-focused': focusedField === 'identifier' }" type="text" text-content-type="username" confirm-type="next" :focus="focusedField === 'identifier'" :placeholder="mobileT('auth.register.identifierPlaceholder')" :disabled="submitting" :aria-invalid="identifierError ? true : undefined" :aria-describedby="identifierError ? 'mobile-register-identifier-error' : undefined" @focus="focusedField = 'identifier'" @blur="blurField('identifier', $event)" @confirm="confirmNext('identifier', 'password', $event)" />
-            <text v-if="validationAttempted && lastIdentifierError" id="mobile-register-identifier-error" class="register-field-error" :class="{ 'is-clear': !identifierError }" :role="identifierError ? 'alert' : undefined" :aria-hidden="!identifierError">{{ identifierError || lastIdentifierError }}</text>
+            <input id="mobile-register-identifier-host" ref="identifierField" v-model="identifier" name="identifier" :maxlength="-1" class="register-input" :class="{ 'is-invalid': visualFeedback.fields.identifier.current, 'is-focused': focusedField === 'identifier' }" type="text" text-content-type="username" confirm-type="next" :focus="focusedField === 'identifier'" :placeholder="mobileT('auth.register.identifierPlaceholder')" :disabled="submitting" :aria-invalid="visualFeedback.fields.identifier.current ? true : undefined" :aria-describedby="visualFeedback.fields.identifier.current ? 'mobile-register-identifier-error' : undefined" @focus="focusedField = 'identifier'" @blur="blurField('identifier', $event)" @confirm="confirmNext('identifier', 'password', $event)" />
+            <text v-if="visualFeedback.active && visualFeedback.fields.identifier.last" id="mobile-register-identifier-error" class="register-field-error" :class="{ 'is-clear': !visualFeedback.fields.identifier.current }" :role="visualFeedback.fields.identifier.current ? 'alert' : undefined" :aria-hidden="!visualFeedback.fields.identifier.current">{{ visualFeedback.fields.identifier.current || visualFeedback.fields.identifier.last }}</text>
           </view>
           <view class="register-field">
             <label id="mobile-register-password-label" class="register-label" for="mobile-register-password-host" @click="focusField('password')">{{ mobileT('auth.register.password') }}</label>
             <view class="register-password">
-              <input id="mobile-register-password-host" ref="passwordField" v-model="password" name="password" class="register-input" :class="{ 'is-invalid': passwordError, 'is-focused': focusedField === 'password' }" type="text" :password="!showPassword" text-content-type="newPassword" confirm-type="next" :focus="focusedField === 'password'" :placeholder="mobileT('auth.register.passwordPlaceholder')" :disabled="submitting" :aria-invalid="passwordError ? true : undefined" :aria-describedby="passwordError ? 'mobile-register-password-hint mobile-register-password-error' : 'mobile-register-password-hint'" @focus="focusedField = 'password'" @blur="blurField('password', $event)" @confirm="confirmNext('password', 'confirm', $event)" />
+              <input id="mobile-register-password-host" ref="passwordField" v-model="password" name="password" :maxlength="-1" class="register-input" :class="{ 'is-invalid': visualFeedback.fields.password.current, 'is-focused': focusedField === 'password' }" type="text" :password="!showPassword" text-content-type="newPassword" confirm-type="next" :focus="focusedField === 'password'" :placeholder="mobileT('auth.register.passwordPlaceholder')" :disabled="submitting" :aria-invalid="visualFeedback.fields.password.current ? true : undefined" :aria-describedby="visualFeedback.fields.password.current ? 'mobile-register-password-hint mobile-register-password-error' : 'mobile-register-password-hint'" @focus="focusedField = 'password'" @blur="blurField('password', $event)" @confirm="confirmNext('password', 'confirm', $event)" />
               <button class="register-password-toggle" tabindex="0" role="button" :aria-controls="passwordControls" :aria-label="mobileT(showPassword ? 'auth.register.hidePassword' : 'auth.register.showPassword')" :aria-pressed="showPassword" :disabled="submitting" :aria-disabled="submitting" @click="togglePassword('password')"><AppIcon name="eye" :size="19" /></button>
             </view>
             <text id="mobile-register-password-hint" class="register-password-hint">{{ mobileT('auth.register.passwordHint') }}</text>
-            <text v-if="validationAttempted && lastPasswordError" id="mobile-register-password-error" class="register-field-error" :class="{ 'is-clear': !passwordError }" :role="passwordError ? 'alert' : undefined" :aria-hidden="!passwordError">{{ passwordError || lastPasswordError }}</text>
+            <text v-if="visualFeedback.active && visualFeedback.fields.password.last" id="mobile-register-password-error" class="register-field-error" :class="{ 'is-clear': !visualFeedback.fields.password.current }" :role="visualFeedback.fields.password.current ? 'alert' : undefined" :aria-hidden="!visualFeedback.fields.password.current">{{ visualFeedback.fields.password.current || visualFeedback.fields.password.last }}</text>
           </view>
           <view class="register-field">
             <label id="mobile-register-confirm-label" class="register-label" for="mobile-register-confirm-host" @click="focusField('confirm')">{{ mobileT('auth.register.confirmPassword') }}</label>
             <view class="register-password">
-              <input id="mobile-register-confirm-host" ref="confirmField" v-model="confirm" name="confirm" class="register-input" :class="{ 'is-invalid': confirmError, 'is-focused': focusedField === 'confirm' }" type="text" :password="!showConfirm" text-content-type="newPassword" confirm-type="go" :focus="focusedField === 'confirm'" :placeholder="mobileT('auth.register.confirmPasswordPlaceholder')" :disabled="submitting" :aria-invalid="confirmError ? true : undefined" :aria-describedby="confirmError ? 'mobile-register-confirm-error' : undefined" @focus="focusedField = 'confirm'" @blur="blurField('confirm', $event)" @confirm="confirmSubmit" />
+              <input id="mobile-register-confirm-host" ref="confirmField" v-model="confirm" name="confirm" :maxlength="-1" class="register-input" :class="{ 'is-invalid': visualFeedback.fields.confirm.current, 'is-focused': focusedField === 'confirm' }" type="text" :password="!showConfirm" text-content-type="newPassword" confirm-type="go" :focus="focusedField === 'confirm'" :placeholder="mobileT('auth.register.confirmPasswordPlaceholder')" :disabled="submitting" :aria-invalid="visualFeedback.fields.confirm.current ? true : undefined" :aria-describedby="visualFeedback.fields.confirm.current ? 'mobile-register-confirm-error' : undefined" @focus="focusedField = 'confirm'" @blur="blurField('confirm', $event)" @confirm="confirmSubmit" />
               <button class="register-password-toggle" tabindex="0" role="button" :aria-controls="confirmControls" :aria-label="mobileT(showConfirm ? 'auth.register.hideConfirm' : 'auth.register.showConfirm')" :aria-pressed="showConfirm" :disabled="submitting" :aria-disabled="submitting" @click="togglePassword('confirm')"><AppIcon name="eye" :size="19" /></button>
             </view>
-            <text v-if="validationAttempted && lastConfirmError" id="mobile-register-confirm-error" class="register-field-error" :class="{ 'is-clear': !confirmError }" :role="confirmError ? 'alert' : undefined" :aria-hidden="!confirmError">{{ confirmError || lastConfirmError }}</text>
+            <text v-if="visualFeedback.active && visualFeedback.fields.confirm.last" id="mobile-register-confirm-error" class="register-field-error" :class="{ 'is-clear': !visualFeedback.fields.confirm.current }" :role="visualFeedback.fields.confirm.current ? 'alert' : undefined" :aria-hidden="!visualFeedback.fields.confirm.current">{{ visualFeedback.fields.confirm.current || visualFeedback.fields.confirm.last }}</text>
           </view>
-          <text v-if="serverError" class="register-server-error" role="alert">{{ serverError }}</text>
-          <button class="register-submit" tabindex="0" role="button" form-type="submit" :disabled="submitting" :aria-disabled="submitting">{{ submitting ? mobileT('auth.register.submitting') : mobileT('auth.register.start') }}</button>
+          <text v-if="visualFeedback.server" class="register-server-error" role="alert">{{ visualFeedback.server }}</text>
+          <button class="register-submit" tabindex="0" role="button" form-type="submit" :disabled="submitting" :aria-disabled="submitting" @keydown.enter.stop.prevent @keyup.enter.stop.prevent="submit()" @keydown.space.stop.prevent @keyup.space.stop.prevent="submit()">{{ submitting ? mobileT('auth.register.submitting') : mobileT('auth.register.start') }}</button>
         </view>
       </form>
       <view class="register-signin"><text>{{ mobileT('auth.register.hasAccount') }}</text><button class="register-text-button" tabindex="0" role="button" :disabled="submitting" :aria-disabled="submitting" @click="signIn">{{ mobileT('auth.register.signIn') }}</button></view>

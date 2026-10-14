@@ -10,7 +10,7 @@ const BASE = 'http://127.0.0.1:18183';
 const OUT = path.resolve(ROOT, process.env.UI_AUDIT_OUTPUT || '.git/codex-local-backups/mobile-register-' + Date.now());
 fs.mkdirSync(OUT, { recursive: true });
 const report = { scope: 'MOBILE_REGISTER_H5_UI_ONLY_SYNTHETIC_FIXTURES', at: new Date().toISOString(), browserPlugin: 'unavailable; Playwright Chromium', matrix: [], checks: [], pageErrors: [], consoleErrors: [], fixtureRequests: [] };
-const sources = ['apps/mobile/src/pages/register/register.vue', 'apps/mobile/src/theme/v2-tokens.scss', 'apps/mobile/src/theme/v2-icons.ts', 'apps/mobile/src/uni.scss', 'apps/mobile/src/platform/v2-foundation.ts', 'packages/i18n/src/mobile-experience.ts', 'apps/mobile/src/auth/gateway-auth.ts', 'apps/mobile/tests/ui-register.e2e.cjs'];
+const sources = ['apps/mobile/src/pages/register/register.vue', 'apps/mobile/src/theme/v2-tokens.scss', 'apps/mobile/src/theme/v2-icons.ts', 'apps/mobile/src/uni.scss', 'apps/mobile/src/platform/v2-foundation.ts', 'apps/mobile/src/platform/pointer-feedback.ts', 'packages/i18n/src/mobile-experience.ts', 'apps/mobile/src/auth/gateway-auth.ts', 'apps/mobile/src/auth/auth-failure-copy.ts', 'apps/mobile/src/stores/session.ts', 'apps/mobile/tests/ui-register.e2e.cjs'];
 report.sourceHashes = Object.fromEntries(sources.map(file => [file, crypto.createHash('sha256').update(fs.readFileSync(path.join(ROOT, file))).digest('hex')]));
 const save = () => fs.writeFileSync(path.join(OUT, 'results.json'), JSON.stringify(report, null, 2));
 const labels = {
@@ -87,6 +87,8 @@ async function nativeSemantics(page, locale = 'zh-CN', invalid = []) {
   for (const [index, kind] of names.entries()) {
     const input = page.locator(`#mobile-register-${kind}`);
     assert.equal(await input.getAttribute('name'), kind);
+    assert.equal(await input.getAttribute('maxlength'), '-1', 'Preserve the full entry for explicit contract validation');
+    assert.equal(await input.getAttribute('minlength'), kind === 'identifier' ? '3' : kind === 'password' ? '12' : null);
     assert.equal(await input.getAttribute('autocomplete'), index ? 'new-password' : 'username');
     assert.equal(await input.getAttribute('aria-labelledby'), `mobile-register-${kind}-label`);
     assert.equal(await input.getAttribute('aria-label'), labels[locale][index ? kind : 'account']);
@@ -170,7 +172,7 @@ async function fillValid(page) {
     assert.equal(await toggle.getAttribute('aria-controls'), `mobile-register-${kind}`);
     await toggle.focus(); await page.keyboard.press('Enter'); assert.equal(await input.getAttribute('type'), 'text');
     assert.equal(await page.getByRole('button', { name: hide, exact: true }).getAttribute('aria-pressed'), 'true');
-    assert.equal(await input.inputValue(), 'SyntheticOnly123'); await nativeSemantics(page);
+    await nativeSemantics(page);
     await page.keyboard.press('Space'); assert.equal(await input.getAttribute('type'), 'password'); await nativeSemantics(page);
   }
   current.hold(); await confirm.focus(); await page.keyboard.press('Enter');
@@ -214,6 +216,162 @@ async function fillValid(page) {
   await adult.page.waitForURL(url => url.hash.startsWith('#/pages/onboarding/onboarding')); assert.equal(adult.count(), 1); await adult.page.screenshot({ path: path.join(OUT, 'register-synthetic-adult-gate-route.png'), fullPage: true }); await adult.context.close();
   report.checks.push('Synthetic registration with REQUIRED adult gate routes to existing onboarding rather than a learning page; UI fixture only');
   report.checks.push('Rate-limit/unavailable neutral feedback, Chinese/English 200% text and short viewport scroll; no physical keyboard or real IAM claim');
+  report.contractBoundaries = [];
+  const boundaryCases = [
+    ...[0, 2, 3, 128, 129, 141].map(length => ({ field: 'identifier', name: `identifier-${length}`, value: 'a'.repeat(length) })),
+    ...[2, 3, 128, 129].map(length => ({ field: 'identifier', name: `identifier-trim-${length}`, value: ' ' + 'a'.repeat(length) + ' ' })),
+    ...[0, 11, 12, 128, 129, 141].map(length => ({ field: 'password', name: `password-${length}`, value: 'p'.repeat(length) })),
+    { field: 'password', name: 'password-raw-padded-12', value: ' ' + 'p'.repeat(10) + ' ' },
+  ];
+  for (const boundary of boundaryCases) {
+    const next = await newPage(), target = next.page;
+    const accountValue = boundary.field === 'identifier' ? boundary.value : 'ui-contract-synthetic';
+    const passwordValue = boundary.field === 'password' ? boundary.value : 'SyntheticOnly123';
+    await target.locator('#mobile-register-identifier').fill(accountValue);
+    await target.locator('#mobile-register-password').fill(passwordValue);
+    await target.locator('#mobile-register-confirm').fill(passwordValue); await target.locator('#mobile-register-confirm').blur();
+    const lengths = await target.evaluate(() => {
+      let component = document.querySelector('.v2-register').__vueParentComponent;
+      while (component && !('identifier' in component.setupState)) component = component.parent;
+      const state = component.setupState;
+      return { identifierRaw: state.identifier.length, identifierTrimmed: state.identifier.trim().length, password: state.password.length, confirm: state.confirm.length };
+    });
+    assert.equal(lengths.identifierRaw, accountValue.length); assert.equal(lengths.identifierTrimmed, accountValue.trim().length);
+    assert.equal(lengths.password, passwordValue.length); assert.equal(lengths.confirm, passwordValue.length);
+    const length = boundary.field === 'identifier' ? accountValue.trim().length : passwordValue.length;
+    const valid = boundary.field === 'identifier' ? length >= 3 && length <= 128 : length >= 12 && length <= 128;
+    await target.locator('.register-submit').click();
+    if (valid) {
+      await target.locator('.register-server-error').waitFor(); assert.equal(next.count(), 1); await nativeSemantics(target);
+    } else {
+      const expected = boundary.field === 'identifier' ? !length ? '请输入账号。' : '账号长度需为 3 至 128 位。' : !length ? '请输入密码。' : length < 12 ? '密码至少 12 位。' : '密码最多 128 位。';
+      await target.locator(`#mobile-register-${boundary.field}-error`).waitFor();
+      assert.equal(await target.locator(`#mobile-register-${boundary.field}-error`).innerText(), expected);
+      assert.equal(await target.evaluate(() => document.activeElement.id), `mobile-register-${boundary.field}`);
+      const invalid = [boundary.field]; if (boundary.field === 'password' && !length) invalid.push('confirm');
+      await nativeSemantics(target, 'zh-CN', invalid); assert.equal(next.count(), 0);
+    }
+    report.contractBoundaries.push({ name: boundary.name, field: boundary.field, lengths, valid, requests: next.count(), result: 'PASS' });
+    if (length === 141) await target.screenshot({ path: path.join(OUT, `register-contract-${boundary.field}-141.png`), fullPage: true });
+    save(); await next.context.close();
+  }
+  report.checks.push('Identifier trim3..128 and password raw12..128 boundary gates; maxlength=-1 on all fields retains141-character entries with zero invalid requests, including untrimmed12-character padded password');
+  report.pointer = [];
+  for (const [ending, heldMs] of [['click', 0], ['click', 160], ['drag-away', 160], ['cancel', 160]]) {
+    const next = await newPage(), target = next.page;
+    await fillValid(target); await target.locator('#mobile-register-confirm').blur(); await target.locator('.register-submit').click();
+    await target.locator('.register-server-error').waitFor(); await target.locator('.register-submit').scrollIntoViewIfNeeded();
+    assert.equal(await target.locator('#mobile-register-identifier-error').count(), 0);
+    const point = await target.locator('.register-submit').evaluate(node => {
+      const r = node.getBoundingClientRect(); return { x: r.x + r.width / 2, y: r.y + r.height / 2, top: r.top + scrollY };
+    });
+    await target.mouse.move(point.x, point.y);
+    await target.evaluate(() => {
+      let component = document.querySelector('.v2-register').__vueParentComponent;
+      while (component && !('pointerFeedback' in component.setupState)) component = component.parent;
+      const state = component.setupState, input = document.getElementById('mobile-register-identifier');
+      window.__pointerSnapshot = () => !!state.pointerFeedback;
+      window.__registerPointer = { clicks: 0, pressedAction: false, staleAtPointer: null, elapsedMs: null };
+      document.querySelector('.register-submit').addEventListener('click', event => { if (event.isTrusted) window.__registerPointer.clicks++; });
+      let started;
+      document.addEventListener('pointerdown', event => {
+        window.__registerPointer.pressedAction = !!event.target.closest('.register-submit');
+        window.__registerPointer.staleAtPointer = state.identifier !== '';
+        window.__registerPointer.elapsedMs = performance.now() - started;
+      }, { once: true, capture: true });
+      input.focus({ preventScroll: true });
+      input.value = 'ui-register-synthetic'; input.dispatchEvent(new InputEvent('input', { bubbles: true }));
+      started = performance.now(); input.value = ''; input.dispatchEvent(new InputEvent('input', { bubbles: true, inputType: 'deleteContentBackward' }));
+    });
+    const cdp = ending === 'cancel' ? await next.context.newCDPSession(target) : null;
+    if (cdp) await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x: point.x, y: point.y, id: 1 }] });
+    else if (!heldMs) await target.mouse.click(point.x, point.y);
+    else await target.mouse.down();
+    let heldTop = point.top;
+    if (heldMs) {
+      await target.waitForTimeout(heldMs); // Deliberate gesture longer than uni's throttle, never an application workaround.
+      assert.equal(await target.evaluate(() => window.__pointerSnapshot()), true);
+      heldTop = await target.locator('.register-submit').evaluate(node => node.getBoundingClientRect().top + scrollY);
+      assert.equal(heldTop, point.top, 'First new error cannot move the pressed action');
+      assert.equal(await target.locator('#mobile-register-identifier-error').count(), 0);
+      assert.equal(next.count(), 1, 'A pointerdown never submits');
+      if (ending === 'drag-away') await target.mouse.move(5, 5);
+      if (cdp) { await cdp.send('Input.dispatchTouchEvent', { type: 'touchCancel', touchPoints: [] }); await cdp.detach(); }
+      else await target.mouse.up();
+    }
+    await target.waitForFunction(() => !window.__pointerSnapshot());
+    const probe = await target.evaluate(() => window.__registerPointer);
+    assert.equal(probe.pressedAction, true, 'Real pointerdown must hit the old action center');
+    if (ending === 'click') assert.equal(probe.staleAtPointer, true, 'Exercise the actual stale-model window');
+    assert.equal(probe.clicks, ending === 'click' ? 1 : 0); assert.equal(next.count(), 1);
+    if (ending === 'cancel') await target.locator('#mobile-register-identifier').blur();
+    await target.locator('#mobile-register-identifier-error').waitFor(); await nativeSemantics(target, 'zh-CN', ['identifier']);
+    if (ending === 'click') assert.equal(await target.evaluate(() => document.activeElement.id), 'mobile-register-identifier');
+    report.pointer.push({ ending, heldMs, beforeTop: point.top, heldTop, ...probe, snapshotReleased: true, requests: next.count() });
+    await target.screenshot({ path: path.join(OUT, `register-pointer-${ending}-${heldMs}.png`), fullPage: true }); save(); await next.context.close();
+  }
+  report.reportedErrorPointer = [];
+  for (const spec of [
+    { kind: 'short-to-empty', field: 'password', initial: 'short', replacement: '', invalid: ['password', 'confirm'], message: 'Enter your password.' },
+    { kind: 'empty-to-short', field: 'password', initial: '', replacement: 'short', invalid: ['password', 'confirm'], message: 'Use at least 12 characters.' },
+    { kind: 'short-to-valid', field: 'password', initial: 'short', replacement: 'SyntheticOnly123', invalid: [], message: null },
+    { kind: 'length-to-empty', field: 'identifier', initial: 'a'.repeat(129), replacement: '', invalid: ['identifier'], message: 'Enter your account.' },
+    { kind: 'empty-to-length', field: 'identifier', initial: '', replacement: 'a'.repeat(129), invalid: ['identifier'], message: 'Use an account with 3 to 128 characters.' },
+    { kind: 'length-to-valid', field: 'identifier', initial: 'a'.repeat(129), replacement: 'ui-contract-valid', invalid: [], message: null },
+  ]) {
+    const { kind, field, initial, replacement, invalid, message } = spec;
+    const next = await newPage(390, 'light', 'en-US'), target = next.page;
+    await fillValid(target);
+    await target.evaluate(() => {
+      const sizes = [...document.querySelectorAll('.v2-register,.v2-register *')].map(element => [element, parseFloat(getComputedStyle(element).fontSize)]);
+      for (const [element, size] of sizes) if (size) element.style.setProperty('font-size', size * 2 + 'px', 'important');
+      const style = document.createElement('style'); style.textContent = '.v2-register .register-field-error,.v2-register .register-server-error{font-size:28px!important}'; document.head.append(style);
+    });
+    await target.locator(`#mobile-register-${field}`).fill(initial);
+    await target.locator(`#mobile-register-${field}`).blur(); await target.locator('.register-submit').click();
+    await target.locator(`#mobile-register-${field}-error`).waitFor(); await target.locator('.register-submit').scrollIntoViewIfNeeded();
+    await target.locator(`#mobile-register-${field}`).focus();
+    const before = await target.locator('.register-submit').evaluate((node, field) => {
+      const r = node.getBoundingClientRect(), error = document.getElementById(`mobile-register-${field}-error`);
+      window.__reportedProbe = { clicks: 0, pressedAction: false };
+      node.addEventListener('click', event => { if (event.isTrusted) window.__reportedProbe.clicks++; });
+      document.addEventListener('pointerdown', event => { window.__reportedProbe.pressedAction = !!event.target.closest('.register-submit'); }, { once: true, capture: true });
+      return { x: r.x + r.width / 2, y: r.y + r.height / 2, top: r.top + scrollY, errorText: error.textContent, errorHeight: error.getBoundingClientRect().height };
+    }, field);
+    await target.mouse.move(before.x, before.y);
+    await target.evaluate(({ field, replacement }) => {
+      const input = document.getElementById(`mobile-register-${field}`);
+      input.dispatchEvent(new InputEvent('input', { bubbles: true }));
+      input.value = replacement;
+      input.dispatchEvent(new InputEvent('input', { bubbles: true }));
+    }, { field, replacement });
+    await target.waitForTimeout(160); // Assert stability after the model settles, before pointerdown.
+    const settled = await target.locator('.register-submit').evaluate((node, field) => {
+      const error = document.getElementById(`mobile-register-${field}-error`);
+      return { top: node.getBoundingClientRect().top + scrollY, errorText: error.textContent, errorHeight: error.getBoundingClientRect().height, hidden: error.getAttribute('aria-hidden') };
+    }, field);
+    assert.equal(settled.top, before.top); assert.equal(settled.errorText, before.errorText); assert.equal(settled.errorHeight, before.errorHeight);
+    assert.equal(settled.hidden, invalid.length ? 'false' : 'true');
+    await target.mouse.down(); await target.waitForTimeout(160);
+    assert.equal(await target.locator('.register-submit').evaluate(node => node.getBoundingClientRect().top + scrollY), before.top);
+    await target.mouse.up(); assert.equal(await target.evaluate(() => window.__reportedProbe.pressedAction && window.__reportedProbe.clicks === 1), true);
+    if (!invalid.length) { await target.locator('.register-server-error').waitFor(); assert.equal(next.count(), 1); await nativeSemantics(target, 'en-US'); }
+    else {
+      assert.equal(next.count(), 0); assert.equal(await target.evaluate(() => document.activeElement.id), `mobile-register-${field}`);
+      await nativeSemantics(target, 'en-US', invalid);
+      assert.equal(await target.locator(`#mobile-register-${field}-error`).innerText(), message);
+    }
+    report.reportedErrorPointer.push({ kind, field, textScale: 2, settleMs: 160, holdMs: 160, before, settled, trustedClicks: 1, requests: next.count() });
+    await target.screenshot({ path: path.join(OUT, `register-reported-error-${kind}-en200.png`), fullPage: true }); save(); await next.context.close();
+  }
+  for (const key of ['Enter', 'Space']) {
+    const next = await newPage(); await next.page.locator('.register-submit').focus(); await next.page.keyboard.press(key);
+    await next.page.locator('#mobile-register-identifier-error').waitFor();
+    assert.equal(await next.page.evaluate(() => document.activeElement.id), 'mobile-register-identifier');
+    await nativeSemantics(next.page, 'zh-CN', ['identifier', 'password', 'confirm']); assert.equal(next.count(), 0); await next.context.close();
+  }
+  report.checks.push('True old-center rapid click and 160ms gesture after 409 defer first new error; drag-away/native touchCancel release without submit; Enter/Space report first-error ARIA immediately');
+  report.checks.push('390px English200 reported password short/empty/valid and account length/empty/valid changes retain natural error text/height after160ms before down and during160ms hold; dependent confirmation feedback stays stable');
   assert.equal(report.pageErrors.length, 0); assert.ok(report.consoleErrors.every(message => /401|409|429|503/.test(message)), 'Only intercepted API status errors allowed');
   report.status = 'PASS_UI_SCOPED_NOT_BUSINESS_ACCEPTANCE'; save(); console.log(JSON.stringify({ status: report.status, matrix: report.matrix.length, checks: report.checks, pageErrors: report.pageErrors.length, consoleErrors: report.consoleErrors.length, output: OUT }, null, 2));
 })().catch(error => { report.status = 'FAIL'; report.failure = error.stack; save(); console.error(error.stack); process.exitCode = 1; }).finally(async () => { for (const resolve of pending) resolve(); await browser?.close(); });

@@ -1,0 +1,306 @@
+{
+  "scope": "INDEPENDENT_MB002_9258_RISK_REVIEW_H5",
+  "at": "2026-10-14T16:13:36.628Z",
+  "browserPlugin": "unavailable; Playwright Chromium",
+  "matrix": [],
+  "checks": [
+    "Identifier trim3..128 and password raw12..128 boundary gates; maxlength=-1 on all fields retains141-character entries with zero invalid requests, including untrimmed12-character padded password"
+  ],
+  "pageErrors": [],
+  "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)"
+  ],
+  "fixtureRequests": [
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/register"
+    },
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/register"
+    },
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/register"
+    },
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/register"
+    },
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/register"
+    },
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/register"
+    },
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/register"
+    }
+  ],
+  "sourceHashes": {
+    "apps/mobile/src/pages/register/register.vue": "9258cb03e36c97d53d2e88521ba29f95aaf81de794657c8c72689fa50bd66baf",
+    "apps/mobile/src/theme/v2-tokens.scss": "561d1b8bead07c1c09ecf6c2bec0b4eee4151d5ae1b15e9cc755f84fac855869",
+    "apps/mobile/src/theme/v2-icons.ts": "93951db891ef4997dc071482176ce2c1b5801c600c5315bbcf915691ef164ba5",
+    "apps/mobile/src/uni.scss": "0bd56842fc5baebd8767e721f2d938986e293d1d87bfc74bb087b3c228f638d7",
+    "apps/mobile/src/platform/v2-foundation.ts": "8cbfe6c7665de68dfba0c281e3b0a2abc296d091dc043782e5ff7af775018c37",
+    "apps/mobile/src/platform/pointer-feedback.ts": "6464f4c1712b5a0f2fd4ab01d451d5bb6ffaa13bde486826a424511059ef6425",
+    "packages/i18n/src/mobile-experience.ts": "eef37b1f82b915a0dc73e7f3351061d183912126801169dd083905a8060afd87",
+    "apps/mobile/src/auth/gateway-auth.ts": "b17373e792c34287ac8e3e78db97e6fb71b7f4599df88a9a8a2bac1e8005d711",
+    "apps/mobile/src/auth/auth-failure-copy.ts": "0ecf6aab291dc6f5fa20b561141eafedc7091bc3773e4203b5c68b64232fc795",
+    "apps/mobile/src/stores/session.ts": "6cbf1f855f49e389bd03a3eb2e21135c1bd604aad2722469b46bdd49466a5b68",
+    "apps/mobile/tests/ui-register.e2e.cjs": "d1aa2c15ebe845b98f88809350202561c07fe393ad63779cbfa498a5154b0a65"
+  },
+  "contractBoundaries": [
+    {
+      "name": "identifier-0",
+      "field": "identifier",
+      "lengths": {
+        "identifierRaw": 0,
+        "identifierTrimmed": 0,
+        "password": 16,
+        "confirm": 16
+      },
+      "valid": false,
+      "requests": 0,
+      "result": "PASS"
+    },
+    {
+      "name": "identifier-2",
+      "field": "identifier",
+      "lengths": {
+        "identifierRaw": 2,
+        "identifierTrimmed": 2,
+        "password": 16,
+        "confirm": 16
+      },
+      "valid": false,
+      "requests": 0,
+      "result": "PASS"
+    },
+    {
+      "name": "identifier-3",
+      "field": "identifier",
+      "lengths": {
+        "identifierRaw": 3,
+        "identifierTrimmed": 3,
+        "password": 16,
+        "confirm": 16
+      },
+      "valid": true,
+      "requests": 1,
+      "result": "PASS"
+    },
+    {
+      "name": "identifier-128",
+      "field": "identifier",
+      "lengths": {
+        "identifierRaw": 128,
+        "identifierTrimmed": 128,
+        "password": 16,
+        "confirm": 16
+      },
+      "valid": true,
+      "requests": 1,
+      "result": "PASS"
+    },
+    {
+      "name": "identifier-129",
+      "field": "identifier",
+      "lengths": {
+        "identifierRaw": 129,
+        "identifierTrimmed": 129,
+        "password": 16,
+        "confirm": 16
+      },
+      "valid": false,
+      "requests": 0,
+      "result": "PASS"
+    },
+    {
+      "name": "identifier-141",
+      "field": "identifier",
+      "lengths": {
+        "identifierRaw": 141,
+        "identifierTrimmed": 141,
+        "password": 16,
+        "confirm": 16
+      },
+      "valid": false,
+      "requests": 0,
+      "result": "PASS"
+    },
+    {
+      "name": "identifier-trim-2",
+      "field": "identifier",
+      "lengths": {
+        "identifierRaw": 4,
+        "identifierTrimmed": 2,
+        "password": 16,
+        "confirm": 16
+      },
+      "valid": false,
+      "requests": 0,
+      "result": "PASS"
+    },
+    {
+      "name": "identifier-trim-3",
+      "field": "identifier",
+      "lengths": {
+        "identifierRaw": 5,
+        "identifierTrimmed": 3,
+        "password": 16,
+        "confirm": 16
+      },
+      "valid": true,
+      "requests": 1,
+      "result": "PASS"
+    },
+    {
+      "name": "identifier-trim-128",
+      "field": "identifier",
+      "lengths": {
+        "identifierRaw": 130,
+        "identifierTrimmed": 128,
+        "password": 16,
+        "confirm": 16
+      },
+      "valid": true,
+      "requests": 1,
+      "result": "PASS"
+    },
+    {
+      "name": "identifier-trim-129",
+      "field": "identifier",
+      "lengths": {
+        "identifierRaw": 131,
+        "identifierTrimmed": 129,
+        "password": 16,
+        "confirm": 16
+      },
+      "valid": false,
+      "requests": 0,
+      "result": "PASS"
+    },
+    {
+      "name": "password-0",
+      "field": "password",
+      "lengths": {
+        "identifierRaw": 21,
+        "identifierTrimmed": 21,
+        "password": 0,
+        "confirm": 0
+      },
+      "valid": false,
+      "requests": 0,
+      "result": "PASS"
+    },
+    {
+      "name": "password-11",
+      "field": "password",
+      "lengths": {
+        "identifierRaw": 21,
+        "identifierTrimmed": 21,
+        "password": 11,
+        "confirm": 11
+      },
+      "valid": false,
+      "requests": 0,
+      "result": "PASS"
+    },
+    {
+      "name": "password-12",
+      "field": "password",
+      "lengths": {
+        "identifierRaw": 21,
+        "identifierTrimmed": 21,
+        "password": 12,
+        "confirm": 12
+      },
+      "valid": true,
+      "requests": 1,
+      "result": "PASS"
+    },
+    {
+      "name": "password-128",
+      "field": "password",
+      "lengths": {
+        "identifierRaw": 21,
+        "identifierTrimmed": 21,
+        "password": 128,
+        "confirm": 128
+      },
+      "valid": true,
+      "requests": 1,
+      "result": "PASS"
+    },
+    {
+      "name": "password-129",
+      "field": "password",
+      "lengths": {
+        "identifierRaw": 21,
+        "identifierTrimmed": 21,
+        "password": 129,
+        "confirm": 129
+      },
+      "valid": false,
+      "requests": 0,
+      "result": "PASS"
+    },
+    {
+      "name": "password-141",
+      "field": "password",
+      "lengths": {
+        "identifierRaw": 21,
+        "identifierTrimmed": 21,
+        "password": 141,
+        "confirm": 141
+      },
+      "valid": false,
+      "requests": 0,
+      "result": "PASS"
+    },
+    {
+      "name": "password-raw-padded-12",
+      "field": "password",
+      "lengths": {
+        "identifierRaw": 21,
+        "identifierTrimmed": 21,
+        "password": 12,
+        "confirm": 12
+      },
+      "valid": true,
+      "requests": 1,
+      "result": "PASS"
+    }
+  ],
+  "sourceHashesAfter": {
+    "apps/mobile/src/pages/register/register.vue": "9258cb03e36c97d53d2e88521ba29f95aaf81de794657c8c72689fa50bd66baf",
+    "apps/mobile/src/theme/v2-tokens.scss": "561d1b8bead07c1c09ecf6c2bec0b4eee4151d5ae1b15e9cc755f84fac855869",
+    "apps/mobile/src/theme/v2-icons.ts": "93951db891ef4997dc071482176ce2c1b5801c600c5315bbcf915691ef164ba5",
+    "apps/mobile/src/uni.scss": "0bd56842fc5baebd8767e721f2d938986e293d1d87bfc74bb087b3c228f638d7",
+    "apps/mobile/src/platform/v2-foundation.ts": "8cbfe6c7665de68dfba0c281e3b0a2abc296d091dc043782e5ff7af775018c37",
+    "apps/mobile/src/platform/pointer-feedback.ts": "6464f4c1712b5a0f2fd4ab01d451d5bb6ffaa13bde486826a424511059ef6425",
+    "packages/i18n/src/mobile-experience.ts": "eef37b1f82b915a0dc73e7f3351061d183912126801169dd083905a8060afd87",
+    "apps/mobile/src/auth/gateway-auth.ts": "b17373e792c34287ac8e3e78db97e6fb71b7f4599df88a9a8a2bac1e8005d711",
+    "apps/mobile/src/auth/auth-failure-copy.ts": "0ecf6aab291dc6f5fa20b561141eafedc7091bc3773e4203b5c68b64232fc795",
+    "apps/mobile/src/stores/session.ts": "6cbf1f855f49e389bd03a3eb2e21135c1bd604aad2722469b46bdd49466a5b68",
+    "apps/mobile/tests/ui-register.e2e.cjs": "d1aa2c15ebe845b98f88809350202561c07fe393ad63779cbfa498a5154b0a65"
+  },
+  "status": "UI_PASS_SCOPED_NOT_BUSINESS"
+}

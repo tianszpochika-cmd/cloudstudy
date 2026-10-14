@@ -1,0 +1,403 @@
+{
+  "scope": "INDEPENDENT_MB002_9258_RISK_REVIEW_H5",
+  "at": "2026-10-14T16:14:40.061Z",
+  "browserPlugin": "unavailable; Playwright Chromium",
+  "matrix": [],
+  "checks": [],
+  "pageErrors": [],
+  "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)"
+  ],
+  "fixtureRequests": [
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/register"
+    },
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/register"
+    },
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/register"
+    },
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/register"
+    },
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/register"
+    },
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/register"
+    },
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/register"
+    },
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/register"
+    }
+  ],
+  "sourceHashes": {
+    "apps/mobile/src/pages/register/register.vue": "9258cb03e36c97d53d2e88521ba29f95aaf81de794657c8c72689fa50bd66baf",
+    "apps/mobile/src/theme/v2-tokens.scss": "561d1b8bead07c1c09ecf6c2bec0b4eee4151d5ae1b15e9cc755f84fac855869",
+    "apps/mobile/src/theme/v2-icons.ts": "93951db891ef4997dc071482176ce2c1b5801c600c5315bbcf915691ef164ba5",
+    "apps/mobile/src/uni.scss": "0bd56842fc5baebd8767e721f2d938986e293d1d87bfc74bb087b3c228f638d7",
+    "apps/mobile/src/platform/v2-foundation.ts": "8cbfe6c7665de68dfba0c281e3b0a2abc296d091dc043782e5ff7af775018c37",
+    "apps/mobile/src/platform/pointer-feedback.ts": "6464f4c1712b5a0f2fd4ab01d451d5bb6ffaa13bde486826a424511059ef6425",
+    "packages/i18n/src/mobile-experience.ts": "eef37b1f82b915a0dc73e7f3351061d183912126801169dd083905a8060afd87",
+    "apps/mobile/src/auth/gateway-auth.ts": "b17373e792c34287ac8e3e78db97e6fb71b7f4599df88a9a8a2bac1e8005d711",
+    "apps/mobile/src/auth/auth-failure-copy.ts": "0ecf6aab291dc6f5fa20b561141eafedc7091bc3773e4203b5c68b64232fc795",
+    "apps/mobile/src/stores/session.ts": "6cbf1f855f49e389bd03a3eb2e21135c1bd604aad2722469b46bdd49466a5b68",
+    "apps/mobile/tests/ui-register.e2e.cjs": "d1aa2c15ebe845b98f88809350202561c07fe393ad63779cbfa498a5154b0a65"
+  },
+  "pointer": [
+    {
+      "ending": "click",
+      "heldMs": 0,
+      "beforeTop": 610.84375,
+      "heldTop": 610.84375,
+      "clicks": 1,
+      "pressedAction": true,
+      "staleAtPointer": true,
+      "elapsedMs": 2.300000000745058,
+      "snapshotReleased": true,
+      "requests": 1
+    },
+    {
+      "ending": "click",
+      "heldMs": 160,
+      "beforeTop": 610.84375,
+      "heldTop": 610.84375,
+      "clicks": 1,
+      "pressedAction": true,
+      "staleAtPointer": true,
+      "elapsedMs": 2.2999999970197678,
+      "snapshotReleased": true,
+      "requests": 1
+    },
+    {
+      "ending": "drag-away",
+      "heldMs": 160,
+      "beforeTop": 610.84375,
+      "heldTop": 610.84375,
+      "clicks": 0,
+      "pressedAction": true,
+      "staleAtPointer": true,
+      "elapsedMs": 2.100000001490116,
+      "snapshotReleased": true,
+      "requests": 1
+    },
+    {
+      "ending": "cancel",
+      "heldMs": 160,
+      "beforeTop": 610.84375,
+      "heldTop": 610.84375,
+      "clicks": 0,
+      "pressedAction": true,
+      "staleAtPointer": true,
+      "elapsedMs": 17.199999999254942,
+      "snapshotReleased": true,
+      "requests": 1
+    }
+  ],
+  "reportedErrorPointer": [
+    {
+      "kind": "short-to-empty",
+      "field": "password",
+      "textScale": 2,
+      "settleMs": 0,
+      "holdMs": 160,
+      "before": {
+        "x": 195,
+        "y": 807.140625,
+        "top": 1193.140625,
+        "errorText": "Use at least 12 characters.",
+        "errorHeight": 89.59375
+      },
+      "settled": {
+        "top": 1193.140625,
+        "errorText": "Use at least 12 characters.",
+        "errorHeight": 89.59375,
+        "hidden": "false"
+      },
+      "trustedClicks": 1,
+      "requests": 0
+    },
+    {
+      "kind": "empty-to-short",
+      "field": "password",
+      "textScale": 2,
+      "settleMs": 0,
+      "holdMs": 160,
+      "before": {
+        "x": 195,
+        "y": 762.34375,
+        "top": 1148.34375,
+        "errorText": "Enter your password.",
+        "errorHeight": 44.796875
+      },
+      "settled": {
+        "top": 1148.34375,
+        "errorText": "Enter your password.",
+        "errorHeight": 44.796875,
+        "hidden": "false"
+      },
+      "trustedClicks": 1,
+      "requests": 0
+    },
+    {
+      "kind": "short-to-valid",
+      "field": "password",
+      "textScale": 2,
+      "settleMs": 0,
+      "holdMs": 160,
+      "before": {
+        "x": 195,
+        "y": 807.140625,
+        "top": 1193.140625,
+        "errorText": "Use at least 12 characters.",
+        "errorHeight": 89.59375
+      },
+      "settled": {
+        "top": 1193.140625,
+        "errorText": "Use at least 12 characters.",
+        "errorHeight": 89.59375,
+        "hidden": "false"
+      },
+      "trustedClicks": 1,
+      "requests": 1
+    },
+    {
+      "kind": "length-to-empty",
+      "field": "identifier",
+      "textScale": 2,
+      "settleMs": 0,
+      "holdMs": 160,
+      "before": {
+        "x": 195,
+        "y": 709.546875,
+        "top": 1095.546875,
+        "errorText": "Use an account with 3 to 128 characters.",
+        "errorHeight": 89.59375
+      },
+      "settled": {
+        "top": 1095.546875,
+        "errorText": "Use an account with 3 to 128 characters.",
+        "errorHeight": 89.59375,
+        "hidden": "false"
+      },
+      "trustedClicks": 1,
+      "requests": 0
+    },
+    {
+      "kind": "empty-to-length",
+      "field": "identifier",
+      "textScale": 2,
+      "settleMs": 0,
+      "holdMs": 160,
+      "before": {
+        "x": 195,
+        "y": 664.75,
+        "top": 1050.75,
+        "errorText": "Enter your account.",
+        "errorHeight": 44.796875
+      },
+      "settled": {
+        "top": 1050.75,
+        "errorText": "Enter your account.",
+        "errorHeight": 44.796875,
+        "hidden": "false"
+      },
+      "trustedClicks": 1,
+      "requests": 0
+    },
+    {
+      "kind": "length-to-valid",
+      "field": "identifier",
+      "textScale": 2,
+      "settleMs": 0,
+      "holdMs": 160,
+      "before": {
+        "x": 195,
+        "y": 709.546875,
+        "top": 1095.546875,
+        "errorText": "Use an account with 3 to 128 characters.",
+        "errorHeight": 89.59375
+      },
+      "settled": {
+        "top": 1095.546875,
+        "errorText": "Use an account with 3 to 128 characters.",
+        "errorHeight": 89.59375,
+        "hidden": "false"
+      },
+      "trustedClicks": 1,
+      "requests": 1
+    },
+    {
+      "kind": "short-to-empty",
+      "field": "password",
+      "textScale": 2,
+      "settleMs": 160,
+      "holdMs": 160,
+      "before": {
+        "x": 195,
+        "y": 807.140625,
+        "top": 1193.140625,
+        "errorText": "Use at least 12 characters.",
+        "errorHeight": 89.59375
+      },
+      "settled": {
+        "top": 1193.140625,
+        "errorText": "Use at least 12 characters.",
+        "errorHeight": 89.59375,
+        "hidden": "false"
+      },
+      "trustedClicks": 1,
+      "requests": 0
+    },
+    {
+      "kind": "empty-to-short",
+      "field": "password",
+      "textScale": 2,
+      "settleMs": 160,
+      "holdMs": 160,
+      "before": {
+        "x": 195,
+        "y": 762.34375,
+        "top": 1148.34375,
+        "errorText": "Enter your password.",
+        "errorHeight": 44.796875
+      },
+      "settled": {
+        "top": 1148.34375,
+        "errorText": "Enter your password.",
+        "errorHeight": 44.796875,
+        "hidden": "false"
+      },
+      "trustedClicks": 1,
+      "requests": 0
+    },
+    {
+      "kind": "short-to-valid",
+      "field": "password",
+      "textScale": 2,
+      "settleMs": 160,
+      "holdMs": 160,
+      "before": {
+        "x": 195,
+        "y": 807.140625,
+        "top": 1193.140625,
+        "errorText": "Use at least 12 characters.",
+        "errorHeight": 89.59375
+      },
+      "settled": {
+        "top": 1193.140625,
+        "errorText": "Use at least 12 characters.",
+        "errorHeight": 89.59375,
+        "hidden": "true"
+      },
+      "trustedClicks": 1,
+      "requests": 1
+    },
+    {
+      "kind": "length-to-empty",
+      "field": "identifier",
+      "textScale": 2,
+      "settleMs": 160,
+      "holdMs": 160,
+      "before": {
+        "x": 195,
+        "y": 709.546875,
+        "top": 1095.546875,
+        "errorText": "Use an account with 3 to 128 characters.",
+        "errorHeight": 89.59375
+      },
+      "settled": {
+        "top": 1095.546875,
+        "errorText": "Use an account with 3 to 128 characters.",
+        "errorHeight": 89.59375,
+        "hidden": "false"
+      },
+      "trustedClicks": 1,
+      "requests": 0
+    },
+    {
+      "kind": "empty-to-length",
+      "field": "identifier",
+      "textScale": 2,
+      "settleMs": 160,
+      "holdMs": 160,
+      "before": {
+        "x": 195,
+        "y": 664.75,
+        "top": 1050.75,
+        "errorText": "Enter your account.",
+        "errorHeight": 44.796875
+      },
+      "settled": {
+        "top": 1050.75,
+        "errorText": "Enter your account.",
+        "errorHeight": 44.796875,
+        "hidden": "false"
+      },
+      "trustedClicks": 1,
+      "requests": 0
+    },
+    {
+      "kind": "length-to-valid",
+      "field": "identifier",
+      "textScale": 2,
+      "settleMs": 160,
+      "holdMs": 160,
+      "before": {
+        "x": 195,
+        "y": 709.546875,
+        "top": 1095.546875,
+        "errorText": "Use an account with 3 to 128 characters.",
+        "errorHeight": 89.59375
+      },
+      "settled": {
+        "top": 1095.546875,
+        "errorText": "Use an account with 3 to 128 characters.",
+        "errorHeight": 89.59375,
+        "hidden": "true"
+      },
+      "trustedClicks": 1,
+      "requests": 1
+    }
+  ],
+  "sourceHashesAfter": {
+    "apps/mobile/src/pages/register/register.vue": "9258cb03e36c97d53d2e88521ba29f95aaf81de794657c8c72689fa50bd66baf",
+    "apps/mobile/src/theme/v2-tokens.scss": "561d1b8bead07c1c09ecf6c2bec0b4eee4151d5ae1b15e9cc755f84fac855869",
+    "apps/mobile/src/theme/v2-icons.ts": "93951db891ef4997dc071482176ce2c1b5801c600c5315bbcf915691ef164ba5",
+    "apps/mobile/src/uni.scss": "0bd56842fc5baebd8767e721f2d938986e293d1d87bfc74bb087b3c228f638d7",
+    "apps/mobile/src/platform/v2-foundation.ts": "8cbfe6c7665de68dfba0c281e3b0a2abc296d091dc043782e5ff7af775018c37",
+    "apps/mobile/src/platform/pointer-feedback.ts": "6464f4c1712b5a0f2fd4ab01d451d5bb6ffaa13bde486826a424511059ef6425",
+    "packages/i18n/src/mobile-experience.ts": "eef37b1f82b915a0dc73e7f3351061d183912126801169dd083905a8060afd87",
+    "apps/mobile/src/auth/gateway-auth.ts": "b17373e792c34287ac8e3e78db97e6fb71b7f4599df88a9a8a2bac1e8005d711",
+    "apps/mobile/src/auth/auth-failure-copy.ts": "0ecf6aab291dc6f5fa20b561141eafedc7091bc3773e4203b5c68b64232fc795",
+    "apps/mobile/src/stores/session.ts": "6cbf1f855f49e389bd03a3eb2e21135c1bd604aad2722469b46bdd49466a5b68",
+    "apps/mobile/tests/ui-register.e2e.cjs": "d1aa2c15ebe845b98f88809350202561c07fe393ad63779cbfa498a5154b0a65"
+  },
+  "status": "UI_PASS_SCOPED_NOT_BUSINESS"
+}

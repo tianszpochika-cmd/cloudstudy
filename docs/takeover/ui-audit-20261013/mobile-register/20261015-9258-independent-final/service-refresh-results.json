@@ -1,0 +1,24 @@
+{
+  "at": "2026-10-14T16:06:24.494Z",
+  "scope": "OWN_SERVICE_REFRESH_FRESH_ZH_EN_COPY_CHECK",
+  "sourceHashBefore": "9258cb03e36c97d53d2e88521ba29f95aaf81de794657c8c72689fa50bd66baf",
+  "i18nHash": "eef37b1f82b915a0dc73e7f3351061d183912126801169dd083905a8060afd87",
+  "cases": [
+    {
+      "locale": "zh-CN",
+      "identifierError": "账号长度需为 3 至 128 位。",
+      "passwordError": "密码最多 128 位。",
+      "untranslatedKeyVisible": false
+    },
+    {
+      "locale": "en-US",
+      "identifierError": "Use an account with 3 to 128 characters.",
+      "passwordError": "Use no more than 128 characters.",
+      "untranslatedKeyVisible": false
+    }
+  ],
+  "requests": [],
+  "pageErrors": [],
+  "sourceHashAfter": "9258cb03e36c97d53d2e88521ba29f95aaf81de794657c8c72689fa50bd66baf",
+  "result": "FRESH_LENGTH_COPY_PASS"
+}

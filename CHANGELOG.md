@@ -1,5 +1,7 @@
 # Changelog
 
+- [MB-002-BOUNDARIES-20261015] 正式Mobile注册按既有契约补账号3–128/密码12–128与中英文长度反馈，三输入取消uni默认截断；复用真实pointer反馈快照稳定首次/多行错误点击，primary键盘keyup单次提交。当前34作者矩阵、17边界和44项独审及typecheck/H5 build通过，缓存/历史FAIL与真实业务边界保留。
+
 - [MB-001-KEYBOARD-20261014] 正式Mobile登录主按钮Enter/Space改为局部keyup单次提交，修复空表单Enter跳过账号首错；17项独立浏览器复验及typecheck通过，涵盖hold/repeat、最新字段、busy与短视口Space不滚动。原设计/原FAIL和真实业务边界保留。
 
 - [MB-003-REDESIGN-20261014] 正式Mobile找回密码两步骤全面简约重排：开放表单、统一字号/图标/间距、简短提示与明确返回；补齐即时字段值、契约长度/不截断、原生语义、pending锁定和真假回执。修复首次/多行错误及回执清除造成真实点击丢失/误切，以及Enter首错焦点跳过；当前c9a6独立49项、typecheck/H5 build和marker8专项通过。旧FAIL按版本保留，真实IAM/mail/native安全清理另列，详见本页报告。

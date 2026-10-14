@@ -1,0 +1,24 @@
+{
+  "scope": "MB-002 only",
+  "files": [
+    {
+      "path": "apps/mobile/src/pages/register/register.vue",
+      "rawSha256": "9258cb03e36c97d53d2e88521ba29f95aaf81de794657c8c72689fa50bd66baf",
+      "stagedLfSha256": "e3296601141e5be4942f872239960ec00d04b53e572e8a0fe410cb6ca8543794",
+      "equivalentAfterCrLfToLf": true
+    },
+    {
+      "path": "apps/mobile/tests/ui-register.e2e.cjs",
+      "rawSha256": "d1aa2c15ebe845b98f88809350202561c07fe393ad63779cbfa498a5154b0a65",
+      "stagedLfSha256": "58905ebafd8df2ea692416ef9273df2f122634464bd028dc528fb08508840587",
+      "equivalentAfterCrLfToLf": true
+    },
+    {
+      "path": "packages/i18n/src/mobile-experience.ts",
+      "rawSha256": "eef37b1f82b915a0dc73e7f3351061d183912126801169dd083905a8060afd87",
+      "stagedLfSha256": "45c90bf7cd24b7653e3b779cbec0e9a7c2ff25cfab6822351eaf77f2fcfe5b22",
+      "equivalentAfterCrLfToLf": true
+    }
+  ],
+  "stagedPathCount": 195
+}

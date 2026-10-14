@@ -1,6 +1,6 @@
 # V2 UI 逐页审查索引 — 2026-10-13
 
-> **2026-10-14 22:39续做（最新）**：Plus实读4%，MB-003 c9a6当前49项独审/PUSHED_SCOPED，`fe6e027c`远程SHA一致；MB-001新主按钮Enter首错FAIL已局部修复，17项独审通过并推`70ad42f4`，远程SHA一致，MB-002指针及长度契约仍IN_REVIEW。见[本轮记录](ui-audit-20261013/RESUME-20261014-2239.md)。以下旧“已推/待审/暂停”仅保留对应范围，不能覆盖新FAIL。
+> **2026-10-14 22:39续做（最新）**：Plus实读4%，MB-003 c9a6当前49项独审/PUSHED_SCOPED，`fe6e027c`远程SHA一致；MB-001新主按钮Enter首错FAIL已局部修复，17项独审通过并推`70ad42f4`，远程SHA一致，MB-002指针/键盘/长度契约9258已44项独审及工程收口，UI_VERIFIED待单页推送。见[本轮记录](ui-audit-20261013/RESUME-20261014-2239.md)。以下旧“已推/待审/暂停”仅保留对应范围，不能覆盖新FAIL。
 
 > **2026-10-14 16:46已恢复续做**：额度实读1%、fetch后067ef187一致，原56文件hash无变化。[本轮记录](ui-audit-20261013/RESUME-20261014-1646.md)；MB-003/MB-002仍在独立复审，旧正常矩阵不代替指针/多行错误通过。
 
@@ -139,7 +139,7 @@
 | 审查编号 | 真实路由 | 页面源文件 | 本页需展开的场景 | 当前状态 | 证据 / 提交 / 远程收据 |
 |---|---|---|---|---|---|
 | MB-001 | `#/pages/login/login` | [apps/mobile/src/pages/login/login.vue](../../apps/mobile/src/pages/login/login.vue) | 登录 | PUSHED_SCOPED | 原重设计/即时值收据保留；当前1d34键盘窄修获[17项独审](ui-audit-20261013/mobile-login/20261014-1d34-independent-keyboard/review.md)，`70ad42f4`已推且远程SHA一致；原da5 FAIL/native/IAM边界保留 |
-| MB-002 | `#/pages/register/register` | [apps/mobile/src/pages/register/register.vue](../../apps/mobile/src/pages/register/register.vue) | 注册 | IN_REVIEW | 原重设计4968bc76已推，旧34/32矩阵保留；[首次错误指针FAIL](ui-audit-20261013/mobile-register/20261014-pointer-followup/before/results.json)与新键盘关切局部修稿作者已过，待长度契约/默认140检查及最终独审，不能凭旧PASS关闭 |
+| MB-002 | `#/pages/register/register` | [apps/mobile/src/pages/register/register.vue](../../apps/mobile/src/pages/register/register.vue) | 注册 | UI_VERIFIED | 原重设计收据保留；当前9258长度/指针/键盘补修获[44项独审](ui-audit-20261013/mobile-register/20261015-9258-independent-final/review.md)及工程收口，待单独推送；原FAIL/native/IAM边界保留 |
 | MB-003 | `#/pages/reset-password/reset-password` | [apps/mobile/src/pages/reset-password/reset-password.vue](../../apps/mobile/src/pages/reset-password/reset-password.vue) | 请求/确认两步、完成态 | PUSHED_SCOPED | [正式两步重设计报告](ui-audit-20261013/mobile-reset/report.md)、[当前c9a6独立49项复签](ui-audit-20261013/mobile-reset/20261014-c9a6-final-interaction/review.md)及[root视觉/工程收口](ui-audit-20261013/mobile-reset/20261014-2239-root/final-review.md)通过；`fe6e027c`已推且远程SHA一致，旧FAIL/IAM/native GAP保留 |
 | MB-004 | `#/pages/onboarding/onboarding` | [apps/mobile/src/pages/onboarding/onboarding.vue](../../apps/mobile/src/pages/onboarding/onboarding.vue) | 成人门、同意、目标、定级四幕 | PENDING | — |
 | MB-005 | `#/pages/forbidden/forbidden` | [apps/mobile/src/pages/forbidden/forbidden.vue](../../apps/mobile/src/pages/forbidden/forbidden.vue) | 限制说明、退出与可用出口 | PENDING | — |

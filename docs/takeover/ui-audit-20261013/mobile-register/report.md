@@ -1,5 +1,7 @@
 # MB-002 — Mobile 注册页逐页重设计与复验
 
+> **2026-10-15最新补修**：当前9258正式注册源已获[作者34矩阵及契约/手势报告](20261015-contract-followup/report.md)、[44项独立风险复签](20261015-9258-independent-final/review.md)与[root收口](20261015-9258-independent-final/root-review.md)，typecheck/H5 build通过；UI_VERIFIED待本页单独推送。新账号/密码长度提示、不截断、错误自然高度及primary键盘修复已在真实H5运行，旧FAIL与缓存裸key FAIL保留。下文既有设计/收据为历史具名范围，不覆盖本次差量。
+
 日期：2026-10-14（北京时间）。正式入口：`http://127.0.0.1:18183/#/pages/register/register`。
 
 作者结论：`PASS_UI_SCOPED_NOT_BUSINESS_ACCEPTANCE`。最终 [results.json](20261014-run1/results.json) 有 34 个矩阵记录、具名交互检查和源文件 SHA-256。独立签收由主 Agent 在 [independent-review.md](independent-review.md) 记录；本报告不代替最终提交、推送收据或实时部署验证。

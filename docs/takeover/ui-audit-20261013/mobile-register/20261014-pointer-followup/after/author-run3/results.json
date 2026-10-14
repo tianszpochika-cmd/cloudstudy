@@ -1,0 +1,1991 @@
+{
+  "scope": "MOBILE_REGISTER_H5_UI_ONLY_SYNTHETIC_FIXTURES",
+  "at": "2026-10-14T15:20:46.551Z",
+  "browserPlugin": "unavailable; Playwright Chromium",
+  "matrix": [
+    {
+      "width": 320,
+      "locale": "zh-CN",
+      "requestedTheme": "light",
+      "url": "http://127.0.0.1:18183/#/pages/register/register?theme=light&uiLocale=zh-CN",
+      "title": "创建账号",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 272,
+      "titleFont": "28px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "descriptionFont": "14px",
+      "titleContrast": 14.171267244103936,
+      "descriptionContrast": 5.504103371100126,
+      "hintContrast": 5.504103371100126,
+      "submitFont": "16px",
+      "submitContrast": 7.996499985642157,
+      "submitTop": 564.453125,
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "显示密码",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "显示确认密码",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "创建账号",
+          "width": 272,
+          "height": 50
+        },
+        {
+          "label": "登录",
+          "width": 44,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 320,
+      "locale": "zh-CN",
+      "requestedTheme": "dark",
+      "url": "http://127.0.0.1:18183/#/pages/register/register?theme=dark&uiLocale=zh-CN",
+      "title": "创建账号",
+      "theme": "dark",
+      "overflow": false,
+      "contentWidth": 272,
+      "titleFont": "28px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "descriptionFont": "14px",
+      "titleContrast": 15.923775297667023,
+      "descriptionContrast": 9.357719562635204,
+      "hintContrast": 9.357719562635204,
+      "submitFont": "16px",
+      "submitContrast": 8.176495938166001,
+      "submitTop": 564.453125,
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "显示密码",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "显示确认密码",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "创建账号",
+          "width": 272,
+          "height": 50
+        },
+        {
+          "label": "登录",
+          "width": 44,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 320,
+      "locale": "zh-CN",
+      "requestedTheme": "high-contrast",
+      "url": "http://127.0.0.1:18183/#/pages/register/register?theme=high-contrast&uiLocale=zh-CN",
+      "title": "创建账号",
+      "theme": "high-contrast",
+      "overflow": false,
+      "contentWidth": 272,
+      "titleFont": "28px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "descriptionFont": "14px",
+      "titleContrast": 21,
+      "descriptionContrast": 16.822650673503315,
+      "hintContrast": 16.822650673503315,
+      "submitFont": "16px",
+      "submitContrast": 11.31039533489464,
+      "submitTop": 564.453125,
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "显示密码",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "显示确认密码",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "创建账号",
+          "width": 272,
+          "height": 50
+        },
+        {
+          "label": "登录",
+          "width": 44,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 320,
+      "locale": "zh-CN",
+      "requestedTheme": "system",
+      "url": "http://127.0.0.1:18183/#/pages/register/register?theme=system&uiLocale=zh-CN",
+      "title": "创建账号",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 272,
+      "titleFont": "28px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "descriptionFont": "14px",
+      "titleContrast": 14.171267244103936,
+      "descriptionContrast": 5.504103371100126,
+      "hintContrast": 5.504103371100126,
+      "submitFont": "16px",
+      "submitContrast": 7.996499985642157,
+      "submitTop": 564.453125,
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "显示密码",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "显示确认密码",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "创建账号",
+          "width": 272,
+          "height": 50
+        },
+        {
+          "label": "登录",
+          "width": 44,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 320,
+      "locale": "en-US",
+      "requestedTheme": "light",
+      "url": "http://127.0.0.1:18183/#/pages/register/register?theme=light&uiLocale=en-US",
+      "title": "Create account",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 272,
+      "titleFont": "28px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "descriptionFont": "14px",
+      "titleContrast": 14.171267244103936,
+      "descriptionContrast": 5.504103371100126,
+      "hintContrast": 5.504103371100126,
+      "submitFont": "16px",
+      "submitContrast": 7.996499985642157,
+      "submitTop": 588.953125,
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "Show password",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "Show confirmation password",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "Create account",
+          "width": 272,
+          "height": 50
+        },
+        {
+          "label": "Sign in",
+          "width": 45.890625,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 320,
+      "locale": "en-US",
+      "requestedTheme": "dark",
+      "url": "http://127.0.0.1:18183/#/pages/register/register?theme=dark&uiLocale=en-US",
+      "title": "Create account",
+      "theme": "dark",
+      "overflow": false,
+      "contentWidth": 272,
+      "titleFont": "28px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "descriptionFont": "14px",
+      "titleContrast": 15.923775297667023,
+      "descriptionContrast": 9.357719562635204,
+      "hintContrast": 9.357719562635204,
+      "submitFont": "16px",
+      "submitContrast": 8.176495938166001,
+      "submitTop": 588.953125,
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "Show password",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "Show confirmation password",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "Create account",
+          "width": 272,
+          "height": 50
+        },
+        {
+          "label": "Sign in",
+          "width": 45.890625,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 320,
+      "locale": "en-US",
+      "requestedTheme": "high-contrast",
+      "url": "http://127.0.0.1:18183/#/pages/register/register?theme=high-contrast&uiLocale=en-US",
+      "title": "Create account",
+      "theme": "high-contrast",
+      "overflow": false,
+      "contentWidth": 272,
+      "titleFont": "28px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "descriptionFont": "14px",
+      "titleContrast": 21,
+      "descriptionContrast": 16.822650673503315,
+      "hintContrast": 16.822650673503315,
+      "submitFont": "16px",
+      "submitContrast": 11.31039533489464,
+      "submitTop": 588.953125,
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "Show password",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "Show confirmation password",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "Create account",
+          "width": 272,
+          "height": 50
+        },
+        {
+          "label": "Sign in",
+          "width": 45.890625,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 320,
+      "locale": "en-US",
+      "requestedTheme": "system",
+      "url": "http://127.0.0.1:18183/#/pages/register/register?theme=system&uiLocale=en-US",
+      "title": "Create account",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 272,
+      "titleFont": "28px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "descriptionFont": "14px",
+      "titleContrast": 14.171267244103936,
+      "descriptionContrast": 5.504103371100126,
+      "hintContrast": 5.504103371100126,
+      "submitFont": "16px",
+      "submitContrast": 7.996499985642157,
+      "submitTop": 588.953125,
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "Show password",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "Show confirmation password",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "Create account",
+          "width": 272,
+          "height": 50
+        },
+        {
+          "label": "Sign in",
+          "width": 45.890625,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 390,
+      "locale": "zh-CN",
+      "requestedTheme": "light",
+      "url": "http://127.0.0.1:18183/#/pages/register/register?theme=light&uiLocale=zh-CN",
+      "title": "创建账号",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 342,
+      "titleFont": "28px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "descriptionFont": "14px",
+      "titleContrast": 14.171267244103936,
+      "descriptionContrast": 5.504103371100126,
+      "hintContrast": 5.504103371100126,
+      "submitFont": "16px",
+      "submitContrast": 7.996499985642157,
+      "submitTop": 564.453125,
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "显示密码",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "显示确认密码",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "创建账号",
+          "width": 342,
+          "height": 50
+        },
+        {
+          "label": "登录",
+          "width": 44,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 390,
+      "locale": "zh-CN",
+      "requestedTheme": "dark",
+      "url": "http://127.0.0.1:18183/#/pages/register/register?theme=dark&uiLocale=zh-CN",
+      "title": "创建账号",
+      "theme": "dark",
+      "overflow": false,
+      "contentWidth": 342,
+      "titleFont": "28px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "descriptionFont": "14px",
+      "titleContrast": 15.923775297667023,
+      "descriptionContrast": 9.357719562635204,
+      "hintContrast": 9.357719562635204,
+      "submitFont": "16px",
+      "submitContrast": 8.176495938166001,
+      "submitTop": 564.453125,
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "显示密码",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "显示确认密码",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "创建账号",
+          "width": 342,
+          "height": 50
+        },
+        {
+          "label": "登录",
+          "width": 44,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 390,
+      "locale": "zh-CN",
+      "requestedTheme": "high-contrast",
+      "url": "http://127.0.0.1:18183/#/pages/register/register?theme=high-contrast&uiLocale=zh-CN",
+      "title": "创建账号",
+      "theme": "high-contrast",
+      "overflow": false,
+      "contentWidth": 342,
+      "titleFont": "28px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "descriptionFont": "14px",
+      "titleContrast": 21,
+      "descriptionContrast": 16.822650673503315,
+      "hintContrast": 16.822650673503315,
+      "submitFont": "16px",
+      "submitContrast": 11.31039533489464,
+      "submitTop": 564.453125,
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "显示密码",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "显示确认密码",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "创建账号",
+          "width": 342,
+          "height": 50
+        },
+        {
+          "label": "登录",
+          "width": 44,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 390,
+      "locale": "zh-CN",
+      "requestedTheme": "system",
+      "url": "http://127.0.0.1:18183/#/pages/register/register?theme=system&uiLocale=zh-CN",
+      "title": "创建账号",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 342,
+      "titleFont": "28px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "descriptionFont": "14px",
+      "titleContrast": 14.171267244103936,
+      "descriptionContrast": 5.504103371100126,
+      "hintContrast": 5.504103371100126,
+      "submitFont": "16px",
+      "submitContrast": 7.996499985642157,
+      "submitTop": 564.453125,
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "显示密码",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "显示确认密码",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "创建账号",
+          "width": 342,
+          "height": 50
+        },
+        {
+          "label": "登录",
+          "width": 44,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 390,
+      "locale": "en-US",
+      "requestedTheme": "light",
+      "url": "http://127.0.0.1:18183/#/pages/register/register?theme=light&uiLocale=en-US",
+      "title": "Create account",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 342,
+      "titleFont": "28px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "descriptionFont": "14px",
+      "titleContrast": 14.171267244103936,
+      "descriptionContrast": 5.504103371100126,
+      "hintContrast": 5.504103371100126,
+      "submitFont": "16px",
+      "submitContrast": 7.996499985642157,
+      "submitTop": 564.453125,
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "Show password",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "Show confirmation password",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "Create account",
+          "width": 342,
+          "height": 50
+        },
+        {
+          "label": "Sign in",
+          "width": 45.890625,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 390,
+      "locale": "en-US",
+      "requestedTheme": "dark",
+      "url": "http://127.0.0.1:18183/#/pages/register/register?theme=dark&uiLocale=en-US",
+      "title": "Create account",
+      "theme": "dark",
+      "overflow": false,
+      "contentWidth": 342,
+      "titleFont": "28px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "descriptionFont": "14px",
+      "titleContrast": 15.923775297667023,
+      "descriptionContrast": 9.357719562635204,
+      "hintContrast": 9.357719562635204,
+      "submitFont": "16px",
+      "submitContrast": 8.176495938166001,
+      "submitTop": 564.453125,
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "Show password",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "Show confirmation password",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "Create account",
+          "width": 342,
+          "height": 50
+        },
+        {
+          "label": "Sign in",
+          "width": 45.890625,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 390,
+      "locale": "en-US",
+      "requestedTheme": "high-contrast",
+      "url": "http://127.0.0.1:18183/#/pages/register/register?theme=high-contrast&uiLocale=en-US",
+      "title": "Create account",
+      "theme": "high-contrast",
+      "overflow": false,
+      "contentWidth": 342,
+      "titleFont": "28px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "descriptionFont": "14px",
+      "titleContrast": 21,
+      "descriptionContrast": 16.822650673503315,
+      "hintContrast": 16.822650673503315,
+      "submitFont": "16px",
+      "submitContrast": 11.31039533489464,
+      "submitTop": 564.453125,
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "Show password",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "Show confirmation password",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "Create account",
+          "width": 342,
+          "height": 50
+        },
+        {
+          "label": "Sign in",
+          "width": 45.890625,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 390,
+      "locale": "en-US",
+      "requestedTheme": "system",
+      "url": "http://127.0.0.1:18183/#/pages/register/register?theme=system&uiLocale=en-US",
+      "title": "Create account",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 342,
+      "titleFont": "28px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "descriptionFont": "14px",
+      "titleContrast": 14.171267244103936,
+      "descriptionContrast": 5.504103371100126,
+      "hintContrast": 5.504103371100126,
+      "submitFont": "16px",
+      "submitContrast": 7.996499985642157,
+      "submitTop": 564.453125,
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "Show password",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "Show confirmation password",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "Create account",
+          "width": 342,
+          "height": 50
+        },
+        {
+          "label": "Sign in",
+          "width": 45.890625,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 768,
+      "locale": "zh-CN",
+      "requestedTheme": "light",
+      "url": "http://127.0.0.1:18183/#/pages/register/register?theme=light&uiLocale=zh-CN",
+      "title": "创建账号",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 420,
+      "titleFont": "28px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "descriptionFont": "14px",
+      "titleContrast": 14.171267244103936,
+      "descriptionContrast": 5.504103371100126,
+      "hintContrast": 5.504103371100126,
+      "submitFont": "16px",
+      "submitContrast": 7.996499985642157,
+      "submitTop": 595.65625,
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "显示密码",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "显示确认密码",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "创建账号",
+          "width": 420,
+          "height": 50
+        },
+        {
+          "label": "登录",
+          "width": 44,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 768,
+      "locale": "zh-CN",
+      "requestedTheme": "dark",
+      "url": "http://127.0.0.1:18183/#/pages/register/register?theme=dark&uiLocale=zh-CN",
+      "title": "创建账号",
+      "theme": "dark",
+      "overflow": false,
+      "contentWidth": 420,
+      "titleFont": "28px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "descriptionFont": "14px",
+      "titleContrast": 15.923775297667023,
+      "descriptionContrast": 9.357719562635204,
+      "hintContrast": 9.357719562635204,
+      "submitFont": "16px",
+      "submitContrast": 8.176495938166001,
+      "submitTop": 595.65625,
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "显示密码",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "显示确认密码",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "创建账号",
+          "width": 420,
+          "height": 50
+        },
+        {
+          "label": "登录",
+          "width": 44,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 768,
+      "locale": "zh-CN",
+      "requestedTheme": "high-contrast",
+      "url": "http://127.0.0.1:18183/#/pages/register/register?theme=high-contrast&uiLocale=zh-CN",
+      "title": "创建账号",
+      "theme": "high-contrast",
+      "overflow": false,
+      "contentWidth": 420,
+      "titleFont": "28px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "descriptionFont": "14px",
+      "titleContrast": 21,
+      "descriptionContrast": 16.822650673503315,
+      "hintContrast": 16.822650673503315,
+      "submitFont": "16px",
+      "submitContrast": 11.31039533489464,
+      "submitTop": 595.65625,
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "显示密码",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "显示确认密码",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "创建账号",
+          "width": 420,
+          "height": 50
+        },
+        {
+          "label": "登录",
+          "width": 44,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 768,
+      "locale": "zh-CN",
+      "requestedTheme": "system",
+      "url": "http://127.0.0.1:18183/#/pages/register/register?theme=system&uiLocale=zh-CN",
+      "title": "创建账号",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 420,
+      "titleFont": "28px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "descriptionFont": "14px",
+      "titleContrast": 14.171267244103936,
+      "descriptionContrast": 5.504103371100126,
+      "hintContrast": 5.504103371100126,
+      "submitFont": "16px",
+      "submitContrast": 7.996499985642157,
+      "submitTop": 595.65625,
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "显示密码",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "显示确认密码",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "创建账号",
+          "width": 420,
+          "height": 50
+        },
+        {
+          "label": "登录",
+          "width": 44,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 768,
+      "locale": "en-US",
+      "requestedTheme": "light",
+      "url": "http://127.0.0.1:18183/#/pages/register/register?theme=light&uiLocale=en-US",
+      "title": "Create account",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 420,
+      "titleFont": "28px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "descriptionFont": "14px",
+      "titleContrast": 14.171267244103936,
+      "descriptionContrast": 5.504103371100126,
+      "hintContrast": 5.504103371100126,
+      "submitFont": "16px",
+      "submitContrast": 7.996499985642157,
+      "submitTop": 595.65625,
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "Show password",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "Show confirmation password",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "Create account",
+          "width": 420,
+          "height": 50
+        },
+        {
+          "label": "Sign in",
+          "width": 45.890625,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 768,
+      "locale": "en-US",
+      "requestedTheme": "dark",
+      "url": "http://127.0.0.1:18183/#/pages/register/register?theme=dark&uiLocale=en-US",
+      "title": "Create account",
+      "theme": "dark",
+      "overflow": false,
+      "contentWidth": 420,
+      "titleFont": "28px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "descriptionFont": "14px",
+      "titleContrast": 15.923775297667023,
+      "descriptionContrast": 9.357719562635204,
+      "hintContrast": 9.357719562635204,
+      "submitFont": "16px",
+      "submitContrast": 8.176495938166001,
+      "submitTop": 595.65625,
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "Show password",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "Show confirmation password",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "Create account",
+          "width": 420,
+          "height": 50
+        },
+        {
+          "label": "Sign in",
+          "width": 45.890625,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 768,
+      "locale": "en-US",
+      "requestedTheme": "high-contrast",
+      "url": "http://127.0.0.1:18183/#/pages/register/register?theme=high-contrast&uiLocale=en-US",
+      "title": "Create account",
+      "theme": "high-contrast",
+      "overflow": false,
+      "contentWidth": 420,
+      "titleFont": "28px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "descriptionFont": "14px",
+      "titleContrast": 21,
+      "descriptionContrast": 16.822650673503315,
+      "hintContrast": 16.822650673503315,
+      "submitFont": "16px",
+      "submitContrast": 11.31039533489464,
+      "submitTop": 595.65625,
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "Show password",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "Show confirmation password",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "Create account",
+          "width": 420,
+          "height": 50
+        },
+        {
+          "label": "Sign in",
+          "width": 45.890625,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 768,
+      "locale": "en-US",
+      "requestedTheme": "system",
+      "url": "http://127.0.0.1:18183/#/pages/register/register?theme=system&uiLocale=en-US",
+      "title": "Create account",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 420,
+      "titleFont": "28px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "descriptionFont": "14px",
+      "titleContrast": 14.171267244103936,
+      "descriptionContrast": 5.504103371100126,
+      "hintContrast": 5.504103371100126,
+      "submitFont": "16px",
+      "submitContrast": 7.996499985642157,
+      "submitTop": 595.65625,
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "Show password",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "Show confirmation password",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "Create account",
+          "width": 420,
+          "height": 50
+        },
+        {
+          "label": "Sign in",
+          "width": 45.890625,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 1280,
+      "locale": "zh-CN",
+      "requestedTheme": "light",
+      "url": "http://127.0.0.1:18183/#/pages/register/register?theme=light&uiLocale=zh-CN",
+      "title": "创建账号",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 420,
+      "titleFont": "28px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "descriptionFont": "14px",
+      "titleContrast": 14.171267244103936,
+      "descriptionContrast": 5.504103371100126,
+      "hintContrast": 5.504103371100126,
+      "submitFont": "16px",
+      "submitContrast": 7.996499985642157,
+      "submitTop": 595.65625,
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "显示密码",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "显示确认密码",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "创建账号",
+          "width": 420,
+          "height": 50
+        },
+        {
+          "label": "登录",
+          "width": 44,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 1280,
+      "locale": "zh-CN",
+      "requestedTheme": "dark",
+      "url": "http://127.0.0.1:18183/#/pages/register/register?theme=dark&uiLocale=zh-CN",
+      "title": "创建账号",
+      "theme": "dark",
+      "overflow": false,
+      "contentWidth": 420,
+      "titleFont": "28px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "descriptionFont": "14px",
+      "titleContrast": 15.923775297667023,
+      "descriptionContrast": 9.357719562635204,
+      "hintContrast": 9.357719562635204,
+      "submitFont": "16px",
+      "submitContrast": 8.176495938166001,
+      "submitTop": 595.65625,
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "显示密码",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "显示确认密码",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "创建账号",
+          "width": 420,
+          "height": 50
+        },
+        {
+          "label": "登录",
+          "width": 44,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 1280,
+      "locale": "zh-CN",
+      "requestedTheme": "high-contrast",
+      "url": "http://127.0.0.1:18183/#/pages/register/register?theme=high-contrast&uiLocale=zh-CN",
+      "title": "创建账号",
+      "theme": "high-contrast",
+      "overflow": false,
+      "contentWidth": 420,
+      "titleFont": "28px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "descriptionFont": "14px",
+      "titleContrast": 21,
+      "descriptionContrast": 16.822650673503315,
+      "hintContrast": 16.822650673503315,
+      "submitFont": "16px",
+      "submitContrast": 11.31039533489464,
+      "submitTop": 595.65625,
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "显示密码",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "显示确认密码",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "创建账号",
+          "width": 420,
+          "height": 50
+        },
+        {
+          "label": "登录",
+          "width": 44,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 1280,
+      "locale": "zh-CN",
+      "requestedTheme": "system",
+      "url": "http://127.0.0.1:18183/#/pages/register/register?theme=system&uiLocale=zh-CN",
+      "title": "创建账号",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 420,
+      "titleFont": "28px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "descriptionFont": "14px",
+      "titleContrast": 14.171267244103936,
+      "descriptionContrast": 5.504103371100126,
+      "hintContrast": 5.504103371100126,
+      "submitFont": "16px",
+      "submitContrast": 7.996499985642157,
+      "submitTop": 595.65625,
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "显示密码",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "显示确认密码",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "创建账号",
+          "width": 420,
+          "height": 50
+        },
+        {
+          "label": "登录",
+          "width": 44,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 1280,
+      "locale": "en-US",
+      "requestedTheme": "light",
+      "url": "http://127.0.0.1:18183/#/pages/register/register?theme=light&uiLocale=en-US",
+      "title": "Create account",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 420,
+      "titleFont": "28px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "descriptionFont": "14px",
+      "titleContrast": 14.171267244103936,
+      "descriptionContrast": 5.504103371100126,
+      "hintContrast": 5.504103371100126,
+      "submitFont": "16px",
+      "submitContrast": 7.996499985642157,
+      "submitTop": 595.65625,
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "Show password",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "Show confirmation password",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "Create account",
+          "width": 420,
+          "height": 50
+        },
+        {
+          "label": "Sign in",
+          "width": 45.890625,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 1280,
+      "locale": "en-US",
+      "requestedTheme": "dark",
+      "url": "http://127.0.0.1:18183/#/pages/register/register?theme=dark&uiLocale=en-US",
+      "title": "Create account",
+      "theme": "dark",
+      "overflow": false,
+      "contentWidth": 420,
+      "titleFont": "28px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "descriptionFont": "14px",
+      "titleContrast": 15.923775297667023,
+      "descriptionContrast": 9.357719562635204,
+      "hintContrast": 9.357719562635204,
+      "submitFont": "16px",
+      "submitContrast": 8.176495938166001,
+      "submitTop": 595.65625,
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "Show password",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "Show confirmation password",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "Create account",
+          "width": 420,
+          "height": 50
+        },
+        {
+          "label": "Sign in",
+          "width": 45.890625,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 1280,
+      "locale": "en-US",
+      "requestedTheme": "high-contrast",
+      "url": "http://127.0.0.1:18183/#/pages/register/register?theme=high-contrast&uiLocale=en-US",
+      "title": "Create account",
+      "theme": "high-contrast",
+      "overflow": false,
+      "contentWidth": 420,
+      "titleFont": "28px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "descriptionFont": "14px",
+      "titleContrast": 21,
+      "descriptionContrast": 16.822650673503315,
+      "hintContrast": 16.822650673503315,
+      "submitFont": "16px",
+      "submitContrast": 11.31039533489464,
+      "submitTop": 595.65625,
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "Show password",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "Show confirmation password",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "Create account",
+          "width": 420,
+          "height": 50
+        },
+        {
+          "label": "Sign in",
+          "width": 45.890625,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 1280,
+      "locale": "en-US",
+      "requestedTheme": "system",
+      "url": "http://127.0.0.1:18183/#/pages/register/register?theme=system&uiLocale=en-US",
+      "title": "Create account",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 420,
+      "titleFont": "28px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "descriptionFont": "14px",
+      "titleContrast": 14.171267244103936,
+      "descriptionContrast": 5.504103371100126,
+      "hintContrast": 5.504103371100126,
+      "submitFont": "16px",
+      "submitContrast": 7.996499985642157,
+      "submitTop": 595.65625,
+      "inputFonts": [
+        "16px",
+        "16px",
+        "16px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "Show password",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "Show confirmation password",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "Create account",
+          "width": 420,
+          "height": 50
+        },
+        {
+          "label": "Sign in",
+          "width": 45.890625,
+          "height": 44
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 390,
+      "locale": "zh-CN",
+      "requestedTheme": "light",
+      "textScale": 2,
+      "url": "http://127.0.0.1:18183/#/pages/register/register?theme=light&uiLocale=zh-CN",
+      "title": "创建账号",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 342,
+      "titleFont": "56px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "descriptionFont": "28px",
+      "titleContrast": 14.171267244103936,
+      "descriptionContrast": 5.504103371100126,
+      "hintContrast": 5.504103371100126,
+      "submitFont": "32px",
+      "submitContrast": 7.996499985642157,
+      "submitTop": 877.96875,
+      "inputFonts": [
+        "32px",
+        "32px",
+        "32px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "显示密码",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "显示确认密码",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "创建账号",
+          "width": 342,
+          "height": 74
+        },
+        {
+          "label": "登录",
+          "width": 56,
+          "height": 60.796875
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 390,
+      "locale": "en-US",
+      "requestedTheme": "light",
+      "textScale": 2,
+      "url": "http://127.0.0.1:18183/#/pages/register/register?theme=light&uiLocale=en-US",
+      "title": "Create account",
+      "theme": "light",
+      "overflow": false,
+      "contentWidth": 342,
+      "titleFont": "56px",
+      "titleFontFamily": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+      "descriptionFont": "28px",
+      "titleContrast": 14.171267244103936,
+      "descriptionContrast": 5.504103371100126,
+      "hintContrast": 5.504103371100126,
+      "submitFont": "32px",
+      "submitContrast": 7.996499985642157,
+      "submitTop": 997.953125,
+      "inputFonts": [
+        "32px",
+        "32px",
+        "32px"
+      ],
+      "fieldGaps": [
+        24,
+        24
+      ],
+      "actionGap": 24,
+      "targets": [
+        {
+          "label": "Show password",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "Show confirmation password",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "Create account",
+          "width": 342,
+          "height": 74
+        },
+        {
+          "label": "Sign in",
+          "width": 91.765625,
+          "height": 60.796875
+        }
+      ],
+      "status": "PASS"
+    }
+  ],
+  "checks": [
+    "32 isolated width/locale/theme combinations; live system preference, readable typography and measured 24px field/action gaps",
+    "Per-field required/length/mismatch, correction, first-error focus, live locale semantics, labels, Tab/Enter/Space and both password visibility controls",
+    "Immediate short-to-valid correction and valid-to-empty password/confirmation submission use current component values, not throttled old models",
+    "Busy locks every input/button/exit, duplicate submit prevented; neutral conflict survives edit and permits retry",
+    "Registration login exit preserves singly/doubly encoded safe deep link; external URL falls back to home",
+    "Synthetic registration with REQUIRED adult gate routes to existing onboarding rather than a learning page; UI fixture only",
+    "Rate-limit/unavailable neutral feedback, Chinese/English 200% text and short viewport scroll; no physical keyboard or real IAM claim",
+    "True old-center rapid click and 160ms gesture after 409 defer first new error; drag-away/native touchCancel release without submit; Enter/Space report first-error ARIA immediately",
+    "390px English200 reported short/empty/valid password changes retain natural error text/height after160ms before down and during160ms hold; dependent confirmation feedback stays stable"
+  ],
+  "pageErrors": [],
+  "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 429 (Too Many Requests)",
+    "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)"
+  ],
+  "fixtureRequests": [
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/register"
+    },
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/register"
+    },
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/register"
+    },
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/register"
+    },
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/register"
+    },
+    {
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/permissions"
+    },
+    {
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/register"
+    },
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/register"
+    },
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/register"
+    },
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/register"
+    },
+    {
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/register"
+    }
+  ],
+  "sourceHashes": {
+    "apps/mobile/src/pages/register/register.vue": "012f7295f1c253741a2927ae90b468eeda41647f83f779e96fbfc808c4ade2bc",
+    "apps/mobile/src/theme/v2-tokens.scss": "561d1b8bead07c1c09ecf6c2bec0b4eee4151d5ae1b15e9cc755f84fac855869",
+    "apps/mobile/src/theme/v2-icons.ts": "93951db891ef4997dc071482176ce2c1b5801c600c5315bbcf915691ef164ba5",
+    "apps/mobile/src/uni.scss": "0bd56842fc5baebd8767e721f2d938986e293d1d87bfc74bb087b3c228f638d7",
+    "apps/mobile/src/platform/v2-foundation.ts": "8cbfe6c7665de68dfba0c281e3b0a2abc296d091dc043782e5ff7af775018c37",
+    "apps/mobile/src/platform/pointer-feedback.ts": "6464f4c1712b5a0f2fd4ab01d451d5bb6ffaa13bde486826a424511059ef6425",
+    "packages/i18n/src/mobile-experience.ts": "f772bccef324eeac99e3f7b31292040d1353557387aaf6f05d309b74d7ad947d",
+    "apps/mobile/src/auth/gateway-auth.ts": "b17373e792c34287ac8e3e78db97e6fb71b7f4599df88a9a8a2bac1e8005d711",
+    "apps/mobile/src/auth/auth-failure-copy.ts": "0ecf6aab291dc6f5fa20b561141eafedc7091bc3773e4203b5c68b64232fc795",
+    "apps/mobile/src/stores/session.ts": "6cbf1f855f49e389bd03a3eb2e21135c1bd604aad2722469b46bdd49466a5b68",
+    "apps/mobile/tests/ui-register.e2e.cjs": "c6b25070dba6224a569591184f8952936b3e92bd963e5a6862885228624424ba"
+  },
+  "pointer": [
+    {
+      "ending": "click",
+      "heldMs": 0,
+      "beforeTop": 610.84375,
+      "heldTop": 610.84375,
+      "clicks": 1,
+      "pressedAction": true,
+      "staleAtPointer": true,
+      "elapsedMs": 2.400000002235174,
+      "snapshotReleased": true,
+      "requests": 1
+    },
+    {
+      "ending": "click",
+      "heldMs": 160,
+      "beforeTop": 610.84375,
+      "heldTop": 610.84375,
+      "clicks": 1,
+      "pressedAction": true,
+      "staleAtPointer": true,
+      "elapsedMs": 2.2999999970197678,
+      "snapshotReleased": true,
+      "requests": 1
+    },
+    {
+      "ending": "drag-away",
+      "heldMs": 160,
+      "beforeTop": 610.84375,
+      "heldTop": 610.84375,
+      "clicks": 0,
+      "pressedAction": true,
+      "staleAtPointer": true,
+      "elapsedMs": 2.199999999254942,
+      "snapshotReleased": true,
+      "requests": 1
+    },
+    {
+      "ending": "cancel",
+      "heldMs": 160,
+      "beforeTop": 610.84375,
+      "heldTop": 610.84375,
+      "clicks": 0,
+      "pressedAction": true,
+      "staleAtPointer": true,
+      "elapsedMs": 17.400000002235174,
+      "snapshotReleased": true,
+      "requests": 1
+    }
+  ],
+  "reportedErrorPointer": [
+    {
+      "kind": "short-to-empty",
+      "textScale": 2,
+      "settleMs": 160,
+      "holdMs": 160,
+      "before": {
+        "x": 195,
+        "y": 807.140625,
+        "top": 1193.140625,
+        "errorText": "Use at least 12 characters.",
+        "errorHeight": 89.59375
+      },
+      "settled": {
+        "top": 1193.140625,
+        "errorText": "Use at least 12 characters.",
+        "errorHeight": 89.59375,
+        "hidden": "false"
+      },
+      "trustedClicks": 1,
+      "requests": 0
+    },
+    {
+      "kind": "empty-to-short",
+      "textScale": 2,
+      "settleMs": 160,
+      "holdMs": 160,
+      "before": {
+        "x": 195,
+        "y": 762.34375,
+        "top": 1148.34375,
+        "errorText": "Enter your password.",
+        "errorHeight": 44.796875
+      },
+      "settled": {
+        "top": 1148.34375,
+        "errorText": "Enter your password.",
+        "errorHeight": 44.796875,
+        "hidden": "false"
+      },
+      "trustedClicks": 1,
+      "requests": 0
+    },
+    {
+      "kind": "short-to-valid",
+      "textScale": 2,
+      "settleMs": 160,
+      "holdMs": 160,
+      "before": {
+        "x": 195,
+        "y": 807.140625,
+        "top": 1193.140625,
+        "errorText": "Use at least 12 characters.",
+        "errorHeight": 89.59375
+      },
+      "settled": {
+        "top": 1193.140625,
+        "errorText": "Use at least 12 characters.",
+        "errorHeight": 89.59375,
+        "hidden": "true"
+      },
+      "trustedClicks": 1,
+      "requests": 1
+    }
+  ],
+  "status": "PASS_UI_SCOPED_NOT_BUSINESS_ACCEPTANCE"
+}

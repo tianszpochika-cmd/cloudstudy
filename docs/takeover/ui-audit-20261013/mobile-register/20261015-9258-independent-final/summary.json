@@ -1,0 +1,101 @@
+{
+  "at": "2026-10-14T16:21:10.5828239Z",
+  "reviewer": "/root/mb003_final",
+  "result": "UI_PASS_RISK_SCOPE_H5",
+  "sourceHash": "9258cb03e36c97d53d2e88521ba29f95aaf81de794657c8c72689fa50bd66baf",
+  "i18nHash": "eef37b1f82b915a0dc73e7f3351061d183912126801169dd083905a8060afd87",
+  "helperHash": "6464f4c1712b5a0f2fd4ab01d451d5bb6ffaa13bde486826a424511059ef6425",
+  "testHash": "d1aa2c15ebe845b98f88809350202561c07fe393ad63779cbfa498a5154b0a65",
+  "scope": "CURRENT_FORMAL_REGISTER_CONTRACT_POINTER_KEYBOARD_LONG_ERROR_UI_RISK_ONLY",
+  "contract": {
+    "allInputMaxLength": -1,
+    "identifier": "trimmed3..128",
+    "longEntriesRetainedLength": 141,
+    "password": "raw12..128",
+    "cases": 17
+  },
+  "pointer": {
+    "holdMs": 160,
+    "inputSettleMs": [
+      0,
+      160
+    ],
+    "reportedEnglish200": 12,
+    "firstNew129Error": 4,
+    "baselinePostCount": 1,
+    "invalidAdditionalPostCount": 0
+  },
+  "keyboard": {
+    "validPostCount": 1,
+    "emptyFirstError": "mobile-register-identifier",
+    "emptyPostCount": 0,
+    "pendingGuard": true,
+    "cases": 5
+  },
+  "visual": {
+    "themes": [
+      "light",
+      "dark",
+      "high-contrast"
+    ],
+    "allViewed": true,
+    "scale": [
+      1,
+      2
+    ],
+    "widths": [
+      320,
+      390
+    ],
+    "cases": 6
+  },
+  "totalRiskCheckRecords": 44,
+  "freshTranslationChecks": 2,
+  "ordinary34MatrixRepeated": false,
+  "pageErrors": 0,
+  "unexpectedConsoleErrors": 0,
+  "sourceDrifts": 0,
+  "allPriorFailuresPreserved": true,
+  "service": {
+    "newSession": 99734,
+    "host": "127.0.0.1",
+    "restartAuthorizedFor": "refresh stale i18n prebundle with strictPort force",
+    "oldOwnSession": 77625,
+    "port": 18183,
+    "newPid": 33636,
+    "oldOwnPid": 19892
+  },
+  "usage": {
+    "postBoundary": [
+      71,
+      77
+    ],
+    "viewImages": [
+      74,
+      77
+    ],
+    "preKeyboardVisual": [
+      72,
+      77
+    ],
+    "serviceVerification": [
+      60,
+      75
+    ],
+    "preBoundary": [
+      67,
+      76
+    ],
+    "close": [
+      75,
+      77
+    ]
+  },
+  "unverified": [
+    "author ordinary matrix not independently repeated",
+    "real IAM registration/adult gate/business",
+    "native App/mini-program",
+    "physical keyboard/screen reader",
+    "credential storage and refresh clearing"
+  ]
+}
