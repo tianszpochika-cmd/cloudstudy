@@ -1,0 +1,19 @@
+{
+  "savedAtBeijing": "2026-10-15 02:14:00",
+  "primaryUsedPercentAtStop": 90,
+  "secondaryUsedPercentAtStop": 80,
+  "resetsAt": 1792006081,
+  "resetsAtBeijing": "2026-10-15 03:28:01",
+  "sourceFiles": {
+    "apps/mobile/src/pages/onboarding/onboarding.vue": "aa20a389d915a4d289db11c0a44a698f7f4f02abe94df5907760555c9a866b0b",
+    "packages/i18n/src/mobile-experience.ts": "5de636433b73ba72a2549c3e6331da9f8ccec48226c71e56d071396cc0a69eeb",
+    "apps/mobile/src/api/learner-content.ts": "63ef96f178b37056ab02b7939a801d61f09458095c9fc01e39123879f719bcd2",
+    "apps/mobile/src/stores/session.ts": "22efb5caa219918b0d7a5a1d62af2c3072e7701d92dd56935a9b14f974b8641d",
+    "apps/mobile/tests/onboarding-target-consent-guard.test.mjs": "912737fed12da1b0fdef18f4e1888d4dd9e97062ae3c4b66a482172d0ed9b7db",
+    "apps/mobile/tests/onboarding-adult-verdict.test.mjs": "e5e61864350c52aff6048c2e92d0fea42d0e9fe42309bc7c88df6c516873ad55"
+  },
+  "sourceStatus": "UNCOMMITTED_IN_PROGRESS_NOT_UI_ACCEPTED",
+  "privateBackup": ".git\\codex-local-backups\\ui-pause-20261015-0214",
+  "lastVerifiedRemote": "09bcfa41bad51a7a78cbb706203a483d107ac6e2",
+  "newTestsAtThreshold": "SKIPPED"
+}

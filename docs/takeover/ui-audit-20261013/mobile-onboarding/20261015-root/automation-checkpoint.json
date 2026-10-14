@@ -1,0 +1,12 @@
+{
+  "id": "ui",
+  "kind": "heartbeat",
+  "status": "ACTIVE",
+  "intervalHours": 5,
+  "minute": 29,
+  "checkpointPromptSaved": "PAUSE-20261015-0214.md",
+  "resetsAt": 1792006081,
+  "resetsAtBeijing": "2026-10-15 03:28:01",
+  "resetCreditConsumed": false,
+  "nextExactExecutionTime": "App scheduler dependent; actual usage must be re-read"
+}

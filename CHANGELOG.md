@@ -1,5 +1,7 @@
 # Changelog
 
+- [UI-PAUSE-20261015-0214] 五小时实读90%停工并保存MB004四态正式源/专属i18n及API/session待验差量；14模块检查不视UI通过，候选类型/模板/browser均未跑。MB003/MB001/MB002本轮单页推送/远程收据已完成，固定每五小时续做、实际reset03:28:01、未用重置券。
+
 - [MB-002-BOUNDARIES-20261015] 正式Mobile注册按既有契约补账号3–128/密码12–128与中英文长度反馈，三输入取消uni默认截断；复用真实pointer反馈快照稳定首次/多行错误点击，primary键盘keyup单次提交。当前34作者矩阵、17边界和44项独审及typecheck/H5 build通过，缓存/历史FAIL与真实业务边界保留。
 
 - [MB-001-KEYBOARD-20261014] 正式Mobile登录主按钮Enter/Space改为局部keyup单次提交，修复空表单Enter跳过账号首错；17项独立浏览器复验及typecheck通过，涵盖hold/repeat、最新字段、busy与短视口Space不滚动。原设计/原FAIL和真实业务边界保留。
