@@ -1,6 +1,6 @@
 # MB-002 root收口 — 正式注册指针/键盘/长度补修
 
-当前UI_VERIFIED / PUSH_PENDING。root按现有三种B8注册契约检查差量，确认账号trim3..128、密码原值12..128、确认值保留、三个uni-input不静默截断；只新增注册专属两条共享中英文长度提示，未改契约、IAM/session或pointer helper。
+当前PUSHED_SCOPED / UI_VERIFIED；正式源/记录提交`4b3a40f17e555c7232391907763bc5edc1c3aa7d`已推origin/dev-redesign，随后远程SHA与HEAD一致。root按现有三种B8注册契约检查差量，确认账号trim3..128、密码原值12..128、确认值保留、三个uni-input不静默截断；只新增注册专属两条共享中英文长度提示，未改契约、IAM/session或pointer helper。
 
 反馈使用已签6464 helper及局部编辑自然高度策略，首次错误/英文多行新旧提示在实际手势中稳定；primary Enter/Space仅keyup单次调用既有submit，避免首错跳字段。即时form/blur/confirm链沿已推实现。无正常排版/主题CSS变更，当前新增错误布局已有实际验收。
 

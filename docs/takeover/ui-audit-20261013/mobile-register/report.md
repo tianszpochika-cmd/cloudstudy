@@ -1,6 +1,6 @@
 # MB-002 — Mobile 注册页逐页重设计与复验
 
-> **2026-10-15最新补修**：当前9258正式注册源已获[作者34矩阵及契约/手势报告](20261015-contract-followup/report.md)、[44项独立风险复签](20261015-9258-independent-final/review.md)与[root收口](20261015-9258-independent-final/root-review.md)，typecheck/H5 build通过；UI_VERIFIED待本页单独推送。新账号/密码长度提示、不截断、错误自然高度及primary键盘修复已在真实H5运行，旧FAIL与缓存裸key FAIL保留。下文既有设计/收据为历史具名范围，不覆盖本次差量。
+> **2026-10-15最新补修**：当前9258正式注册源已获[作者34矩阵及契约/手势报告](20261015-contract-followup/report.md)、[44项独立风险复签](20261015-9258-independent-final/review.md)与[root收口](20261015-9258-independent-final/root-review.md)，typecheck/H5 build通过；PUSHED_SCOPED，提交`4b3a40f17e555c7232391907763bc5edc1c3aa7d`已推origin/dev-redesign且随后远程SHA与HEAD一致。新账号/密码长度提示、不截断、错误自然高度及primary键盘修复已在真实H5运行，旧FAIL与缓存裸key FAIL保留。下文既有设计/收据为历史具名范围，不覆盖本次差量。
 
 日期：2026-10-14（北京时间）。正式入口：`http://127.0.0.1:18183/#/pages/register/register`。
 
