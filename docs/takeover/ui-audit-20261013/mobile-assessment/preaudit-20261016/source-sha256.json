@@ -1,0 +1,41 @@
+{
+  "kind": "READ_ONLY_PREAUDIT_SOURCE_HASHES",
+  "collectedAt": "2026-10-16T04:05:31.8089328+08:00",
+  "gitOperation": "NONE",
+  "browser": "NOT_RUN",
+  "tests": "NOT_RUN",
+  "sourceFiles": [
+    {
+      "path": "apps/mobile/src/pages/assessment/assessment.vue",
+      "sha256": "30cfa42c97c3fcd3923ac1309f3786fd2a1cf57c9e0d996bd897073429a86598"
+    },
+    {
+      "path": "apps/mobile/src/stores/learner-content.ts",
+      "sha256": "95cc92496db996242d91baed3301d76f985e4e3b9134e1e50c2b9ab8d41e4c61"
+    },
+    {
+      "path": "apps/mobile/src/api/learner-content.ts",
+      "sha256": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6"
+    },
+    {
+      "path": "apps/mobile/src/components/MobilePageHeader.vue",
+      "sha256": "003147d89d8d89cfdbefc1a700ab6199edfda0eb7ec27f5c045272207bde1b5c"
+    },
+    {
+      "path": "apps/mobile/src/components/AppIcon.vue",
+      "sha256": "01384fdd9388e4ef5b6b5bb10bbad87ef33029302c3eedd902d675ce563ba1b5"
+    },
+    {
+      "path": "packages/i18n/src/mobile-experience.ts",
+      "sha256": "cb47a78d810e2c2b08fc280f237cae726ee7a66cc2c0bf2dccf7c1112baaca83"
+    },
+    {
+      "path": "apps/mobile/src/platform/experience.ts",
+      "sha256": "2a5859f672fc02239fd784ba26d7327ab6d8ac71f043f558fa3e350d4d05d240"
+    },
+    {
+      "path": "apps/mobile/src/domain/placement-score.ts",
+      "sha256": "fc31ede9bb3a5694798a1bb889fee9732b6a79e13095eebe37f415b6f52603c9"
+    }
+  ]
+}

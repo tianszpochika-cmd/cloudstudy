@@ -1,0 +1,740 @@
+{
+  "at": "2026-10-15T20:40:04.136Z",
+  "scope": "EN_DARK_320x568_CSS_TEXT200_ONLY",
+  "quotaBefore": {
+    "fiveHour": 87,
+    "week": 44
+  },
+  "sourceHashesBefore": {
+    "apps/mobile/src/pages/assessment/assessment.vue": "d1b501e33b313679bd5c90dd8fcda8e9a5a6b790856a444b01e915523827366a",
+    "packages/i18n/src/mobile-experience.ts": "d55f74003bdbe9eae58858ab51bc52d806d2b07e5b06a05e68a183768291249d",
+    "apps/mobile/src/api/learner-content.ts": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6",
+    "apps/mobile/src/stores/learner-content.ts": "95cc92496db996242d91baed3301d76f985e4e3b9134e1e50c2b9ab8d41e4c61",
+    "apps/mobile/src/stores/session.ts": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+    "apps/mobile/src/auth/navigation.ts": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5"
+  },
+  "states": [
+    {
+      "name": "01-guide-css200-en-dark-320",
+      "facts": {
+        "route": "#/pages/assessment/assessment",
+        "title": "Level assessment",
+        "viewport": {
+          "width": 320,
+          "height": 568
+        },
+        "textScale": "CSS computed font sizes multiplied by 2; not native zoom",
+        "h1Font": "56px",
+        "rootText": "Back\nLevel assessment\nAnswer 10 questions to understand your current English starting point.\nAnswer at your current level\nChoose the answer you think is right.\nView your result when finished\nYour result is based on the answers received.\nStart assessment\nReturn to learning home\nQuick start is currently unavailable. Please complete the assessment.",
+        "overflow": false,
+        "overlay": false,
+        "words": [
+          {
+            "id": "assessment-title",
+            "word": "Level",
+            "rects": [
+              {
+                "x": 20,
+                "y": 122,
+                "width": 134.953125,
+                "height": 74
+              }
+            ],
+            "split": false
+          },
+          {
+            "id": "assessment-title",
+            "word": "assessment",
+            "rects": [
+              {
+                "x": 20,
+                "y": 200.390625,
+                "width": 274.453125,
+                "height": 74
+              },
+              {
+                "x": 20,
+                "y": 278.78125,
+                "width": 21.796875,
+                "height": 74
+              }
+            ],
+            "split": true
+          },
+          {
+            "id": "assessment-back",
+            "word": "Back",
+            "rects": [
+              {
+                "x": 46,
+                "y": 26,
+                "width": 65.3125,
+                "height": 43
+              }
+            ],
+            "split": false
+          },
+          {
+            "id": "assessment-start",
+            "word": "Start",
+            "rects": [
+              {
+                "x": 38.8125,
+                "y": 1378.171875,
+                "width": 69.09375,
+                "height": 43
+              }
+            ],
+            "split": false
+          },
+          {
+            "id": "assessment-start",
+            "word": "assessment",
+            "rects": [
+              {
+                "x": 116.703125,
+                "y": 1378.171875,
+                "width": 164.46875,
+                "height": 43
+              }
+            ],
+            "split": false
+          },
+          {
+            "id": "assessment-home",
+            "word": "Return",
+            "rects": [
+              {
+                "x": 91.9375,
+                "y": 1464.171875,
+                "width": 96.828125,
+                "height": 43
+              }
+            ],
+            "split": false
+          },
+          {
+            "id": "assessment-home",
+            "word": "to",
+            "rects": [
+              {
+                "x": 197.5625,
+                "y": 1464.171875,
+                "width": 30.484375,
+                "height": 43
+              }
+            ],
+            "split": false
+          },
+          {
+            "id": "assessment-home",
+            "word": "learning",
+            "rects": [
+              {
+                "x": 54.609375,
+                "y": 1512.171875,
+                "width": 118.890625,
+                "height": 43
+              }
+            ],
+            "split": false
+          },
+          {
+            "id": "assessment-home",
+            "word": "home",
+            "rects": [
+              {
+                "x": 182.296875,
+                "y": 1512.171875,
+                "width": 83.078125,
+                "height": 43
+              }
+            ],
+            "split": false
+          }
+        ],
+        "splitWords": [
+          {
+            "id": "assessment-title",
+            "word": "assessment",
+            "rects": [
+              {
+                "x": 20,
+                "y": 200.390625,
+                "width": 274.453125,
+                "height": 74
+              },
+              {
+                "x": 20,
+                "y": 278.78125,
+                "width": 21.796875,
+                "height": 74
+              }
+            ],
+            "split": true
+          }
+        ],
+        "targets": [
+          {
+            "id": "assessment-back",
+            "width": 91.3125,
+            "height": 64,
+            "font": "32px",
+            "pressed": null
+          },
+          {
+            "id": "assessment-settings",
+            "width": 44,
+            "height": 44,
+            "font": "32px",
+            "pressed": null
+          },
+          {
+            "id": "assessment-start",
+            "width": 280,
+            "height": 74,
+            "font": "32px",
+            "pressed": null
+          },
+          {
+            "id": "assessment-home",
+            "width": 280,
+            "height": 122,
+            "font": "32px",
+            "pressed": null
+          }
+        ]
+      },
+      "counts": {
+        "login": 1,
+        "refresh": 0,
+        "logout": 0,
+        "principal": 4,
+        "start": 0,
+        "respond": 0,
+        "retest": 0,
+        "ensure": 0,
+        "GET": 9,
+        "placementGet": 0
+      },
+      "result": "FAIL"
+    },
+    {
+      "name": "02-selected-css200-en-dark-320",
+      "facts": {
+        "route": "#/pages/assessment/assessment",
+        "title": "Level assessment",
+        "viewport": {
+          "width": 320,
+          "height": 568
+        },
+        "textScale": "CSS computed font sizes multiplied by 2; not native zoom",
+        "h1Font": "56px",
+        "rootText": "Back\nLevel assessment\nQuestion 1 of 10\n0/10\n0 of 10 answers received\nChoose the phrase that completes the sentence: I ___ every evening.\nA\nread a book\nSelected\nB\nreads a book\nC\nreading a book\nD\nhas read a book\nSubmit answer\nUnsubmitted choices stay on this page only.",
+        "overflow": false,
+        "overlay": false,
+        "words": [
+          {
+            "id": "assessment-title",
+            "word": "Level",
+            "rects": [
+              {
+                "x": 20,
+                "y": 122,
+                "width": 134.953125,
+                "height": 74
+              }
+            ],
+            "split": false
+          },
+          {
+            "id": "assessment-title",
+            "word": "assessment",
+            "rects": [
+              {
+                "x": 20,
+                "y": 200.390625,
+                "width": 274.453125,
+                "height": 74
+              },
+              {
+                "x": 20,
+                "y": 278.78125,
+                "width": 21.796875,
+                "height": 74
+              }
+            ],
+            "split": true
+          },
+          {
+            "id": "assessment-back",
+            "word": "Back",
+            "rects": [
+              {
+                "x": 46,
+                "y": 26,
+                "width": 65.3125,
+                "height": 43
+              }
+            ],
+            "split": false
+          },
+          {
+            "id": "assessment-option-A",
+            "word": "A",
+            "rects": [
+              {
+                "x": 40.671875,
+                "y": 940.171875,
+                "width": 20.640625,
+                "height": 43
+              }
+            ],
+            "split": false
+          },
+          {
+            "id": "assessment-option-A",
+            "word": "read",
+            "rects": [
+              {
+                "x": 79,
+                "y": 892.171875,
+                "width": 62.984375,
+                "height": 43
+              }
+            ],
+            "split": false
+          },
+          {
+            "id": "assessment-option-A",
+            "word": "a",
+            "rects": [
+              {
+                "x": 79,
+                "y": 940.171875,
+                "width": 16.28125,
+                "height": 43
+              }
+            ],
+            "split": false
+          },
+          {
+            "id": "assessment-option-A",
+            "word": "book",
+            "rects": [
+              {
+                "x": 79,
+                "y": 988.171875,
+                "width": 72.21875,
+                "height": 43
+              }
+            ],
+            "split": false
+          },
+          {
+            "id": "assessment-option-A",
+            "word": "Selected",
+            "rects": [
+              {
+                "x": 177.8125,
+                "y": 951.171875,
+                "width": 107.1875,
+                "height": 37
+              }
+            ],
+            "split": false
+          },
+          {
+            "id": "assessment-option-B",
+            "word": "B",
+            "rects": [
+              {
+                "x": 41.828125,
+                "y": 1074.171875,
+                "width": 18.34375,
+                "height": 43
+              }
+            ],
+            "split": false
+          },
+          {
+            "id": "assessment-option-B",
+            "word": "reads",
+            "rects": [
+              {
+                "x": 79,
+                "y": 1074.171875,
+                "width": 76.5625,
+                "height": 43
+              }
+            ],
+            "split": false
+          },
+          {
+            "id": "assessment-option-B",
+            "word": "a",
+            "rects": [
+              {
+                "x": 164.328125,
+                "y": 1074.171875,
+                "width": 16.28125,
+                "height": 43
+              }
+            ],
+            "split": false
+          },
+          {
+            "id": "assessment-option-B",
+            "word": "book",
+            "rects": [
+              {
+                "x": 189.375,
+                "y": 1074.171875,
+                "width": 72.21875,
+                "height": 43
+              }
+            ],
+            "split": false
+          },
+          {
+            "id": "assessment-option-C",
+            "word": "C",
+            "rects": [
+              {
+                "x": 41.09375,
+                "y": 1184.171875,
+                "width": 19.8125,
+                "height": 43
+              }
+            ],
+            "split": false
+          },
+          {
+            "id": "assessment-option-C",
+            "word": "reading",
+            "rects": [
+              {
+                "x": 79,
+                "y": 1160.171875,
+                "width": 107.6875,
+                "height": 43
+              }
+            ],
+            "split": false
+          },
+          {
+            "id": "assessment-option-C",
+            "word": "a",
+            "rects": [
+              {
+                "x": 195.453125,
+                "y": 1160.171875,
+                "width": 16.28125,
+                "height": 43
+              }
+            ],
+            "split": false
+          },
+          {
+            "id": "assessment-option-C",
+            "word": "book",
+            "rects": [
+              {
+                "x": 79,
+                "y": 1208.171875,
+                "width": 72.21875,
+                "height": 43
+              }
+            ],
+            "split": false
+          },
+          {
+            "id": "assessment-option-D",
+            "word": "D",
+            "rects": [
+              {
+                "x": 39.78125,
+                "y": 1318.171875,
+                "width": 22.4375,
+                "height": 43
+              }
+            ],
+            "split": false
+          },
+          {
+            "id": "assessment-option-D",
+            "word": "has",
+            "rects": [
+              {
+                "x": 79,
+                "y": 1294.171875,
+                "width": 47.96875,
+                "height": 43
+              }
+            ],
+            "split": false
+          },
+          {
+            "id": "assessment-option-D",
+            "word": "read",
+            "rects": [
+              {
+                "x": 135.734375,
+                "y": 1294.171875,
+                "width": 62.984375,
+                "height": 43
+              }
+            ],
+            "split": false
+          },
+          {
+            "id": "assessment-option-D",
+            "word": "a",
+            "rects": [
+              {
+                "x": 207.484375,
+                "y": 1294.171875,
+                "width": 16.28125,
+                "height": 43
+              }
+            ],
+            "split": false
+          },
+          {
+            "id": "assessment-option-D",
+            "word": "book",
+            "rects": [
+              {
+                "x": 79,
+                "y": 1342.171875,
+                "width": 72.21875,
+                "height": 43
+              }
+            ],
+            "split": false
+          },
+          {
+            "id": "assessment-submit",
+            "word": "Submit",
+            "rects": [
+              {
+                "x": 52.75,
+                "y": 1448.171875,
+                "width": 103.640625,
+                "height": 43
+              }
+            ],
+            "split": false
+          },
+          {
+            "id": "assessment-submit",
+            "word": "answer",
+            "rects": [
+              {
+                "x": 165.1875,
+                "y": 1448.171875,
+                "width": 102.0625,
+                "height": 43
+              }
+            ],
+            "split": false
+          }
+        ],
+        "splitWords": [
+          {
+            "id": "assessment-title",
+            "word": "assessment",
+            "rects": [
+              {
+                "x": 20,
+                "y": 200.390625,
+                "width": 274.453125,
+                "height": 74
+              },
+              {
+                "x": 20,
+                "y": 278.78125,
+                "width": 21.796875,
+                "height": 74
+              }
+            ],
+            "split": true
+          }
+        ],
+        "targets": [
+          {
+            "id": "assessment-back",
+            "width": 91.3125,
+            "height": 64,
+            "font": "32px",
+            "pressed": null
+          },
+          {
+            "id": "assessment-settings",
+            "width": 44,
+            "height": 44,
+            "font": "32px",
+            "pressed": null
+          },
+          {
+            "id": "assessment-option-A",
+            "width": 280,
+            "height": 170,
+            "font": "32px",
+            "pressed": "true"
+          },
+          {
+            "id": "assessment-option-B",
+            "width": 280,
+            "height": 74,
+            "font": "32px",
+            "pressed": "false"
+          },
+          {
+            "id": "assessment-option-C",
+            "width": 280,
+            "height": 122,
+            "font": "32px",
+            "pressed": "false"
+          },
+          {
+            "id": "assessment-option-D",
+            "width": 280,
+            "height": 122,
+            "font": "32px",
+            "pressed": "false"
+          },
+          {
+            "id": "assessment-submit",
+            "width": 280,
+            "height": 74,
+            "font": "32px",
+            "pressed": null
+          }
+        ]
+      },
+      "counts": {
+        "login": 1,
+        "refresh": 0,
+        "logout": 0,
+        "principal": 4,
+        "start": 1,
+        "respond": 0,
+        "retest": 0,
+        "ensure": 0,
+        "GET": 9,
+        "placementGet": 0
+      },
+      "result": "FAIL"
+    }
+  ],
+  "completed": true,
+  "result": "FAIL",
+  "closed": true,
+  "sourceHashesAfter": {
+    "apps/mobile/src/pages/assessment/assessment.vue": "d1b501e33b313679bd5c90dd8fcda8e9a5a6b790856a444b01e915523827366a",
+    "packages/i18n/src/mobile-experience.ts": "d55f74003bdbe9eae58858ab51bc52d806d2b07e5b06a05e68a183768291249d",
+    "apps/mobile/src/api/learner-content.ts": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6",
+    "apps/mobile/src/stores/learner-content.ts": "95cc92496db996242d91baed3301d76f985e4e3b9134e1e50c2b9ab8d41e4c61",
+    "apps/mobile/src/stores/session.ts": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+    "apps/mobile/src/auth/navigation.ts": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5"
+  },
+  "sourceStable": true,
+  "transport": {
+    "scope": "MB006_PREPARED_SYNTHETIC_TRANSPORT_NOT_RUN",
+    "browser": "Browser plugin not available; existing Playwright Chromium fallback",
+    "requests": [
+      {
+        "id": 1,
+        "locale": "en-US",
+        "theme": "dark",
+        "origin": "https://127.0.0.1:18087",
+        "method": "POST",
+        "path": "/api/v1/auth/login"
+      },
+      {
+        "id": 1,
+        "locale": "en-US",
+        "theme": "dark",
+        "origin": "http://127.0.0.1:18070",
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me"
+      },
+      {
+        "id": 1,
+        "locale": "en-US",
+        "theme": "dark",
+        "origin": "http://127.0.0.1:18070",
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me"
+      },
+      {
+        "id": 1,
+        "locale": "en-US",
+        "theme": "dark",
+        "origin": "http://127.0.0.1:18070",
+        "method": "GET",
+        "path": "/api/v1/learner/targets"
+      },
+      {
+        "id": 1,
+        "locale": "en-US",
+        "theme": "dark",
+        "origin": "http://127.0.0.1:18070",
+        "method": "GET",
+        "path": "/api/v1/learner/profile"
+      },
+      {
+        "id": 1,
+        "locale": "en-US",
+        "theme": "dark",
+        "origin": "http://127.0.0.1:18070",
+        "method": "GET",
+        "path": "/api/v1/learner/targets"
+      },
+      {
+        "id": 1,
+        "locale": "en-US",
+        "theme": "dark",
+        "origin": "http://127.0.0.1:18070",
+        "method": "GET",
+        "path": "/api/v1/learner/preferences"
+      },
+      {
+        "id": 1,
+        "locale": "en-US",
+        "theme": "dark",
+        "origin": "http://127.0.0.1:18070",
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me"
+      },
+      {
+        "id": 1,
+        "locale": "en-US",
+        "theme": "dark",
+        "origin": "http://127.0.0.1:18070",
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me"
+      },
+      {
+        "id": 1,
+        "locale": "en-US",
+        "theme": "dark",
+        "origin": "http://127.0.0.1:18070",
+        "method": "GET",
+        "path": "/api/v1/learner/targets"
+      },
+      {
+        "id": 1,
+        "locale": "en-US",
+        "theme": "dark",
+        "origin": "http://127.0.0.1:18070",
+        "method": "POST",
+        "path": "/api/v1/assessment/placement/sessions"
+      }
+    ],
+    "unexpected": [],
+    "pageErrors": [],
+    "consoleErrors": []
+  }
+}

@@ -1,0 +1,939 @@
+{
+  "at": "2026-10-15T20:37:47.913Z",
+  "scope": "MB006_CANDIDATE1_NARROW_SYNTHETIC_H5_SMOKE",
+  "quotaBefore": {
+    "fiveHour": 82,
+    "week": 44,
+    "ordinaryUsageAllowed": true
+  },
+  "sourceHashesBefore": {
+    "apps/mobile/src/pages/assessment/assessment.vue": "d1b501e33b313679bd5c90dd8fcda8e9a5a6b790856a444b01e915523827366a",
+    "packages/i18n/src/mobile-experience.ts": "d55f74003bdbe9eae58858ab51bc52d806d2b07e5b06a05e68a183768291249d",
+    "apps/mobile/src/api/learner-content.ts": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6",
+    "apps/mobile/src/stores/learner-content.ts": "95cc92496db996242d91baed3301d76f985e4e3b9134e1e50c2b9ab8d41e4c61",
+    "apps/mobile/src/stores/session.ts": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+    "apps/mobile/src/auth/navigation.ts": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5"
+  },
+  "checks": [
+    {
+      "name": "normal-login-guard-guide-zero-start",
+      "result": "PASS"
+    },
+    {
+      "name": "real-option-A-selected-readable-and-pressed",
+      "result": "PASS"
+    },
+    {
+      "name": "response503-preserves-A-with-visible-local-error",
+      "result": "PASS"
+    },
+    {
+      "name": "same-session-GET-preserves-choice-no-new-start",
+      "result": "PASS"
+    },
+    {
+      "name": "ten-successful-submits-assessed-report-one-ensure",
+      "result": "PASS"
+    },
+    {
+      "name": "ask-and-cancel-retest-zero-write",
+      "result": "PASS"
+    },
+    {
+      "name": "retest503-shows-error-keeps-old-report-cancel-unlocks",
+      "result": "PASS"
+    },
+    {
+      "name": "en-dark-guide-no-Chinese-body-or-raw-keys",
+      "result": "PASS"
+    }
+  ],
+  "states": [
+    {
+      "name": "01-guide-zh-light-390",
+      "facts": {
+        "route": "#/pages/assessment/assessment",
+        "title": "水平测评",
+        "locale": "zh-CN",
+        "theme": "light",
+        "heading": "水平测评",
+        "text": "返回\n水平测评\n共 10 道题，了解你现在的英语起点。\n按实际水平作答\n选择你认为正确的答案。\n完成后查看结果\n测评结果以已接收的答案为依据。\n开始测评\n返回学习首页\n快速开始暂不可用，请先完成测评。",
+        "busy": "false",
+        "reportVisible": false,
+        "questionVisible": false,
+        "retestConfirmation": false,
+        "options": [],
+        "controls": [
+          {
+            "id": "assessment-back",
+            "text": "返回",
+            "disabled": false
+          },
+          {
+            "id": "assessment-settings",
+            "text": "",
+            "disabled": false
+          },
+          {
+            "id": "assessment-start",
+            "text": "开始测评",
+            "disabled": false
+          },
+          {
+            "id": "assessment-home",
+            "text": "返回学习首页",
+            "disabled": false
+          }
+        ],
+        "overlay": false,
+        "overflow": false,
+        "rawKey": false
+      },
+      "counts": {
+        "login": 1,
+        "refresh": 0,
+        "logout": 0,
+        "principal": 4,
+        "start": 0,
+        "respond": 0,
+        "retest": 0,
+        "ensure": 0,
+        "GET": 9,
+        "placementGet": 0
+      }
+    },
+    {
+      "name": "02-selected-zh-light-390",
+      "facts": {
+        "route": "#/pages/assessment/assessment",
+        "title": "水平测评",
+        "locale": "zh-CN",
+        "theme": "light",
+        "heading": "水平测评",
+        "text": "返回\n水平测评\n第 1 题，共 10 题\n0/10\n已接收 0 题，共 10 题\nChoose the phrase that completes the sentence: I ___ every evening.\nA\nread a book\n已选\nB\nreads a book\nC\nreading a book\nD\nhas read a book\n提交答案\n未提交的选择仅保留在此页。",
+        "busy": "false",
+        "reportVisible": false,
+        "questionVisible": true,
+        "retestConfirmation": false,
+        "options": [
+          {
+            "id": "assessment-option-A",
+            "pressed": "true",
+            "disabled": false,
+            "text": "A\nread a book\n已选"
+          },
+          {
+            "id": "assessment-option-B",
+            "pressed": "false",
+            "disabled": false,
+            "text": "B\nreads a book"
+          },
+          {
+            "id": "assessment-option-C",
+            "pressed": "false",
+            "disabled": false,
+            "text": "C\nreading a book"
+          },
+          {
+            "id": "assessment-option-D",
+            "pressed": "false",
+            "disabled": false,
+            "text": "D\nhas read a book"
+          }
+        ],
+        "progress": "0",
+        "controls": [
+          {
+            "id": "assessment-back",
+            "text": "返回",
+            "disabled": false
+          },
+          {
+            "id": "assessment-settings",
+            "text": "",
+            "disabled": false
+          },
+          {
+            "id": "assessment-option-A",
+            "text": "A\nread a book\n已选",
+            "disabled": false
+          },
+          {
+            "id": "assessment-option-B",
+            "text": "B\nreads a book",
+            "disabled": false
+          },
+          {
+            "id": "assessment-option-C",
+            "text": "C\nreading a book",
+            "disabled": false
+          },
+          {
+            "id": "assessment-option-D",
+            "text": "D\nhas read a book",
+            "disabled": false
+          },
+          {
+            "id": "assessment-submit",
+            "text": "提交答案",
+            "disabled": false
+          }
+        ],
+        "overlay": false,
+        "overflow": false,
+        "rawKey": false
+      },
+      "counts": {
+        "login": 1,
+        "refresh": 0,
+        "logout": 0,
+        "principal": 4,
+        "start": 1,
+        "respond": 0,
+        "retest": 0,
+        "ensure": 0,
+        "GET": 9,
+        "placementGet": 0
+      }
+    },
+    {
+      "name": "03-submit503-retained-choice",
+      "facts": {
+        "route": "#/pages/assessment/assessment",
+        "title": "水平测评",
+        "locale": "zh-CN",
+        "theme": "light",
+        "heading": "水平测评",
+        "text": "返回\n水平测评\n答案状态尚未确认，请先重新读取当前题目再重试。同一道题会保留你在本页的选择。\n第 1 题，共 10 题\n0/10\n已接收 0 题，共 10 题\nChoose the phrase that completes the sentence: I ___ every evening.\nA\nread a book\n已选\nB\nreads a book\nC\nreading a book\nD\nhas read a book\n重新读取\n未提交的选择仅保留在此页。",
+        "busy": "false",
+        "error": "答案状态尚未确认，请先重新读取当前题目再重试。同一道题会保留你在本页的选择。",
+        "reportVisible": false,
+        "questionVisible": true,
+        "retestConfirmation": false,
+        "options": [
+          {
+            "id": "assessment-option-A",
+            "pressed": "true",
+            "disabled": false,
+            "text": "A\nread a book\n已选"
+          },
+          {
+            "id": "assessment-option-B",
+            "pressed": "false",
+            "disabled": false,
+            "text": "B\nreads a book"
+          },
+          {
+            "id": "assessment-option-C",
+            "pressed": "false",
+            "disabled": false,
+            "text": "C\nreading a book"
+          },
+          {
+            "id": "assessment-option-D",
+            "pressed": "false",
+            "disabled": false,
+            "text": "D\nhas read a book"
+          }
+        ],
+        "progress": "0",
+        "controls": [
+          {
+            "id": "assessment-back",
+            "text": "返回",
+            "disabled": false
+          },
+          {
+            "id": "assessment-settings",
+            "text": "",
+            "disabled": false
+          },
+          {
+            "id": "assessment-option-A",
+            "text": "A\nread a book\n已选",
+            "disabled": false
+          },
+          {
+            "id": "assessment-option-B",
+            "text": "B\nreads a book",
+            "disabled": false
+          },
+          {
+            "id": "assessment-option-C",
+            "text": "C\nreading a book",
+            "disabled": false
+          },
+          {
+            "id": "assessment-option-D",
+            "text": "D\nhas read a book",
+            "disabled": false
+          },
+          {
+            "id": "assessment-reload-answer",
+            "text": "重新读取",
+            "disabled": false
+          }
+        ],
+        "overlay": false,
+        "overflow": false,
+        "rawKey": false
+      },
+      "counts": {
+        "login": 1,
+        "refresh": 0,
+        "logout": 0,
+        "principal": 4,
+        "start": 1,
+        "respond": 1,
+        "retest": 0,
+        "ensure": 0,
+        "GET": 9,
+        "placementGet": 0
+      }
+    },
+    {
+      "name": "04-readback-same-question-retained-choice",
+      "facts": {
+        "route": "#/pages/assessment/assessment",
+        "title": "水平测评",
+        "locale": "zh-CN",
+        "theme": "light",
+        "heading": "水平测评",
+        "text": "返回\n水平测评\n第 1 题，共 10 题\n0/10\n已接收 0 题，共 10 题\nChoose the phrase that completes the sentence: I ___ every evening.\nA\nread a book\n已选\nB\nreads a book\nC\nreading a book\nD\nhas read a book\n提交答案\n未提交的选择仅保留在此页。",
+        "busy": "false",
+        "reportVisible": false,
+        "questionVisible": true,
+        "retestConfirmation": false,
+        "options": [
+          {
+            "id": "assessment-option-A",
+            "pressed": "true",
+            "disabled": false,
+            "text": "A\nread a book\n已选"
+          },
+          {
+            "id": "assessment-option-B",
+            "pressed": "false",
+            "disabled": false,
+            "text": "B\nreads a book"
+          },
+          {
+            "id": "assessment-option-C",
+            "pressed": "false",
+            "disabled": false,
+            "text": "C\nreading a book"
+          },
+          {
+            "id": "assessment-option-D",
+            "pressed": "false",
+            "disabled": false,
+            "text": "D\nhas read a book"
+          }
+        ],
+        "progress": "0",
+        "controls": [
+          {
+            "id": "assessment-back",
+            "text": "返回",
+            "disabled": false
+          },
+          {
+            "id": "assessment-settings",
+            "text": "",
+            "disabled": false
+          },
+          {
+            "id": "assessment-option-A",
+            "text": "A\nread a book\n已选",
+            "disabled": false
+          },
+          {
+            "id": "assessment-option-B",
+            "text": "B\nreads a book",
+            "disabled": false
+          },
+          {
+            "id": "assessment-option-C",
+            "text": "C\nreading a book",
+            "disabled": false
+          },
+          {
+            "id": "assessment-option-D",
+            "text": "D\nhas read a book",
+            "disabled": false
+          },
+          {
+            "id": "assessment-submit",
+            "text": "提交答案",
+            "disabled": false
+          }
+        ],
+        "overlay": false,
+        "overflow": false,
+        "rawKey": false
+      },
+      "counts": {
+        "login": 1,
+        "refresh": 0,
+        "logout": 0,
+        "principal": 4,
+        "start": 1,
+        "respond": 1,
+        "retest": 0,
+        "ensure": 0,
+        "GET": 10,
+        "placementGet": 1
+      }
+    },
+    {
+      "name": "05-assessed-after-ten-real-submits",
+      "facts": {
+        "route": "#/pages/assessment/assessment",
+        "title": "测评结果",
+        "locale": "zh-CN",
+        "theme": "light",
+        "heading": "测评结果",
+        "text": "返回\n测评结果\n已完成\nA2\n70 分\n答对 7 题，共 10 题。\n刚才提交的这题没有答对。\n本次测评结果已保存。\n查看今日状态\n重新测评\n重测不会自动调整已有计划。",
+        "busy": "false",
+        "reportVisible": true,
+        "questionVisible": false,
+        "retestConfirmation": false,
+        "options": [],
+        "controls": [
+          {
+            "id": "assessment-back",
+            "text": "返回",
+            "disabled": false
+          },
+          {
+            "id": "assessment-settings",
+            "text": "",
+            "disabled": false
+          },
+          {
+            "id": "assessment-today",
+            "text": "查看今日状态",
+            "disabled": false
+          },
+          {
+            "id": "assessment-retest",
+            "text": "重新测评",
+            "disabled": false
+          }
+        ],
+        "overlay": false,
+        "overflow": false,
+        "rawKey": false
+      },
+      "counts": {
+        "login": 1,
+        "refresh": 0,
+        "logout": 0,
+        "principal": 4,
+        "start": 1,
+        "respond": 11,
+        "retest": 0,
+        "ensure": 1,
+        "GET": 11,
+        "placementGet": 1
+      }
+    },
+    {
+      "name": "06-retest-confirm-zero-write",
+      "facts": {
+        "route": "#/pages/assessment/assessment",
+        "title": "测评结果",
+        "locale": "zh-CN",
+        "theme": "light",
+        "heading": "测评结果",
+        "text": "返回\n测评结果\n已完成\nA2\n70 分\n答对 7 题，共 10 题。\n刚才提交的这题没有答对。\n本次测评结果已保存。\n查看今日状态\n重新测评\n重新测评？\n新开一套题，原报告会保留。\n取消\n确认重测\n重测不会自动调整已有计划。",
+        "busy": "false",
+        "reportVisible": true,
+        "questionVisible": false,
+        "retestConfirmation": true,
+        "options": [],
+        "controls": [
+          {
+            "id": "assessment-back",
+            "text": "返回",
+            "disabled": false
+          },
+          {
+            "id": "assessment-settings",
+            "text": "",
+            "disabled": false
+          },
+          {
+            "id": "assessment-today",
+            "text": "查看今日状态",
+            "disabled": true
+          },
+          {
+            "id": "assessment-retest",
+            "text": "重新测评",
+            "disabled": true
+          },
+          {
+            "id": "assessment-retest-cancel",
+            "text": "取消",
+            "disabled": false
+          },
+          {
+            "id": "assessment-retest-confirm",
+            "text": "确认重测",
+            "disabled": false
+          }
+        ],
+        "overlay": false,
+        "overflow": false,
+        "rawKey": false
+      },
+      "counts": {
+        "login": 1,
+        "refresh": 0,
+        "logout": 0,
+        "principal": 4,
+        "start": 1,
+        "respond": 11,
+        "retest": 0,
+        "ensure": 1,
+        "GET": 11,
+        "placementGet": 1
+      }
+    },
+    {
+      "name": "07-retest503-old-report-visible",
+      "facts": {
+        "route": "#/pages/assessment/assessment",
+        "title": "测评结果",
+        "locale": "zh-CN",
+        "theme": "light",
+        "heading": "测评结果",
+        "text": "返回\n测评结果\n重测没有开出新题，原报告仍可查看。你可以再试一次。\n已完成\nA2\n70 分\n答对 7 题，共 10 题。\n刚才提交的这题没有答对。\n本次测评结果已保存。\n查看今日状态\n重新测评\n重新测评？\n新开一套题，原报告会保留。\n取消\n确认重测\n重测不会自动调整已有计划。",
+        "busy": "false",
+        "error": "重测没有开出新题，原报告仍可查看。你可以再试一次。",
+        "reportVisible": true,
+        "questionVisible": false,
+        "retestConfirmation": true,
+        "options": [],
+        "controls": [
+          {
+            "id": "assessment-back",
+            "text": "返回",
+            "disabled": false
+          },
+          {
+            "id": "assessment-settings",
+            "text": "",
+            "disabled": false
+          },
+          {
+            "id": "assessment-today",
+            "text": "查看今日状态",
+            "disabled": true
+          },
+          {
+            "id": "assessment-retest",
+            "text": "重新测评",
+            "disabled": true
+          },
+          {
+            "id": "assessment-retest-cancel",
+            "text": "取消",
+            "disabled": false
+          },
+          {
+            "id": "assessment-retest-confirm",
+            "text": "确认重测",
+            "disabled": false
+          }
+        ],
+        "overlay": false,
+        "overflow": false,
+        "rawKey": false
+      },
+      "counts": {
+        "login": 1,
+        "refresh": 0,
+        "logout": 0,
+        "principal": 4,
+        "start": 1,
+        "respond": 11,
+        "retest": 1,
+        "ensure": 1,
+        "GET": 11,
+        "placementGet": 1
+      }
+    },
+    {
+      "name": "08-guide-en-dark-390",
+      "facts": {
+        "route": "#/pages/assessment/assessment",
+        "title": "Level assessment",
+        "locale": "en-US",
+        "theme": "dark",
+        "heading": "Level assessment",
+        "text": "Back\nLevel assessment\nAnswer 10 questions to understand your current English starting point.\nAnswer at your current level\nChoose the answer you think is right.\nView your result when finished\nYour result is based on the answers received.\nStart assessment\nReturn to learning home\nQuick start is currently unavailable. Please complete the assessment.",
+        "busy": "false",
+        "reportVisible": false,
+        "questionVisible": false,
+        "retestConfirmation": false,
+        "options": [],
+        "controls": [
+          {
+            "id": "assessment-back",
+            "text": "Back",
+            "disabled": false
+          },
+          {
+            "id": "assessment-settings",
+            "text": "",
+            "disabled": false
+          },
+          {
+            "id": "assessment-start",
+            "text": "Start assessment",
+            "disabled": false
+          },
+          {
+            "id": "assessment-home",
+            "text": "Return to learning home",
+            "disabled": false
+          }
+        ],
+        "overlay": false,
+        "overflow": false,
+        "rawKey": false
+      },
+      "counts": {
+        "login": 1,
+        "refresh": 0,
+        "logout": 0,
+        "principal": 4,
+        "start": 0,
+        "respond": 0,
+        "retest": 0,
+        "ensure": 0,
+        "GET": 9,
+        "placementGet": 0
+      }
+    }
+  ],
+  "completed": true,
+  "closed": true,
+  "sourceHashesAfter": {
+    "apps/mobile/src/pages/assessment/assessment.vue": "d1b501e33b313679bd5c90dd8fcda8e9a5a6b790856a444b01e915523827366a",
+    "packages/i18n/src/mobile-experience.ts": "d55f74003bdbe9eae58858ab51bc52d806d2b07e5b06a05e68a183768291249d",
+    "apps/mobile/src/api/learner-content.ts": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6",
+    "apps/mobile/src/stores/learner-content.ts": "95cc92496db996242d91baed3301d76f985e4e3b9134e1e50c2b9ab8d41e4c61",
+    "apps/mobile/src/stores/session.ts": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+    "apps/mobile/src/auth/navigation.ts": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5"
+  },
+  "sourceStable": true,
+  "transport": {
+    "scope": "MB006_PREPARED_SYNTHETIC_TRANSPORT_NOT_RUN",
+    "browser": "Browser plugin not available; existing Playwright Chromium fallback",
+    "requests": [
+      {
+        "id": 1,
+        "locale": "zh-CN",
+        "theme": "light",
+        "origin": "https://127.0.0.1:18087",
+        "method": "POST",
+        "path": "/api/v1/auth/login"
+      },
+      {
+        "id": 1,
+        "locale": "zh-CN",
+        "theme": "light",
+        "origin": "http://127.0.0.1:18070",
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me"
+      },
+      {
+        "id": 1,
+        "locale": "zh-CN",
+        "theme": "light",
+        "origin": "http://127.0.0.1:18070",
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me"
+      },
+      {
+        "id": 1,
+        "locale": "zh-CN",
+        "theme": "light",
+        "origin": "http://127.0.0.1:18070",
+        "method": "GET",
+        "path": "/api/v1/learner/targets"
+      },
+      {
+        "id": 1,
+        "locale": "zh-CN",
+        "theme": "light",
+        "origin": "http://127.0.0.1:18070",
+        "method": "GET",
+        "path": "/api/v1/learner/profile"
+      },
+      {
+        "id": 1,
+        "locale": "zh-CN",
+        "theme": "light",
+        "origin": "http://127.0.0.1:18070",
+        "method": "GET",
+        "path": "/api/v1/learner/targets"
+      },
+      {
+        "id": 1,
+        "locale": "zh-CN",
+        "theme": "light",
+        "origin": "http://127.0.0.1:18070",
+        "method": "GET",
+        "path": "/api/v1/learner/preferences"
+      },
+      {
+        "id": 1,
+        "locale": "zh-CN",
+        "theme": "light",
+        "origin": "http://127.0.0.1:18070",
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me"
+      },
+      {
+        "id": 1,
+        "locale": "zh-CN",
+        "theme": "light",
+        "origin": "http://127.0.0.1:18070",
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me"
+      },
+      {
+        "id": 1,
+        "locale": "zh-CN",
+        "theme": "light",
+        "origin": "http://127.0.0.1:18070",
+        "method": "GET",
+        "path": "/api/v1/learner/targets"
+      },
+      {
+        "id": 1,
+        "locale": "zh-CN",
+        "theme": "light",
+        "origin": "http://127.0.0.1:18070",
+        "method": "POST",
+        "path": "/api/v1/assessment/placement/sessions"
+      },
+      {
+        "id": 1,
+        "locale": "zh-CN",
+        "theme": "light",
+        "origin": "http://127.0.0.1:18070",
+        "method": "POST",
+        "path": "/api/v1/assessment/placement/sessions/asess_ui_review_1_1/responses"
+      },
+      {
+        "id": 1,
+        "locale": "zh-CN",
+        "theme": "light",
+        "origin": "http://127.0.0.1:18070",
+        "method": "GET",
+        "path": "/api/v1/assessment/placement/sessions/asess_ui_review_1_1"
+      },
+      {
+        "id": 1,
+        "locale": "zh-CN",
+        "theme": "light",
+        "origin": "http://127.0.0.1:18070",
+        "method": "POST",
+        "path": "/api/v1/assessment/placement/sessions/asess_ui_review_1_1/responses"
+      },
+      {
+        "id": 1,
+        "locale": "zh-CN",
+        "theme": "light",
+        "origin": "http://127.0.0.1:18070",
+        "method": "POST",
+        "path": "/api/v1/assessment/placement/sessions/asess_ui_review_1_1/responses"
+      },
+      {
+        "id": 1,
+        "locale": "zh-CN",
+        "theme": "light",
+        "origin": "http://127.0.0.1:18070",
+        "method": "POST",
+        "path": "/api/v1/assessment/placement/sessions/asess_ui_review_1_1/responses"
+      },
+      {
+        "id": 1,
+        "locale": "zh-CN",
+        "theme": "light",
+        "origin": "http://127.0.0.1:18070",
+        "method": "POST",
+        "path": "/api/v1/assessment/placement/sessions/asess_ui_review_1_1/responses"
+      },
+      {
+        "id": 1,
+        "locale": "zh-CN",
+        "theme": "light",
+        "origin": "http://127.0.0.1:18070",
+        "method": "POST",
+        "path": "/api/v1/assessment/placement/sessions/asess_ui_review_1_1/responses"
+      },
+      {
+        "id": 1,
+        "locale": "zh-CN",
+        "theme": "light",
+        "origin": "http://127.0.0.1:18070",
+        "method": "POST",
+        "path": "/api/v1/assessment/placement/sessions/asess_ui_review_1_1/responses"
+      },
+      {
+        "id": 1,
+        "locale": "zh-CN",
+        "theme": "light",
+        "origin": "http://127.0.0.1:18070",
+        "method": "POST",
+        "path": "/api/v1/assessment/placement/sessions/asess_ui_review_1_1/responses"
+      },
+      {
+        "id": 1,
+        "locale": "zh-CN",
+        "theme": "light",
+        "origin": "http://127.0.0.1:18070",
+        "method": "POST",
+        "path": "/api/v1/assessment/placement/sessions/asess_ui_review_1_1/responses"
+      },
+      {
+        "id": 1,
+        "locale": "zh-CN",
+        "theme": "light",
+        "origin": "http://127.0.0.1:18070",
+        "method": "POST",
+        "path": "/api/v1/assessment/placement/sessions/asess_ui_review_1_1/responses"
+      },
+      {
+        "id": 1,
+        "locale": "zh-CN",
+        "theme": "light",
+        "origin": "http://127.0.0.1:18070",
+        "method": "POST",
+        "path": "/api/v1/assessment/placement/sessions/asess_ui_review_1_1/responses"
+      },
+      {
+        "id": 1,
+        "locale": "zh-CN",
+        "theme": "light",
+        "origin": "http://127.0.0.1:18070",
+        "method": "POST",
+        "path": "/api/v1/learning/plans:ensure"
+      },
+      {
+        "id": 1,
+        "locale": "zh-CN",
+        "theme": "light",
+        "origin": "http://127.0.0.1:18070",
+        "method": "GET",
+        "path": "/api/v1/learning/today"
+      },
+      {
+        "id": 1,
+        "locale": "zh-CN",
+        "theme": "light",
+        "origin": "http://127.0.0.1:18070",
+        "method": "POST",
+        "path": "/api/v1/assessment/placement/sessions/asess_ui_review_1_1/retest"
+      },
+      {
+        "id": 2,
+        "locale": "en-US",
+        "theme": "dark",
+        "origin": "https://127.0.0.1:18087",
+        "method": "POST",
+        "path": "/api/v1/auth/login"
+      },
+      {
+        "id": 2,
+        "locale": "en-US",
+        "theme": "dark",
+        "origin": "http://127.0.0.1:18070",
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me"
+      },
+      {
+        "id": 2,
+        "locale": "en-US",
+        "theme": "dark",
+        "origin": "http://127.0.0.1:18070",
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me"
+      },
+      {
+        "id": 2,
+        "locale": "en-US",
+        "theme": "dark",
+        "origin": "http://127.0.0.1:18070",
+        "method": "GET",
+        "path": "/api/v1/learner/targets"
+      },
+      {
+        "id": 2,
+        "locale": "en-US",
+        "theme": "dark",
+        "origin": "http://127.0.0.1:18070",
+        "method": "GET",
+        "path": "/api/v1/learner/profile"
+      },
+      {
+        "id": 2,
+        "locale": "en-US",
+        "theme": "dark",
+        "origin": "http://127.0.0.1:18070",
+        "method": "GET",
+        "path": "/api/v1/learner/targets"
+      },
+      {
+        "id": 2,
+        "locale": "en-US",
+        "theme": "dark",
+        "origin": "http://127.0.0.1:18070",
+        "method": "GET",
+        "path": "/api/v1/learner/preferences"
+      },
+      {
+        "id": 2,
+        "locale": "en-US",
+        "theme": "dark",
+        "origin": "http://127.0.0.1:18070",
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me"
+      },
+      {
+        "id": 2,
+        "locale": "en-US",
+        "theme": "dark",
+        "origin": "http://127.0.0.1:18070",
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me"
+      },
+      {
+        "id": 2,
+        "locale": "en-US",
+        "theme": "dark",
+        "origin": "http://127.0.0.1:18070",
+        "method": "GET",
+        "path": "/api/v1/learner/targets"
+      }
+    ],
+    "unexpected": [],
+    "pageErrors": [],
+    "consoleErrors": [
+      {
+        "id": 1,
+        "message": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)"
+      },
+      {
+        "id": 1,
+        "message": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)"
+      }
+    ]
+  }
+}

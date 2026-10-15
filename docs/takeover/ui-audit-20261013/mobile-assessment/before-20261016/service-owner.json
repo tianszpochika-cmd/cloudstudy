@@ -1,0 +1,8 @@
+{
+  "ProcessId": 32992,
+  "ParentProcessId": 34368,
+  "CreationDate": "2026-10-16T04:23:30.959221+08:00",
+  "Name": "node.exe",
+  "ExecutablePath": "C:\\Users\\Administrator\\Tools\\node-v20.19.5-win-x64\\node.exe",
+  "CommandLine": "node   \"C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\apps\\mobile\\node_modules\\.bin\\\\..\\@dcloudio\\vite-plugin-uni\\bin\\uni.js\" -p h5 --host 127.0.0.1 --port 18183 --strictPort --force"
+}

@@ -1,0 +1,72 @@
+{
+  "at": "2026-10-15T20:45:15.385Z",
+  "kind": "PRIVATE_CANDIDATE2_UNVALIDATED_QUOTA_PAUSE",
+  "usage": {
+    "primary": 90,
+    "secondary": 45,
+    "ordinaryUsageAllowed": true,
+    "resetsAt": 1792111380
+  },
+  "files": [
+    {
+      "path": "apps/mobile/src/pages/assessment/assessment.vue",
+      "raw": "d1b501e33b313679bd5c90dd8fcda8e9a5a6b790856a444b01e915523827366a",
+      "lf": "d1b501e33b313679bd5c90dd8fcda8e9a5a6b790856a444b01e915523827366a",
+      "backup": ".git/codex-local-backups/mb006-20261016-candidate2/assessment.vue",
+      "backupMatches": true
+    },
+    {
+      "path": "packages/i18n/src/mobile-experience.ts",
+      "raw": "44e4c857868f8be2bac17f7da86f43c9ea0d03eaaadd3a3f154414d02f129c64",
+      "lf": "d620bdd85e3d2cbe699de80ffc6085f11a160b29dba5ce682a93dacd6b1f6d02",
+      "backup": ".git/codex-local-backups/mb006-20261016-candidate2/mobile-experience.ts",
+      "backupMatches": true
+    },
+    {
+      "path": "apps/mobile/src/stores/learner-content.ts",
+      "raw": "95cc92496db996242d91baed3301d76f985e4e3b9134e1e50c2b9ab8d41e4c61",
+      "lf": "95cc92496db996242d91baed3301d76f985e4e3b9134e1e50c2b9ab8d41e4c61",
+      "backup": ".git\\codex-local-backups\\mb006-20261016-candidate1\\source\\apps\\mobile\\src\\stores\\learner-content.ts",
+      "backupMatches": true
+    },
+    {
+      "path": "apps/mobile/src/api/learner-content.ts",
+      "raw": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6",
+      "lf": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6",
+      "backup": ".git\\codex-local-backups\\mb006-20261016-candidate1\\source\\apps\\mobile\\src\\api\\learner-content.ts",
+      "backupMatches": true
+    },
+    {
+      "path": "apps/mobile/src/stores/session.ts",
+      "raw": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+      "lf": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+      "backup": ".git\\codex-local-backups\\mb006-20261016-candidate1\\source\\apps\\mobile\\src\\stores\\session.ts",
+      "backupMatches": true
+    },
+    {
+      "path": "apps/mobile/src/auth/navigation.ts",
+      "raw": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5",
+      "lf": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5",
+      "backup": ".git\\codex-local-backups\\mb006-20261016-candidate1\\source\\apps\\mobile\\src\\auth\\navigation.ts",
+      "backupMatches": true
+    },
+    {
+      "path": "apps/mobile/src/platform/experience.ts",
+      "raw": "2a5859f672fc02239fd784ba26d7327ab6d8ac71f043f558fa3e350d4d05d240",
+      "lf": "2a5859f672fc02239fd784ba26d7327ab6d8ac71f043f558fa3e350d4d05d240",
+      "backup": ".git\\codex-local-backups\\mb006-20261016-candidate1\\source\\apps\\mobile\\src\\platform\\experience.ts",
+      "backupMatches": true
+    },
+    {
+      "path": "apps/mobile/src/platform/uni-runtime.ts",
+      "raw": "fcbeba8626d8364af0ae96db64a05fcff9a3bb2b46a7d8fbcba21507ef609751",
+      "lf": "fcbeba8626d8364af0ae96db64a05fcff9a3bb2b46a7d8fbcba21507ef609751",
+      "backup": ".git\\codex-local-backups\\mb006-20261016-candidate1\\source\\apps\\mobile\\src\\platform\\uni-runtime.ts",
+      "backupMatches": true
+    }
+  ],
+  "protected": {
+    "total": 56,
+    "drift": []
+  }
+}

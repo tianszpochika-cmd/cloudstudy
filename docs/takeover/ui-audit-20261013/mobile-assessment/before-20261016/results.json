@@ -1,0 +1,609 @@
+{
+  "at": "2026-10-15T20:24:16.249Z",
+  "scope": "MB006_BEFORE_REAL_H5_SYNTHETIC_TRANSPORT_ONLY",
+  "browser": "Browser plugin not available; Playwright Chromium 1.63.0 fallback",
+  "base": "http://127.0.0.1:18183",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "sourceHashesBefore": {
+    "apps/mobile/src/pages/assessment/assessment.vue": "30cfa42c97c3fcd3923ac1309f3786fd2a1cf57c9e0d996bd897073429a86598",
+    "packages/i18n/src/mobile-experience.ts": "cb47a78d810e2c2b08fc280f237cae726ee7a66cc2c0bf2dccf7c1112baaca83",
+    "apps/mobile/src/api/learner-content.ts": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6",
+    "apps/mobile/src/stores/learner-content.ts": "95cc92496db996242d91baed3301d76f985e4e3b9134e1e50c2b9ab8d41e4c61",
+    "apps/mobile/src/stores/session.ts": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+    "apps/mobile/src/auth/navigation.ts": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5"
+  },
+  "shots": [
+    {
+      "name": "01-guide-zh-light-390",
+      "facts": {
+        "route": "#/pages/assessment/assessment",
+        "title": "规则化测评",
+        "locale": "zh-CN",
+        "theme": "light",
+        "text": "开始定级\n共 10 道题。用来了解你现在的英语起点，方便安排后面的学习。\n开始\n返回学习首页",
+        "header": "‹\n返回\n☷\n找到起点\n从了解自己开始。\n完成一组小测评，找到适合你的学习起点。",
+        "overlay": false,
+        "overflow": false,
+        "options": [],
+        "controls": [
+          {
+            "text": "开始",
+            "disabled": false,
+            "font": "14px"
+          },
+          {
+            "text": "返回学习首页",
+            "disabled": false,
+            "font": "14px"
+          }
+        ],
+        "cardBox": {
+          "x": 22,
+          "y": 224.03125,
+          "width": 346,
+          "height": 301.140625
+        }
+      },
+      "counts": {
+        "login": 1,
+        "start": 0,
+        "responses": 0,
+        "ensure": 0
+      }
+    },
+    {
+      "name": "02-answer-selected-zh-light-390",
+      "facts": {
+        "route": "#/pages/assessment/assessment",
+        "title": "规则化测评",
+        "locale": "zh-CN",
+        "theme": "light",
+        "text": "第 1 题，共 10 题\nChoose the word that completes the sentence: I read a book every evening.\nA\nread a book\nB\nreads a book\nC\nreading a book\nD\nhas read a book\n当前选择只留在这一页。离开后，还没提交的选择不会保留。\n提交答案",
+        "header": "‹\n返回\n☷\n找到起点\n从了解自己开始。\n完成一组小测评，找到适合你的学习起点。",
+        "overlay": false,
+        "overflow": false,
+        "options": [
+          {
+            "text": "A\nread a book",
+            "selected": true,
+            "ariaPressed": null,
+            "font": "14px",
+            "box": {
+              "x": 43,
+              "y": 419.09375,
+              "width": 304,
+              "height": 57.796875
+            }
+          },
+          {
+            "text": "B\nreads a book",
+            "selected": false,
+            "ariaPressed": null,
+            "font": "14px",
+            "box": {
+              "x": 43,
+              "y": 492.890625,
+              "width": 304,
+              "height": 57.796875
+            }
+          },
+          {
+            "text": "C\nreading a book",
+            "selected": false,
+            "ariaPressed": null,
+            "font": "14px",
+            "box": {
+              "x": 43,
+              "y": 566.6875,
+              "width": 304,
+              "height": 57.796875
+            }
+          },
+          {
+            "text": "D\nhas read a book",
+            "selected": false,
+            "ariaPressed": null,
+            "font": "14px",
+            "box": {
+              "x": 43,
+              "y": 640.484375,
+              "width": 304,
+              "height": 57.796875
+            }
+          }
+        ],
+        "controls": [
+          {
+            "text": "A\nread a book",
+            "disabled": false,
+            "font": "14px"
+          },
+          {
+            "text": "B\nreads a book",
+            "disabled": false,
+            "font": "14px"
+          },
+          {
+            "text": "C\nreading a book",
+            "disabled": false,
+            "font": "14px"
+          },
+          {
+            "text": "D\nhas read a book",
+            "disabled": false,
+            "font": "14px"
+          },
+          {
+            "text": "提交答案",
+            "disabled": false,
+            "font": "14px"
+          }
+        ],
+        "cardBox": {
+          "x": 22,
+          "y": 224.03125,
+          "width": 346,
+          "height": 644.28125
+        }
+      },
+      "counts": {
+        "login": 1,
+        "start": 1,
+        "responses": 0,
+        "ensure": 0
+      }
+    },
+    {
+      "name": "03-assessed-report-zh-light-390",
+      "facts": {
+        "route": "#/pages/assessment/assessment",
+        "title": "规则化测评",
+        "locale": "zh-CN",
+        "theme": "light",
+        "text": "报告已生成\nA2 · 70 分\n这份报告和快照是同一版本。\n答对 7 题，共 10 题。\n刚才提交的这题答对了。\n重测会另开一套题，这份报告会保留。是否调整已有计划需要另外确认。\n查看今日状态\n重测",
+        "header": "‹\n返回\n☷\n找到起点\n从了解自己开始。\n完成一组小测评，找到适合你的学习起点。",
+        "overlay": false,
+        "overflow": false,
+        "options": [],
+        "controls": [
+          {
+            "text": "查看今日状态",
+            "disabled": false,
+            "font": "14px"
+          },
+          {
+            "text": "重测",
+            "disabled": false,
+            "font": "14px"
+          }
+        ],
+        "cardBox": {
+          "x": 22,
+          "y": 224.03125,
+          "width": 346,
+          "height": 595.421875
+        }
+      },
+      "counts": {
+        "login": 1,
+        "start": 1,
+        "responses": 10,
+        "ensure": 1
+      }
+    },
+    {
+      "name": "04-guide-en-dark-390",
+      "facts": {
+        "route": "#/pages/assessment/assessment",
+        "title": "规则化测评",
+        "locale": "en-US",
+        "theme": "dark",
+        "text": "开始定级\n共 10 道题。用来了解你现在的英语起点，方便安排后面的学习。\n开始\n返回学习首页",
+        "header": "‹\nBack\n☷\nFIND YOUR START\nFind your starting point.\nTake a short assessment to guide your learning.",
+        "overlay": false,
+        "overflow": false,
+        "options": [],
+        "controls": [
+          {
+            "text": "开始",
+            "disabled": false,
+            "font": "14px"
+          },
+          {
+            "text": "返回学习首页",
+            "disabled": false,
+            "font": "14px"
+          }
+        ],
+        "cardBox": {
+          "x": 22,
+          "y": 224.03125,
+          "width": 346,
+          "height": 301.140625
+        }
+      },
+      "counts": {
+        "login": 1,
+        "start": 0,
+        "responses": 0,
+        "ensure": 0
+      }
+    },
+    {
+      "name": "05-start-error-503-zh-light-390",
+      "facts": {
+        "route": "#/pages/assessment/assessment",
+        "title": "规则化测评",
+        "locale": "zh-CN",
+        "theme": "light",
+        "text": "开始定级\n测评暂时不可用，请稍后重试。\n重新读取\n返回学习首页",
+        "header": "‹\n返回\n☷\n找到起点\n从了解自己开始。\n完成一组小测评，找到适合你的学习起点。",
+        "overlay": false,
+        "overflow": false,
+        "options": [],
+        "controls": [
+          {
+            "text": "重新读取",
+            "disabled": false,
+            "font": "14px"
+          },
+          {
+            "text": "返回学习首页",
+            "disabled": false,
+            "font": "14px"
+          }
+        ],
+        "cardBox": {
+          "x": 22,
+          "y": 224.03125,
+          "width": 346,
+          "height": 277.34375
+        }
+      },
+      "counts": {
+        "login": 1,
+        "start": 1,
+        "responses": 0,
+        "ensure": 0
+      }
+    }
+  ],
+  "requests": [
+    {
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "https://127.0.0.1:18087",
+      "method": "POST",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/learner/targets"
+    },
+    {
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/learner/profile"
+    },
+    {
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/learner/targets"
+    },
+    {
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/learner/preferences"
+    },
+    {
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/learner/targets"
+    },
+    {
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "POST",
+      "path": "/api/v1/assessment/placement/sessions"
+    },
+    {
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "POST",
+      "path": "/api/v1/assessment/placement/sessions/asess_ui_before_mb006/responses"
+    },
+    {
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "POST",
+      "path": "/api/v1/assessment/placement/sessions/asess_ui_before_mb006/responses"
+    },
+    {
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "POST",
+      "path": "/api/v1/assessment/placement/sessions/asess_ui_before_mb006/responses"
+    },
+    {
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "POST",
+      "path": "/api/v1/assessment/placement/sessions/asess_ui_before_mb006/responses"
+    },
+    {
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "POST",
+      "path": "/api/v1/assessment/placement/sessions/asess_ui_before_mb006/responses"
+    },
+    {
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "POST",
+      "path": "/api/v1/assessment/placement/sessions/asess_ui_before_mb006/responses"
+    },
+    {
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "POST",
+      "path": "/api/v1/assessment/placement/sessions/asess_ui_before_mb006/responses"
+    },
+    {
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "POST",
+      "path": "/api/v1/assessment/placement/sessions/asess_ui_before_mb006/responses"
+    },
+    {
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "POST",
+      "path": "/api/v1/assessment/placement/sessions/asess_ui_before_mb006/responses"
+    },
+    {
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "POST",
+      "path": "/api/v1/assessment/placement/sessions/asess_ui_before_mb006/responses"
+    },
+    {
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "POST",
+      "path": "/api/v1/learning/plans:ensure"
+    },
+    {
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/learning/today"
+    },
+    {
+      "locale": "en-US",
+      "theme": "dark",
+      "origin": "https://127.0.0.1:18087",
+      "method": "POST",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "locale": "en-US",
+      "theme": "dark",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "locale": "en-US",
+      "theme": "dark",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "locale": "en-US",
+      "theme": "dark",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/learner/targets"
+    },
+    {
+      "locale": "en-US",
+      "theme": "dark",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/learner/profile"
+    },
+    {
+      "locale": "en-US",
+      "theme": "dark",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/learner/targets"
+    },
+    {
+      "locale": "en-US",
+      "theme": "dark",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/learner/preferences"
+    },
+    {
+      "locale": "en-US",
+      "theme": "dark",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "locale": "en-US",
+      "theme": "dark",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "locale": "en-US",
+      "theme": "dark",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/learner/targets"
+    },
+    {
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "https://127.0.0.1:18087",
+      "method": "POST",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/learner/targets"
+    },
+    {
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/learner/profile"
+    },
+    {
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/learner/targets"
+    },
+    {
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/learner/preferences"
+    },
+    {
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/learner/targets"
+    },
+    {
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "POST",
+      "path": "/api/v1/assessment/placement/sessions"
+    }
+  ],
+  "unexpected": [],
+  "pageErrors": [],
+  "consoleErrors": [
+    {
+      "locale": "zh-CN",
+      "theme": "light",
+      "message": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)"
+    }
+  ],
+  "sourceHashesAfter": {
+    "apps/mobile/src/pages/assessment/assessment.vue": "30cfa42c97c3fcd3923ac1309f3786fd2a1cf57c9e0d996bd897073429a86598",
+    "packages/i18n/src/mobile-experience.ts": "cb47a78d810e2c2b08fc280f237cae726ee7a66cc2c0bf2dccf7c1112baaca83",
+    "apps/mobile/src/api/learner-content.ts": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6",
+    "apps/mobile/src/stores/learner-content.ts": "95cc92496db996242d91baed3301d76f985e4e3b9134e1e50c2b9ab8d41e4c61",
+    "apps/mobile/src/stores/session.ts": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+    "apps/mobile/src/auth/navigation.ts": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5"
+  },
+  "sourceStable": true,
+  "completed": true,
+  "notRun": [
+    "SKIPPED: current page has no normal skip write path; reportId must not be invented",
+    "Real IAM/Gateway/assessment/learning owner or database chain",
+    "Native App/iPad/physical device",
+    "Additional error/race/viewport matrix"
+  ]
+}

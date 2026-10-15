@@ -1,5 +1,7 @@
 # V2 UI 逐页审查索引 — 2026-10-13
 
+> **2026-10-16 04:42额度暂停（最新）**：首次实读五小时90%/周45%立停新修测。MB005已本地验收提交758dc0fb，GitHub TLS持续失败待推（本地8页/远程7页）。MB006实际重排候选2 page d1b501e3/i18n44e4c857未提交未签：C1类型/8项H5具名通过，但英文200%标题拆词FAIL；已短文案修稿尚未复验，原FAIL保留。56保护0漂移，详[本次精确断点](ui-audit-20261013/PAUSE-20261016-0442.md)。实际reset今天08:43，同ui08:44后每五小时，不用券；以下为历史。
+
 > **2026-10-16 MB005本地UI已签（最新）**：实际受限页C4通过52项独立H5具名记录与Root工程/概念实图复核，本机UI累计8页，已推远程仍7页。GitHub连接失败，当前单页将本地提交待推，不能称PUSHED；[范围与证据](ui-audit-20261013/mobile-forbidden/FINAL-UI-REVIEW-20261016.md)。下一MB006定级页仅只读预审，真实后台/native和历史GAP未升级。下方为历史。
 
 > **2026-10-16 03:42已恢复（最新）**：官方五小时0%/周31%、普通使用允许，8源与56保护0漂移，接续MB005候选2剩余独审，未签整页。远程连接失败，断点4c9d97d5仅本地，候选未推；见[续做记录](ui-audit-20261013/RESUME-20261016-0342.md)。实际reset08:42:59，同ui08:44后每五小时，无券。以下为历史。
@@ -163,7 +165,7 @@
 | MB-003 | `#/pages/reset-password/reset-password` | [apps/mobile/src/pages/reset-password/reset-password.vue](../../apps/mobile/src/pages/reset-password/reset-password.vue) | 请求/确认两步、完成态 | PUSHED_SCOPED | [正式两步重设计报告](ui-audit-20261013/mobile-reset/report.md)、[当前c9a6独立49项复签](ui-audit-20261013/mobile-reset/20261014-c9a6-final-interaction/review.md)及[root视觉/工程收口](ui-audit-20261013/mobile-reset/20261014-2239-root/final-review.md)通过；`fe6e027c`已推且远程SHA一致，旧FAIL/IAM/native GAP保留 |
 | MB-004 | `#/pages/onboarding/onboarding` | [apps/mobile/src/pages/onboarding/onboarding.vue](../../apps/mobile/src/pages/onboarding/onboarding.vue) | 成人门、同意、目标、已保存摘要四态 | PUSHED_UI_SCOPED | [当前验收与版本](ui-audit-20261013/mobile-onboarding/FINAL-UI-REVIEW-20261015.md)；a7d26107远程同SHA，实际四态矩阵/交互/独立复审完成；真实后台/native及发布目录GAP另列 |
 | MB-005 | `#/pages/forbidden/forbidden` | [apps/mobile/src/pages/forbidden/forbidden.vue](../../apps/mobile/src/pages/forbidden/forbidden.vue) | 限制说明、退出与可用出口 | UI_VERIFIED_LOCAL_PENDING_PUSH | [当前C4验收](ui-audit-20261013/mobile-forbidden/FINAL-UI-REVIEW-20261016.md)，远程连接失败未推 |
-| MB-006 | `#/pages/assessment/assessment` | [apps/mobile/src/pages/assessment/assessment.vue](../../apps/mobile/src/pages/assessment/assessment.vue) | 开场、作答、反馈、结果与重测 | PENDING | — |
+| MB-006 | `#/pages/assessment/assessment` | [apps/mobile/src/pages/assessment/assessment.vue](../../apps/mobile/src/pages/assessment/assessment.vue) | 开场、作答、反馈、结果与重测 | IN_REVIEW | [C2未签断点](ui-audit-20261013/PAUSE-20261016-0442.md)，C1文字放大FAIL保留 |
 | MB-007 | `#/pages/home/home` | [apps/mobile/src/pages/home/home.vue](../../apps/mobile/src/pages/home/home.vue) | 首页、计划横幅、任务与首次引导 | PENDING | — |
 | MB-008 | `#/pages/today/today` | [apps/mobile/src/pages/today/today.vue](../../apps/mobile/src/pages/today/today.vue) | 今日任务与各类空/错态 | PENDING | — |
 | MB-009 | `#/pages/learn/learn` | [apps/mobile/src/pages/learn/learn.vue](../../apps/mobile/src/pages/learn/learn.vue) | 课程/内容/续学、队列、错题/补救/复习区域 | PENDING | — |
