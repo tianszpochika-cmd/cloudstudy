@@ -1,6 +1,6 @@
-# MB-004 — 正式Mobile学习设置重设计（进行中）
+# MB-004 — 正式Mobile学习设置重设计（本轮H5已推）
 
-> **2026-10-15本轮UI已复审收口（最新）**：正式c4/7b/helper24a/sessiond944与登录0c5组合已作者矩阵/交互及独立验收，当前pageerror0；完整状态、版本、概念差量、证据与GAP见[当前收口报告](FINAL-UI-REVIEW-20261015.md)。Root正按白名单单页推送，收据随后补齐；以下进行中/暂停均是历史快照，不覆盖当前具名结论。
+> **2026-10-15本轮H5已推（最新）**：正式c4/7b/helper24a/sessiond944与登录0c5组合已作者矩阵/交互及独立验收，当前pageerror0；MB004已推a7d26107698b88f58df7bbd8ac7fd289f817cb0e且远程同SHA，[收据](../PUSH-RECEIPT-20261015-MB004.md)。完整状态、版本、概念差量、证据与GAP见[当前收口报告](FINAL-UI-REVIEW-20261015.md)。以下进行中/暂停均是历史快照，不覆盖当前具名结论。
 
 > **2026-10-15 17:35继续（最新）**：[本轮接续](../RESUME-20261015-1735.md)。当前c4/7b/helper24a/sessiond944修稿用于关闭12:39真实checkbox/disabled指针、200%拆词与restore误判认证FAIL，最终作者/独立复验进行中，尚未签页。Root当前typecheck/43相关模块具名PASS不代UI。旧f56/854/9a与其PASS/FAIL全部保留；当前hash结果须另证，正式源仍未提交。
 

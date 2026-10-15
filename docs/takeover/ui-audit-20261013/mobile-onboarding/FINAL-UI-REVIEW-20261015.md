@@ -1,6 +1,6 @@
 # MB004 正式学习设置 — 本轮H5 UI收口
 
-状态：**REVIEWED_UI_SCOPED / 待Root逐页推送收据**。真实路由为http://127.0.0.1:18183/#/pages/onboarding/onboarding；Vue/uni-app正式代码实现，不是静态Demo。范围为本机Chromium实际H5、合成API夹具下的排版/视觉/交互/状态与共享影响；真实IAM/learner事实、原生端/物理输入/读屏不在本次签收中。
+状态：**PUSHED_UI_SCOPED**，提交a7d26107698b88f58df7bbd8ac7fd289f817cb0e已核origin/dev-redesign完整SHA一致，[推送收据](../PUSH-RECEIPT-20261015-MB004.md)。真实路由为http://127.0.0.1:18183/#/pages/onboarding/onboarding；Vue/uni-app正式代码实现，不是静态Demo。范围为本机Chromium实际H5、合成API夹具下的排版/视觉/交互/状态与共享影响；真实IAM/learner事实、原生端/物理输入/读屏不在本次签收中。
 
 ## 重新设计后的四态
 
@@ -48,6 +48,6 @@ Root已对照[概念](concept.png)与当前390中文及320英文200%真实gate/g
 
 继承R1-006/007/008/010/011/013/016/017与BC/IC映射，详见[实施计划](implementation-plan.md)。未改契约、服务器、生产数据或阶段Gate。旧显式签署fallback/409自动重签仍GAP，当前页不调用；待签发布目录和真实后台/native证据仍独立保留，当前UI通过不改变它们的状态。
 
-源的raw/LF hash、私有备份与保护核对见本目录20261015-root-final-1735/final-source-snapshot.json；正式源按白名单单页提交。推送收据随后记录，原始FAIL、诊断、错误测试注入与旧矩阵都保留。
+源的raw/LF hash、私有备份与保护核对见本目录20261015-root-final-1735/final-source-snapshot.json；正式源已按白名单单页提交并核远程，原始FAIL、诊断、错误测试注入与旧矩阵都保留。
 
 发布记录检查：16份本页正式源/测试严格diff空白检查，Git index逐字节等于已验raw的LF归一化；56保护文件hash无漂移。原始归档执行脚本仅免除EOF空行、原始控制台日志仅免除EOL空格/EOF空行，保留其执行字节与失败输出，不以此放宽正式源检查。
