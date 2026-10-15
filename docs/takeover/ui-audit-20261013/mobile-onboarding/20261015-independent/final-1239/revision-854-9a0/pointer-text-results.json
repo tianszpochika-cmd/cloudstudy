@@ -1,0 +1,36 @@
+{
+  "at": "2026-10-15T04:48:09.427Z",
+  "scope": "INDEPENDENT_MB004_POINTER_TEXT_SYNTHETIC_ONLY",
+  "sourceHashesBefore": {
+    "apps/mobile/src/pages/onboarding/onboarding.vue": "8540707509e844fc02f8bdf01435e6a7f2ad691c97dba576d1acbad96b4ac377",
+    "packages/i18n/src/mobile-experience.ts": "5e0e045c0118226ef8e2f80b1fa1db072bdfdbd2d171c13a904075fe3c4f8743",
+    "apps/mobile/src/auth/gateway-auth.ts": "746bb9d83d241162bce9d9cd701d2f6662d11a132977533e3ba2a11e428c3277",
+    "apps/mobile/src/stores/session.ts": "ba479dfebf777599ed40b05218549afc23712f1077720b748f973ec3d3fadc99",
+    "apps/mobile/src/api/learner-content.ts": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6",
+    "apps/mobile/src/domain/onboarding-resume.ts": "ea6e26682e69a9f1c3d8fd47d284aa55d96e39d646e27e5d41d0f556ba902e26",
+    "apps/mobile/src/stores/learner-content.ts": "95cc92496db996242d91baed3301d76f985e4e3b9134e1e50c2b9ab8d41e4c61",
+    "apps/mobile/src/platform/pointer-feedback.ts": "9a0b104937e7f637c88f946232a0a614a0116452c79818a54429b96596d8d1f2"
+  },
+  "checks": [
+    {
+      "name": "enabled-old-center-click-0ms",
+      "result": "PASS",
+      "counts": {
+        "adult": 1,
+        "targetPut": 0,
+        "consentPut": 0,
+        "preferencePatch": 0,
+        "recordGet": 0
+      },
+      "point": {
+        "x": 195,
+        "y": 591.15625,
+        "top": 566.15625
+      },
+      "held": 0,
+      "trustedClicks": 1
+    }
+  ],
+  "status": "FAIL",
+  "failure": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\nfalse !== true\n\n    at C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-independent\\final-1239\\revision-854-9a0\\pointer-text.cjs:18:48"
+}

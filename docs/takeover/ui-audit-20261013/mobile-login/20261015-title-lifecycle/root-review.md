@@ -1,6 +1,6 @@
 # MB001 登录标题生命周期窄补修
 
-状态：REVIEWED_UI_SCOPED / 等待Root推送收据。原登录重设计与键盘/输入验收范围不重做，旧PASS/FAIL保留。
+状态：PUSHED_UI_SCOPED。提交54f5ac0e02a529635eefb3b7c55dd3cd7d33a71f已推origin/dev-redesign，并以ls-remote核对同一完整SHA。原登录重设计与键盘/输入验收范围不重做，旧PASS/FAIL保留。
 
 在MB004恢复401及退出后迟到响应的独立复审中，真实捕获两次未处理Promise异常。隔离API调用栈已归因到原login.vue的onShow：页面元数据尚未注册就setNavigationBarTitle，返回page not found，不能把这些Object错误免除为预期401。见[原始归因](before-title-origin.json)。本地uni-h5实现也在pageMeta缺失时明确reject。
 

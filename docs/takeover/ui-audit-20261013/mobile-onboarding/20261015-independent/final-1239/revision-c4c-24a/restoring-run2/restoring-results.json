@@ -1,0 +1,71 @@
+{
+  "at": "2026-10-15T09:59:05.415Z",
+  "scope": "INDEPENDENT_MB004_REAL_ONSHOW_REFRESH_RACE_SYNTHETIC_ONLY",
+  "sourceHashesBefore": {
+    "apps/mobile/src/pages/onboarding/onboarding.vue": "c4c691dd9ab74c8aa7f21a677d43f3541b22c4ea4642f733ad53c4cf94176086",
+    "packages/i18n/src/mobile-experience.ts": "7b21f6e074bf705463e27941cbc4c91847a242443cdbd1ad3deea155fc733dde",
+    "apps/mobile/src/auth/gateway-auth.ts": "746bb9d83d241162bce9d9cd701d2f6662d11a132977533e3ba2a11e428c3277",
+    "apps/mobile/src/stores/session.ts": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+    "apps/mobile/src/api/learner-content.ts": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6",
+    "apps/mobile/src/domain/onboarding-resume.ts": "ea6e26682e69a9f1c3d8fd47d284aa55d96e39d646e27e5d41d0f556ba902e26",
+    "apps/mobile/src/stores/learner-content.ts": "95cc92496db996242d91baed3301d76f985e4e3b9134e1e50c2b9ab8d41e4c61",
+    "apps/mobile/src/platform/pointer-feedback.ts": "24a1f9b26ad6797fc9a61a16cb43559d116230cd7e9cd66c1dd4d9a563d94a6c"
+  },
+  "checks": [
+    {
+      "name": "actual-onShow-refresh200-stays-owned-route-then-goal",
+      "pending": {
+        "route": "#/pages/onboarding/onboarding",
+        "status": "refreshing",
+        "restoring": true,
+        "reading": true,
+        "busy": true
+      },
+      "result": "PASS",
+      "counts": {
+        "adult": 0,
+        "targetPut": 0,
+        "consentPut": 0,
+        "preferencePatch": 0,
+        "recordGet": 1,
+        "targetGet": 4,
+        "refresh": 1
+      }
+    },
+    {
+      "name": "actual-onShow-refresh401-clears-and-unlocks",
+      "pending": {
+        "route": "#/pages/onboarding/onboarding",
+        "status": "refreshing",
+        "restoring": true,
+        "reading": true,
+        "busy": true
+      },
+      "result": "PASS",
+      "counts": {
+        "adult": 0,
+        "targetPut": 0,
+        "consentPut": 0,
+        "preferencePatch": 0,
+        "recordGet": 1,
+        "targetGet": 2,
+        "refresh": 1
+      }
+    },
+    {
+      "name": "logout-while-refresh-held-late200-cannot-resurrect",
+      "result": "PASS",
+      "counts": {
+        "adult": 0,
+        "targetPut": 0,
+        "consentPut": 0,
+        "preferencePatch": 0,
+        "recordGet": 1,
+        "targetGet": 2,
+        "refresh": 1
+      }
+    }
+  ],
+  "status": "FAIL",
+  "failure": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\n2 !== 0\n\n    at C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-independent\\final-1239\\revision-c4c-24a\\restoring-run2\\restoring-review.cjs:18:18"
+}

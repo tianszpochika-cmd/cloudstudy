@@ -1,5 +1,7 @@
 # V2 UI 逐页审查索引 — 2026-10-13
 
+> **2026-10-15 17:35继续（最新）**：官方实读五小时1%/周0%、普通使用允许，接续MB004；12:39周限中断前的checkbox/指针/200%拆词/restoring成功误跳登录FAIL全部保留。当前c4/7b/helper24a/sessiond944候选复验中，尚未签UI/推正式源，旧PASS不升级新版本；[本轮事实与断点](ui-audit-20261013/RESUME-20261015-1735.md)。真实reset22:35:56，每五小时继续，不用券。
+
 > **2026-10-15 08:10额度暂停（最新）**：作者实读90%立即停新修/测，根08:10:42回读91%/周95%；真实reset今天12:32:34，同ui heartbeat首个复查已对齐12:34、随后每五小时，不耗券。MB004 f56/5e0四态候选仍未签最终UI，最后7恢复/4race fixture与31/25模块PASS仅具名范围，最终构建/矩阵/暗色边界/200%pointer/独审待验。16源/测试私有备份、56保护无漂移，正式源未提交；先读[精确断点](ui-audit-20261013/PAUSE-20261015-0810.md)。下方为历史。
 
 > **2026-10-15 07:32已恢复继续（最新）**：开工实读Plus0%/周80%，fetch bdca4f8a一致，六源/原56保护hash无漂移；正在接续MB004正式四态，实际checkbox/插值/焦点/busy FAIL修稿与Gate/prefs边界复验。当前未签UI，旧128矩阵不代最终hash；[本轮记录](ui-audit-20261013/RESUME-20261015-0732.md)。下一真实reset12:32:34，同heartbeat首个复查对齐12:34、后每五小时，不用券。下方旧暂停为历史。
@@ -147,7 +149,7 @@
 | MB-001 | `#/pages/login/login` | [apps/mobile/src/pages/login/login.vue](../../apps/mobile/src/pages/login/login.vue) | 登录 | PUSHED_SCOPED | 原重设计/即时值收据保留；当前1d34键盘窄修获[17项独审](ui-audit-20261013/mobile-login/20261014-1d34-independent-keyboard/review.md)，`70ad42f4`已推且远程SHA一致；原da5 FAIL/native/IAM边界保留 |
 | MB-002 | `#/pages/register/register` | [apps/mobile/src/pages/register/register.vue](../../apps/mobile/src/pages/register/register.vue) | 注册 | PUSHED_SCOPED | 原重设计收据保留；当前9258长度/指针/键盘补修获[44项独审](ui-audit-20261013/mobile-register/20261015-9258-independent-final/review.md)及工程收口，`4b3a40f1`已推且远程SHA一致；原FAIL/native/IAM边界保留 |
 | MB-003 | `#/pages/reset-password/reset-password` | [apps/mobile/src/pages/reset-password/reset-password.vue](../../apps/mobile/src/pages/reset-password/reset-password.vue) | 请求/确认两步、完成态 | PUSHED_SCOPED | [正式两步重设计报告](ui-audit-20261013/mobile-reset/report.md)、[当前c9a6独立49项复签](ui-audit-20261013/mobile-reset/20261014-c9a6-final-interaction/review.md)及[root视觉/工程收口](ui-audit-20261013/mobile-reset/20261014-2239-root/final-review.md)通过；`fe6e027c`已推且远程SHA一致，旧FAIL/IAM/native GAP保留 |
-| MB-004 | `#/pages/onboarding/onboarding` | [apps/mobile/src/pages/onboarding/onboarding.vue](../../apps/mobile/src/pages/onboarding/onboarding.vue) | 成人门、同意、目标、定级四幕 | IN_PROGRESS | [正式四幕实施记录](ui-audit-20261013/mobile-onboarding/report.md)；UI候选在写，两个窄owner/verdict差量各7模块检查通过；浏览器/独审未跑，不签UI |
+| MB-004 | `#/pages/onboarding/onboarding` | [apps/mobile/src/pages/onboarding/onboarding.vue](../../apps/mobile/src/pages/onboarding/onboarding.vue) | 成人门、同意、目标、已保存摘要四态 | REVIEWED_UI_SCOPED | [当前验收与版本](ui-audit-20261013/mobile-onboarding/FINAL-UI-REVIEW-20261015.md)；实际四态矩阵/交互/独立复审完成，待Root推送收据；真实后台/native及发布目录GAP另列 |
 | MB-005 | `#/pages/forbidden/forbidden` | [apps/mobile/src/pages/forbidden/forbidden.vue](../../apps/mobile/src/pages/forbidden/forbidden.vue) | 限制说明、退出与可用出口 | PENDING | — |
 | MB-006 | `#/pages/assessment/assessment` | [apps/mobile/src/pages/assessment/assessment.vue](../../apps/mobile/src/pages/assessment/assessment.vue) | 开场、作答、反馈、结果与重测 | PENDING | — |
 | MB-007 | `#/pages/home/home` | [apps/mobile/src/pages/home/home.vue](../../apps/mobile/src/pages/home/home.vue) | 首页、计划横幅、任务与首次引导 | PENDING | — |

@@ -177,6 +177,8 @@ export const useLearnerContentStore = defineStore('mobile-learner-content', () =
     const quota = remote.target.quota
     const facts: OnboardingResumeFacts = {
       adultGate: remote.adultGate,
+      adultLearningAccess: remote.adultLearningAccess,
+      sessionRefreshRequired: remote.sessionRefreshRequired === true,
       consent: {
         readable: remote.consent.readable,
         accepted: remote.consent.accepted,

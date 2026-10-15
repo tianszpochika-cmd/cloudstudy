@@ -1,0 +1,986 @@
+{
+  "at": "2026-10-15T04:44:06.333Z",
+  "scope": "MB004_INDEPENDENT_RENDERED_BOUNDARIES_SYNTHETIC_ONLY",
+  "cases": [
+    {
+      "mode": "gate",
+      "theme": "light",
+      "facts": {
+        "title": "Confirm adult eligibility",
+        "description": "Your birth year is used to confirm adult learning eligibility. We do not collect your full date of birth.",
+        "rawKeys": false,
+        "overlay": false,
+        "overflow": false,
+        "theme": "light",
+        "boundaries": [
+          {
+            "kind": "onboarding-input",
+            "border": "rgb(96, 98, 119)",
+            "borderWidth": "1px",
+            "fill": "rgb(255, 255, 255)",
+            "effectiveFill": [
+              255,
+              255,
+              255,
+              1
+            ],
+            "effectiveOutside": [
+              245,
+              245,
+              250,
+              1
+            ],
+            "againstFill": 5.9815185273527325,
+            "againstOutside": 5.504103371100126,
+            "width": 342,
+            "height": 48
+          },
+          {
+            "kind": "uni-checkbox-input",
+            "border": "rgb(209, 209, 209)",
+            "borderWidth": "1px",
+            "fill": "rgb(255, 255, 255)",
+            "effectiveFill": [
+              255,
+              255,
+              255,
+              1
+            ],
+            "effectiveOutside": [
+              245,
+              245,
+              250,
+              1
+            ],
+            "againstFill": 1.527057553215567,
+            "againstOutside": 1.4051753895072507,
+            "width": 24,
+            "height": 24
+          }
+        ]
+      },
+      "result": "FAIL",
+      "errors": [
+        "uni-checkbox-input: 1.405"
+      ]
+    },
+    {
+      "mode": "gate",
+      "theme": "dark",
+      "facts": {
+        "title": "Confirm adult eligibility",
+        "description": "Your birth year is used to confirm adult learning eligibility. We do not collect your full date of birth.",
+        "rawKeys": false,
+        "overlay": false,
+        "overflow": false,
+        "theme": "dark",
+        "boundaries": [
+          {
+            "kind": "onboarding-input",
+            "border": "rgb(186, 184, 207)",
+            "borderWidth": "1px",
+            "fill": "rgb(32, 32, 45)",
+            "effectiveFill": [
+              32,
+              32,
+              45,
+              1
+            ],
+            "effectiveOutside": [
+              21,
+              21,
+              31,
+              1
+            ],
+            "againstFill": 8.304551134813018,
+            "againstOutside": 9.357719562635204,
+            "width": 342,
+            "height": 48
+          },
+          {
+            "kind": "uni-checkbox-input",
+            "border": "rgb(209, 209, 209)",
+            "borderWidth": "1px",
+            "fill": "rgb(255, 255, 255)",
+            "effectiveFill": [
+              255,
+              255,
+              255,
+              1
+            ],
+            "effectiveOutside": [
+              21,
+              21,
+              31,
+              1
+            ],
+            "againstFill": 1.527057553215567,
+            "againstOutside": 11.865983599759755,
+            "width": 24,
+            "height": 24
+          }
+        ]
+      },
+      "result": "FAIL",
+      "errors": [
+        "uni-checkbox-input: 1.527"
+      ]
+    },
+    {
+      "mode": "gate",
+      "theme": "high-contrast",
+      "facts": {
+        "title": "Confirm adult eligibility",
+        "description": "Your birth year is used to confirm adult learning eligibility. We do not collect your full date of birth.",
+        "rawKeys": false,
+        "overlay": false,
+        "overflow": false,
+        "theme": "high-contrast",
+        "boundaries": [
+          {
+            "kind": "onboarding-input",
+            "border": "rgb(226, 230, 241)",
+            "borderWidth": "1px",
+            "fill": "rgb(13, 16, 24)",
+            "effectiveFill": [
+              13,
+              16,
+              24,
+              1
+            ],
+            "effectiveOutside": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "againstFill": 15.232125910059796,
+            "againstOutside": 16.822650673503315,
+            "width": 342,
+            "height": 48
+          },
+          {
+            "kind": "uni-checkbox-input",
+            "border": "rgb(209, 209, 209)",
+            "borderWidth": "1px",
+            "fill": "rgb(255, 255, 255)",
+            "effectiveFill": [
+              255,
+              255,
+              255,
+              1
+            ],
+            "effectiveOutside": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "againstFill": 1.527057553215567,
+            "againstOutside": 13.751937479880652,
+            "width": 24,
+            "height": 24
+          }
+        ]
+      },
+      "result": "FAIL",
+      "errors": [
+        "uni-checkbox-input: 1.527"
+      ]
+    },
+    {
+      "mode": "gate",
+      "theme": "system",
+      "facts": {
+        "title": "Confirm adult eligibility",
+        "description": "Your birth year is used to confirm adult learning eligibility. We do not collect your full date of birth.",
+        "rawKeys": false,
+        "overlay": false,
+        "overflow": false,
+        "theme": "light",
+        "boundaries": [
+          {
+            "kind": "onboarding-input",
+            "border": "rgb(96, 98, 119)",
+            "borderWidth": "1px",
+            "fill": "rgb(255, 255, 255)",
+            "effectiveFill": [
+              255,
+              255,
+              255,
+              1
+            ],
+            "effectiveOutside": [
+              245,
+              245,
+              250,
+              1
+            ],
+            "againstFill": 5.9815185273527325,
+            "againstOutside": 5.504103371100126,
+            "width": 342,
+            "height": 48
+          },
+          {
+            "kind": "uni-checkbox-input",
+            "border": "rgb(209, 209, 209)",
+            "borderWidth": "1px",
+            "fill": "rgb(255, 255, 255)",
+            "effectiveFill": [
+              255,
+              255,
+              255,
+              1
+            ],
+            "effectiveOutside": [
+              245,
+              245,
+              250,
+              1
+            ],
+            "againstFill": 1.527057553215567,
+            "againstOutside": 1.4051753895072507,
+            "width": 24,
+            "height": 24
+          }
+        ]
+      },
+      "result": "FAIL",
+      "errors": [
+        "uni-checkbox-input: 1.405"
+      ]
+    },
+    {
+      "mode": "goal",
+      "theme": "light",
+      "facts": {
+        "title": "Choose your learning goal",
+        "description": "Choose a goal and daily time. Save your choices before starting placement.",
+        "rawKeys": false,
+        "overlay": false,
+        "overflow": false,
+        "theme": "light",
+        "boundaries": [
+          {
+            "kind": "onboarding-choice",
+            "border": "rgb(96, 98, 119)",
+            "borderWidth": "1px",
+            "fill": "rgb(255, 255, 255)",
+            "effectiveFill": [
+              255,
+              255,
+              255,
+              1
+            ],
+            "effectiveOutside": [
+              245,
+              245,
+              250,
+              1
+            ],
+            "againstFill": 5.9815185273527325,
+            "againstOutside": 5.504103371100126,
+            "width": 342,
+            "height": 101.59375
+          },
+          {
+            "kind": "onboarding-choice",
+            "border": "rgb(96, 98, 119)",
+            "borderWidth": "1px",
+            "fill": "rgb(255, 255, 255)",
+            "effectiveFill": [
+              255,
+              255,
+              255,
+              1
+            ],
+            "effectiveOutside": [
+              245,
+              245,
+              250,
+              1
+            ],
+            "againstFill": 5.9815185273527325,
+            "againstOutside": 5.504103371100126,
+            "width": 342,
+            "height": 101.59375
+          },
+          {
+            "kind": "onboarding-choice",
+            "border": "rgb(96, 98, 119)",
+            "borderWidth": "1px",
+            "fill": "rgb(255, 255, 255)",
+            "effectiveFill": [
+              255,
+              255,
+              255,
+              1
+            ],
+            "effectiveOutside": [
+              245,
+              245,
+              250,
+              1
+            ],
+            "againstFill": 5.9815185273527325,
+            "againstOutside": 5.504103371100126,
+            "width": 342,
+            "height": 101.59375
+          },
+          {
+            "kind": "onboarding-choice",
+            "border": "rgb(96, 98, 119)",
+            "borderWidth": "1px",
+            "fill": "rgb(255, 255, 255)",
+            "effectiveFill": [
+              255,
+              255,
+              255,
+              1
+            ],
+            "effectiveOutside": [
+              245,
+              245,
+              250,
+              1
+            ],
+            "againstFill": 5.9815185273527325,
+            "againstOutside": 5.504103371100126,
+            "width": 342,
+            "height": 101.59375
+          },
+          {
+            "kind": "onboarding-quota",
+            "border": "rgb(96, 98, 119)",
+            "borderWidth": "1px",
+            "fill": "rgb(255, 255, 255)",
+            "effectiveFill": [
+              255,
+              255,
+              255,
+              1
+            ],
+            "effectiveOutside": [
+              245,
+              245,
+              250,
+              1
+            ],
+            "againstFill": 5.9815185273527325,
+            "againstOutside": 5.504103371100126,
+            "width": 165,
+            "height": 66.796875
+          },
+          {
+            "kind": "onboarding-quota",
+            "border": "rgb(96, 98, 119)",
+            "borderWidth": "1px",
+            "fill": "rgb(255, 255, 255)",
+            "effectiveFill": [
+              255,
+              255,
+              255,
+              1
+            ],
+            "effectiveOutside": [
+              245,
+              245,
+              250,
+              1
+            ],
+            "againstFill": 5.9815185273527325,
+            "againstOutside": 5.504103371100126,
+            "width": 165,
+            "height": 48
+          },
+          {
+            "kind": "onboarding-quota",
+            "border": "rgb(96, 98, 119)",
+            "borderWidth": "1px",
+            "fill": "rgb(255, 255, 255)",
+            "effectiveFill": [
+              255,
+              255,
+              255,
+              1
+            ],
+            "effectiveOutside": [
+              245,
+              245,
+              250,
+              1
+            ],
+            "againstFill": 5.9815185273527325,
+            "againstOutside": 5.504103371100126,
+            "width": 165,
+            "height": 48
+          }
+        ]
+      },
+      "result": "PASS",
+      "errors": []
+    },
+    {
+      "mode": "goal",
+      "theme": "dark",
+      "facts": {
+        "title": "Choose your learning goal",
+        "description": "Choose a goal and daily time. Save your choices before starting placement.",
+        "rawKeys": false,
+        "overlay": false,
+        "overflow": false,
+        "theme": "dark",
+        "boundaries": [
+          {
+            "kind": "onboarding-choice",
+            "border": "rgb(186, 184, 207)",
+            "borderWidth": "1px",
+            "fill": "rgb(32, 32, 45)",
+            "effectiveFill": [
+              32,
+              32,
+              45,
+              1
+            ],
+            "effectiveOutside": [
+              21,
+              21,
+              31,
+              1
+            ],
+            "againstFill": 8.304551134813018,
+            "againstOutside": 9.357719562635204,
+            "width": 342,
+            "height": 101.59375
+          },
+          {
+            "kind": "onboarding-choice",
+            "border": "rgb(186, 184, 207)",
+            "borderWidth": "1px",
+            "fill": "rgb(32, 32, 45)",
+            "effectiveFill": [
+              32,
+              32,
+              45,
+              1
+            ],
+            "effectiveOutside": [
+              21,
+              21,
+              31,
+              1
+            ],
+            "againstFill": 8.304551134813018,
+            "againstOutside": 9.357719562635204,
+            "width": 342,
+            "height": 101.59375
+          },
+          {
+            "kind": "onboarding-choice",
+            "border": "rgb(186, 184, 207)",
+            "borderWidth": "1px",
+            "fill": "rgb(32, 32, 45)",
+            "effectiveFill": [
+              32,
+              32,
+              45,
+              1
+            ],
+            "effectiveOutside": [
+              21,
+              21,
+              31,
+              1
+            ],
+            "againstFill": 8.304551134813018,
+            "againstOutside": 9.357719562635204,
+            "width": 342,
+            "height": 101.59375
+          },
+          {
+            "kind": "onboarding-choice",
+            "border": "rgb(186, 184, 207)",
+            "borderWidth": "1px",
+            "fill": "rgb(32, 32, 45)",
+            "effectiveFill": [
+              32,
+              32,
+              45,
+              1
+            ],
+            "effectiveOutside": [
+              21,
+              21,
+              31,
+              1
+            ],
+            "againstFill": 8.304551134813018,
+            "againstOutside": 9.357719562635204,
+            "width": 342,
+            "height": 101.59375
+          },
+          {
+            "kind": "onboarding-quota",
+            "border": "rgb(186, 184, 207)",
+            "borderWidth": "1px",
+            "fill": "rgb(32, 32, 45)",
+            "effectiveFill": [
+              32,
+              32,
+              45,
+              1
+            ],
+            "effectiveOutside": [
+              21,
+              21,
+              31,
+              1
+            ],
+            "againstFill": 8.304551134813018,
+            "againstOutside": 9.357719562635204,
+            "width": 165,
+            "height": 66.796875
+          },
+          {
+            "kind": "onboarding-quota",
+            "border": "rgb(186, 184, 207)",
+            "borderWidth": "1px",
+            "fill": "rgb(32, 32, 45)",
+            "effectiveFill": [
+              32,
+              32,
+              45,
+              1
+            ],
+            "effectiveOutside": [
+              21,
+              21,
+              31,
+              1
+            ],
+            "againstFill": 8.304551134813018,
+            "againstOutside": 9.357719562635204,
+            "width": 165,
+            "height": 48
+          },
+          {
+            "kind": "onboarding-quota",
+            "border": "rgb(186, 184, 207)",
+            "borderWidth": "1px",
+            "fill": "rgb(32, 32, 45)",
+            "effectiveFill": [
+              32,
+              32,
+              45,
+              1
+            ],
+            "effectiveOutside": [
+              21,
+              21,
+              31,
+              1
+            ],
+            "againstFill": 8.304551134813018,
+            "againstOutside": 9.357719562635204,
+            "width": 165,
+            "height": 48
+          }
+        ]
+      },
+      "result": "PASS",
+      "errors": []
+    },
+    {
+      "mode": "goal",
+      "theme": "high-contrast",
+      "facts": {
+        "title": "Choose your learning goal",
+        "description": "Choose a goal and daily time. Save your choices before starting placement.",
+        "rawKeys": false,
+        "overlay": false,
+        "overflow": false,
+        "theme": "high-contrast",
+        "boundaries": [
+          {
+            "kind": "onboarding-choice",
+            "border": "rgb(226, 230, 241)",
+            "borderWidth": "1px",
+            "fill": "rgb(13, 16, 24)",
+            "effectiveFill": [
+              13,
+              16,
+              24,
+              1
+            ],
+            "effectiveOutside": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "againstFill": 15.232125910059796,
+            "againstOutside": 16.822650673503315,
+            "width": 342,
+            "height": 101.59375
+          },
+          {
+            "kind": "onboarding-choice",
+            "border": "rgb(226, 230, 241)",
+            "borderWidth": "1px",
+            "fill": "rgb(13, 16, 24)",
+            "effectiveFill": [
+              13,
+              16,
+              24,
+              1
+            ],
+            "effectiveOutside": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "againstFill": 15.232125910059796,
+            "againstOutside": 16.822650673503315,
+            "width": 342,
+            "height": 101.59375
+          },
+          {
+            "kind": "onboarding-choice",
+            "border": "rgb(226, 230, 241)",
+            "borderWidth": "1px",
+            "fill": "rgb(13, 16, 24)",
+            "effectiveFill": [
+              13,
+              16,
+              24,
+              1
+            ],
+            "effectiveOutside": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "againstFill": 15.232125910059796,
+            "againstOutside": 16.822650673503315,
+            "width": 342,
+            "height": 101.59375
+          },
+          {
+            "kind": "onboarding-choice",
+            "border": "rgb(226, 230, 241)",
+            "borderWidth": "1px",
+            "fill": "rgb(13, 16, 24)",
+            "effectiveFill": [
+              13,
+              16,
+              24,
+              1
+            ],
+            "effectiveOutside": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "againstFill": 15.232125910059796,
+            "againstOutside": 16.822650673503315,
+            "width": 342,
+            "height": 101.59375
+          },
+          {
+            "kind": "onboarding-quota",
+            "border": "rgb(226, 230, 241)",
+            "borderWidth": "1px",
+            "fill": "rgb(13, 16, 24)",
+            "effectiveFill": [
+              13,
+              16,
+              24,
+              1
+            ],
+            "effectiveOutside": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "againstFill": 15.232125910059796,
+            "againstOutside": 16.822650673503315,
+            "width": 165,
+            "height": 66.796875
+          },
+          {
+            "kind": "onboarding-quota",
+            "border": "rgb(226, 230, 241)",
+            "borderWidth": "1px",
+            "fill": "rgb(13, 16, 24)",
+            "effectiveFill": [
+              13,
+              16,
+              24,
+              1
+            ],
+            "effectiveOutside": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "againstFill": 15.232125910059796,
+            "againstOutside": 16.822650673503315,
+            "width": 165,
+            "height": 48
+          },
+          {
+            "kind": "onboarding-quota",
+            "border": "rgb(226, 230, 241)",
+            "borderWidth": "1px",
+            "fill": "rgb(13, 16, 24)",
+            "effectiveFill": [
+              13,
+              16,
+              24,
+              1
+            ],
+            "effectiveOutside": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "againstFill": 15.232125910059796,
+            "againstOutside": 16.822650673503315,
+            "width": 165,
+            "height": 48
+          }
+        ]
+      },
+      "result": "PASS",
+      "errors": []
+    },
+    {
+      "mode": "goal",
+      "theme": "system",
+      "facts": {
+        "title": "Choose your learning goal",
+        "description": "Choose a goal and daily time. Save your choices before starting placement.",
+        "rawKeys": false,
+        "overlay": false,
+        "overflow": false,
+        "theme": "light",
+        "boundaries": [
+          {
+            "kind": "onboarding-choice",
+            "border": "rgb(96, 98, 119)",
+            "borderWidth": "1px",
+            "fill": "rgb(255, 255, 255)",
+            "effectiveFill": [
+              255,
+              255,
+              255,
+              1
+            ],
+            "effectiveOutside": [
+              245,
+              245,
+              250,
+              1
+            ],
+            "againstFill": 5.9815185273527325,
+            "againstOutside": 5.504103371100126,
+            "width": 342,
+            "height": 101.59375
+          },
+          {
+            "kind": "onboarding-choice",
+            "border": "rgb(96, 98, 119)",
+            "borderWidth": "1px",
+            "fill": "rgb(255, 255, 255)",
+            "effectiveFill": [
+              255,
+              255,
+              255,
+              1
+            ],
+            "effectiveOutside": [
+              245,
+              245,
+              250,
+              1
+            ],
+            "againstFill": 5.9815185273527325,
+            "againstOutside": 5.504103371100126,
+            "width": 342,
+            "height": 101.59375
+          },
+          {
+            "kind": "onboarding-choice",
+            "border": "rgb(96, 98, 119)",
+            "borderWidth": "1px",
+            "fill": "rgb(255, 255, 255)",
+            "effectiveFill": [
+              255,
+              255,
+              255,
+              1
+            ],
+            "effectiveOutside": [
+              245,
+              245,
+              250,
+              1
+            ],
+            "againstFill": 5.9815185273527325,
+            "againstOutside": 5.504103371100126,
+            "width": 342,
+            "height": 101.59375
+          },
+          {
+            "kind": "onboarding-choice",
+            "border": "rgb(96, 98, 119)",
+            "borderWidth": "1px",
+            "fill": "rgb(255, 255, 255)",
+            "effectiveFill": [
+              255,
+              255,
+              255,
+              1
+            ],
+            "effectiveOutside": [
+              245,
+              245,
+              250,
+              1
+            ],
+            "againstFill": 5.9815185273527325,
+            "againstOutside": 5.504103371100126,
+            "width": 342,
+            "height": 101.59375
+          },
+          {
+            "kind": "onboarding-quota",
+            "border": "rgb(96, 98, 119)",
+            "borderWidth": "1px",
+            "fill": "rgb(255, 255, 255)",
+            "effectiveFill": [
+              255,
+              255,
+              255,
+              1
+            ],
+            "effectiveOutside": [
+              245,
+              245,
+              250,
+              1
+            ],
+            "againstFill": 5.9815185273527325,
+            "againstOutside": 5.504103371100126,
+            "width": 165,
+            "height": 66.796875
+          },
+          {
+            "kind": "onboarding-quota",
+            "border": "rgb(96, 98, 119)",
+            "borderWidth": "1px",
+            "fill": "rgb(255, 255, 255)",
+            "effectiveFill": [
+              255,
+              255,
+              255,
+              1
+            ],
+            "effectiveOutside": [
+              245,
+              245,
+              250,
+              1
+            ],
+            "againstFill": 5.9815185273527325,
+            "againstOutside": 5.504103371100126,
+            "width": 165,
+            "height": 48
+          },
+          {
+            "kind": "onboarding-quota",
+            "border": "rgb(96, 98, 119)",
+            "borderWidth": "1px",
+            "fill": "rgb(255, 255, 255)",
+            "effectiveFill": [
+              255,
+              255,
+              255,
+              1
+            ],
+            "effectiveOutside": [
+              245,
+              245,
+              250,
+              1
+            ],
+            "againstFill": 5.9815185273527325,
+            "againstOutside": 5.504103371100126,
+            "width": 165,
+            "height": 48
+          }
+        ]
+      },
+      "result": "PASS",
+      "errors": []
+    },
+    {
+      "mode": "consent",
+      "theme": "light",
+      "facts": {
+        "title": "查看同意事项",
+        "description": "查看当前要求与已记录的同意。",
+        "blocked": "同意内容暂时无法读取，请稍后重新读取。",
+        "rawKeys": false,
+        "overlay": false,
+        "overflow": false,
+        "theme": "light",
+        "boundaries": []
+      },
+      "result": "PASS"
+    },
+    {
+      "mode": "assessment",
+      "theme": "light",
+      "facts": {
+        "title": "设置已完成",
+        "description": "定级帮助你找到合适的起点，也可以先调整已保存的目标。",
+        "rawKeys": false,
+        "overlay": false,
+        "overflow": false,
+        "theme": "light",
+        "boundaries": []
+      },
+      "result": "PASS"
+    }
+  ],
+  "failures": [
+    {
+      "mode": "gate",
+      "theme": "light",
+      "error": "uni-checkbox-input: 1.405"
+    },
+    {
+      "mode": "gate",
+      "theme": "dark",
+      "error": "uni-checkbox-input: 1.527"
+    },
+    {
+      "mode": "gate",
+      "theme": "high-contrast",
+      "error": "uni-checkbox-input: 1.527"
+    },
+    {
+      "mode": "gate",
+      "theme": "system",
+      "error": "uni-checkbox-input: 1.405"
+    }
+  ],
+  "status": "FAIL"
+}

@@ -1,0 +1,1094 @@
+{
+  "at": "2026-10-15T09:56:04.272Z",
+  "scope": "INDEPENDENT_MB004_POINTER_TEXT_SYNTHETIC_ONLY",
+  "sourceHashesBefore": {
+    "apps/mobile/src/pages/onboarding/onboarding.vue": "c4c691dd9ab74c8aa7f21a677d43f3541b22c4ea4642f733ad53c4cf94176086",
+    "packages/i18n/src/mobile-experience.ts": "7b21f6e074bf705463e27941cbc4c91847a242443cdbd1ad3deea155fc733dde",
+    "apps/mobile/src/auth/gateway-auth.ts": "746bb9d83d241162bce9d9cd701d2f6662d11a132977533e3ba2a11e428c3277",
+    "apps/mobile/src/stores/session.ts": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+    "apps/mobile/src/api/learner-content.ts": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6",
+    "apps/mobile/src/domain/onboarding-resume.ts": "ea6e26682e69a9f1c3d8fd47d284aa55d96e39d646e27e5d41d0f556ba902e26",
+    "apps/mobile/src/stores/learner-content.ts": "95cc92496db996242d91baed3301d76f985e4e3b9134e1e50c2b9ab8d41e4c61",
+    "apps/mobile/src/platform/pointer-feedback.ts": "24a1f9b26ad6797fc9a61a16cb43559d116230cd7e9cd66c1dd4d9a563d94a6c"
+  },
+  "checks": [
+    {
+      "name": "enabled-old-center-click-0ms",
+      "result": "PASS",
+      "counts": {
+        "adult": 1,
+        "targetPut": 0,
+        "consentPut": 0,
+        "preferencePatch": 0,
+        "recordGet": 0
+      },
+      "point": {
+        "x": 195,
+        "y": 592.765625,
+        "top": 567.765625
+      },
+      "held": 0,
+      "trustedClicks": 1
+    },
+    {
+      "name": "enabled-old-center-click-160ms",
+      "result": "PASS",
+      "counts": {
+        "adult": 1,
+        "targetPut": 0,
+        "consentPut": 0,
+        "preferencePatch": 0,
+        "recordGet": 0
+      },
+      "point": {
+        "x": 195,
+        "y": 592.765625,
+        "top": 567.765625
+      },
+      "held": 160,
+      "trustedClicks": 1
+    },
+    {
+      "name": "enabled-old-center-drag-160ms",
+      "result": "PASS",
+      "counts": {
+        "adult": 0,
+        "targetPut": 0,
+        "consentPut": 0,
+        "preferencePatch": 0,
+        "recordGet": 0
+      },
+      "point": {
+        "x": 195,
+        "y": 592.765625,
+        "top": 567.765625
+      },
+      "held": 160,
+      "trustedClicks": 0
+    },
+    {
+      "name": "enabled-old-center-cancel-160ms",
+      "result": "PASS",
+      "counts": {
+        "adult": 0,
+        "targetPut": 0,
+        "consentPut": 0,
+        "preferencePatch": 0,
+        "recordGet": 0
+      },
+      "point": {
+        "x": 195,
+        "y": 592.765625,
+        "top": 567.765625
+      },
+      "held": 160,
+      "trustedClicks": 0
+    },
+    {
+      "name": "disabled-action-does-not-latch-then-valid-click-recovers",
+      "result": "PASS",
+      "counts": {
+        "adult": 1,
+        "targetPut": 0,
+        "consentPut": 0,
+        "preferencePatch": 0,
+        "recordGet": 0
+      }
+    },
+    {
+      "name": "enabled-secondary-retains-freeze-and-releases",
+      "result": "PASS",
+      "counts": {
+        "adult": 0,
+        "targetPut": 0,
+        "consentPut": 0,
+        "preferencePatch": 0,
+        "recordGet": 2,
+        "targetGet": 2
+      }
+    },
+    {
+      "name": "gate-320-english200-short-dark",
+      "result": "PASS",
+      "counts": {
+        "adult": 0,
+        "targetPut": 0,
+        "consentPut": 0,
+        "preferencePatch": 0,
+        "recordGet": 0
+      },
+      "facts": {
+        "overflow": false,
+        "rawKey": false,
+        "targets": [
+          {
+            "w": 272,
+            "h": 150.390625
+          },
+          {
+            "w": 44,
+            "h": 44
+          },
+          {
+            "w": 272,
+            "h": 122
+          },
+          {
+            "w": 272,
+            "h": 60.796875
+          },
+          {
+            "w": 272,
+            "h": 60.796875
+          }
+        ],
+        "yearFont": "32px"
+      }
+    },
+    {
+      "name": "gate-390-english200-short-dark",
+      "result": "PASS",
+      "counts": {
+        "adult": 0,
+        "targetPut": 0,
+        "consentPut": 0,
+        "preferencePatch": 0,
+        "recordGet": 0
+      },
+      "facts": {
+        "overflow": false,
+        "rawKey": false,
+        "targets": [
+          {
+            "w": 342,
+            "h": 105.59375
+          },
+          {
+            "w": 44,
+            "h": 44
+          },
+          {
+            "w": 342,
+            "h": 122
+          },
+          {
+            "w": 342,
+            "h": 60.796875
+          },
+          {
+            "w": 342,
+            "h": 60.796875
+          }
+        ],
+        "yearFont": "32px"
+      }
+    },
+    {
+      "name": "gate-1280-english200-short-dark",
+      "result": "PASS",
+      "counts": {
+        "adult": 0,
+        "targetPut": 0,
+        "consentPut": 0,
+        "preferencePatch": 0,
+        "recordGet": 0
+      },
+      "facts": {
+        "overflow": false,
+        "rawKey": false,
+        "targets": [
+          {
+            "w": 420,
+            "h": 105.59375
+          },
+          {
+            "w": 44,
+            "h": 44
+          },
+          {
+            "w": 420,
+            "h": 74
+          },
+          {
+            "w": 420,
+            "h": 60.796875
+          },
+          {
+            "w": 420,
+            "h": 60.796875
+          }
+        ],
+        "yearFont": "32px"
+      }
+    },
+    {
+      "name": "consent-320-english200-short-dark",
+      "result": "PASS",
+      "counts": {
+        "adult": 0,
+        "targetPut": 0,
+        "consentPut": 0,
+        "preferencePatch": 0,
+        "recordGet": 1,
+        "targetGet": 1
+      },
+      "facts": {
+        "overflow": false,
+        "rawKey": false,
+        "targets": [
+          {
+            "w": 272,
+            "h": 105.59375
+          },
+          {
+            "w": 272,
+            "h": 60.796875
+          },
+          {
+            "w": 272,
+            "h": 60.796875
+          },
+          {
+            "w": 272,
+            "h": 60.796875
+          }
+        ],
+        "yearFont": null
+      }
+    },
+    {
+      "name": "consent-390-english200-short-dark",
+      "result": "PASS",
+      "counts": {
+        "adult": 0,
+        "targetPut": 0,
+        "consentPut": 0,
+        "preferencePatch": 0,
+        "recordGet": 1,
+        "targetGet": 1
+      },
+      "facts": {
+        "overflow": false,
+        "rawKey": false,
+        "targets": [
+          {
+            "w": 342,
+            "h": 60.796875
+          },
+          {
+            "w": 342,
+            "h": 60.796875
+          },
+          {
+            "w": 342,
+            "h": 60.796875
+          },
+          {
+            "w": 342,
+            "h": 60.796875
+          }
+        ],
+        "yearFont": null
+      }
+    },
+    {
+      "name": "consent-1280-english200-short-dark",
+      "result": "PASS",
+      "counts": {
+        "adult": 0,
+        "targetPut": 0,
+        "consentPut": 0,
+        "preferencePatch": 0,
+        "recordGet": 1,
+        "targetGet": 1
+      },
+      "facts": {
+        "overflow": false,
+        "rawKey": false,
+        "targets": [
+          {
+            "w": 560,
+            "h": 60.796875
+          },
+          {
+            "w": 560,
+            "h": 60.796875
+          },
+          {
+            "w": 560,
+            "h": 60.796875
+          },
+          {
+            "w": 560,
+            "h": 60.796875
+          }
+        ],
+        "yearFont": null
+      }
+    },
+    {
+      "name": "goal-320-english200-short-dark",
+      "result": "PASS",
+      "counts": {
+        "adult": 0,
+        "targetPut": 0,
+        "consentPut": 0,
+        "preferencePatch": 0,
+        "recordGet": 0,
+        "targetGet": 1
+      },
+      "facts": {
+        "overflow": false,
+        "rawKey": false,
+        "targets": [
+          {
+            "w": 272,
+            "h": 339.96875
+          },
+          {
+            "w": 272,
+            "h": 298.375
+          },
+          {
+            "w": 272,
+            "h": 298.375
+          },
+          {
+            "w": 272,
+            "h": 339.96875
+          },
+          {
+            "w": 272,
+            "h": 70
+          },
+          {
+            "w": 272,
+            "h": 111.59375
+          },
+          {
+            "w": 272,
+            "h": 70
+          },
+          {
+            "w": 272,
+            "h": 70
+          },
+          {
+            "w": 272,
+            "h": 122
+          },
+          {
+            "w": 272,
+            "h": 60.796875
+          },
+          {
+            "w": 272,
+            "h": 60.796875
+          },
+          {
+            "w": 272,
+            "h": 60.796875
+          }
+        ],
+        "yearFont": null
+      }
+    },
+    {
+      "name": "goal-390-english200-short-dark",
+      "result": "PASS",
+      "counts": {
+        "adult": 0,
+        "targetPut": 0,
+        "consentPut": 0,
+        "preferencePatch": 0,
+        "recordGet": 0,
+        "targetGet": 1
+      },
+      "facts": {
+        "overflow": false,
+        "rawKey": false,
+        "targets": [
+          {
+            "w": 342,
+            "h": 250.375
+          },
+          {
+            "w": 342,
+            "h": 208.78125
+          },
+          {
+            "w": 342,
+            "h": 256.78125
+          },
+          {
+            "w": 342,
+            "h": 208.78125
+          },
+          {
+            "w": 342,
+            "h": 70
+          },
+          {
+            "w": 342,
+            "h": 111.59375
+          },
+          {
+            "w": 342,
+            "h": 70
+          },
+          {
+            "w": 342,
+            "h": 70
+          },
+          {
+            "w": 342,
+            "h": 122
+          },
+          {
+            "w": 342,
+            "h": 60.796875
+          },
+          {
+            "w": 342,
+            "h": 60.796875
+          },
+          {
+            "w": 342,
+            "h": 60.796875
+          }
+        ],
+        "yearFont": null
+      }
+    },
+    {
+      "name": "goal-1280-english200-short-dark",
+      "result": "PASS",
+      "counts": {
+        "adult": 0,
+        "targetPut": 0,
+        "consentPut": 0,
+        "preferencePatch": 0,
+        "recordGet": 0,
+        "targetGet": 1
+      },
+      "facts": {
+        "overflow": false,
+        "rawKey": false,
+        "targets": [
+          {
+            "w": 560,
+            "h": 167.1875
+          },
+          {
+            "w": 560,
+            "h": 167.1875
+          },
+          {
+            "w": 560,
+            "h": 167.1875
+          },
+          {
+            "w": 560,
+            "h": 167.1875
+          },
+          {
+            "w": 274,
+            "h": 111.59375
+          },
+          {
+            "w": 274,
+            "h": 111.59375
+          },
+          {
+            "w": 274,
+            "h": 70
+          },
+          {
+            "w": 274,
+            "h": 70
+          },
+          {
+            "w": 560,
+            "h": 74
+          },
+          {
+            "w": 560,
+            "h": 60.796875
+          },
+          {
+            "w": 560,
+            "h": 60.796875
+          },
+          {
+            "w": 560,
+            "h": 60.796875
+          }
+        ],
+        "yearFont": null
+      }
+    },
+    {
+      "name": "assessment-320-english200-short-dark",
+      "result": "PASS",
+      "counts": {
+        "adult": 0,
+        "targetPut": 0,
+        "consentPut": 0,
+        "preferencePatch": 0,
+        "recordGet": 0,
+        "targetGet": 1
+      },
+      "facts": {
+        "overflow": false,
+        "rawKey": false,
+        "targets": [
+          {
+            "w": 272,
+            "h": 122
+          },
+          {
+            "w": 272,
+            "h": 60.796875
+          },
+          {
+            "w": 272,
+            "h": 60.796875
+          },
+          {
+            "w": 272,
+            "h": 60.796875
+          }
+        ],
+        "yearFont": null
+      }
+    },
+    {
+      "name": "assessment-390-english200-short-dark",
+      "result": "PASS",
+      "counts": {
+        "adult": 0,
+        "targetPut": 0,
+        "consentPut": 0,
+        "preferencePatch": 0,
+        "recordGet": 0,
+        "targetGet": 1
+      },
+      "facts": {
+        "overflow": false,
+        "rawKey": false,
+        "targets": [
+          {
+            "w": 342,
+            "h": 74
+          },
+          {
+            "w": 342,
+            "h": 60.796875
+          },
+          {
+            "w": 342,
+            "h": 60.796875
+          },
+          {
+            "w": 342,
+            "h": 60.796875
+          }
+        ],
+        "yearFont": null
+      }
+    },
+    {
+      "name": "assessment-1280-english200-short-dark",
+      "result": "PASS",
+      "counts": {
+        "adult": 0,
+        "targetPut": 0,
+        "consentPut": 0,
+        "preferencePatch": 0,
+        "recordGet": 0,
+        "targetGet": 1
+      },
+      "facts": {
+        "overflow": false,
+        "rawKey": false,
+        "targets": [
+          {
+            "w": 420,
+            "h": 74
+          },
+          {
+            "w": 420,
+            "h": 60.796875
+          },
+          {
+            "w": 420,
+            "h": 60.796875
+          },
+          {
+            "w": 420,
+            "h": 60.796875
+          }
+        ],
+        "yearFont": null
+      }
+    }
+  ],
+  "pageErrors": [],
+  "fixtureRequests": [
+    {
+      "mode": "gate",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "mode": "gate",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "gate",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "gate",
+      "method": "POST",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/adult-gate"
+    },
+    {
+      "mode": "gate",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "mode": "gate",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "gate",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "gate",
+      "method": "POST",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/adult-gate"
+    },
+    {
+      "mode": "gate",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "mode": "gate",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "gate",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "gate",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "mode": "gate",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "gate",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "gate",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "mode": "gate",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "gate",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "gate",
+      "method": "POST",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/adult-gate"
+    },
+    {
+      "mode": "consent",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "mode": "consent",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "consent",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "consent",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/learner/targets"
+    },
+    {
+      "mode": "consent",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/consents"
+    },
+    {
+      "mode": "consent",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "consent",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/learner/targets"
+    },
+    {
+      "mode": "consent",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/consents"
+    },
+    {
+      "mode": "gate",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "mode": "gate",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "gate",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "gate",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "mode": "gate",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "gate",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "gate",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "mode": "gate",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "gate",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "consent",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "mode": "consent",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "consent",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "consent",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/learner/targets"
+    },
+    {
+      "mode": "consent",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/consents"
+    },
+    {
+      "mode": "consent",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "mode": "consent",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "consent",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "consent",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/learner/targets"
+    },
+    {
+      "mode": "consent",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/consents"
+    },
+    {
+      "mode": "consent",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "mode": "consent",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "consent",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "consent",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/learner/targets"
+    },
+    {
+      "mode": "consent",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/consents"
+    },
+    {
+      "mode": "goal",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "mode": "goal",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "goal",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "goal",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/learner/targets"
+    },
+    {
+      "mode": "goal",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "mode": "goal",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "goal",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "goal",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/learner/targets"
+    },
+    {
+      "mode": "goal",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "mode": "goal",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "goal",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "goal",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/learner/targets"
+    },
+    {
+      "mode": "assessment",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "mode": "assessment",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "assessment",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "assessment",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/learner/targets"
+    },
+    {
+      "mode": "assessment",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "mode": "assessment",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "assessment",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "assessment",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/learner/targets"
+    },
+    {
+      "mode": "assessment",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "mode": "assessment",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "assessment",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "assessment",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/learner/targets"
+    }
+  ],
+  "sourceHashesAfter": {
+    "apps/mobile/src/pages/onboarding/onboarding.vue": "c4c691dd9ab74c8aa7f21a677d43f3541b22c4ea4642f733ad53c4cf94176086",
+    "packages/i18n/src/mobile-experience.ts": "7b21f6e074bf705463e27941cbc4c91847a242443cdbd1ad3deea155fc733dde",
+    "apps/mobile/src/auth/gateway-auth.ts": "746bb9d83d241162bce9d9cd701d2f6662d11a132977533e3ba2a11e428c3277",
+    "apps/mobile/src/stores/session.ts": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+    "apps/mobile/src/api/learner-content.ts": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6",
+    "apps/mobile/src/domain/onboarding-resume.ts": "ea6e26682e69a9f1c3d8fd47d284aa55d96e39d646e27e5d41d0f556ba902e26",
+    "apps/mobile/src/stores/learner-content.ts": "95cc92496db996242d91baed3301d76f985e4e3b9134e1e50c2b9ab8d41e4c61",
+    "apps/mobile/src/platform/pointer-feedback.ts": "24a1f9b26ad6797fc9a61a16cb43559d116230cd7e9cd66c1dd4d9a563d94a6c"
+  },
+  "status": "UI_PASS_INDEPENDENT_POINTER_TEXT_ONLY"
+}

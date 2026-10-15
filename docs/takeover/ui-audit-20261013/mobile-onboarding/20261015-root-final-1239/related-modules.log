@@ -1,0 +1,71 @@
+TAP version 13
+# Subtest: birth year validation accepts integer year bounds without deciding adulthood
+ok 1 - birth year validation accepts integer year bounds without deciding adulthood
+  ---
+  duration_ms: 1.6279
+  ...
+# Subtest: mobile onboarding submits a minor year and opens the no-access page
+ok 2 - mobile onboarding submits a minor year and opens the no-access page
+  ---
+  duration_ms: 131.0128
+  ...
+# Subtest: legacy consent-summary parser retains compatibility but does not supply wizard signing authority
+ok 3 - legacy consent-summary parser retains compatibility but does not supply wizard signing authority
+  ---
+  duration_ms: 2.5861
+  ...
+# Subtest: the redesigned wizard keeps year-only collection and restricted exits without signing unseen documents
+ok 4 - the redesigned wizard keeps year-only collection and restricted exits without signing unseen documents
+  ---
+  duration_ms: 0.3994
+  ...
+# Subtest: mobile resume step order stays gate, consent, goal, then assessment
+ok 5 - mobile resume step order stays gate, consent, goal, then assessment
+  ---
+  duration_ms: 0.266
+  ...
+# [Vue warn]: onBeforeUnmount is called when there is no active component instance to be associated with. Lifecycle injection APIs can only be used during execution of setup(). If you are using async setup(), make sure to register lifecycle hooks before the first await statement.
+# Subtest: mobile withdrawal marks ADULT_LEARNING withdrawn and keeps the settings notice
+ok 6 - mobile withdrawal marks ADULT_LEARNING withdrawn and keeps the settings notice
+  ---
+  duration_ms: 85.6079
+  ...
+# Subtest: BC-008: mobile catches 409 and retries with refreshed consent version
+ok 7 - BC-008: mobile catches 409 and retries with refreshed consent version
+  ---
+  duration_ms: 3.9709
+  ...
+# Subtest: BC-008: mobile retains refreshed version for subsequent save and signs with it
+ok 8 - BC-008: mobile retains refreshed version for subsequent save and signs with it
+  ---
+  duration_ms: 1.7392
+  ...
+# Subtest: BC-008: mobile falls back to default version when principal/me is unavailable
+ok 9 - BC-008: mobile falls back to default version when principal/me is unavailable
+  ---
+  duration_ms: 0.8515
+  ...
+# Subtest: h5 onboarding idempotency keys fit the learner outbox dedupe limit
+ok 10 - h5 onboarding idempotency keys fit the learner outbox dedupe limit
+  ---
+  duration_ms: 0.9803
+  ...
+# Subtest: onboarding retry resumes after a committed target whose response was lost
+ok 11 - onboarding retry resumes after a committed target whose response was lost
+  ---
+  duration_ms: 5.0109
+  ...
+# Subtest: onboarding retry does not repeat an already committed preferences write
+ok 12 - onboarding retry does not repeat an already committed preferences write
+  ---
+  duration_ms: 1.8536
+  ...
+1..12
+# tests 12
+# suites 0
+# pass 12
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1804.532

@@ -1,0 +1,130 @@
+{
+  "savedAt": "2026-10-15T10:07:58.0905418+00:00",
+  "status": "AUTHOR_H5_FIXTURE_CHECKS_COMPLETE_PENDING_INDEPENDENT_REVIEW",
+  "sourceHashes": {
+    "apps/mobile/src/pages/onboarding/onboarding.vue": "c4c691dd9ab74c8aa7f21a677d43f3541b22c4ea4642f733ad53c4cf94176086",
+    "packages/i18n/src/mobile-experience.ts": "7b21f6e074bf705463e27941cbc4c91847a242443cdbd1ad3deea155fc733dde",
+    "apps/mobile/src/api/learner-content.ts": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6",
+    "apps/mobile/src/stores/session.ts": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+    "apps/mobile/src/auth/gateway-auth.ts": "746bb9d83d241162bce9d9cd701d2f6662d11a132977533e3ba2a11e428c3277",
+    "apps/mobile/src/domain/onboarding-resume.ts": "ea6e26682e69a9f1c3d8fd47d284aa55d96e39d646e27e5d41d0f556ba902e26",
+    "apps/mobile/src/stores/learner-content.ts": "95cc92496db996242d91baed3301d76f985e4e3b9134e1e50c2b9ab8d41e4c61",
+    "apps/mobile/src/platform/pointer-feedback.ts": "24a1f9b26ad6797fc9a61a16cb43559d116230cd7e9cd66c1dd4d9a563d94a6c",
+    "apps/mobile/tests/ui-onboarding.e2e.cjs": "d0fe81578fca24ba53d9e0099037126f39ef7bbea3310fa1b13bd69796c4a35f"
+  },
+  "groups": [
+    {
+      "group": "recovery-final1",
+      "result": "PASS_GROUP_UI_SYNTHETIC_NOT_BUSINESS_ACCEPTANCE",
+      "checks": 7,
+      "matrix": 0,
+      "pageErrors": 0,
+      "sourceStable": true,
+      "testHash": "8397cc11432d9a23b98a0a5e06cc90774adc557dec8672878811b8e324a58380",
+      "path": "docs/takeover/ui-audit-20261013/mobile-onboarding/20261015-resume-author/final-1239/recovery-final1/results.json",
+      "sha256": "f29c11a2a526d423be971195d632797dfe6aab46d3761f35f643a3d4ec5d4aa0"
+    },
+    {
+      "group": "restoring-final1",
+      "result": "PASS_GROUP_UI_SYNTHETIC_NOT_BUSINESS_ACCEPTANCE",
+      "checks": 2,
+      "matrix": 0,
+      "pageErrors": 0,
+      "sourceStable": true,
+      "testHash": "8397cc11432d9a23b98a0a5e06cc90774adc557dec8672878811b8e324a58380",
+      "path": "docs/takeover/ui-audit-20261013/mobile-onboarding/20261015-resume-author/final-1239/restoring-final1/results.json",
+      "sha256": "e94ac7078f0f7c04e405b55cdb63aa70b9c31234c4ce718f59d8b538eb1ea689"
+    },
+    {
+      "group": "text-final1",
+      "result": "PASS_GROUP_UI_SYNTHETIC_NOT_BUSINESS_ACCEPTANCE",
+      "checks": 13,
+      "matrix": 0,
+      "pageErrors": 0,
+      "sourceStable": true,
+      "testHash": "8397cc11432d9a23b98a0a5e06cc90774adc557dec8672878811b8e324a58380",
+      "path": "docs/takeover/ui-audit-20261013/mobile-onboarding/20261015-resume-author/final-1239/text-final1/results.json",
+      "sha256": "1c8a9093570685dfb618a27fc05b075b229777820b886c831d1628fe6d741040"
+    },
+    {
+      "group": "controls-final1",
+      "result": "PASS_GROUP_UI_SYNTHETIC_NOT_BUSINESS_ACCEPTANCE",
+      "checks": 2,
+      "matrix": 0,
+      "pageErrors": 0,
+      "sourceStable": true,
+      "testHash": "8397cc11432d9a23b98a0a5e06cc90774adc557dec8672878811b8e324a58380",
+      "path": "docs/takeover/ui-audit-20261013/mobile-onboarding/20261015-resume-author/final-1239/controls-final1/results.json",
+      "sha256": "e2d701403f79efe34d7b2e000ef3018470ca39ffea8819a92ba45dba7ca1e43e"
+    },
+    {
+      "group": "race-final1",
+      "result": "PASS_GROUP_UI_SYNTHETIC_NOT_BUSINESS_ACCEPTANCE",
+      "checks": 4,
+      "matrix": 0,
+      "pageErrors": 0,
+      "sourceStable": true,
+      "testHash": "8397cc11432d9a23b98a0a5e06cc90774adc557dec8672878811b8e324a58380",
+      "path": "docs/takeover/ui-audit-20261013/mobile-onboarding/20261015-resume-author/final-1239/race-final1/results.json",
+      "sha256": "c83a4e9b899a1f3e687af6a659c8f0c95be6200a634e87b930696ae6746e2fdc"
+    },
+    {
+      "group": "flow-final1",
+      "result": "PASS_GROUP_UI_SYNTHETIC_NOT_BUSINESS_ACCEPTANCE",
+      "checks": 15,
+      "matrix": 0,
+      "pageErrors": 0,
+      "sourceStable": true,
+      "testHash": "8397cc11432d9a23b98a0a5e06cc90774adc557dec8672878811b8e324a58380",
+      "path": "docs/takeover/ui-audit-20261013/mobile-onboarding/20261015-resume-author/final-1239/flow-final1/results.json",
+      "sha256": "f6bb4b532da2b9a572dd000bbe1513dfbba768543c61949ab562442ff27f7f14"
+    },
+    {
+      "group": "matrix-final1",
+      "result": "PASS_GROUP_UI_SYNTHETIC_NOT_BUSINESS_ACCEPTANCE",
+      "checks": 0,
+      "matrix": 128,
+      "pageErrors": 0,
+      "sourceStable": true,
+      "testHash": "8397cc11432d9a23b98a0a5e06cc90774adc557dec8672878811b8e324a58380",
+      "path": "docs/takeover/ui-audit-20261013/mobile-onboarding/20261015-resume-author/final-1239/matrix-final1/results.json",
+      "sha256": "cca8ee84319c50fd388b852e1dd1363ccc448f86c48e70fb58648e28a80c3f14"
+    },
+    {
+      "group": "boundary-final1",
+      "result": "PASS_GROUP_UI_SYNTHETIC_NOT_BUSINESS_ACCEPTANCE",
+      "checks": 8,
+      "matrix": 0,
+      "pageErrors": 0,
+      "sourceStable": true,
+      "testHash": "d0fe81578fca24ba53d9e0099037126f39ef7bbea3310fa1b13bd69796c4a35f",
+      "path": "docs/takeover/ui-audit-20261013/mobile-onboarding/20261015-resume-author/final-1239/boundary-final1/results.json",
+      "sha256": "efbab829d72920a338353d7ddc384754e1c1791954d8bc34ce8d427dbd6da957"
+    }
+  ],
+  "measuredFromExistingResults": {
+    "minActualSvgPaintContrast": 7.969476450059623,
+    "minControlBoundaryAgainstPage": 5.504103371100126,
+    "minControlBoundaryAgainstFill": 5.9815185273527325,
+    "actualSvgSamples": 8
+  },
+  "metricErratum": "matrix-final1 checkedMark used inherited parent text color, not actual tick. That tick metric is superseded by boundary-final1 actual SVG paint. Unchecked boundary measurements and keyboard assertions remain applicable.",
+  "testVersions": {
+    "matrixAnd43Checks": "8397cc11432d9a23b98a0a5e06cc90774adc557dec8672878811b8e324a58380",
+    "actualSvg8": "d0fe81578fca24ba53d9e0099037126f39ef7bbea3310fa1b13bd69796c4a35f"
+  },
+  "oldFailPreserved": [
+    "text-run1/results.json",
+    "text-run2/results.json",
+    "restoring-run1/results.json",
+    "restoring-run2/results.json",
+    "restoring-diagnostic-run1/results.json"
+  ],
+  "limitations": [
+    "Synthetic intercepted H5 only; not real IAM or learner backend acceptance",
+    "200 percent means computed text-size doubling in 320x460 Chromium viewport, not OS/browser zoom certification",
+    "CDP trusted touchCancel is browser cancellation evidence, not native app device acceptance",
+    "Published pending-consent catalog remains unavailable; no signing path accepted",
+    "Independent review and integration owned by Root"
+  ]
+}

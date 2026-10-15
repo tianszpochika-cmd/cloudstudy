@@ -2,7 +2,7 @@ import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
 import { getInMemoryAccessToken, setInMemoryAccessToken, setInMemoryRequestIdentity } from '../auth/access-token'
 import { mobileAuthFailureMarker } from '../auth/auth-failure-copy'
-import { createGatewayMobileAuthAdapter, safeMobileReturnTo, type MobileAdultGateStatus, type MobileAuthAdapter, type MobileAuthSnapshot, type MobileLoginCredentials, type MobileTokenPair } from '../auth/gateway-auth'
+import { createGatewayMobileAuthAdapter, safeMobileReturnTo, type MobileAdultGateStatus, type MobileAdultLearningAccess, type MobileAuthAdapter, type MobileAuthSnapshot, type MobileLoginCredentials, type MobileTokenPair } from '../auth/gateway-auth'
 import { getUniRuntime, isNativeAppRuntime, type UniSecureStorage, type UniRuntime } from '../platform/uni-runtime'
 import { removeAllLearningCaches } from './learning-cache'
 
@@ -61,12 +61,13 @@ export const useSessionStore = defineStore('session', () => {
   const permissions = ref<readonly string[]>([])
   const status = ref<'unknown' | 'restoring' | 'authenticated' | 'refreshing' | 'revoking' | 'unauthenticated' | 'error'>('unknown')
   const adultGate = ref<MobileAdultGateStatus>('UNKNOWN')
+  const adultLearningAccess = ref<MobileAdultLearningAccess>('UNKNOWN')
   const learningConsentWithdrawn = ref(false)
   const withdrawnMarkerKey = 'yx.auth.learning-consent-withdrawn'
   const lastError = ref<string | null>(null)
   const restored = ref(false)
   const isAuthenticated = computed(() => status.value === 'authenticated' && Boolean(accessToken.value) && Boolean(verifiedSubject.value))
-  const isLearningReady = computed(() => isAuthenticated.value && adultGate.value === 'PASSED' && permissions.value.includes('learning.plan.read'))
+  const isLearningReady = computed(() => isAuthenticated.value && adultGate.value === 'PASSED' && adultLearningAccess.value === 'ELIGIBLE' && permissions.value.includes('learning.plan.read'))
   let activeAdapter: MobileAuthAdapter | null = null
   let restorePromise: Promise<void> | null = null
   let refreshPromise: Promise<boolean> | null = null
@@ -74,7 +75,7 @@ export const useSessionStore = defineStore('session', () => {
   let authEpoch = 0
 
   function adapter(): MobileAuthAdapter { if (!activeAdapter) activeAdapter = createGatewayMobileAuthAdapter(); return activeAdapter }
-  function applySnapshot(snapshot: MobileAuthSnapshot | null): void { if (!snapshot) return; if (snapshot.tokenPair) setTokenPair(snapshot.tokenPair); permissions.value = snapshot.permissions ?? permissions.value; adultGate.value = snapshot.adultGate ?? adultGate.value }
+  function applySnapshot(snapshot: MobileAuthSnapshot | null): void { if (!snapshot) return; if (snapshot.tokenPair) setTokenPair(snapshot.tokenPair); permissions.value = snapshot.permissions ?? permissions.value; adultGate.value = snapshot.adultGate ?? 'UNKNOWN'; adultLearningAccess.value = snapshot.adultLearningAccess ?? 'UNKNOWN' }
   function acceptPermissions(snapshot: MobileAuthSnapshot | null): void {
     const subject = snapshot?.principal?.subject?.trim()
     if (!subject) throw new Error('认证服务未返回可核验的账号身份。')
@@ -109,11 +110,15 @@ export const useSessionStore = defineStore('session', () => {
     deviceId.value = pair.deviceId?.trim() || deviceId.value
     sessionId.value = pair.sessionId?.trim() || sessionId.value
     adultGate.value = pair.adultGate ?? adultGate.value
+    adultLearningAccess.value = pair.adultLearningAccess ?? 'UNKNOWN'
     setInMemoryAccessToken(accessToken.value)
     markMobileSessionHint()
     lastError.value = null
   }
   async function restore(): Promise<void> {
+    // Navigation must wait for the current refresh verdict, without granting
+    // authenticated access while that refresh is still pending.
+    if (refreshPromise) await refreshPromise
     if (restored.value) return
     if (restorePromise) return restorePromise
     restorePromise = (async () => {
@@ -291,17 +296,22 @@ export const useSessionStore = defineStore('session', () => {
   async function confirmAdultGate(birthYear: number, policyVersion = ADULT_GATE_POLICY_VERSION): Promise<boolean> {
     const epoch = authEpoch
     const subject = verifiedSubject.value
+    const revision = identityRevision.value
     if (!subject || !isAuthenticated.value) return false
     try {
       const snapshot = await adapter().confirmAdultGate({ confirmed: true, birthYear, policyVersion })
       if (epoch !== authEpoch || subject !== verifiedSubject.value) return false
       if (snapshot?.principal?.subject && snapshot.principal.subject !== subject) throw new Error('账号身份已变化，请重新登录。')
       applySnapshot(snapshot)
-      adultGate.value = snapshot?.adultGate === 'PASSED' ? 'PASSED' : 'REJECTED'
-      return adultGate.value === 'PASSED'
+      adultGate.value = snapshot?.adultGate ?? 'UNKNOWN'
+      adultLearningAccess.value = snapshot?.adultLearningAccess ?? 'UNKNOWN'
+      if (adultGate.value !== 'PASSED' || adultLearningAccess.value !== 'ELIGIBLE') return false
+      // The adult fact is not a new JWT. Refresh existing IAM claims before learner operations.
+      if (!await refreshSilentlyForIdentity({ subject, revision })) return false
+      return adultGate.value === 'PASSED' && adultLearningAccess.value === 'ELIGIBLE'
     } catch (error) {
-      if (epoch !== authEpoch) return false
-      adultGate.value = 'REJECTED'; lastError.value = error instanceof Error ? error.message : 'ADULT_GATE_FAILED'; return false
+      if (epoch !== authEpoch || subject !== verifiedSubject.value) return false
+      adultGate.value = 'UNKNOWN'; adultLearningAccess.value = 'UNKNOWN'; lastError.value = error instanceof Error ? error.message : 'ADULT_GATE_FAILED'; return false
     }
   }
   function setReturnTo(value: unknown): void {
@@ -343,10 +353,16 @@ export const useSessionStore = defineStore('session', () => {
   }
   async function refreshGateFromServer(): Promise<void> {
     if (status.value !== 'authenticated' || !accessToken.value) return
-    const snapshot = await adapter().getPermissions()
-    acceptPermissions(snapshot)
-    if (learningConsentWithdrawn.value) {
-      permissions.value = permissions.value.filter((item) => item !== 'learning.plan.read')
+    const epoch = authEpoch, subject = verifiedSubject.value
+    try {
+      const snapshot = await adapter().getPermissions()
+      if (epoch !== authEpoch || subject !== verifiedSubject.value) return
+      if (snapshot?.principal?.subject?.trim() !== subject) throw new Error('资格读取未返回当前账号身份。')
+      acceptPermissions(snapshot)
+      if (learningConsentWithdrawn.value) permissions.value = permissions.value.filter((item) => item !== 'learning.plan.read')
+    } catch (error) {
+      if (epoch === authEpoch && subject === verifiedSubject.value) { adultGate.value = 'UNKNOWN'; adultLearningAccess.value = 'UNKNOWN' }
+      throw error
     }
   }
   function clear(): void {
@@ -359,6 +375,7 @@ export const useSessionStore = defineStore('session', () => {
     sessionId.value = null
     permissions.value = []
     adultGate.value = 'UNKNOWN'
+    adultLearningAccess.value = 'UNKNOWN'
     learningConsentWithdrawn.value = false
     status.value = 'unauthenticated'
     setInMemoryAccessToken(null)
@@ -367,7 +384,7 @@ export const useSessionStore = defineStore('session', () => {
     if (withdrawn) learningConsentWithdrawn.value = true
   }
 
-  return { accessToken, deviceId, sessionId, verifiedSubject, identityRevision, permissions, status, adultGate, learningConsentWithdrawn, lastError, restored, isAuthenticated, isLearningReady, getMobileApiIdentity, restore, login, register, requestPasswordReset, confirmPasswordReset, refreshSilently, refreshSilentlyForIdentity, logout, revokeCurrentSession, confirmAdultGate, setReturnTo, peekReturnTo, consumeReturnTo, setAuthAdapter, markLearningConsentWithdrawn, refreshGateFromServer, clear }
+  return { accessToken, deviceId, sessionId, verifiedSubject, identityRevision, permissions, status, adultGate, adultLearningAccess, learningConsentWithdrawn, lastError, restored, isAuthenticated, isLearningReady, getMobileApiIdentity, restore, login, register, requestPasswordReset, confirmPasswordReset, refreshSilently, refreshSilentlyForIdentity, logout, revokeCurrentSession, confirmAdultGate, setReturnTo, peekReturnTo, consumeReturnTo, setAuthAdapter, markLearningConsentWithdrawn, refreshGateFromServer, clear }
 })
 
 export function readAccessToken(): string | null { return getInMemoryAccessToken() }

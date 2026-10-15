@@ -1,0 +1,226 @@
+TAP version 13
+# Subtest: birth year validation accepts integer year bounds without deciding adulthood
+ok 1 - birth year validation accepts integer year bounds without deciding adulthood
+  ---
+  duration_ms: 1.569
+  ...
+# Subtest: mobile onboarding submits a minor year and opens the no-access page
+ok 2 - mobile onboarding submits a minor year and opens the no-access page
+  ---
+  duration_ms: 138.928
+  ...
+# Subtest: legacy consent-summary parser retains compatibility but does not supply wizard signing authority
+ok 3 - legacy consent-summary parser retains compatibility but does not supply wizard signing authority
+  ---
+  duration_ms: 3.834
+  ...
+# Subtest: the redesigned wizard keeps year-only collection and restricted exits without signing unseen documents
+ok 4 - the redesigned wizard keeps year-only collection and restricted exits without signing unseen documents
+  ---
+  duration_ms: 0.4626
+  ...
+# Subtest: mobile resume step order stays gate, consent, goal, then assessment
+ok 5 - mobile resume step order stays gate, consent, goal, then assessment
+  ---
+  duration_ms: 0.2871
+  ...
+# [Vue warn]: onBeforeUnmount is called when there is no active component instance to be associated with. Lifecycle injection APIs can only be used during execution of setup(). If you are using async setup(), make sure to register lifecycle hooks before the first await statement.
+# Subtest: mobile withdrawal marks ADULT_LEARNING withdrawn and keeps the settings notice
+ok 6 - mobile withdrawal marks ADULT_LEARNING withdrawn and keeps the settings notice
+  ---
+  duration_ms: 89.0286
+  ...
+# Subtest: BC-008: mobile catches 409 and retries with refreshed consent version
+ok 7 - BC-008: mobile catches 409 and retries with refreshed consent version
+  ---
+  duration_ms: 4.6372
+  ...
+# Subtest: BC-008: mobile retains refreshed version for subsequent save and signs with it
+ok 8 - BC-008: mobile retains refreshed version for subsequent save and signs with it
+  ---
+  duration_ms: 2.2899
+  ...
+# Subtest: BC-008: mobile falls back to default version when principal/me is unavailable
+ok 9 - BC-008: mobile falls back to default version when principal/me is unavailable
+  ---
+  duration_ms: 1.342
+  ...
+# Subtest: the UI preserves the explicit REQUIRED verdict
+ok 10 - the UI preserves the explicit REQUIRED verdict
+  ---
+  duration_ms: 50.2667
+  ...
+# Subtest: the UI preserves the explicit UNKNOWN verdict
+ok 11 - the UI preserves the explicit UNKNOWN verdict
+  ---
+  duration_ms: 33.1845
+  ...
+# Subtest: the UI preserves the explicit REJECTED verdict
+ok 12 - the UI preserves the explicit REJECTED verdict
+  ---
+  duration_ms: 24.8854
+  ...
+# Subtest: the UI preserves the explicit PASSED verdict
+ok 13 - the UI preserves the explicit PASSED verdict
+  ---
+  duration_ms: 18.4774
+  ...
+# Subtest: a missing verdict remains unknown and cannot enable learning
+ok 14 - a missing verdict remains unknown and cannot enable learning
+  ---
+  duration_ms: 16.3812
+  ...
+# Subtest: a transport failure is not a rejected adult eligibility decision
+ok 15 - a transport failure is not a rejected adult eligibility decision
+  ---
+  duration_ms: 12.1784
+  ...
+# Subtest: a response after logout cannot restore adult or learning access
+ok 16 - a response after logout cannot restore adult or learning access
+  ---
+  duration_ms: 15.1847
+  ...
+# Subtest: passed status with UNKNOWN access cannot enable learning
+ok 17 - passed status with UNKNOWN access cannot enable learning
+  ---
+  duration_ms: 16.9223
+  ...
+# Subtest: passed status with RESTRICTED access cannot enable learning
+ok 18 - passed status with RESTRICTED access cannot enable learning
+  ---
+  duration_ms: 11.0291
+  ...
+# Subtest: passed status with missing access cannot enable learning
+ok 19 - passed status with missing access cannot enable learning
+  ---
+  duration_ms: 12.1091
+  ...
+# Subtest: an unreadable current gate invalidates readiness while preserving authentication
+ok 20 - an unreadable current gate invalidates readiness while preserving authentication
+  ---
+  duration_ms: 16.4594
+  ...
+# Subtest: an unreadable current gate invalidates readiness while preserving authentication
+ok 21 - an unreadable current gate invalidates readiness while preserving authentication
+  ---
+  duration_ms: 16.3052
+  ...
+# Subtest: current principal preserves ELIGIBLE eligibility independently of permissions
+ok 22 - current principal preserves ELIGIBLE eligibility independently of permissions
+  ---
+  duration_ms: 3.6913
+  ...
+# Subtest: current principal preserves RESTRICTED eligibility independently of permissions
+ok 23 - current principal preserves RESTRICTED eligibility independently of permissions
+  ---
+  duration_ms: 1.1616
+  ...
+# Subtest: current principal preserves missing eligibility independently of permissions
+ok 24 - current principal preserves missing eligibility independently of permissions
+  ---
+  duration_ms: 0.3907
+  ...
+# Subtest: adult POST PASSED/ELIGIBLE does not invent qualification or rejection
+ok 25 - adult POST PASSED/ELIGIBLE does not invent qualification or rejection
+  ---
+  duration_ms: 1.947
+  ...
+# Subtest: adult POST PASSED/missing does not invent qualification or rejection
+ok 26 - adult POST PASSED/missing does not invent qualification or rejection
+  ---
+  duration_ms: 0.3492
+  ...
+# Subtest: adult POST REJECTED/RESTRICTED does not invent qualification or rejection
+ok 27 - adult POST REJECTED/RESTRICTED does not invent qualification or rejection
+  ---
+  duration_ms: 0.2265
+  ...
+# Subtest: adult POST NOT_EVALUATED/RESTRICTED does not invent qualification or rejection
+ok 28 - adult POST NOT_EVALUATED/RESTRICTED does not invent qualification or rejection
+  ---
+  duration_ms: 0.4964
+  ...
+# Subtest: h5 onboarding idempotency keys fit the learner outbox dedupe limit
+ok 29 - h5 onboarding idempotency keys fit the learner outbox dedupe limit
+  ---
+  duration_ms: 0.9757
+  ...
+# Subtest: onboarding retry resumes after a committed target whose response was lost
+ok 30 - onboarding retry resumes after a committed target whose response was lost
+  ---
+  duration_ms: 5.4374
+  ...
+# Subtest: onboarding retry does not repeat an already committed preferences write
+ok 31 - onboarding retry does not repeat an already committed preferences write
+  ---
+  duration_ms: 2.0321
+  ...
+# Subtest: an already confirmed target edit reads current IAM facts and writes only learner owner
+ok 32 - an already confirmed target edit reads current IAM facts and writes only learner owner
+  ---
+  duration_ms: 3.8993
+  ...
+# Subtest: missing consent projection does not sign documents or write a target
+ok 33 - missing consent projection does not sign documents or write a target
+  ---
+  duration_ms: 1.2675
+  ...
+# Subtest: current version no longer accepted does not sign documents or write a target
+ok 34 - current version no longer accepted does not sign documents or write a target
+  ---
+  duration_ms: 0.4676
+  ...
+# Subtest: inconsistent required purposes does not sign documents or write a target
+ok 35 - inconsistent required purposes does not sign documents or write a target
+  ---
+  duration_ms: 0.3318
+  ...
+# Subtest: adult gate not evaluated does not sign documents or write a target
+ok 36 - adult gate not evaluated does not sign documents or write a target
+  ---
+  duration_ms: 0.2665
+  ...
+# Subtest: passed status without eligibility does not sign documents or write a target
+ok 37 - passed status without eligibility does not sign documents or write a target
+  ---
+  duration_ms: 0.2656
+  ...
+# Subtest: passed but explicitly restricted does not sign documents or write a target
+ok 38 - passed but explicitly restricted does not sign documents or write a target
+  ---
+  duration_ms: 0.2513
+  ...
+# Subtest: transport failure does not sign documents or write a target
+ok 39 - transport failure does not sign documents or write a target
+  ---
+  duration_ms: 0.2601
+  ...
+# Subtest: identity changed during the IAM read cannot write the previous owner target
+ok 40 - identity changed during the IAM read cannot write the previous owner target
+  ---
+  duration_ms: 0.3614
+  ...
+# Subtest: changing a goal preserves existing interface and content language, theme, accessibility and motion preferences
+ok 41 - changing a goal preserves existing interface and content language, theme, accessibility and motion preferences
+  ---
+  duration_ms: 0.824
+  ...
+# Subtest: current IAM acceptance is preserved when an older protected read needs refreshed claims
+ok 42 - current IAM acceptance is preserved when an older protected read needs refreshed claims
+  ---
+  duration_ms: 0.4984
+  ...
+# Subtest: missing current consent is not presented as a session refresh that could restore access
+ok 43 - missing current consent is not presented as a session refresh that could restore access
+  ---
+  duration_ms: 0.3162
+  ...
+1..43
+# tests 43
+# suites 0
+# pass 43
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2194.536

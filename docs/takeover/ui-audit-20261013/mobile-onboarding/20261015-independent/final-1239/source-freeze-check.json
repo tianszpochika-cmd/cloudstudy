@@ -1,0 +1,76 @@
+{
+  "rows": [
+    {
+      "path": "apps/mobile/src/pages/onboarding/onboarding.vue",
+      "expected": "f56f77954e12a9ea2fabb1717b4ad2e53cbf382f26481824c95bcdbdea4ebf97",
+      "actual": "f56f77954e12a9ea2fabb1717b4ad2e53cbf382f26481824c95bcdbdea4ebf97",
+      "match": true,
+      "productSource": true
+    },
+    {
+      "path": "packages/i18n/src/mobile-experience.ts",
+      "expected": "5e0e045c0118226ef8e2f80b1fa1db072bdfdbd2d171c13a904075fe3c4f8743",
+      "actual": "5e0e045c0118226ef8e2f80b1fa1db072bdfdbd2d171c13a904075fe3c4f8743",
+      "match": true,
+      "productSource": true
+    },
+    {
+      "path": "apps/mobile/tests/ui-onboarding.e2e.cjs",
+      "expected": "8cdc9714ab8786733750770c0097f447ca9e021fdef1c46f674dc04f6e4c7a92",
+      "actual": "57b48ca08e17c21433744c03b517a28da4562e411abac997481bed14dc72ebd4",
+      "match": false,
+      "productSource": false
+    },
+    {
+      "path": "apps/mobile/src/auth/gateway-auth.ts",
+      "expected": "746bb9d83d241162bce9d9cd701d2f6662d11a132977533e3ba2a11e428c3277",
+      "actual": "746bb9d83d241162bce9d9cd701d2f6662d11a132977533e3ba2a11e428c3277",
+      "match": true,
+      "productSource": true
+    },
+    {
+      "path": "apps/mobile/src/stores/session.ts",
+      "expected": "ba479dfebf777599ed40b05218549afc23712f1077720b748f973ec3d3fadc99",
+      "actual": "ba479dfebf777599ed40b05218549afc23712f1077720b748f973ec3d3fadc99",
+      "match": true,
+      "productSource": true
+    },
+    {
+      "path": "apps/mobile/src/api/learner-content.ts",
+      "expected": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6",
+      "actual": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6",
+      "match": true,
+      "productSource": true
+    },
+    {
+      "path": "apps/mobile/src/domain/onboarding-resume.ts",
+      "expected": "ea6e26682e69a9f1c3d8fd47d284aa55d96e39d646e27e5d41d0f556ba902e26",
+      "actual": "ea6e26682e69a9f1c3d8fd47d284aa55d96e39d646e27e5d41d0f556ba902e26",
+      "match": true,
+      "productSource": true
+    },
+    {
+      "path": "apps/mobile/src/stores/learner-content.ts",
+      "expected": "95cc92496db996242d91baed3301d76f985e4e3b9134e1e50c2b9ab8d41e4c61",
+      "actual": "95cc92496db996242d91baed3301d76f985e4e3b9134e1e50c2b9ab8d41e4c61",
+      "match": true,
+      "productSource": true
+    },
+    {
+      "path": "apps/mobile/src/platform/pointer-feedback.ts",
+      "expected": "6464f4c1712b5a0f2fd4ab01d451d5bb6ffaa13bde486826a424511059ef6425",
+      "actual": "6464f4c1712b5a0f2fd4ab01d451d5bb6ffaa13bde486826a424511059ef6425",
+      "match": true,
+      "productSource": true
+    }
+  ],
+  "service": {
+    "pid": 24472,
+    "verifiedSameOwner": true,
+    "port": 18183,
+    "creation": "2026-10-15T08:04:45.276483+08:00",
+    "session": 87595
+  },
+  "note": "Product eight files frozen. Author authorized test-only additions have new SHA 57b48ca08e17c21433744c03b517a28da4562e411abac997481bed14dc72ebd4; old 8cdc is historical, not a product drift.",
+  "at": "2026-10-15T12:44:00.0634770+08:00"
+}

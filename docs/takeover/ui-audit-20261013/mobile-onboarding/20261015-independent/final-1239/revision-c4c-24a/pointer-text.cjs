@@ -1,0 +1,34 @@
+const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict'),crypto=require('node:crypto');
+process.env.UI_AUDIT_OUTPUT=__dirname;const fixture=require('./fixture-transport.cjs');
+const manifest=JSON.parse(fs.readFileSync(path.join(__dirname,'product-freeze.json'),'utf8').replace(/^\uFEFF/,''));
+const current=()=>Object.fromEntries(Object.keys(manifest).map(f=>[f,crypto.createHash('sha256').update(fs.readFileSync(path.join(process.cwd(),f))).digest('hex')]));
+const report={at:new Date().toISOString(),scope:'INDEPENDENT_MB004_POINTER_TEXT_SYNTHETIC_ONLY',sourceHashesBefore:current(),checks:[]};
+const save=()=>fs.writeFileSync(path.join(__dirname,'pointer-text-results.json'),JSON.stringify(report,null,2));
+const verify=()=>assert.deepEqual(current(),manifest,'Source drift: stop');
+async function probe(p){await p.evaluate(()=>{let c=document.querySelector('.yx-onboarding').__vueParentComponent;while(c&&!('pointerFeedback'in c.setupState))c=c.parent;window.__independentPointer=()=>({frozen:!!c.setupState.pointerFeedback,yearEmpty:c.setupState.birthYear===''});window.__trustedClicks=0;document.querySelector('.onboarding-primary')?.addEventListener('click',e=>{if(e.isTrusted)window.__trustedClicks++})})}
+async function add(name,c,data={}){verify();report.checks.push({name,result:'PASS',counts:{...c.state.counts},...data});save();await c.context.close()}
+(async()=>{verify();await fixture.init();
+ for(const [ending,held] of [['click',0],['click',160],['drag',160],['cancel',160]]){
+  const c=await fixture.open('gate',390,'en-US'),p=c.page,b=p.locator('.onboarding-primary'),y=p.locator('#mobile-onboarding-year');c.state.adultStatus=503;
+  await p.locator('.onboarding-check-row').click();await y.fill('1820');await y.press('Enter');await p.locator('#mobile-onboarding-year-error').waitFor();await b.scrollIntoViewIfNeeded();await y.focus();await probe(p);
+  const point=await b.evaluate(n=>{const r=n.getBoundingClientRect();return{x:r.x+r.width/2,y:r.y+r.height/2,top:r.top+scrollY}});await p.mouse.move(point.x,point.y);
+  await p.evaluate(()=>{const n=document.getElementById('mobile-onboarding-year');n.focus({preventScroll:true});n.value='1990';n.dispatchEvent(new InputEvent('input',{bubbles:true}))});
+  const cdp=ending==='cancel'?await c.context.newCDPSession(p):null;
+  if(cdp)await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:point.x,y:point.y,id:1}]});else if(held)await p.mouse.down();else await p.mouse.click(point.x,point.y);
+  if(held){await p.waitForTimeout(held);assert.equal((await p.evaluate(()=>window.__independentPointer())).frozen,true);assert.equal(await b.evaluate(n=>n.getBoundingClientRect().top+scrollY),point.top);assert.equal(c.state.counts.adult,0);if(ending==='drag')await p.mouse.move(5,5);if(cdp){await cdp.send('Input.dispatchTouchEvent',{type:'touchCancel',touchPoints:[]});await cdp.detach()}else await p.mouse.up()}
+  await p.waitForFunction(()=>!window.__independentPointer().frozen);if(ending==='click'){await p.locator('.onboarding-error[role=alert]').last().waitFor();assert.equal(c.state.counts.adult,1)}else assert.equal(c.state.counts.adult,0);
+  const clicks=await p.evaluate(()=>window.__trustedClicks);assert.equal(clicks,ending==='click'?1:0);await add(`enabled-old-center-${ending}-${held}ms`,c,{point,held,trustedClicks:clicks});
+ }
+ {const c=await fixture.open('gate',390,'en-US'),p=c.page,b=p.locator('.onboarding-primary'),y=p.locator('#mobile-onboarding-year');c.state.adultStatus=503;
+  await p.locator('.onboarding-check-row').click();await y.fill('1820');await y.press('Enter');await p.locator('#mobile-onboarding-year-error').waitFor();await b.scrollIntoViewIfNeeded();await probe(p);await y.fill('');assert.equal(await b.isDisabled(),true);const r=await b.boundingBox();await p.mouse.move(r.x+r.width/2,r.y+r.height/2);await p.mouse.down();await p.waitForTimeout(160);await p.mouse.up();assert.equal((await p.evaluate(()=>window.__independentPointer())).frozen,false);assert.equal(await p.evaluate(()=>window.__trustedClicks),0);assert.equal(c.state.counts.adult,0);
+  await y.fill('1990');await b.click();await p.locator('.onboarding-error[role=alert]').last().waitFor();assert.equal(c.state.counts.adult,1);assert.equal((await p.evaluate(()=>window.__independentPointer())).frozen,false);await add('disabled-action-does-not-latch-then-valid-click-recovers',c)
+ }
+ {const c=await fixture.open('consent',390,'en-US'),p=c.page;await probe(p);const b=p.getByRole('button',{name:'Read again',exact:true});await b.scrollIntoViewIfNeeded();const r=await b.boundingBox();await p.mouse.move(r.x+r.width/2,r.y+r.height/2);await p.mouse.down();await p.waitForTimeout(160);assert.equal((await p.evaluate(()=>window.__independentPointer())).frozen,true);await p.mouse.up();await p.waitForFunction(()=>!window.__independentPointer().frozen);await p.locator('.yx-onboarding[aria-busy=false]').waitFor();assert.equal(c.state.counts.targetPut,0);assert.equal(c.state.counts.consentPut,0);await add('enabled-secondary-retains-freeze-and-releases',c)}
+ for(const mode of ['gate','consent','goal','assessment'])for(const width of [320,390,1280]){
+  const c=await fixture.open(mode,width,'en-US','dark',460),p=c.page;
+  await p.evaluate(()=>{const nodes=[...document.querySelectorAll('.yx-onboarding,.yx-onboarding *')].map(n=>[n,parseFloat(getComputedStyle(n).fontSize)]);for(const[n,s]of nodes)if(s)n.style.setProperty('font-size',`${s*2}px`,'important')});
+  await p.locator('.onboarding-exits').scrollIntoViewIfNeeded();const facts=await p.evaluate(()=>({overflow:document.documentElement.scrollWidth>innerWidth+1,rawKey:/mobile\.onboarding\./.test(document.querySelector('.yx-onboarding').textContent),targets:[...document.querySelectorAll('.yx-onboarding uni-button,.yx-onboarding uni-checkbox,.onboarding-check-row')].map(n=>{const r=n.getBoundingClientRect();return{w:r.width,h:r.height}}),yearFont:document.getElementById('mobile-onboarding-year')?getComputedStyle(document.getElementById('mobile-onboarding-year')).fontSize:null}));assert.equal(facts.overflow,false);assert.equal(facts.rawKey,false);assert.ok(facts.targets.every(r=>r.w>=44&&r.h>=44));if(mode==='gate')assert.equal(facts.yearFont,'32px');await p.screenshot({path:path.join(__dirname,`${mode}-${width}-en-dark-200.png`),fullPage:true});await add(`${mode}-${width}-english200-short-dark`,c,{facts});
+ }
+ verify();assert.equal(fixture.report.pageErrors.length,0);report.pageErrors=fixture.report.pageErrors;report.fixtureRequests=fixture.report.fixtureRequests;report.sourceHashesAfter=current();report.status='UI_PASS_INDEPENDENT_POINTER_TEXT_ONLY';save();console.log(JSON.stringify({status:report.status,checks:report.checks.length}));
+})().catch(e=>{report.status='FAIL';report.failure=e.stack;save();console.error(e.stack);process.exitCode=1}).finally(async()=>fixture.close());
+

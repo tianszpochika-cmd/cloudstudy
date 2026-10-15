@@ -1,4 +1,5 @@
 import { mobileApiClient, MobileApiError } from './client'
+import type { B8AdultGateResponse } from '@englishflow/contracts'
 import type { MobileContentCard, MobileContentDetail, MobileFirstDayModel, MobileGoalOption, MobileHomeModel, MobileLearnerAccount, MobileMotionMode, MobileOnboardingModel, MobilePlacementModel, MobilePlacementQuestion, MobilePlacementReport, MobileTask, MobileThemeMode } from '../domain/learner-content'
 
 type RecordValue = Record<string, unknown>
@@ -414,6 +415,8 @@ async function refreshActiveConsentVersion(): Promise<string> {
 
 export interface MobileOnboardingResumeRead {
   adultGate: string
+  adultLearningAccess: NonNullable<B8AdultGateResponse['learningAccess']> | 'UNKNOWN'
+  sessionRefreshRequired?: boolean
   consent: { readable: boolean; accepted: boolean | null; unsatisfiedPurposes: readonly string[] }
   target: { readable: boolean; saved: boolean; goal: string | null; quota: number | null }
 }
@@ -437,14 +440,17 @@ function parseConsentFact(value: unknown): MobileOnboardingResumeRead['consent']
   return { readable: true, accepted, unsatisfiedPurposes: purposes ?? [] }
 }
 
-async function readIamResumeFacts(): Promise<{ adultGate: string; consent: MobileOnboardingResumeRead['consent'] }> {
+async function readIamResumeFacts(): Promise<Pick<MobileOnboardingResumeRead, 'adultGate' | 'adultLearningAccess' | 'consent'>> {
   const raw = await mobileApiClient.request<unknown>('/iam/principal/me')
   const source = unwrap(raw)
   const record = isRecord(source) ? source : {}
   const principal = isRecord(record.principal) ? record.principal : record
-  const adultGate = parseAdultGateFact(record.adultGate ?? record.adultGateStatus ?? principal.adultGate ?? principal.adultGateStatus)
+  const adultFact = record.adultGate ?? record.adultGateStatus ?? principal.adultGate ?? principal.adultGateStatus
+  const adultGate = parseAdultGateFact(adultFact)
+  const access = isRecord(adultFact) ? adultFact.learningAccess : undefined
+  const adultLearningAccess = access === 'ELIGIBLE' || access === 'RESTRICTED' ? access : 'UNKNOWN'
   const consentSource = isRecord(record.consentState) ? record.consentState : isRecord(principal.consentState) ? principal.consentState : null
-  return { adultGate, consent: parseConsentFact(consentSource) }
+  return { adultGate, adultLearningAccess, consent: parseConsentFact(consentSource) }
 }
 
 async function readTargetFact(): Promise<MobileOnboardingResumeRead['target'] & { consentRequired: boolean }> {
@@ -510,16 +516,20 @@ async function signRequiredConsents(clientEventId: string, isCurrent?: () => boo
 export const mobileLearnerContentApi = {
   async readOnboardingResume(): Promise<MobileOnboardingResumeRead> {
     const iam = await readIamResumeFacts()
-    if (iam.adultGate !== 'PASSED') return { ...iam, target: { readable: true, saved: false, goal: null, quota: null } }
+    if (iam.adultGate !== 'PASSED' || iam.adultLearningAccess !== 'ELIGIBLE') return { ...iam, target: { readable: true, saved: false, goal: null, quota: null } }
     const target = await readTargetFact()
     if (target.consentRequired) {
       return {
         adultGate: iam.adultGate,
-        consent: { readable: true, accepted: false, unsatisfiedPurposes: ['ADULT_LEARNING_ELIGIBILITY'] },
-        target: { readable: true, saved: false, goal: null, quota: null },
+        adultLearningAccess: iam.adultLearningAccess,
+        // A protected read may see older JWT claims than the current IAM record.
+        // Preserve the owner fact and request one session refresh; do not re-sign.
+        consent: iam.consent,
+        sessionRefreshRequired: iam.consent.readable && iam.consent.accepted === true,
+        target: { readable: false, saved: false, goal: null, quota: null },
       }
     }
-    return { adultGate: iam.adultGate, consent: iam.consent, target }
+    return { adultGate: iam.adultGate, adultLearningAccess: iam.adultLearningAccess, consent: iam.consent, target }
   },
 
   async recordRequiredConsents(clientEventId: string, isCurrent?: () => boolean): Promise<void> {
@@ -557,11 +567,19 @@ export const mobileLearnerContentApi = {
     }
     const targetLevel = input.goal === 'ZERO_BASIS' ? 'A1' : input.goal === 'CET_4_6' ? 'B1' : 'B2'
 
-    // Consent is an IAM fact. Learner writes require a freshly issued access
-    // token carrying that fact, and each write advances one profile version.
-    await signRequiredConsents(input.clientEventId, isCurrent)
+    // A target edit cannot accept documents again on the learner's behalf.
+    // Check the current IAM fact; the learner PEP still authorizes each write.
+    if (input.consentsRecorded) {
+      const iam = await readIamResumeFacts()
+      requireSameIdentity(isCurrent)
+      const satisfied = iam.adultGate === 'PASSED' && iam.adultLearningAccess === 'ELIGIBLE' && iam.consent.readable && iam.consent.accepted === true
+        && !iam.consent.unsatisfiedPurposes.some(item => item === 'ACCOUNT_TERMS' || item === 'PRIVACY_NOTICE' || item === 'ADULT_LEARNING_ELIGIBILITY')
+      if (!satisfied) throw new Error('必要同意需重新确认，请返回设置读取当前状态。')
+    } else {
+      await signRequiredConsents(input.clientEventId, isCurrent)
+    }
 
-    // Re-read the owner after IAM refresh. A previous attempt may have saved
+    // Re-read the owner after checking current IAM facts. A previous attempt may have saved
     // only some steps before the network failed; its new retry key must not
     // start again at version zero or invent a daily task from client content.
     const [profile, existingTarget, existingPreferences] = await Promise.all([
@@ -598,7 +616,8 @@ export const mobileLearnerContentApi = {
       && text(preferences.themeMode) === 'SYSTEM'
       && preferences.highContrast === false
       && text(preferences.motionMode) === 'FULL'
-    if (!preferencesMatch) {
+    // Target editing owns the target only; existing preferences belong to settings.
+    if (!input.consentsRecorded && !preferencesMatch) {
       await mobileApiClient.request('/learner/preferences', {
         method: 'PATCH',
         data: { expectedStateVersion: currentVersion, uiLocale: 'zh-CN', contentLocale: 'en-US', timezone: 'Asia/Shanghai', themeMode: 'SYSTEM', highContrast: false, motionMode: 'FULL' },

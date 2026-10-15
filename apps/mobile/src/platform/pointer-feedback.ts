@@ -28,6 +28,10 @@ export function usePointerFeedback<T>(options: PointerFeedbackOptions<T>) {
   }
   function end(event: PointerEvent): void {
     if (!gesture || event.pointerId !== gesture.id) return
+    // Blur can enable an action after pointerdown; only the final state decides
+    // whether a closing click is possible on a uni action.
+    const action = gesture.action
+    if (action.matches(':disabled') || action.getAttribute('aria-disabled') === 'true' || (action.hasAttribute('disabled') && action.getAttribute('disabled') !== 'false')) { release(); return }
     const rect = gesture.action.getBoundingClientRect()
     if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) release()
     // A release within the action retains feedback through the real click.

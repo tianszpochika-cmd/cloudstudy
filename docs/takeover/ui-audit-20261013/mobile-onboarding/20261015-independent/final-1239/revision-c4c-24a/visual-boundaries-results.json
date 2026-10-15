@@ -1,0 +1,1217 @@
+{
+  "at": "2026-10-15T09:55:03.168Z",
+  "scope": "MB004_INDEPENDENT_RENDERED_BOUNDARIES_SYNTHETIC_ONLY",
+  "sourceHashesBefore": {
+    "apps/mobile/src/pages/onboarding/onboarding.vue": "c4c691dd9ab74c8aa7f21a677d43f3541b22c4ea4642f733ad53c4cf94176086",
+    "packages/i18n/src/mobile-experience.ts": "7b21f6e074bf705463e27941cbc4c91847a242443cdbd1ad3deea155fc733dde",
+    "apps/mobile/src/auth/gateway-auth.ts": "746bb9d83d241162bce9d9cd701d2f6662d11a132977533e3ba2a11e428c3277",
+    "apps/mobile/src/stores/session.ts": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+    "apps/mobile/src/api/learner-content.ts": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6",
+    "apps/mobile/src/domain/onboarding-resume.ts": "ea6e26682e69a9f1c3d8fd47d284aa55d96e39d646e27e5d41d0f556ba902e26",
+    "apps/mobile/src/stores/learner-content.ts": "95cc92496db996242d91baed3301d76f985e4e3b9134e1e50c2b9ab8d41e4c61",
+    "apps/mobile/src/platform/pointer-feedback.ts": "24a1f9b26ad6797fc9a61a16cb43559d116230cd7e9cd66c1dd4d9a563d94a6c"
+  },
+  "cases": [
+    {
+      "mode": "gate",
+      "theme": "light",
+      "facts": {
+        "title": "Confirm adult eligibility",
+        "description": "Your birth year is used to confirm adult learning eligibility. We do not collect your full date of birth.",
+        "rawKeys": false,
+        "overlay": false,
+        "overflow": false,
+        "theme": "light",
+        "boundaries": [
+          {
+            "kind": "onboarding-input",
+            "border": "rgb(96, 98, 119)",
+            "borderWidth": "1px",
+            "fill": "rgb(255, 255, 255)",
+            "effectiveFill": [
+              255,
+              255,
+              255,
+              1
+            ],
+            "effectiveOutside": [
+              245,
+              245,
+              250,
+              1
+            ],
+            "againstFill": 5.9815185273527325,
+            "againstOutside": 5.504103371100126,
+            "width": 342,
+            "height": 48
+          },
+          {
+            "kind": "uni-checkbox-input",
+            "border": "rgb(96, 98, 119)",
+            "borderWidth": "1px",
+            "fill": "rgb(255, 255, 255)",
+            "effectiveFill": [
+              255,
+              255,
+              255,
+              1
+            ],
+            "effectiveOutside": [
+              245,
+              245,
+              250,
+              1
+            ],
+            "againstFill": 5.9815185273527325,
+            "againstOutside": 5.504103371100126,
+            "width": 24,
+            "height": 24
+          }
+        ]
+      },
+      "result": "PASS",
+      "errors": []
+    },
+    {
+      "mode": "gate",
+      "theme": "light",
+      "checked": true,
+      "facts": {
+        "title": "Confirm adult eligibility",
+        "description": "Your birth year is used to confirm adult learning eligibility. We do not collect your full date of birth.",
+        "rawKeys": false,
+        "overlay": false,
+        "overflow": false,
+        "theme": "light",
+        "boundaries": [
+          {
+            "kind": "onboarding-input",
+            "border": "rgb(96, 98, 119)",
+            "borderWidth": "1px",
+            "fill": "rgb(255, 255, 255)",
+            "effectiveFill": [
+              255,
+              255,
+              255,
+              1
+            ],
+            "effectiveOutside": [
+              245,
+              245,
+              250,
+              1
+            ],
+            "againstFill": 5.9815185273527325,
+            "againstOutside": 5.504103371100126,
+            "width": 342,
+            "height": 48
+          },
+          {
+            "kind": "uni-checkbox-input",
+            "border": "rgb(0, 122, 255)",
+            "borderWidth": "1px",
+            "fill": "rgb(255, 255, 255)",
+            "effectiveFill": [
+              255,
+              255,
+              255,
+              1
+            ],
+            "effectiveOutside": [
+              245,
+              245,
+              250,
+              1
+            ],
+            "againstFill": 4.016975780478911,
+            "againstOutside": 3.696360687316435,
+            "width": 24,
+            "height": 24
+          }
+        ]
+      },
+      "result": "PASS"
+    },
+    {
+      "mode": "gate",
+      "theme": "dark",
+      "facts": {
+        "title": "Confirm adult eligibility",
+        "description": "Your birth year is used to confirm adult learning eligibility. We do not collect your full date of birth.",
+        "rawKeys": false,
+        "overlay": false,
+        "overflow": false,
+        "theme": "dark",
+        "boundaries": [
+          {
+            "kind": "onboarding-input",
+            "border": "rgb(186, 184, 207)",
+            "borderWidth": "1px",
+            "fill": "rgb(32, 32, 45)",
+            "effectiveFill": [
+              32,
+              32,
+              45,
+              1
+            ],
+            "effectiveOutside": [
+              21,
+              21,
+              31,
+              1
+            ],
+            "againstFill": 8.304551134813018,
+            "againstOutside": 9.357719562635204,
+            "width": 342,
+            "height": 48
+          },
+          {
+            "kind": "uni-checkbox-input",
+            "border": "rgb(186, 184, 207)",
+            "borderWidth": "1px",
+            "fill": "rgb(32, 32, 45)",
+            "effectiveFill": [
+              32,
+              32,
+              45,
+              1
+            ],
+            "effectiveOutside": [
+              21,
+              21,
+              31,
+              1
+            ],
+            "againstFill": 8.304551134813018,
+            "againstOutside": 9.357719562635204,
+            "width": 24,
+            "height": 24
+          }
+        ]
+      },
+      "result": "PASS",
+      "errors": []
+    },
+    {
+      "mode": "gate",
+      "theme": "dark",
+      "checked": true,
+      "facts": {
+        "title": "Confirm adult eligibility",
+        "description": "Your birth year is used to confirm adult learning eligibility. We do not collect your full date of birth.",
+        "rawKeys": false,
+        "overlay": false,
+        "overflow": false,
+        "theme": "dark",
+        "boundaries": [
+          {
+            "kind": "onboarding-input",
+            "border": "rgb(186, 184, 207)",
+            "borderWidth": "1px",
+            "fill": "rgb(32, 32, 45)",
+            "effectiveFill": [
+              32,
+              32,
+              45,
+              1
+            ],
+            "effectiveOutside": [
+              21,
+              21,
+              31,
+              1
+            ],
+            "againstFill": 8.304551134813018,
+            "againstOutside": 9.357719562635204,
+            "width": 342,
+            "height": 48
+          },
+          {
+            "kind": "uni-checkbox-input",
+            "border": "rgb(0, 122, 255)",
+            "borderWidth": "1px",
+            "fill": "rgb(32, 32, 45)",
+            "effectiveFill": [
+              32,
+              32,
+              45,
+              1
+            ],
+            "effectiveOutside": [
+              21,
+              21,
+              31,
+              1
+            ],
+            "againstFill": 4.003188806736353,
+            "againstOutside": 4.510866102405245,
+            "width": 24,
+            "height": 24
+          }
+        ]
+      },
+      "result": "PASS"
+    },
+    {
+      "mode": "gate",
+      "theme": "high-contrast",
+      "facts": {
+        "title": "Confirm adult eligibility",
+        "description": "Your birth year is used to confirm adult learning eligibility. We do not collect your full date of birth.",
+        "rawKeys": false,
+        "overlay": false,
+        "overflow": false,
+        "theme": "high-contrast",
+        "boundaries": [
+          {
+            "kind": "onboarding-input",
+            "border": "rgb(226, 230, 241)",
+            "borderWidth": "1px",
+            "fill": "rgb(13, 16, 24)",
+            "effectiveFill": [
+              13,
+              16,
+              24,
+              1
+            ],
+            "effectiveOutside": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "againstFill": 15.232125910059796,
+            "againstOutside": 16.822650673503315,
+            "width": 342,
+            "height": 48
+          },
+          {
+            "kind": "uni-checkbox-input",
+            "border": "rgb(226, 230, 241)",
+            "borderWidth": "1px",
+            "fill": "rgb(13, 16, 24)",
+            "effectiveFill": [
+              13,
+              16,
+              24,
+              1
+            ],
+            "effectiveOutside": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "againstFill": 15.232125910059796,
+            "againstOutside": 16.822650673503315,
+            "width": 24,
+            "height": 24
+          }
+        ]
+      },
+      "result": "PASS",
+      "errors": []
+    },
+    {
+      "mode": "gate",
+      "theme": "high-contrast",
+      "checked": true,
+      "facts": {
+        "title": "Confirm adult eligibility",
+        "description": "Your birth year is used to confirm adult learning eligibility. We do not collect your full date of birth.",
+        "rawKeys": false,
+        "overlay": false,
+        "overflow": false,
+        "theme": "high-contrast",
+        "boundaries": [
+          {
+            "kind": "onboarding-input",
+            "border": "rgb(226, 230, 241)",
+            "borderWidth": "1px",
+            "fill": "rgb(13, 16, 24)",
+            "effectiveFill": [
+              13,
+              16,
+              24,
+              1
+            ],
+            "effectiveOutside": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "againstFill": 15.232125910059796,
+            "againstOutside": 16.822650673503315,
+            "width": 342,
+            "height": 48
+          },
+          {
+            "kind": "uni-checkbox-input",
+            "border": "rgb(0, 122, 255)",
+            "borderWidth": "1px",
+            "fill": "rgb(13, 16, 24)",
+            "effectiveFill": [
+              13,
+              16,
+              24,
+              1
+            ],
+            "effectiveOutside": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "againstFill": 4.733541354388993,
+            "againstOutside": 5.2278134466363,
+            "width": 24,
+            "height": 24
+          }
+        ]
+      },
+      "result": "PASS"
+    },
+    {
+      "mode": "gate",
+      "theme": "system",
+      "facts": {
+        "title": "Confirm adult eligibility",
+        "description": "Your birth year is used to confirm adult learning eligibility. We do not collect your full date of birth.",
+        "rawKeys": false,
+        "overlay": false,
+        "overflow": false,
+        "theme": "light",
+        "boundaries": [
+          {
+            "kind": "onboarding-input",
+            "border": "rgb(96, 98, 119)",
+            "borderWidth": "1px",
+            "fill": "rgb(255, 255, 255)",
+            "effectiveFill": [
+              255,
+              255,
+              255,
+              1
+            ],
+            "effectiveOutside": [
+              245,
+              245,
+              250,
+              1
+            ],
+            "againstFill": 5.9815185273527325,
+            "againstOutside": 5.504103371100126,
+            "width": 342,
+            "height": 48
+          },
+          {
+            "kind": "uni-checkbox-input",
+            "border": "rgb(96, 98, 119)",
+            "borderWidth": "1px",
+            "fill": "rgb(255, 255, 255)",
+            "effectiveFill": [
+              255,
+              255,
+              255,
+              1
+            ],
+            "effectiveOutside": [
+              245,
+              245,
+              250,
+              1
+            ],
+            "againstFill": 5.9815185273527325,
+            "againstOutside": 5.504103371100126,
+            "width": 24,
+            "height": 24
+          }
+        ]
+      },
+      "result": "PASS",
+      "errors": []
+    },
+    {
+      "mode": "gate",
+      "theme": "system",
+      "checked": true,
+      "facts": {
+        "title": "Confirm adult eligibility",
+        "description": "Your birth year is used to confirm adult learning eligibility. We do not collect your full date of birth.",
+        "rawKeys": false,
+        "overlay": false,
+        "overflow": false,
+        "theme": "light",
+        "boundaries": [
+          {
+            "kind": "onboarding-input",
+            "border": "rgb(96, 98, 119)",
+            "borderWidth": "1px",
+            "fill": "rgb(255, 255, 255)",
+            "effectiveFill": [
+              255,
+              255,
+              255,
+              1
+            ],
+            "effectiveOutside": [
+              245,
+              245,
+              250,
+              1
+            ],
+            "againstFill": 5.9815185273527325,
+            "againstOutside": 5.504103371100126,
+            "width": 342,
+            "height": 48
+          },
+          {
+            "kind": "uni-checkbox-input",
+            "border": "rgb(0, 122, 255)",
+            "borderWidth": "1px",
+            "fill": "rgb(255, 255, 255)",
+            "effectiveFill": [
+              255,
+              255,
+              255,
+              1
+            ],
+            "effectiveOutside": [
+              245,
+              245,
+              250,
+              1
+            ],
+            "againstFill": 4.016975780478911,
+            "againstOutside": 3.696360687316435,
+            "width": 24,
+            "height": 24
+          }
+        ]
+      },
+      "result": "PASS"
+    },
+    {
+      "mode": "goal",
+      "theme": "light",
+      "facts": {
+        "title": "Choose your learning goal",
+        "description": "Choose a goal and daily time. Save your choices before starting placement.",
+        "rawKeys": false,
+        "overlay": false,
+        "overflow": false,
+        "theme": "light",
+        "boundaries": [
+          {
+            "kind": "onboarding-choice",
+            "border": "rgb(96, 98, 119)",
+            "borderWidth": "1px",
+            "fill": "rgb(255, 255, 255)",
+            "effectiveFill": [
+              255,
+              255,
+              255,
+              1
+            ],
+            "effectiveOutside": [
+              245,
+              245,
+              250,
+              1
+            ],
+            "againstFill": 5.9815185273527325,
+            "againstOutside": 5.504103371100126,
+            "width": 342,
+            "height": 101.59375
+          },
+          {
+            "kind": "onboarding-choice",
+            "border": "rgb(96, 98, 119)",
+            "borderWidth": "1px",
+            "fill": "rgb(255, 255, 255)",
+            "effectiveFill": [
+              255,
+              255,
+              255,
+              1
+            ],
+            "effectiveOutside": [
+              245,
+              245,
+              250,
+              1
+            ],
+            "againstFill": 5.9815185273527325,
+            "againstOutside": 5.504103371100126,
+            "width": 342,
+            "height": 101.59375
+          },
+          {
+            "kind": "onboarding-choice",
+            "border": "rgb(96, 98, 119)",
+            "borderWidth": "1px",
+            "fill": "rgb(255, 255, 255)",
+            "effectiveFill": [
+              255,
+              255,
+              255,
+              1
+            ],
+            "effectiveOutside": [
+              245,
+              245,
+              250,
+              1
+            ],
+            "againstFill": 5.9815185273527325,
+            "againstOutside": 5.504103371100126,
+            "width": 342,
+            "height": 101.59375
+          },
+          {
+            "kind": "onboarding-choice",
+            "border": "rgb(96, 98, 119)",
+            "borderWidth": "1px",
+            "fill": "rgb(255, 255, 255)",
+            "effectiveFill": [
+              255,
+              255,
+              255,
+              1
+            ],
+            "effectiveOutside": [
+              245,
+              245,
+              250,
+              1
+            ],
+            "againstFill": 5.9815185273527325,
+            "againstOutside": 5.504103371100126,
+            "width": 342,
+            "height": 101.59375
+          },
+          {
+            "kind": "onboarding-quota",
+            "border": "rgb(96, 98, 119)",
+            "borderWidth": "1px",
+            "fill": "rgb(255, 255, 255)",
+            "effectiveFill": [
+              255,
+              255,
+              255,
+              1
+            ],
+            "effectiveOutside": [
+              245,
+              245,
+              250,
+              1
+            ],
+            "againstFill": 5.9815185273527325,
+            "againstOutside": 5.504103371100126,
+            "width": 165,
+            "height": 66.796875
+          },
+          {
+            "kind": "onboarding-quota",
+            "border": "rgb(96, 98, 119)",
+            "borderWidth": "1px",
+            "fill": "rgb(255, 255, 255)",
+            "effectiveFill": [
+              255,
+              255,
+              255,
+              1
+            ],
+            "effectiveOutside": [
+              245,
+              245,
+              250,
+              1
+            ],
+            "againstFill": 5.9815185273527325,
+            "againstOutside": 5.504103371100126,
+            "width": 165,
+            "height": 48
+          },
+          {
+            "kind": "onboarding-quota",
+            "border": "rgb(96, 98, 119)",
+            "borderWidth": "1px",
+            "fill": "rgb(255, 255, 255)",
+            "effectiveFill": [
+              255,
+              255,
+              255,
+              1
+            ],
+            "effectiveOutside": [
+              245,
+              245,
+              250,
+              1
+            ],
+            "againstFill": 5.9815185273527325,
+            "againstOutside": 5.504103371100126,
+            "width": 165,
+            "height": 48
+          }
+        ]
+      },
+      "result": "PASS",
+      "errors": []
+    },
+    {
+      "mode": "goal",
+      "theme": "dark",
+      "facts": {
+        "title": "Choose your learning goal",
+        "description": "Choose a goal and daily time. Save your choices before starting placement.",
+        "rawKeys": false,
+        "overlay": false,
+        "overflow": false,
+        "theme": "dark",
+        "boundaries": [
+          {
+            "kind": "onboarding-choice",
+            "border": "rgb(186, 184, 207)",
+            "borderWidth": "1px",
+            "fill": "rgb(32, 32, 45)",
+            "effectiveFill": [
+              32,
+              32,
+              45,
+              1
+            ],
+            "effectiveOutside": [
+              21,
+              21,
+              31,
+              1
+            ],
+            "againstFill": 8.304551134813018,
+            "againstOutside": 9.357719562635204,
+            "width": 342,
+            "height": 101.59375
+          },
+          {
+            "kind": "onboarding-choice",
+            "border": "rgb(186, 184, 207)",
+            "borderWidth": "1px",
+            "fill": "rgb(32, 32, 45)",
+            "effectiveFill": [
+              32,
+              32,
+              45,
+              1
+            ],
+            "effectiveOutside": [
+              21,
+              21,
+              31,
+              1
+            ],
+            "againstFill": 8.304551134813018,
+            "againstOutside": 9.357719562635204,
+            "width": 342,
+            "height": 101.59375
+          },
+          {
+            "kind": "onboarding-choice",
+            "border": "rgb(186, 184, 207)",
+            "borderWidth": "1px",
+            "fill": "rgb(32, 32, 45)",
+            "effectiveFill": [
+              32,
+              32,
+              45,
+              1
+            ],
+            "effectiveOutside": [
+              21,
+              21,
+              31,
+              1
+            ],
+            "againstFill": 8.304551134813018,
+            "againstOutside": 9.357719562635204,
+            "width": 342,
+            "height": 101.59375
+          },
+          {
+            "kind": "onboarding-choice",
+            "border": "rgb(186, 184, 207)",
+            "borderWidth": "1px",
+            "fill": "rgb(32, 32, 45)",
+            "effectiveFill": [
+              32,
+              32,
+              45,
+              1
+            ],
+            "effectiveOutside": [
+              21,
+              21,
+              31,
+              1
+            ],
+            "againstFill": 8.304551134813018,
+            "againstOutside": 9.357719562635204,
+            "width": 342,
+            "height": 101.59375
+          },
+          {
+            "kind": "onboarding-quota",
+            "border": "rgb(186, 184, 207)",
+            "borderWidth": "1px",
+            "fill": "rgb(32, 32, 45)",
+            "effectiveFill": [
+              32,
+              32,
+              45,
+              1
+            ],
+            "effectiveOutside": [
+              21,
+              21,
+              31,
+              1
+            ],
+            "againstFill": 8.304551134813018,
+            "againstOutside": 9.357719562635204,
+            "width": 165,
+            "height": 66.796875
+          },
+          {
+            "kind": "onboarding-quota",
+            "border": "rgb(186, 184, 207)",
+            "borderWidth": "1px",
+            "fill": "rgb(32, 32, 45)",
+            "effectiveFill": [
+              32,
+              32,
+              45,
+              1
+            ],
+            "effectiveOutside": [
+              21,
+              21,
+              31,
+              1
+            ],
+            "againstFill": 8.304551134813018,
+            "againstOutside": 9.357719562635204,
+            "width": 165,
+            "height": 48
+          },
+          {
+            "kind": "onboarding-quota",
+            "border": "rgb(186, 184, 207)",
+            "borderWidth": "1px",
+            "fill": "rgb(32, 32, 45)",
+            "effectiveFill": [
+              32,
+              32,
+              45,
+              1
+            ],
+            "effectiveOutside": [
+              21,
+              21,
+              31,
+              1
+            ],
+            "againstFill": 8.304551134813018,
+            "againstOutside": 9.357719562635204,
+            "width": 165,
+            "height": 48
+          }
+        ]
+      },
+      "result": "PASS",
+      "errors": []
+    },
+    {
+      "mode": "goal",
+      "theme": "high-contrast",
+      "facts": {
+        "title": "Choose your learning goal",
+        "description": "Choose a goal and daily time. Save your choices before starting placement.",
+        "rawKeys": false,
+        "overlay": false,
+        "overflow": false,
+        "theme": "high-contrast",
+        "boundaries": [
+          {
+            "kind": "onboarding-choice",
+            "border": "rgb(226, 230, 241)",
+            "borderWidth": "1px",
+            "fill": "rgb(13, 16, 24)",
+            "effectiveFill": [
+              13,
+              16,
+              24,
+              1
+            ],
+            "effectiveOutside": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "againstFill": 15.232125910059796,
+            "againstOutside": 16.822650673503315,
+            "width": 342,
+            "height": 101.59375
+          },
+          {
+            "kind": "onboarding-choice",
+            "border": "rgb(226, 230, 241)",
+            "borderWidth": "1px",
+            "fill": "rgb(13, 16, 24)",
+            "effectiveFill": [
+              13,
+              16,
+              24,
+              1
+            ],
+            "effectiveOutside": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "againstFill": 15.232125910059796,
+            "againstOutside": 16.822650673503315,
+            "width": 342,
+            "height": 101.59375
+          },
+          {
+            "kind": "onboarding-choice",
+            "border": "rgb(226, 230, 241)",
+            "borderWidth": "1px",
+            "fill": "rgb(13, 16, 24)",
+            "effectiveFill": [
+              13,
+              16,
+              24,
+              1
+            ],
+            "effectiveOutside": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "againstFill": 15.232125910059796,
+            "againstOutside": 16.822650673503315,
+            "width": 342,
+            "height": 101.59375
+          },
+          {
+            "kind": "onboarding-choice",
+            "border": "rgb(226, 230, 241)",
+            "borderWidth": "1px",
+            "fill": "rgb(13, 16, 24)",
+            "effectiveFill": [
+              13,
+              16,
+              24,
+              1
+            ],
+            "effectiveOutside": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "againstFill": 15.232125910059796,
+            "againstOutside": 16.822650673503315,
+            "width": 342,
+            "height": 101.59375
+          },
+          {
+            "kind": "onboarding-quota",
+            "border": "rgb(226, 230, 241)",
+            "borderWidth": "1px",
+            "fill": "rgb(13, 16, 24)",
+            "effectiveFill": [
+              13,
+              16,
+              24,
+              1
+            ],
+            "effectiveOutside": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "againstFill": 15.232125910059796,
+            "againstOutside": 16.822650673503315,
+            "width": 165,
+            "height": 66.796875
+          },
+          {
+            "kind": "onboarding-quota",
+            "border": "rgb(226, 230, 241)",
+            "borderWidth": "1px",
+            "fill": "rgb(13, 16, 24)",
+            "effectiveFill": [
+              13,
+              16,
+              24,
+              1
+            ],
+            "effectiveOutside": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "againstFill": 15.232125910059796,
+            "againstOutside": 16.822650673503315,
+            "width": 165,
+            "height": 48
+          },
+          {
+            "kind": "onboarding-quota",
+            "border": "rgb(226, 230, 241)",
+            "borderWidth": "1px",
+            "fill": "rgb(13, 16, 24)",
+            "effectiveFill": [
+              13,
+              16,
+              24,
+              1
+            ],
+            "effectiveOutside": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "againstFill": 15.232125910059796,
+            "againstOutside": 16.822650673503315,
+            "width": 165,
+            "height": 48
+          }
+        ]
+      },
+      "result": "PASS",
+      "errors": []
+    },
+    {
+      "mode": "goal",
+      "theme": "system",
+      "facts": {
+        "title": "Choose your learning goal",
+        "description": "Choose a goal and daily time. Save your choices before starting placement.",
+        "rawKeys": false,
+        "overlay": false,
+        "overflow": false,
+        "theme": "light",
+        "boundaries": [
+          {
+            "kind": "onboarding-choice",
+            "border": "rgb(96, 98, 119)",
+            "borderWidth": "1px",
+            "fill": "rgb(255, 255, 255)",
+            "effectiveFill": [
+              255,
+              255,
+              255,
+              1
+            ],
+            "effectiveOutside": [
+              245,
+              245,
+              250,
+              1
+            ],
+            "againstFill": 5.9815185273527325,
+            "againstOutside": 5.504103371100126,
+            "width": 342,
+            "height": 101.59375
+          },
+          {
+            "kind": "onboarding-choice",
+            "border": "rgb(96, 98, 119)",
+            "borderWidth": "1px",
+            "fill": "rgb(255, 255, 255)",
+            "effectiveFill": [
+              255,
+              255,
+              255,
+              1
+            ],
+            "effectiveOutside": [
+              245,
+              245,
+              250,
+              1
+            ],
+            "againstFill": 5.9815185273527325,
+            "againstOutside": 5.504103371100126,
+            "width": 342,
+            "height": 101.59375
+          },
+          {
+            "kind": "onboarding-choice",
+            "border": "rgb(96, 98, 119)",
+            "borderWidth": "1px",
+            "fill": "rgb(255, 255, 255)",
+            "effectiveFill": [
+              255,
+              255,
+              255,
+              1
+            ],
+            "effectiveOutside": [
+              245,
+              245,
+              250,
+              1
+            ],
+            "againstFill": 5.9815185273527325,
+            "againstOutside": 5.504103371100126,
+            "width": 342,
+            "height": 101.59375
+          },
+          {
+            "kind": "onboarding-choice",
+            "border": "rgb(96, 98, 119)",
+            "borderWidth": "1px",
+            "fill": "rgb(255, 255, 255)",
+            "effectiveFill": [
+              255,
+              255,
+              255,
+              1
+            ],
+            "effectiveOutside": [
+              245,
+              245,
+              250,
+              1
+            ],
+            "againstFill": 5.9815185273527325,
+            "againstOutside": 5.504103371100126,
+            "width": 342,
+            "height": 101.59375
+          },
+          {
+            "kind": "onboarding-quota",
+            "border": "rgb(96, 98, 119)",
+            "borderWidth": "1px",
+            "fill": "rgb(255, 255, 255)",
+            "effectiveFill": [
+              255,
+              255,
+              255,
+              1
+            ],
+            "effectiveOutside": [
+              245,
+              245,
+              250,
+              1
+            ],
+            "againstFill": 5.9815185273527325,
+            "againstOutside": 5.504103371100126,
+            "width": 165,
+            "height": 66.796875
+          },
+          {
+            "kind": "onboarding-quota",
+            "border": "rgb(96, 98, 119)",
+            "borderWidth": "1px",
+            "fill": "rgb(255, 255, 255)",
+            "effectiveFill": [
+              255,
+              255,
+              255,
+              1
+            ],
+            "effectiveOutside": [
+              245,
+              245,
+              250,
+              1
+            ],
+            "againstFill": 5.9815185273527325,
+            "againstOutside": 5.504103371100126,
+            "width": 165,
+            "height": 48
+          },
+          {
+            "kind": "onboarding-quota",
+            "border": "rgb(96, 98, 119)",
+            "borderWidth": "1px",
+            "fill": "rgb(255, 255, 255)",
+            "effectiveFill": [
+              255,
+              255,
+              255,
+              1
+            ],
+            "effectiveOutside": [
+              245,
+              245,
+              250,
+              1
+            ],
+            "againstFill": 5.9815185273527325,
+            "againstOutside": 5.504103371100126,
+            "width": 165,
+            "height": 48
+          }
+        ]
+      },
+      "result": "PASS",
+      "errors": []
+    },
+    {
+      "mode": "consent",
+      "theme": "light",
+      "facts": {
+        "title": "查看同意事项",
+        "description": "查看当前要求与已记录的同意。",
+        "blocked": "同意内容暂时无法读取，请稍后重新读取。",
+        "rawKeys": false,
+        "overlay": false,
+        "overflow": false,
+        "theme": "light",
+        "boundaries": []
+      },
+      "result": "PASS"
+    },
+    {
+      "mode": "assessment",
+      "theme": "light",
+      "facts": {
+        "title": "设置已完成",
+        "description": "定级帮助你找到合适的起点，也可以先调整已保存的目标。",
+        "rawKeys": false,
+        "overlay": false,
+        "overflow": false,
+        "theme": "light",
+        "boundaries": []
+      },
+      "result": "PASS"
+    }
+  ],
+  "failures": [],
+  "sourceHashesAfter": {
+    "apps/mobile/src/pages/onboarding/onboarding.vue": "c4c691dd9ab74c8aa7f21a677d43f3541b22c4ea4642f733ad53c4cf94176086",
+    "packages/i18n/src/mobile-experience.ts": "7b21f6e074bf705463e27941cbc4c91847a242443cdbd1ad3deea155fc733dde",
+    "apps/mobile/src/auth/gateway-auth.ts": "746bb9d83d241162bce9d9cd701d2f6662d11a132977533e3ba2a11e428c3277",
+    "apps/mobile/src/stores/session.ts": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+    "apps/mobile/src/api/learner-content.ts": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6",
+    "apps/mobile/src/domain/onboarding-resume.ts": "ea6e26682e69a9f1c3d8fd47d284aa55d96e39d646e27e5d41d0f556ba902e26",
+    "apps/mobile/src/stores/learner-content.ts": "95cc92496db996242d91baed3301d76f985e4e3b9134e1e50c2b9ab8d41e4c61",
+    "apps/mobile/src/platform/pointer-feedback.ts": "24a1f9b26ad6797fc9a61a16cb43559d116230cd7e9cd66c1dd4d9a563d94a6c"
+  },
+  "status": "UI_PASS_RENDERED_BOUNDARIES_ONLY"
+}

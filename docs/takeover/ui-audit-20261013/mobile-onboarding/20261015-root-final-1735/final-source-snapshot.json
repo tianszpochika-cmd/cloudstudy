@@ -1,0 +1,95 @@
+{
+  "status": "REVIEWED_UI_SCOPED_PENDING_PUSH",
+  "parent": "54f5ac0e02a529635eefb3b7c55dd3cd7d33a71f",
+  "source": {
+    "apps/mobile/src/pages/onboarding/onboarding.vue": {
+      "rawSha256": "c4c691dd9ab74c8aa7f21a677d43f3541b22c4ea4642f733ad53c4cf94176086",
+      "lfSha256": "b8bc825aa7dcb71691828955fe3538db2f50d33dd5fc5806c1fb3dcf26bf8129",
+      "bytes": 35886
+    },
+    "packages/i18n/src/mobile-experience.ts": {
+      "rawSha256": "7b21f6e074bf705463e27941cbc4c91847a242443cdbd1ad3deea155fc733dde",
+      "lfSha256": "1011750f09fad8b2f91b742b9931e0bf23c24500e7df9d0162a1648fe1cf93a6",
+      "bytes": 24017
+    },
+    "apps/mobile/src/auth/gateway-auth.ts": {
+      "rawSha256": "746bb9d83d241162bce9d9cd701d2f6662d11a132977533e3ba2a11e428c3277",
+      "lfSha256": "746bb9d83d241162bce9d9cd701d2f6662d11a132977533e3ba2a11e428c3277",
+      "bytes": 9741
+    },
+    "apps/mobile/src/stores/session.ts": {
+      "rawSha256": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+      "lfSha256": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+      "bytes": 19841
+    },
+    "apps/mobile/src/api/learner-content.ts": {
+      "rawSha256": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6",
+      "lfSha256": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6",
+      "bytes": 40595
+    },
+    "apps/mobile/src/domain/onboarding-resume.ts": {
+      "rawSha256": "ea6e26682e69a9f1c3d8fd47d284aa55d96e39d646e27e5d41d0f556ba902e26",
+      "lfSha256": "ea6e26682e69a9f1c3d8fd47d284aa55d96e39d646e27e5d41d0f556ba902e26",
+      "bytes": 8514
+    },
+    "apps/mobile/src/stores/learner-content.ts": {
+      "rawSha256": "95cc92496db996242d91baed3301d76f985e4e3b9134e1e50c2b9ab8d41e4c61",
+      "lfSha256": "95cc92496db996242d91baed3301d76f985e4e3b9134e1e50c2b9ab8d41e4c61",
+      "bytes": 29759
+    },
+    "apps/mobile/src/platform/pointer-feedback.ts": {
+      "rawSha256": "24a1f9b26ad6797fc9a61a16cb43559d116230cd7e9cd66c1dd4d9a563d94a6c",
+      "lfSha256": "24a1f9b26ad6797fc9a61a16cb43559d116230cd7e9cd66c1dd4d9a563d94a6c",
+      "bytes": 3265
+    },
+    "apps/mobile/src/pages/login/login.vue": {
+      "rawSha256": "0c5fb5cd346d9e86271eaf65638cf2ffabbc9b466fb3d6cd1079e4fbc9a55460",
+      "lfSha256": "0c5fb5cd346d9e86271eaf65638cf2ffabbc9b466fb3d6cd1079e4fbc9a55460",
+      "bytes": 16496
+    },
+    "apps/mobile/tests/adult-birth-year-submit.test.mjs": {
+      "rawSha256": "fb78ca464bb43a0aa08b9ed772b361762726ab39fb8bf7d69cf12a0c74400609",
+      "lfSha256": "fb78ca464bb43a0aa08b9ed772b361762726ab39fb8bf7d69cf12a0c74400609",
+      "bytes": 6119
+    },
+    "apps/mobile/tests/adult-consent-copy.test.mjs": {
+      "rawSha256": "df039c5baaef32381d30159e1e25b39cfba11e5a6c4fb7964cb557b6be3405c9",
+      "lfSha256": "6f75096e3020be0e2ee9a3f67a335cab9539f53195a5403b04767faa185e4ac1",
+      "bytes": 3621
+    },
+    "apps/mobile/tests/mobile-gateway-auth-bootstrap.test.mjs": {
+      "rawSha256": "04e890d13180a155518f44e2713752d8c1c0624b87f773028a57c64ff076e692",
+      "lfSha256": "04e890d13180a155518f44e2713752d8c1c0624b87f773028a57c64ff076e692",
+      "bytes": 26881
+    },
+    "apps/mobile/tests/onboarding-resume-step.test.mjs": {
+      "rawSha256": "515ee65c390dbc63f5d68d11313c6130f368379d045e7f024f057c401e676320",
+      "lfSha256": "515ee65c390dbc63f5d68d11313c6130f368379d045e7f024f057c401e676320",
+      "bytes": 14583
+    },
+    "apps/mobile/tests/onboarding-adult-verdict.test.mjs": {
+      "rawSha256": "bed4e42721d80b075295f98139801ab054bb867a321c0314ef27c4c766df795c",
+      "lfSha256": "3fb51e0294e87f6353940a609fadc53e412bf30ce38cc9aad699b3c974f0c7f3",
+      "bytes": 4990
+    },
+    "apps/mobile/tests/onboarding-auth-projection.test.mjs": {
+      "rawSha256": "fa35ec4b16330623647aeefd6184539e2c9b6263a654fea2791fc5ba48d3a82f",
+      "lfSha256": "3f55fb099464119c6575926b2e67c2a8ed73428facb9eb4b4fd029c2e0a1aeaa",
+      "bytes": 2371
+    },
+    "apps/mobile/tests/onboarding-target-consent-guard.test.mjs": {
+      "rawSha256": "1e9e3291154e599a2d94668918ea958f00fff67e7ada471852a5381941dcf7e4",
+      "lfSha256": "e4750c88eea8833aa6ccde00d970e65e9711131e5cc053656cf932109c063ca2",
+      "bytes": 6061
+    },
+    "apps/mobile/tests/ui-onboarding.e2e.cjs": {
+      "rawSha256": "d0fe81578fca24ba53d9e0099037126f39ef7bbea3310fa1b13bd69796c4a35f",
+      "lfSha256": "d0fe81578fca24ba53d9e0099037126f39ef7bbea3310fa1b13bd69796c4a35f",
+      "bytes": 47274
+    }
+  },
+  "privateBackup": ".git/codex-local-backups/mb004-final-20261015/source",
+  "protectedChecked": 56,
+  "protectedDrift": [],
+  "realBackendNativeAcceptance": "NOT_RUN"
+}

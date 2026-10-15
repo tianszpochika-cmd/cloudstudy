@@ -20,8 +20,8 @@ function load(relativePath, modules) {
 
 const domain = load('src/domain/onboarding-resume.ts', {})
 
-function facts({ adultGate = 'PASSED', consent = { readable: true, accepted: true, unsatisfiedPurposes: [] }, target = { readable: true, saved: false, goal: null, quota: null } } = {}) {
-  return { adultGate, consent, target }
+function facts({ adultGate = 'PASSED', adultLearningAccess = 'ELIGIBLE', consent = { readable: true, accepted: true, unsatisfiedPurposes: [] }, target = { readable: true, saved: false, goal: null, quota: null } } = {}) {
+  return { adultGate, adultLearningAccess, consent, target }
 }
 
 test('mobile resume step matches the web facts: gate, consent, target, then placement entry', () => {
@@ -55,6 +55,13 @@ test('mobile resume step matches the web facts: gate, consent, target, then plac
   assert.deepEqual(domain.onboardingRemainingStepLabels(saved, true), [])
 })
 
+test('a saved target cannot advance resume without explicit eligible adult access', () => {
+  const saved = facts({ target: { readable: true, saved: true, goal: 'ZERO_BASIS', quota: 15 } })
+  const { adultLearningAccess: omitted, ...missingAccess } = saved
+  assert.equal(domain.selectOnboardingResumeStep(missingAccess), 'gate')
+  assert.equal(domain.selectOnboardingResumeStep({ ...saved, adultLearningAccess: 'RESTRICTED' }), 'gate')
+})
+
 class MobileApiError extends Error {
   constructor(status, details = {}) { super(`HTTP ${status}`); this.status = status; this.details = details }
 }
@@ -77,10 +84,47 @@ function responder(routes) {
   return { calls, request }
 }
 
+const adultGate = {
+  status: 'PASSED', learningAccess: 'ELIGIBLE', effectiveAt: '2026-10-15T00:00:00Z',
+  policyVersion: 'b30-adult-v1', minimumAge: 18, evidenceStatus: 'SERVER_VERIFIED', retryAllowed: false,
+}
 const passedConsent = {
-  adultGate: 'PASSED',
+  principalId: '00000000-0000-4000-8000-00000000000a',
+  tenantId: 'fixture-platform',
+  sessionId: '00000000-0000-4000-8000-000000000010',
+  deviceId: '00000000-0000-4000-8000-000000000020',
+  roles: ['learner'], permissions: ['learning.plan.read'], authMode: 'self-owned-jwt', status: 'ACTIVE',
+  adultGate,
   consentState: { accepted: true, unsatisfiedPurposes: [], version: 'b30-consent-v1' },
 }
+
+const { learningAccess: omittedAccess, ...adultGateWithoutAccess } = adultGate
+for (const [name, wireAdultGate, expectedAccess] of [
+  ['missing access', adultGateWithoutAccess, 'UNKNOWN'],
+  ['restricted access', { ...adultGate, learningAccess: 'RESTRICTED' }, 'RESTRICTED'],
+  ['legacy PASSED string', 'PASSED', 'UNKNOWN'],
+]) {
+  test(`mobile does not request targets for ${name}, despite accepted consent`, async () => {
+    const denied = responder({
+      '/iam/principal/me': { ...passedConsent, adultGate: wireAdultGate },
+      '/learner/targets': { goalCode: 'FOUNDATION', dailyQuotaMinutes: 15 },
+    })
+    const row = await apiFor(denied.request).readOnboardingResume()
+    assert.equal(row.adultLearningAccess, expectedAccess)
+    assert.equal(domain.selectOnboardingResumeStep(row), 'gate')
+    assert.deepEqual(row.target, { readable: true, saved: false, goal: null, quota: null })
+    assert.deepEqual(denied.calls, ['/iam/principal/me'])
+  })
+}
+
+test('an unavailable IAM principal read fails before any learner target request', async () => {
+  const unavailable = responder({
+    '/iam/principal/me': new MobileApiError(503),
+    '/learner/targets': { goalCode: 'FOUNDATION', dailyQuotaMinutes: 15 },
+  })
+  await assert.rejects(apiFor(unavailable.request).readOnboardingResume(), { status: 503 })
+  assert.deepEqual(unavailable.calls, ['/iam/principal/me'])
+})
 
 test('mobile GET target maps FOUNDATION and keeps a 404 distinct from a failed read', async () => {
   const saved = responder({
@@ -110,31 +154,47 @@ test('mobile GET target maps FOUNDATION and keeps a 404 distinct from a failed r
 
 test('mobile does not read a target before the gate passes, and optional analytics do not block', async () => {
   const unevaluated = responder({
-    '/iam/principal/me': { adultGate: 'NOT_EVALUATED' },
+    '/iam/principal/me': { ...passedConsent, adultGate: { ...adultGate, status: 'NOT_EVALUATED', learningAccess: 'RESTRICTED', evidenceStatus: 'INSUFFICIENT' } },
     '/learner/targets': { goalCode: 'FOUNDATION', dailyQuotaMinutes: 15 },
   })
   const gate = await apiFor(unevaluated.request).readOnboardingResume()
-  assert.equal(gate.adultGate, 'UNKNOWN')
+  assert.equal(gate.adultGate, 'REQUIRED')
   assert.deepEqual(unevaluated.calls, ['/iam/principal/me'])
   assert.equal(domain.selectOnboardingResumeStep(gate), 'gate')
 
   const rejected = await apiFor(responder({
-    '/iam/principal/me': { adultGate: 'REJECTED' },
+    '/iam/principal/me': { ...passedConsent, adultGate: { ...adultGate, status: 'REJECTED', learningAccess: 'RESTRICTED', evidenceStatus: 'REJECTED' } },
   }).request).readOnboardingResume()
   assert.equal(domain.selectOnboardingResumeStep(rejected), 'rejected')
 
   const required = await apiFor(responder({
-    '/iam/principal/me': { adultGate: 'PASSED', consentState: { accepted: true, unsatisfiedPurposes: ['ADULT_LEARNING_ELIGIBILITY'] } },
+    '/iam/principal/me': { ...passedConsent, consentState: { ...passedConsent.consentState, unsatisfiedPurposes: ['ADULT_LEARNING_ELIGIBILITY'] } },
     '/learner/targets': new MobileApiError(403, { code: 'CONSENT_REQUIRED' }),
   }).request).readOnboardingResume()
   assert.equal(domain.selectOnboardingResumeStep(required), 'consent')
 
   const analytics = await apiFor(responder({
-    '/iam/principal/me': { adultGate: 'PASSED', consentState: { accepted: true, unsatisfiedPurposes: ['PRODUCT_ANALYTICS'] } },
+    '/iam/principal/me': { ...passedConsent, consentState: { ...passedConsent.consentState, unsatisfiedPurposes: ['PRODUCT_ANALYTICS'] } },
     '/learner/targets': { goalCode: 'COLLEGE_CET', dailyQuotaMinutes: 30 },
   }).request).readOnboardingResume()
   assert.equal(analytics.target.goal, 'CET_4_6')
   assert.equal(domain.selectOnboardingResumeStep(analytics), 'assessment')
+})
+
+test('a target consent 403 preserves IAM acceptance and pauses for session refresh', async () => {
+  const staleSession = responder({
+    '/iam/principal/me': passedConsent,
+    '/learner/targets': new MobileApiError(403, { code: 'CONSENT_REQUIRED' }),
+  })
+  const row = await apiFor(staleSession.request).readOnboardingResume()
+  assert.deepEqual(row.consent, { readable: true, accepted: true, unsatisfiedPurposes: [] })
+  assert.equal(row.sessionRefreshRequired, true)
+  assert.deepEqual(row.target, { readable: false, saved: false, goal: null, quota: null })
+  assert.equal(domain.selectOnboardingResumeStep(row), 'consent')
+  assert.equal(domain.selectOnboardingResumeStep({
+    ...row, target: { readable: true, saved: true, goal: 'ZERO_BASIS', quota: 15 },
+  }), 'consent', 'A cached saved target cannot authorize advancement while refresh is required')
+  assert.deepEqual(staleSession.calls, ['/iam/principal/me', '/learner/targets'])
 })
 
 test('mobile onboarding, home and guard stay aligned with the server resume', () => {
@@ -147,14 +207,9 @@ test('mobile onboarding, home and guard stay aligned with the server resume', ()
     for (const pattern of banned) assert.doesNotMatch(source, pattern)
   }
   assert.match(page, /loadOnboardingResume\(true\)/)
-  assert.match(page, /v-for="item in store\.quotas"/)
-  assert.match(page, /v-for="item in goalOptions"/)
-  assert.match(page, /canonicalGoalOptions\(store\.goals\)/)
   assert.match(page, /prefillSavedTarget\(facts\.target\)/)
+  assert.match(page, /store\.saveTarget\(/)
   assert.match(page, /goal\.value = null/)
-  assert.match(page, /离开后不会保留/)
-  assert.match(page, /开始定级/)
-  assert.match(page, /data-primary-action="step === 'assessment' \? 'assessment' : step === 'goal' \? 'save-target' : 'continue'"/)
   assert.match(page, /\/pages\/forbidden\/forbidden/)
   assert.match(page, /\/pages\/assessment\/assessment/)
   assert.doesNotMatch(page, /saveOnboarding|跳过测评|快速开始|每日提醒/)

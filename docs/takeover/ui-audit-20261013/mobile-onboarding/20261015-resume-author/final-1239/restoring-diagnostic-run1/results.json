@@ -1,0 +1,454 @@
+{
+  "at": "2026-10-15T09:43:26.605Z",
+  "scope": "MB004_FORMAL_H5_SYNTHETIC_UI_ONLY",
+  "group": "restoring-diagnostic",
+  "browserPlugin": "Browser plugin not available; Playwright Chromium",
+  "sourceHashes": {
+    "apps/mobile/src/pages/onboarding/onboarding.vue": "8540707509e844fc02f8bdf01435e6a7f2ad691c97dba576d1acbad96b4ac377",
+    "packages/i18n/src/mobile-experience.ts": "5e0e045c0118226ef8e2f80b1fa1db072bdfdbd2d171c13a904075fe3c4f8743",
+    "apps/mobile/src/api/learner-content.ts": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6",
+    "apps/mobile/src/stores/session.ts": "ba479dfebf777599ed40b05218549afc23712f1077720b748f973ec3d3fadc99",
+    "apps/mobile/src/auth/gateway-auth.ts": "746bb9d83d241162bce9d9cd701d2f6662d11a132977533e3ba2a11e428c3277",
+    "apps/mobile/src/domain/onboarding-resume.ts": "ea6e26682e69a9f1c3d8fd47d284aa55d96e39d646e27e5d41d0f556ba902e26",
+    "apps/mobile/src/stores/learner-content.ts": "95cc92496db996242d91baed3301d76f985e4e3b9134e1e50c2b9ab8d41e4c61",
+    "apps/mobile/src/platform/pointer-feedback.ts": "9a0b104937e7f637c88f946232a0a614a0116452c79818a54429b96596d8d1f2",
+    "apps/mobile/tests/ui-onboarding.e2e.cjs": "1cca2f0c4a0ebe0c4ac9933b809db66114f35caa8c45b06305c5c13326913e31"
+  },
+  "checks": [],
+  "matrix": [],
+  "pageErrors": [],
+  "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "fixtureRequests": [
+    {
+      "mode": "consent",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "mode": "consent",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "consent",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "consent",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/learner/targets"
+    },
+    {
+      "mode": "consent",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/consents"
+    },
+    {
+      "mode": "consent",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "consent",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/learner/targets"
+    },
+    {
+      "mode": "consent",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/token/refresh"
+    },
+    {
+      "mode": "consent",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "consent",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "consent",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/learner/targets"
+    }
+  ],
+  "diagnosticNetwork": [
+    {
+      "at": 1792057408118,
+      "event": "request",
+      "method": "POST",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "at": 1792057408119,
+      "event": "response",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200,
+      "shape": {
+        "accessToken": "string",
+        "adultGate": {
+          "status": "string",
+          "learningAccess": "string"
+        }
+      }
+    },
+    {
+      "at": 1792057408129,
+      "event": "request",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "at": 1792057408131,
+      "event": "response",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me",
+      "status": 200,
+      "shape": {
+        "principal": {
+          "subject": "string",
+          "permissions": "array",
+          "roles": "array",
+          "adultGate": "string"
+        },
+        "adultGate": {
+          "status": "string",
+          "learningAccess": "string"
+        },
+        "learningAccess": "string",
+        "permissions": "array",
+        "consentState": {
+          "accepted": "boolean",
+          "unsatisfiedPurposes": "array<string>",
+          "requiredPurposes": "array<string>",
+          "version": "string",
+          "learningAccess": "string"
+        }
+      }
+    },
+    {
+      "at": 1792057408165,
+      "event": "request",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "at": 1792057408166,
+      "event": "response",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me",
+      "status": 200,
+      "shape": {
+        "principal": {
+          "subject": "string",
+          "permissions": "array",
+          "roles": "array",
+          "adultGate": "string"
+        },
+        "adultGate": {
+          "status": "string",
+          "learningAccess": "string"
+        },
+        "learningAccess": "string",
+        "permissions": "array",
+        "consentState": {
+          "accepted": "boolean",
+          "unsatisfiedPurposes": "array<string>",
+          "requiredPurposes": "array<string>",
+          "version": "string",
+          "learningAccess": "string"
+        }
+      }
+    },
+    {
+      "at": 1792057408169,
+      "event": "request",
+      "method": "GET",
+      "path": "/api/v1/learner/targets"
+    },
+    {
+      "at": 1792057408173,
+      "event": "response",
+      "method": "GET",
+      "path": "/api/v1/learner/targets",
+      "status": 404,
+      "shape": {
+        "code": "string"
+      }
+    },
+    {
+      "at": 1792057408187,
+      "event": "request",
+      "method": "GET",
+      "path": "/api/v1/iam/consents"
+    },
+    {
+      "at": 1792057408192,
+      "event": "response",
+      "method": "GET",
+      "path": "/api/v1/iam/consents",
+      "status": 200,
+      "shape": {
+        "items": "array<object>"
+      }
+    },
+    {
+      "at": 1792057408265,
+      "event": "request",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "at": 1792057408265,
+      "event": "response",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me",
+      "status": 200,
+      "shape": {
+        "principal": {
+          "subject": "string",
+          "permissions": "array<string>",
+          "roles": "array",
+          "adultGate": "string"
+        },
+        "adultGate": {
+          "status": "string",
+          "learningAccess": "string"
+        },
+        "learningAccess": "string",
+        "permissions": "array<string>",
+        "consentState": {
+          "accepted": "boolean",
+          "unsatisfiedPurposes": "array",
+          "requiredPurposes": "array<string>",
+          "version": "string",
+          "learningAccess": "string"
+        }
+      }
+    },
+    {
+      "at": 1792057408271,
+      "event": "request",
+      "method": "GET",
+      "path": "/api/v1/learner/targets"
+    },
+    {
+      "at": 1792057408272,
+      "event": "response",
+      "method": "GET",
+      "path": "/api/v1/learner/targets",
+      "status": 403,
+      "shape": {
+        "code": "string"
+      }
+    },
+    {
+      "at": 1792057408279,
+      "event": "request",
+      "method": "POST",
+      "path": "/api/v1/auth/token/refresh"
+    },
+    {
+      "at": 1792057408281,
+      "event": "fixture-held",
+      "method": "POST",
+      "path": "/api/v1/auth/token/refresh"
+    },
+    {
+      "at": 1792057408282,
+      "event": "fixture-release-requested",
+      "refreshFailure": false
+    },
+    {
+      "at": 1792057408288,
+      "event": "response",
+      "method": "POST",
+      "path": "/api/v1/auth/token/refresh",
+      "status": 200,
+      "shape": {
+        "accessToken": "string",
+        "adultGate": {
+          "status": "string",
+          "learningAccess": "string"
+        }
+      }
+    },
+    {
+      "at": 1792057408300,
+      "event": "request",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "at": 1792057408302,
+      "event": "response",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me",
+      "status": 200,
+      "shape": {
+        "principal": {
+          "subject": "string",
+          "permissions": "array<string>",
+          "roles": "array",
+          "adultGate": "string"
+        },
+        "adultGate": {
+          "status": "string",
+          "learningAccess": "string"
+        },
+        "learningAccess": "string",
+        "permissions": "array<string>",
+        "consentState": {
+          "accepted": "boolean",
+          "unsatisfiedPurposes": "array",
+          "requiredPurposes": "array<string>",
+          "version": "string",
+          "learningAccess": "string"
+        }
+      }
+    },
+    {
+      "at": 1792057408321,
+      "event": "request",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "at": 1792057408321,
+      "event": "response",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me",
+      "status": 200,
+      "shape": {
+        "principal": {
+          "subject": "string",
+          "permissions": "array<string>",
+          "roles": "array",
+          "adultGate": "string"
+        },
+        "adultGate": {
+          "status": "string",
+          "learningAccess": "string"
+        },
+        "learningAccess": "string",
+        "permissions": "array<string>",
+        "consentState": {
+          "accepted": "boolean",
+          "unsatisfiedPurposes": "array",
+          "requiredPurposes": "array<string>",
+          "version": "string",
+          "learningAccess": "string"
+        }
+      }
+    },
+    {
+      "at": 1792057408324,
+      "event": "request",
+      "method": "GET",
+      "path": "/api/v1/learner/targets"
+    },
+    {
+      "at": 1792057408328,
+      "event": "response",
+      "method": "GET",
+      "path": "/api/v1/learner/targets",
+      "status": 404,
+      "shape": {
+        "code": "string"
+      }
+    }
+  ],
+  "status": "FAIL",
+  "failure": "locator.waitFor: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('heading', { name: '选择学习目标' }) to be visible\u001b[22m\n\n    at restoring (C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\apps\\mobile\\tests\\ui-onboarding.e2e.cjs:297:68)\n    at async C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\apps\\mobile\\tests\\ui-onboarding.e2e.cjs:370:69",
+  "diagnosticBrowser": [
+    {
+      "at": 1792057408213,
+      "event": "installed",
+      "route": "#/pages/onboarding/onboarding",
+      "status": "authenticated",
+      "isAuthenticated": true,
+      "identityRevision": 4,
+      "onboardingPresent": true,
+      "restoring": false,
+      "reading": false,
+      "busy": false,
+      "step": "consent"
+    },
+    {
+      "at": 1792057408259,
+      "event": "sample",
+      "route": "#/pages/settings/settings",
+      "status": "authenticated",
+      "isAuthenticated": true,
+      "identityRevision": 4,
+      "onboardingPresent": false,
+      "restoring": null,
+      "reading": null,
+      "busy": null,
+      "step": null
+    },
+    {
+      "at": 1792057408276,
+      "event": "session-change",
+      "route": "#/pages/onboarding/onboarding",
+      "status": "refreshing",
+      "isAuthenticated": false,
+      "identityRevision": 4,
+      "onboardingPresent": true,
+      "restoring": true,
+      "reading": true,
+      "busy": true,
+      "step": "gate"
+    },
+    {
+      "at": 1792057408319,
+      "event": "session-change",
+      "route": "#/pages/login/login",
+      "status": "refreshing",
+      "isAuthenticated": false,
+      "identityRevision": 4,
+      "onboardingPresent": false,
+      "restoring": null,
+      "reading": null,
+      "busy": null,
+      "step": null
+    },
+    {
+      "at": 1792057408319,
+      "event": "session-change",
+      "route": "#/pages/login/login",
+      "status": "authenticated",
+      "isAuthenticated": true,
+      "identityRevision": 4,
+      "onboardingPresent": false,
+      "restoring": null,
+      "reading": null,
+      "busy": null,
+      "step": null
+    }
+  ],
+  "failureState": {
+    "route": "#/pages/login/login",
+    "focusId": "",
+    "errorPresent": 0
+  }
+}

@@ -1,0 +1,4 @@
+
+> @englishflow/mobile@1.0.0 typecheck C:\Users\Administrator\Desktop\my\cloudstudy\apps\mobile
+> tsc --noEmit -p tsconfig.json
+

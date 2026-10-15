@@ -1,0 +1,692 @@
+{
+  "at": "2026-10-15T10:05:23.113Z",
+  "scope": "MB004_FORMAL_H5_SYNTHETIC_UI_ONLY",
+  "group": "boundary",
+  "browserPlugin": "Browser plugin not available; Playwright Chromium",
+  "sourceHashes": {
+    "apps/mobile/src/pages/onboarding/onboarding.vue": "c4c691dd9ab74c8aa7f21a677d43f3541b22c4ea4642f733ad53c4cf94176086",
+    "packages/i18n/src/mobile-experience.ts": "7b21f6e074bf705463e27941cbc4c91847a242443cdbd1ad3deea155fc733dde",
+    "apps/mobile/src/api/learner-content.ts": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6",
+    "apps/mobile/src/stores/session.ts": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+    "apps/mobile/src/auth/gateway-auth.ts": "746bb9d83d241162bce9d9cd701d2f6662d11a132977533e3ba2a11e428c3277",
+    "apps/mobile/src/domain/onboarding-resume.ts": "ea6e26682e69a9f1c3d8fd47d284aa55d96e39d646e27e5d41d0f556ba902e26",
+    "apps/mobile/src/stores/learner-content.ts": "95cc92496db996242d91baed3301d76f985e4e3b9134e1e50c2b9ab8d41e4c61",
+    "apps/mobile/src/platform/pointer-feedback.ts": "24a1f9b26ad6797fc9a61a16cb43559d116230cd7e9cd66c1dd4d9a563d94a6c",
+    "apps/mobile/tests/ui-onboarding.e2e.cjs": "d0fe81578fca24ba53d9e0099037126f39ef7bbea3310fa1b13bd69796c4a35f"
+  },
+  "checks": [
+    {
+      "name": "actual-visible-checkbox-zh-CN-light",
+      "facts": {
+        "url": "#/pages/onboarding/onboarding",
+        "title": "确认成人身份",
+        "titleFont": "28px",
+        "titleWeight": "650",
+        "descriptionFont": "14px",
+        "brandIcon": 25,
+        "overflow": false,
+        "bodyWidth": 342,
+        "inputFont": "16px",
+        "idleErrors": 0,
+        "overlay": 0,
+        "rawKeys": false,
+        "titleContrast": 14.171267244103936,
+        "descriptionContrast": 5.504103371100126,
+        "boundaries": [
+          {
+            "control": "onboarding-input",
+            "border": "rgb(96, 98, 119)",
+            "againstFill": 5.9815185273527325,
+            "againstPage": 5.504103371100126
+          },
+          {
+            "control": "uni-checkbox-input",
+            "border": "rgb(96, 98, 119)",
+            "againstFill": 5.9815185273527325,
+            "againstPage": 5.504103371100126
+          }
+        ],
+        "bodyGap": "24px",
+        "primaryFont": "16px",
+        "targets": [
+          {
+            "width": 342,
+            "height": 60
+          },
+          {
+            "width": 44,
+            "height": 44
+          },
+          {
+            "width": 342,
+            "height": 50
+          },
+          {
+            "width": 342,
+            "height": 44
+          },
+          {
+            "width": 342,
+            "height": 44
+          }
+        ]
+      },
+      "checkedMark": {
+        "measured": "actual-svg-paint",
+        "mark": "rgb(89, 53, 184)",
+        "fill": "rgb(255, 255, 255)",
+        "contrast": 7.996499985642157
+      },
+      "result": "PASS"
+    },
+    {
+      "name": "actual-visible-checkbox-zh-CN-dark",
+      "facts": {
+        "url": "#/pages/onboarding/onboarding",
+        "title": "确认成人身份",
+        "titleFont": "28px",
+        "titleWeight": "650",
+        "descriptionFont": "14px",
+        "brandIcon": 25,
+        "overflow": false,
+        "bodyWidth": 342,
+        "inputFont": "16px",
+        "idleErrors": 0,
+        "overlay": 0,
+        "rawKeys": false,
+        "titleContrast": 15.923775297667023,
+        "descriptionContrast": 9.357719562635204,
+        "boundaries": [
+          {
+            "control": "onboarding-input",
+            "border": "rgb(186, 184, 207)",
+            "againstFill": 8.304551134813018,
+            "againstPage": 9.357719562635204
+          },
+          {
+            "control": "uni-checkbox-input",
+            "border": "rgb(186, 184, 207)",
+            "againstFill": 8.304551134813018,
+            "againstPage": 9.357719562635204
+          }
+        ],
+        "bodyGap": "24px",
+        "primaryFont": "16px",
+        "targets": [
+          {
+            "width": 342,
+            "height": 60
+          },
+          {
+            "width": 44,
+            "height": 44
+          },
+          {
+            "width": 342,
+            "height": 50
+          },
+          {
+            "width": 342,
+            "height": 44
+          },
+          {
+            "width": 342,
+            "height": 44
+          }
+        ]
+      },
+      "checkedMark": {
+        "measured": "actual-svg-paint",
+        "mark": "rgb(188, 171, 255)",
+        "fill": "rgb(32, 32, 45)",
+        "contrast": 7.969476450059623
+      },
+      "result": "PASS"
+    },
+    {
+      "name": "actual-visible-checkbox-zh-CN-high-contrast",
+      "facts": {
+        "url": "#/pages/onboarding/onboarding",
+        "title": "确认成人身份",
+        "titleFont": "28px",
+        "titleWeight": "650",
+        "descriptionFont": "14px",
+        "brandIcon": 25,
+        "overflow": false,
+        "bodyWidth": 342,
+        "inputFont": "16px",
+        "idleErrors": 0,
+        "overlay": 0,
+        "rawKeys": false,
+        "titleContrast": 21,
+        "descriptionContrast": 16.822650673503315,
+        "boundaries": [
+          {
+            "control": "onboarding-input",
+            "border": "rgb(226, 230, 241)",
+            "againstFill": 15.232125910059796,
+            "againstPage": 16.822650673503315
+          },
+          {
+            "control": "uni-checkbox-input",
+            "border": "rgb(226, 230, 241)",
+            "againstFill": 15.232125910059796,
+            "againstPage": 16.822650673503315
+          }
+        ],
+        "bodyGap": "24px",
+        "primaryFont": "16px",
+        "targets": [
+          {
+            "width": 342,
+            "height": 60
+          },
+          {
+            "width": 44,
+            "height": 44
+          },
+          {
+            "width": 342,
+            "height": 50
+          },
+          {
+            "width": 342,
+            "height": 44
+          },
+          {
+            "width": 342,
+            "height": 44
+          }
+        ]
+      },
+      "checkedMark": {
+        "measured": "actual-svg-paint",
+        "mark": "rgb(195, 181, 250)",
+        "fill": "rgb(13, 16, 24)",
+        "contrast": 10.241035683218554
+      },
+      "result": "PASS"
+    },
+    {
+      "name": "actual-visible-checkbox-zh-CN-system",
+      "facts": {
+        "url": "#/pages/onboarding/onboarding",
+        "title": "确认成人身份",
+        "titleFont": "28px",
+        "titleWeight": "650",
+        "descriptionFont": "14px",
+        "brandIcon": 25,
+        "overflow": false,
+        "bodyWidth": 342,
+        "inputFont": "16px",
+        "idleErrors": 0,
+        "overlay": 0,
+        "rawKeys": false,
+        "titleContrast": 14.171267244103936,
+        "descriptionContrast": 5.504103371100126,
+        "boundaries": [
+          {
+            "control": "onboarding-input",
+            "border": "rgb(96, 98, 119)",
+            "againstFill": 5.9815185273527325,
+            "againstPage": 5.504103371100126
+          },
+          {
+            "control": "uni-checkbox-input",
+            "border": "rgb(96, 98, 119)",
+            "againstFill": 5.9815185273527325,
+            "againstPage": 5.504103371100126
+          }
+        ],
+        "bodyGap": "24px",
+        "primaryFont": "16px",
+        "targets": [
+          {
+            "width": 342,
+            "height": 60
+          },
+          {
+            "width": 44,
+            "height": 44
+          },
+          {
+            "width": 342,
+            "height": 50
+          },
+          {
+            "width": 342,
+            "height": 44
+          },
+          {
+            "width": 342,
+            "height": 44
+          }
+        ]
+      },
+      "checkedMark": {
+        "measured": "actual-svg-paint",
+        "mark": "rgb(89, 53, 184)",
+        "fill": "rgb(255, 255, 255)",
+        "contrast": 7.996499985642157
+      },
+      "result": "PASS"
+    },
+    {
+      "name": "actual-visible-checkbox-en-US-light",
+      "facts": {
+        "url": "#/pages/onboarding/onboarding",
+        "title": "Confirm adult eligibility",
+        "titleFont": "28px",
+        "titleWeight": "650",
+        "descriptionFont": "14px",
+        "brandIcon": 25,
+        "overflow": false,
+        "bodyWidth": 342,
+        "inputFont": "16px",
+        "idleErrors": 0,
+        "overlay": 0,
+        "rawKeys": false,
+        "titleContrast": 14.171267244103936,
+        "descriptionContrast": 5.504103371100126,
+        "boundaries": [
+          {
+            "control": "onboarding-input",
+            "border": "rgb(96, 98, 119)",
+            "againstFill": 5.9815185273527325,
+            "againstPage": 5.504103371100126
+          },
+          {
+            "control": "uni-checkbox-input",
+            "border": "rgb(96, 98, 119)",
+            "againstFill": 5.9815185273527325,
+            "againstPage": 5.504103371100126
+          }
+        ],
+        "bodyGap": "24px",
+        "primaryFont": "16px",
+        "targets": [
+          {
+            "width": 342,
+            "height": 60
+          },
+          {
+            "width": 44,
+            "height": 44
+          },
+          {
+            "width": 342,
+            "height": 50
+          },
+          {
+            "width": 342,
+            "height": 44
+          },
+          {
+            "width": 342,
+            "height": 44
+          }
+        ]
+      },
+      "checkedMark": {
+        "measured": "actual-svg-paint",
+        "mark": "rgb(89, 53, 184)",
+        "fill": "rgb(255, 255, 255)",
+        "contrast": 7.996499985642157
+      },
+      "result": "PASS"
+    },
+    {
+      "name": "actual-visible-checkbox-en-US-dark",
+      "facts": {
+        "url": "#/pages/onboarding/onboarding",
+        "title": "Confirm adult eligibility",
+        "titleFont": "28px",
+        "titleWeight": "650",
+        "descriptionFont": "14px",
+        "brandIcon": 25,
+        "overflow": false,
+        "bodyWidth": 342,
+        "inputFont": "16px",
+        "idleErrors": 0,
+        "overlay": 0,
+        "rawKeys": false,
+        "titleContrast": 15.923775297667023,
+        "descriptionContrast": 9.357719562635204,
+        "boundaries": [
+          {
+            "control": "onboarding-input",
+            "border": "rgb(186, 184, 207)",
+            "againstFill": 8.304551134813018,
+            "againstPage": 9.357719562635204
+          },
+          {
+            "control": "uni-checkbox-input",
+            "border": "rgb(186, 184, 207)",
+            "againstFill": 8.304551134813018,
+            "againstPage": 9.357719562635204
+          }
+        ],
+        "bodyGap": "24px",
+        "primaryFont": "16px",
+        "targets": [
+          {
+            "width": 342,
+            "height": 60
+          },
+          {
+            "width": 44,
+            "height": 44
+          },
+          {
+            "width": 342,
+            "height": 50
+          },
+          {
+            "width": 342,
+            "height": 44
+          },
+          {
+            "width": 342,
+            "height": 44
+          }
+        ]
+      },
+      "checkedMark": {
+        "measured": "actual-svg-paint",
+        "mark": "rgb(188, 171, 255)",
+        "fill": "rgb(32, 32, 45)",
+        "contrast": 7.969476450059623
+      },
+      "result": "PASS"
+    },
+    {
+      "name": "actual-visible-checkbox-en-US-high-contrast",
+      "facts": {
+        "url": "#/pages/onboarding/onboarding",
+        "title": "Confirm adult eligibility",
+        "titleFont": "28px",
+        "titleWeight": "650",
+        "descriptionFont": "14px",
+        "brandIcon": 25,
+        "overflow": false,
+        "bodyWidth": 342,
+        "inputFont": "16px",
+        "idleErrors": 0,
+        "overlay": 0,
+        "rawKeys": false,
+        "titleContrast": 21,
+        "descriptionContrast": 16.822650673503315,
+        "boundaries": [
+          {
+            "control": "onboarding-input",
+            "border": "rgb(226, 230, 241)",
+            "againstFill": 15.232125910059796,
+            "againstPage": 16.822650673503315
+          },
+          {
+            "control": "uni-checkbox-input",
+            "border": "rgb(226, 230, 241)",
+            "againstFill": 15.232125910059796,
+            "againstPage": 16.822650673503315
+          }
+        ],
+        "bodyGap": "24px",
+        "primaryFont": "16px",
+        "targets": [
+          {
+            "width": 342,
+            "height": 60
+          },
+          {
+            "width": 44,
+            "height": 44
+          },
+          {
+            "width": 342,
+            "height": 50
+          },
+          {
+            "width": 342,
+            "height": 44
+          },
+          {
+            "width": 342,
+            "height": 44
+          }
+        ]
+      },
+      "checkedMark": {
+        "measured": "actual-svg-paint",
+        "mark": "rgb(195, 181, 250)",
+        "fill": "rgb(13, 16, 24)",
+        "contrast": 10.241035683218554
+      },
+      "result": "PASS"
+    },
+    {
+      "name": "actual-visible-checkbox-en-US-system",
+      "facts": {
+        "url": "#/pages/onboarding/onboarding",
+        "title": "Confirm adult eligibility",
+        "titleFont": "28px",
+        "titleWeight": "650",
+        "descriptionFont": "14px",
+        "brandIcon": 25,
+        "overflow": false,
+        "bodyWidth": 342,
+        "inputFont": "16px",
+        "idleErrors": 0,
+        "overlay": 0,
+        "rawKeys": false,
+        "titleContrast": 14.171267244103936,
+        "descriptionContrast": 5.504103371100126,
+        "boundaries": [
+          {
+            "control": "onboarding-input",
+            "border": "rgb(96, 98, 119)",
+            "againstFill": 5.9815185273527325,
+            "againstPage": 5.504103371100126
+          },
+          {
+            "control": "uni-checkbox-input",
+            "border": "rgb(96, 98, 119)",
+            "againstFill": 5.9815185273527325,
+            "againstPage": 5.504103371100126
+          }
+        ],
+        "bodyGap": "24px",
+        "primaryFont": "16px",
+        "targets": [
+          {
+            "width": 342,
+            "height": 60
+          },
+          {
+            "width": 44,
+            "height": 44
+          },
+          {
+            "width": 342,
+            "height": 50
+          },
+          {
+            "width": 342,
+            "height": 44
+          },
+          {
+            "width": 342,
+            "height": 44
+          }
+        ]
+      },
+      "checkedMark": {
+        "measured": "actual-svg-paint",
+        "mark": "rgb(89, 53, 184)",
+        "fill": "rgb(255, 255, 255)",
+        "contrast": 7.996499985642157
+      },
+      "result": "PASS"
+    }
+  ],
+  "matrix": [],
+  "pageErrors": [],
+  "consoleErrors": [],
+  "fixtureRequests": [
+    {
+      "mode": "gate",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "mode": "gate",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "gate",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "gate",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "mode": "gate",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "gate",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "gate",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "mode": "gate",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "gate",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "gate",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "mode": "gate",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "gate",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "gate",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "mode": "gate",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "gate",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "gate",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "mode": "gate",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "gate",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "gate",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "mode": "gate",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "gate",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "gate",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "mode": "gate",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "gate",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    }
+  ],
+  "status": "PASS_GROUP_UI_SYNTHETIC_NOT_BUSINESS_ACCEPTANCE",
+  "sourceHashesAfter": {
+    "apps/mobile/src/pages/onboarding/onboarding.vue": "c4c691dd9ab74c8aa7f21a677d43f3541b22c4ea4642f733ad53c4cf94176086",
+    "packages/i18n/src/mobile-experience.ts": "7b21f6e074bf705463e27941cbc4c91847a242443cdbd1ad3deea155fc733dde",
+    "apps/mobile/src/api/learner-content.ts": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6",
+    "apps/mobile/src/stores/session.ts": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+    "apps/mobile/src/auth/gateway-auth.ts": "746bb9d83d241162bce9d9cd701d2f6662d11a132977533e3ba2a11e428c3277",
+    "apps/mobile/src/domain/onboarding-resume.ts": "ea6e26682e69a9f1c3d8fd47d284aa55d96e39d646e27e5d41d0f556ba902e26",
+    "apps/mobile/src/stores/learner-content.ts": "95cc92496db996242d91baed3301d76f985e4e3b9134e1e50c2b9ab8d41e4c61",
+    "apps/mobile/src/platform/pointer-feedback.ts": "24a1f9b26ad6797fc9a61a16cb43559d116230cd7e9cd66c1dd4d9a563d94a6c",
+    "apps/mobile/tests/ui-onboarding.e2e.cjs": "d0fe81578fca24ba53d9e0099037126f39ef7bbea3310fa1b13bd69796c4a35f"
+  }
+}

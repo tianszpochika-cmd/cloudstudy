@@ -1,0 +1,36 @@
+
+> @englishflow/mobile@1.0.0 build:h5 C:\Users\Administrator\Desktop\my\cloudstudy\apps\mobile
+> uni build -p h5
+
+Compiler version: 4.81（vue3）
+Compiling...
+​(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vite.config.ts:1:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.​
+
+uni-app 有新版本发布，请执行 `npx @dcloudio/uvm@latest alpha` 更新，更新日志详见：https://download1.dcloud.net.cn/hbuilderx/changelog/5.31.2026093020-alpha.html
+DEPRECATION WARNING [import]: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+    ╷
+134 │ @import "./theme/v2-tokens.scss";
+    │         ^^^^^^^^^^^^^^^^^^^^^^^^
+    ╵
+    src\App.vue 134:9  root stylesheet
+
+​[33m[INEFFECTIVE_DYNAMIC_IMPORT] [0msrc/stores/session.ts is dynamically imported by src/api/client.ts, src/api/learner-content.ts but also statically imported by src/App.vue?vue&type=script&setup=true&lang.ts, src/auth/navigation.ts, src/components/b12/B12RewardsCard.vue?vue&type=script&setup=true&lang.ts, src/components/b12/B12SocialExtensions.vue?vue&type=script&setup=true&lang.ts, src/pages/assessment/assessment.vue?vue&type=script&setup=true&lang.ts, ..., dynamic import will not move module into another chunk.
+​
+
+欢迎将web站点部署到uniCloud前端网页托管平台，高速、免费、安全、省心，详见：https://uniapp.dcloud.io/uniCloud/hosting
+​[33m[PLUGIN_TIMINGS] [0mPlugin hooks ran for 9.9s of this 10.2s build (97%).
+The slowest hooks, timed inside each callback (the wait before a callback starts is excluded, the time it awaits is included):
+  - uni:copy writeBundle (40%, 4.1s, 1 call)
+Additional hook time came from the hooks below and from hooks under 1s.
+3 hooks are listed without a time. Their calls overlapped, so the time inside one call includes work from other calls. To find their cost, profile the build with `node --cpu-prof`:
+  - vite:terser renderChunk (62 calls)
+  - vite:css-post renderChunk (62 calls)
+  - vite:css transform (50 calls)
+See https://rolldown.rs/reference/InputOptions.checks#plugintimings for more details.
+​
+DONE  Build complete.

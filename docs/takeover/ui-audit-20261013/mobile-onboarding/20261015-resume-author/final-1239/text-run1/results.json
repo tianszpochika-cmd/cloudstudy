@@ -1,0 +1,861 @@
+{
+  "at": "2026-10-15T04:42:14.444Z",
+  "scope": "MB004_FORMAL_H5_SYNTHETIC_UI_ONLY",
+  "group": "text",
+  "browserPlugin": "Browser plugin not available; Playwright Chromium",
+  "sourceHashes": {
+    "apps/mobile/src/pages/onboarding/onboarding.vue": "f56f77954e12a9ea2fabb1717b4ad2e53cbf382f26481824c95bcdbdea4ebf97",
+    "packages/i18n/src/mobile-experience.ts": "5e0e045c0118226ef8e2f80b1fa1db072bdfdbd2d171c13a904075fe3c4f8743",
+    "apps/mobile/src/api/learner-content.ts": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6",
+    "apps/mobile/src/stores/session.ts": "ba479dfebf777599ed40b05218549afc23712f1077720b748f973ec3d3fadc99",
+    "apps/mobile/src/auth/gateway-auth.ts": "746bb9d83d241162bce9d9cd701d2f6662d11a132977533e3ba2a11e428c3277",
+    "apps/mobile/src/domain/onboarding-resume.ts": "ea6e26682e69a9f1c3d8fd47d284aa55d96e39d646e27e5d41d0f556ba902e26",
+    "apps/mobile/src/stores/learner-content.ts": "95cc92496db996242d91baed3301d76f985e4e3b9134e1e50c2b9ab8d41e4c61",
+    "apps/mobile/src/platform/pointer-feedback.ts": "6464f4c1712b5a0f2fd4ab01d451d5bb6ffaa13bde486826a424511059ef6425",
+    "apps/mobile/tests/ui-onboarding.e2e.cjs": "57b48ca08e17c21433744c03b517a28da4562e411abac997481bed14dc72ebd4"
+  },
+  "checks": [
+    {
+      "name": "gate-zh-CN-200-short",
+      "facts": {
+        "url": "#/pages/onboarding/onboarding",
+        "title": "确认成人身份",
+        "titleFont": "56px",
+        "titleWeight": "650",
+        "descriptionFont": "28px",
+        "brandIcon": 25,
+        "overflow": false,
+        "bodyWidth": 272,
+        "inputFont": "32px",
+        "idleErrors": 0,
+        "overlay": 0,
+        "rawKeys": false,
+        "titleContrast": 14.171267244103936,
+        "descriptionContrast": 5.504103371100126,
+        "boundaries": [
+          {
+            "border": "rgb(96, 98, 119)",
+            "againstFill": 5.9815185273527325,
+            "againstPage": 5.504103371100126
+          }
+        ],
+        "bodyGap": "24px",
+        "primaryFont": "32px",
+        "targets": [
+          {
+            "width": 272,
+            "height": 105.59375
+          },
+          {
+            "width": 44,
+            "height": 44
+          },
+          {
+            "width": 272,
+            "height": 74
+          },
+          {
+            "width": 272,
+            "height": 60.796875
+          },
+          {
+            "width": 272,
+            "height": 60.796875
+          }
+        ]
+      },
+      "result": "PASS"
+    },
+    {
+      "name": "gate-en-US-200-short",
+      "facts": {
+        "url": "#/pages/onboarding/onboarding",
+        "title": "Confirm adult eligibility",
+        "titleFont": "56px",
+        "titleWeight": "650",
+        "descriptionFont": "28px",
+        "brandIcon": 25,
+        "overflow": false,
+        "bodyWidth": 272,
+        "inputFont": "32px",
+        "idleErrors": 0,
+        "overlay": 0,
+        "rawKeys": false,
+        "titleContrast": 14.171267244103936,
+        "descriptionContrast": 5.504103371100126,
+        "boundaries": [
+          {
+            "border": "rgb(96, 98, 119)",
+            "againstFill": 5.9815185273527325,
+            "againstPage": 5.504103371100126
+          }
+        ],
+        "bodyGap": "24px",
+        "primaryFont": "32px",
+        "targets": [
+          {
+            "width": 272,
+            "height": 150.390625
+          },
+          {
+            "width": 44,
+            "height": 44
+          },
+          {
+            "width": 272,
+            "height": 122
+          },
+          {
+            "width": 272,
+            "height": 60.796875
+          },
+          {
+            "width": 272,
+            "height": 60.796875
+          }
+        ]
+      },
+      "result": "PASS"
+    },
+    {
+      "name": "consent-zh-CN-200-short",
+      "facts": {
+        "url": "#/pages/onboarding/onboarding",
+        "title": "查看同意事项",
+        "titleFont": "56px",
+        "titleWeight": "650",
+        "descriptionFont": "28px",
+        "brandIcon": 25,
+        "overflow": false,
+        "bodyWidth": 272,
+        "inputFont": null,
+        "idleErrors": 0,
+        "overlay": 0,
+        "rawKeys": false,
+        "titleContrast": 14.171267244103936,
+        "descriptionContrast": 5.504103371100126,
+        "boundaries": [],
+        "bodyGap": "24px",
+        "primaryFont": null,
+        "targets": [
+          {
+            "width": 272,
+            "height": 60.796875
+          },
+          {
+            "width": 272,
+            "height": 60.796875
+          },
+          {
+            "width": 272,
+            "height": 60.796875
+          },
+          {
+            "width": 272,
+            "height": 60.796875
+          }
+        ]
+      },
+      "result": "PASS"
+    },
+    {
+      "name": "consent-en-US-200-short",
+      "facts": {
+        "url": "#/pages/onboarding/onboarding",
+        "title": "Review consent status",
+        "titleFont": "56px",
+        "titleWeight": "650",
+        "descriptionFont": "28px",
+        "brandIcon": 25,
+        "overflow": false,
+        "bodyWidth": 272,
+        "inputFont": null,
+        "idleErrors": 0,
+        "overlay": 0,
+        "rawKeys": false,
+        "titleContrast": 14.171267244103936,
+        "descriptionContrast": 5.504103371100126,
+        "boundaries": [],
+        "bodyGap": "24px",
+        "primaryFont": null,
+        "targets": [
+          {
+            "width": 272,
+            "height": 105.59375
+          },
+          {
+            "width": 272,
+            "height": 60.796875
+          },
+          {
+            "width": 272,
+            "height": 60.796875
+          },
+          {
+            "width": 272,
+            "height": 60.796875
+          }
+        ]
+      },
+      "result": "PASS"
+    },
+    {
+      "name": "goal-zh-CN-200-short",
+      "facts": {
+        "url": "#/pages/onboarding/onboarding",
+        "title": "选择学习目标",
+        "titleFont": "56px",
+        "titleWeight": "650",
+        "descriptionFont": "28px",
+        "brandIcon": 25,
+        "overflow": false,
+        "bodyWidth": 272,
+        "inputFont": null,
+        "idleErrors": 0,
+        "overlay": 0,
+        "rawKeys": false,
+        "titleContrast": 14.171267244103936,
+        "descriptionContrast": 5.504103371100126,
+        "boundaries": [
+          {
+            "border": "rgb(96, 98, 119)",
+            "againstFill": 5.9815185273527325,
+            "againstPage": 5.504103371100126
+          },
+          {
+            "border": "rgb(96, 98, 119)",
+            "againstFill": 5.9815185273527325,
+            "againstPage": 5.504103371100126
+          },
+          {
+            "border": "rgb(96, 98, 119)",
+            "againstFill": 5.9815185273527325,
+            "againstPage": 5.504103371100126
+          },
+          {
+            "border": "rgb(96, 98, 119)",
+            "againstFill": 5.9815185273527325,
+            "againstPage": 5.504103371100126
+          },
+          {
+            "border": "rgb(96, 98, 119)",
+            "againstFill": 5.9815185273527325,
+            "againstPage": 5.504103371100126
+          },
+          {
+            "border": "rgb(96, 98, 119)",
+            "againstFill": 5.9815185273527325,
+            "againstPage": 5.504103371100126
+          },
+          {
+            "border": "rgb(96, 98, 119)",
+            "againstFill": 5.9815185273527325,
+            "againstPage": 5.504103371100126
+          }
+        ],
+        "bodyGap": "24px",
+        "primaryFont": "32px",
+        "targets": [
+          {
+            "width": 272,
+            "height": 167.1875
+          },
+          {
+            "width": 272,
+            "height": 167.1875
+          },
+          {
+            "width": 272,
+            "height": 167.1875
+          },
+          {
+            "width": 272,
+            "height": 167.1875
+          },
+          {
+            "width": 130,
+            "height": 159.59375
+          },
+          {
+            "width": 130,
+            "height": 159.59375
+          },
+          {
+            "width": 130,
+            "height": 118
+          },
+          {
+            "width": 130,
+            "height": 118
+          },
+          {
+            "width": 272,
+            "height": 74
+          },
+          {
+            "width": 272,
+            "height": 60.796875
+          },
+          {
+            "width": 272,
+            "height": 60.796875
+          },
+          {
+            "width": 272,
+            "height": 60.796875
+          }
+        ]
+      },
+      "result": "PASS"
+    },
+    {
+      "name": "goal-en-US-200-short",
+      "facts": {
+        "url": "#/pages/onboarding/onboarding",
+        "title": "Choose your learning goal",
+        "titleFont": "56px",
+        "titleWeight": "650",
+        "descriptionFont": "28px",
+        "brandIcon": 25,
+        "overflow": false,
+        "bodyWidth": 272,
+        "inputFont": null,
+        "idleErrors": 0,
+        "overlay": 0,
+        "rawKeys": false,
+        "titleContrast": 14.171267244103936,
+        "descriptionContrast": 5.504103371100126,
+        "boundaries": [
+          {
+            "border": "rgb(96, 98, 119)",
+            "againstFill": 5.9815185273527325,
+            "againstPage": 5.504103371100126
+          },
+          {
+            "border": "rgb(96, 98, 119)",
+            "againstFill": 5.9815185273527325,
+            "againstPage": 5.504103371100126
+          },
+          {
+            "border": "rgb(96, 98, 119)",
+            "againstFill": 5.9815185273527325,
+            "againstPage": 5.504103371100126
+          },
+          {
+            "border": "rgb(96, 98, 119)",
+            "againstFill": 5.9815185273527325,
+            "againstPage": 5.504103371100126
+          },
+          {
+            "border": "rgb(96, 98, 119)",
+            "againstFill": 5.9815185273527325,
+            "againstPage": 5.504103371100126
+          },
+          {
+            "border": "rgb(96, 98, 119)",
+            "againstFill": 5.9815185273527325,
+            "againstPage": 5.504103371100126
+          },
+          {
+            "border": "rgb(96, 98, 119)",
+            "againstFill": 5.9815185273527325,
+            "againstPage": 5.504103371100126
+          }
+        ],
+        "bodyGap": "24px",
+        "primaryFont": "32px",
+        "targets": [
+          {
+            "width": 272,
+            "height": 339.96875
+          },
+          {
+            "width": 272,
+            "height": 298.375
+          },
+          {
+            "width": 272,
+            "height": 298.375
+          },
+          {
+            "width": 272,
+            "height": 339.96875
+          },
+          {
+            "width": 130,
+            "height": 207.59375
+          },
+          {
+            "width": 130,
+            "height": 207.59375
+          },
+          {
+            "width": 130,
+            "height": 166
+          },
+          {
+            "width": 130,
+            "height": 166
+          },
+          {
+            "width": 272,
+            "height": 122
+          },
+          {
+            "width": 272,
+            "height": 60.796875
+          },
+          {
+            "width": 272,
+            "height": 60.796875
+          },
+          {
+            "width": 272,
+            "height": 60.796875
+          }
+        ]
+      },
+      "result": "PASS"
+    },
+    {
+      "name": "assessment-zh-CN-200-short",
+      "facts": {
+        "url": "#/pages/onboarding/onboarding",
+        "title": "设置已完成",
+        "titleFont": "56px",
+        "titleWeight": "650",
+        "descriptionFont": "28px",
+        "brandIcon": 25,
+        "overflow": false,
+        "bodyWidth": 272,
+        "inputFont": null,
+        "idleErrors": 0,
+        "overlay": 0,
+        "rawKeys": false,
+        "titleContrast": 14.171267244103936,
+        "descriptionContrast": 5.504103371100126,
+        "boundaries": [],
+        "bodyGap": "24px",
+        "primaryFont": "32px",
+        "targets": [
+          {
+            "width": 272,
+            "height": 74
+          },
+          {
+            "width": 272,
+            "height": 60.796875
+          },
+          {
+            "width": 272,
+            "height": 60.796875
+          },
+          {
+            "width": 272,
+            "height": 60.796875
+          }
+        ]
+      },
+      "result": "PASS"
+    },
+    {
+      "name": "assessment-en-US-200-short",
+      "facts": {
+        "url": "#/pages/onboarding/onboarding",
+        "title": "Your setup is saved",
+        "titleFont": "56px",
+        "titleWeight": "650",
+        "descriptionFont": "28px",
+        "brandIcon": 25,
+        "overflow": false,
+        "bodyWidth": 272,
+        "inputFont": null,
+        "idleErrors": 0,
+        "overlay": 0,
+        "rawKeys": false,
+        "titleContrast": 14.171267244103936,
+        "descriptionContrast": 5.504103371100126,
+        "boundaries": [],
+        "bodyGap": "24px",
+        "primaryFont": "32px",
+        "targets": [
+          {
+            "width": 272,
+            "height": 122
+          },
+          {
+            "width": 272,
+            "height": 60.796875
+          },
+          {
+            "width": 272,
+            "height": 60.796875
+          },
+          {
+            "width": 272,
+            "height": 60.796875
+          }
+        ]
+      },
+      "result": "PASS"
+    },
+    {
+      "name": "old-center-click-0",
+      "beforeTop": 566.15625,
+      "heldMs": 0,
+      "observed": {
+        "clicks": 1,
+        "hit": true
+      },
+      "requests": 1,
+      "result": "PASS"
+    },
+    {
+      "name": "old-center-click-160",
+      "beforeTop": 566.15625,
+      "heldMs": 160,
+      "observed": {
+        "clicks": 1,
+        "hit": true
+      },
+      "requests": 1,
+      "result": "PASS"
+    },
+    {
+      "name": "old-center-drag-160",
+      "beforeTop": 566.15625,
+      "heldMs": 160,
+      "observed": {
+        "clicks": 0,
+        "hit": true
+      },
+      "requests": 0,
+      "result": "PASS"
+    },
+    {
+      "name": "old-center-cancel-160",
+      "beforeTop": 566.15625,
+      "heldMs": 160,
+      "observed": {
+        "clicks": 0,
+        "hit": true
+      },
+      "requests": 0,
+      "result": "PASS"
+    }
+  ],
+  "matrix": [],
+  "pageErrors": [],
+  "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+    "Failed to load resource: the server responded with a status of 503 (Service Unavailable)"
+  ],
+  "fixtureRequests": [
+    {
+      "mode": "gate",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "mode": "gate",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "gate",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "gate",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "mode": "gate",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "gate",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "consent",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "mode": "consent",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "consent",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "consent",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/learner/targets"
+    },
+    {
+      "mode": "consent",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/consents"
+    },
+    {
+      "mode": "consent",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "mode": "consent",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "consent",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "consent",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/learner/targets"
+    },
+    {
+      "mode": "consent",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/consents"
+    },
+    {
+      "mode": "goal",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "mode": "goal",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "goal",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "goal",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/learner/targets"
+    },
+    {
+      "mode": "goal",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "mode": "goal",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "goal",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "goal",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/learner/targets"
+    },
+    {
+      "mode": "assessment",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "mode": "assessment",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "assessment",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "assessment",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/learner/targets"
+    },
+    {
+      "mode": "assessment",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "mode": "assessment",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "assessment",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "assessment",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/learner/targets"
+    },
+    {
+      "mode": "gate",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "mode": "gate",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "gate",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "gate",
+      "method": "POST",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/adult-gate"
+    },
+    {
+      "mode": "gate",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "mode": "gate",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "gate",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "gate",
+      "method": "POST",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/adult-gate"
+    },
+    {
+      "mode": "gate",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "mode": "gate",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "gate",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "gate",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "mode": "gate",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "gate",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "gate",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "mode": "gate",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "gate",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    }
+  ],
+  "status": "FAIL",
+  "failure": "page.waitForFunction: Timeout 30000ms exceeded.\n    at textAndPointer (C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\apps\\mobile\\tests\\ui-onboarding.e2e.cjs:263:13)\n    at async C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\apps\\mobile\\tests\\ui-onboarding.e2e.cjs:321:40",
+  "failureState": {
+    "route": "#/pages/onboarding/onboarding",
+    "focusId": "",
+    "busy": "false",
+    "errorPresent": 1
+  }
+}

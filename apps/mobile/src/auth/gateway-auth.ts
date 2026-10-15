@@ -1,5 +1,6 @@
 import {
   type B8AdultGateRequest,
+  type B8AdultGateResponse,
   type B8AuthTokenResponse,
   type B8DeviceInput,
   type B8LoginRequest,
@@ -11,6 +12,7 @@ import { MobileApiError, mobileApiClient, mobileIamAuthClient } from '../api/cli
 import { safeInternalReturnTo } from '../platform/gateway'
 
 export type MobileAdultGateStatus = 'UNKNOWN' | 'REQUIRED' | 'PASSED' | 'REJECTED'
+export type MobileAdultLearningAccess = NonNullable<B8AdultGateResponse['learningAccess']> | 'UNKNOWN'
 
 export interface MobileTokenPair {
   accessToken: B8AuthTokenResponse['accessToken']
@@ -18,6 +20,7 @@ export interface MobileTokenPair {
   deviceId?: B8AuthTokenResponse['deviceId'] | null
   sessionId?: B8AuthTokenResponse['sessionId'] | null
   adultGate?: MobileAdultGateStatus
+  adultLearningAccess?: MobileAdultLearningAccess
 }
 
 export interface MobilePrincipalSnapshot {
@@ -25,6 +28,7 @@ export interface MobilePrincipalSnapshot {
   roles: readonly string[]
   permissions: readonly string[]
   adultGate: MobileAdultGateStatus
+  adultLearningAccess?: MobileAdultLearningAccess
 }
 
 export interface MobileAuthSnapshot {
@@ -32,6 +36,7 @@ export interface MobileAuthSnapshot {
   readonly permissions?: readonly string[]
   readonly roles?: readonly string[]
   readonly adultGate?: MobileAdultGateStatus
+  readonly adultLearningAccess?: MobileAdultLearningAccess
   readonly tokenPair?: MobileTokenPair | null
 }
 
@@ -98,6 +103,11 @@ function parseAdultGate(value: unknown): MobileAdultGateStatus {
   return 'UNKNOWN'
 }
 
+function parseAdultLearningAccess(value: unknown): MobileAdultLearningAccess {
+  if (!isRecord(value)) return 'UNKNOWN'
+  return value.learningAccess === 'ELIGIBLE' || value.learningAccess === 'RESTRICTED' ? value.learningAccess : 'UNKNOWN'
+}
+
 function parseTokenPair(value: unknown): MobileTokenPair {
   const source = unwrap(value)
   if (!isRecord(source)) throw new Error('认证服务没有返回有效移动会话。')
@@ -109,6 +119,7 @@ function parseTokenPair(value: unknown): MobileTokenPair {
     deviceId: text(source.deviceId),
     sessionId: text(source.sessionId),
     adultGate: parseAdultGate(source.adultGate ?? source.adultGateStatus),
+    adultLearningAccess: parseAdultLearningAccess(source.adultGate),
   }
 }
 
@@ -119,12 +130,15 @@ function parseSnapshot(value: unknown): MobileAuthSnapshot | null {
   const subject = text(principalSource.subject ?? principalSource.sub ?? principalSource.principalId)
   const roles = list(source.roles ?? principalSource.roles)
   const permissions = list(source.permissions ?? principalSource.permissions)
-  const adultGate = parseAdultGate(source.adultGate ?? source.adultGateStatus ?? principalSource.adultGate ?? principalSource.adultGateStatus ?? (source.learningAccess !== undefined ? source : undefined))
+  const adultFact = source.adultGate ?? source.adultGateStatus ?? principalSource.adultGate ?? principalSource.adultGateStatus ?? (source.learningAccess !== undefined || ['PASSED', 'REJECTED', 'NOT_EVALUATED'].includes(String(source.status)) ? source : undefined)
+  const adultGate = parseAdultGate(adultFact)
+  const adultLearningAccess = parseAdultLearningAccess(adultFact)
   return {
-    principal: subject ? { subject, roles, permissions, adultGate } : null,
+    principal: subject ? { subject, roles, permissions, adultGate, adultLearningAccess } : null,
     roles,
     permissions,
     adultGate,
+    adultLearningAccess,
     tokenPair: source.accessToken ? parseTokenPair(source) : null,
   }
 }
@@ -194,7 +208,8 @@ export function createGatewayMobileAuthAdapter(): MobileAuthAdapter {
     },
     async getPermissions() {
       try {
-        return parseSnapshot(await mobileApiClient.request('/iam/permissions', { skipAuthRetry: true, authBootstrap: 'identity' }))
+        // The principal contract includes current permissions and adult eligibility.
+        return parseSnapshot(await mobileApiClient.request('/iam/principal/me', { skipAuthRetry: true, authBootstrap: 'identity' }))
       } catch (error) {
         if (error instanceof MobileApiError && (error.status === 401 || error.status === 404)) return null
         throw error

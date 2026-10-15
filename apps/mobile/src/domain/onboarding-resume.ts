@@ -1,3 +1,5 @@
+import type { B8AdultGateResponse } from '@englishflow/contracts'
+
 // Resume facts for BC-011. Step choice uses IAM adult gate, IAM consent and
 // GET /learner/targets only. First-day blockers and registration time are not inputs.
 
@@ -22,6 +24,8 @@ export interface OnboardingTargetFact {
 
 export interface OnboardingResumeFacts {
   adultGate: string
+  adultLearningAccess?: NonNullable<B8AdultGateResponse['learningAccess']> | 'UNKNOWN'
+  sessionRefreshRequired?: boolean
   consent: OnboardingConsentFact
   target: OnboardingTargetFact
 }
@@ -54,8 +58,8 @@ export function requiredConsentsComplete(consent: OnboardingConsentFact): boolea
 
 export function selectOnboardingResumeStep(facts: OnboardingResumeFacts): OnboardingResumeStep {
   if (facts.adultGate === 'REJECTED') return 'rejected'
-  if (facts.adultGate !== 'PASSED') return 'gate'
-  if (!requiredConsentsComplete(facts.consent)) return 'consent'
+  if (facts.adultGate !== 'PASSED' || facts.adultLearningAccess !== 'ELIGIBLE') return 'gate'
+  if (facts.sessionRefreshRequired || !requiredConsentsComplete(facts.consent)) return 'consent'
   if (!facts.target.readable || !facts.target.saved) return 'goal'
   return 'assessment'
 }

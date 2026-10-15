@@ -1,347 +1,373 @@
 <script setup lang="ts">
-import MobilePageHeader from '../../components/MobilePageHeader.vue'
-import { useMobileExperience } from '../../platform/experience'
-const { experienceStyle, experienceMotion } = useMobileExperience()
-
-import { computed, reactive, ref, watch } from 'vue'
+import AppIcon from '../../components/AppIcon.vue'
+import { mobileT, useMobileExperience } from '../../platform/experience'
+import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import { onHide, onShow } from '@dcloudio/uni-app'
+import type { B8Consent } from '@englishflow/contracts'
+import { interpolate } from '@englishflow/i18n'
+import { mobileI18n } from '../../platform/v2-foundation'
 import { mobileApiClient } from '../../api/client'
-import { getUniRuntime, openUniPage } from '../../platform/uni-runtime'
+import { getUniRuntime } from '../../platform/uni-runtime'
+import { usePointerFeedback } from '../../platform/pointer-feedback'
 import { currentBirthYearMax, isSubmittableBirthYear } from '../../domain/adult-birth-year'
-import { emptyConsentChoices, readPublishedConsentVersion, requiredConsentItems, type RequiredConsentPurpose } from '../../domain/onboarding-consent-copy'
-import { canonicalGoalOptions, mapUiGoal, onboardingProgressLabel, prefillSavedTarget, selectOnboardingResumeStep, type OnboardingResumeStep } from '../../domain/onboarding-resume'
+import { canonicalGoalOptions, mapUiGoal, prefillSavedTarget, requiredConsentsComplete, selectOnboardingResumeStep, type OnboardingResumeStep } from '../../domain/onboarding-resume'
 import { useLearnerContentStore } from '../../stores/learner-content'
 import { useSessionStore } from '../../stores/session'
 
+const { experienceStyle, experienceMotion } = useMobileExperience()
 const store = useLearnerContentStore()
 const session = useSessionStore()
 const step = ref<OnboardingResumeStep>('gate')
 const goal = ref<string | null>(null)
-const quota = ref<number>(15)
-const birthYear = ref<number | null>(null)
-const ageConfirmed = ref(false)
-const consentChecked = reactive(emptyConsentChoices())
-const publishedConsentVersion = ref<string | null>(null)
-const saving = ref(false)
+const quota = ref(15)
 const savedGoal = ref<string | null>(null)
 const savedQuota = ref<number | null>(null)
-const resumeError = ref<string | null>(null)
-const adultError = ref<string | null>(null)
-let loaded = false
-let leftPage = true
-
-watch(() => session.identityRevision, () => {
-  loaded = false
-  leftPage = true
-  step.value = 'gate'
-  goal.value = null
-  quota.value = 15
-  birthYear.value = null
-  ageConfirmed.value = false
-  clearConsentChoices()
-  savedGoal.value = null
-  savedQuota.value = null
-  resumeError.value = null
-  adultError.value = null
-}, { flush: 'sync' })
-
+const birthYear = ref('')
+const ageConfirmed = ref(false)
+const yearFocused = ref(false)
+const yearField = ref<{ $el?: HTMLElement } | null>(null)
+const pageRoot = ref<{ $el?: HTMLElement } | null>(null)
+const saving = ref(false)
+const reading = ref(false)
+const restoring = ref(false)
+const attempted = ref(false)
+const actionError = ref<string | null>(null)
+const lastYearError = ref('')
+const lastAgeError = ref('')
+const recordsOpen = ref(false)
+const recordsError = ref(false)
+type ConsentRecord = Pick<B8Consent, 'type' | 'purpose' | 'required' | 'document' | 'state' | 'provenance' | 'policyRef' | 'policyVersion' | 'decisionRef'>
+const consentRecords = ref<ConsentRecord[]>([])
+let active = false
+let generation = 0
+let showRequest = 0
 const birthYearMax = currentBirthYearMax()
-const adultBirthYearValid = computed(() => isSubmittableBirthYear(birthYear.value, birthYearMax))
-const targetDirty = computed(() => Boolean(savedGoal.value) && (goal.value !== savedGoal.value || quota.value !== savedQuota.value))
-const goalOptions = computed(() => canonicalGoalOptions(store.goals))
-const requiredConsentsChecked = computed(() => requiredConsentItems.every((item) => consentChecked[item.purpose]))
-const canContinue = computed(() => {
-  if (step.value === 'gate') return adultBirthYearValid.value && ageConfirmed.value
-  if (step.value === 'consent') return requiredConsentsChecked.value && Boolean(publishedConsentVersion.value)
-  if (step.value === 'assessment') return true
-  return Boolean(goal.value && quota.value)
+const busy = computed(() => saving.value || reading.value || restoring.value || store.onboardingStatus === 'loading')
+const yearValid = computed(() => isSubmittableBirthYear(birthYear.value.trim() ? Number(birthYear.value) : null, birthYearMax))
+const yearError = computed(() => attempted.value && !yearValid.value ? interpolate(mobileT('onboarding.yearError'), { max: birthYearMax }) : null)
+const ageError = computed(() => attempted.value && !ageConfirmed.value ? mobileT('onboarding.ageError') : null)
+const goalOptions = canonicalGoalOptions([])
+const quotas = [5, 15, 30, 45]
+const rank = computed(() => step.value === 'gate' ? 0 : step.value === 'consent' ? 1 : step.value === 'goal' ? 2 : 3)
+const consentCurrent = computed(() => Boolean(store.onboardingResume && !store.onboardingResume.sessionRefreshRequired && requiredConsentsComplete(store.onboardingResume.consent) && session.adultGate === 'PASSED' && session.isLearningReady))
+const targetUnreadable = computed(() => store.onboardingResume?.target.readable === false)
+const primaryLabel = computed(() => mobileT(`onboarding.${saving.value ? step.value === 'goal' ? 'saving' : 'confirming' : step.value === 'gate' ? 'confirm' : step.value === 'goal' ? 'saveStart' : step.value === 'assessment' ? 'start' : 'continue'}`))
+function minuteLabel(value: number | null): string { return interpolate(mobileT('onboarding.minutes'), { count: value === null ? '' : mobileI18n.formatNumber(value) }) }
+function reportErrors(): void {
+  if (yearError.value) lastYearError.value = yearError.value
+  if (ageError.value) lastAgeError.value = ageError.value
+}
+watch([yearError, ageError], () => { if (!yearFocused.value) reportErrors() })
+function currentFeedback() {
+  return { year: yearError.value ? lastYearError.value || null : null, lastYear: lastYearError.value, age: ageError.value ? lastAgeError.value || null : null, lastAge: lastAgeError.value, action: actionError.value }
+}
+const pointerFeedback = usePointerFeedback({ root: () => pageRoot.value?.$el ?? null, actions: '.onboarding-primary,.onboarding-text,.onboarding-record-toggle', capture: currentFeedback, disabled: () => busy.value, afterRelease: () => { syncNativeYear() } })
+const feedback = computed(() => pointerFeedback.value ?? currentFeedback())
+function syncNativeYear(): void {
+  // #ifdef H5
+  const input = yearField.value?.$el?.querySelector<HTMLInputElement>('.uni-input-input')
+  if (!input) return
+  const attrs: Record<string, string | null> = { id: 'mobile-onboarding-year', name: 'birthYear', autocomplete: 'bday-year', inputmode: 'numeric', required: '', 'aria-label': mobileT('onboarding.year'), 'aria-labelledby': 'mobile-onboarding-year-label', 'aria-invalid': feedback.value.year ? 'true' : null, 'aria-describedby': feedback.value.year ? 'mobile-onboarding-year-error' : null }
+  for (const [key, value] of Object.entries(attrs)) { if (value === null) input.removeAttribute(key); else input.setAttribute(key, value) }
+  // #endif
+}
+watch([birthYear, yearFocused, feedback, busy, () => mobileT('onboarding.year')], async () => { await nextTick(); syncNativeYear() }, { flush: 'post' })
+onMounted(syncNativeYear)
+watch(step, async () => {
+  await nextTick()
+  if (!active) return
+  // #ifdef H5
+  const title = pageRoot.value?.$el?.querySelector<HTMLElement>('#mobile-onboarding-title')
+  title?.focus({ preventScroll: true })
+  title?.scrollIntoView({ block: 'start' })
+  // #endif
+  uni.setNavigationBarTitle({ title: mobileT(`onboarding.${step.value}Title`) })
 })
-let consentVersionRequest = 0
-
-function clearConsentChoices(): void {
-  consentVersionRequest += 1
-  for (const item of requiredConsentItems) consentChecked[item.purpose] = false
-  publishedConsentVersion.value = null
+function current(request: number, revision: number): boolean { return active && request === generation && revision === session.identityRevision && session.isAuthenticated }
+function clearDrafts(): void {
+  birthYear.value = ''; ageConfirmed.value = false; attempted.value = false; yearFocused.value = false
+  lastYearError.value = ''; lastAgeError.value = ''; consentRecords.value = []; recordsOpen.value = false; recordsError.value = false
+  goal.value = savedGoal.value; quota.value = savedQuota.value ?? 15
 }
-
-function toggleConsent(purpose: RequiredConsentPurpose): void {
-  consentChecked[purpose] = !consentChecked[purpose]
-}
-
-async function loadPublishedConsentVersion(): Promise<void> {
-  const request = ++consentVersionRequest
-  publishedConsentVersion.value = null
-  try {
-    const raw = await mobileApiClient.request<unknown>('/iam/principal/me')
-    if (request !== consentVersionRequest || step.value !== 'consent') return
-    publishedConsentVersion.value = readPublishedConsentVersion(raw)
-  } catch {
-    if (request !== consentVersionRequest || step.value !== 'consent') return
-    publishedConsentVersion.value = null
+function invalidate(): void { generation++; saving.value = false; reading.value = false; clearDrafts() }
+watch(() => session.identityRevision, () => {
+  invalidate(); savedGoal.value = null; savedQuota.value = null; goal.value = null; quota.value = 15; step.value = 'gate'; actionError.value = null
+  if (active && !restoring.value && session.isAuthenticated) void loadResume()
+  else if (active && !restoring.value) {
+    const request = generation
+    void nextTick().then(async () => {
+      if (!active || request !== generation || session.isAuthenticated) return
+      try { await navigate('/pages/login/login?returnTo=%2Fpages%2Fonboarding%2Fonboarding', true) }
+      catch { if (active && request === generation) actionError.value = mobileT('onboarding.navigationFailed') }
+    })
   }
+}, { flush: 'sync' })
+function object(value: unknown): Record<string, unknown> | null { return value !== null && typeof value === 'object' && !Array.isArray(value) ? value as Record<string, unknown> : null }
+function parseRecords(raw: unknown): ConsentRecord[] {
+  const envelope = object(raw), data = object(envelope?.data) ?? envelope
+  if (!data || !Array.isArray(data.items) || data.hasMore === true || data.nextCursor || (typeof data.total === 'number' && data.total > data.items.length)) throw new Error('Incomplete consent records')
+  const types = ['TERMS', 'PRIVACY', 'ADULT_LEARNING', 'PRODUCT_ANALYTICS', 'VOICE_RECORDING'] as const
+  const purposes = ['ACCOUNT_TERMS', 'PRIVACY_NOTICE', 'ADULT_LEARNING_ELIGIBILITY', 'PRODUCT_ANALYTICS', 'ADULT_VOICE_RECORDING_REMOTE_STORAGE_AND_REPLAY'] as const
+  return data.items.map((rawItem: unknown) => {
+    const item = object(rawItem), doc = object(item?.document), provenance = object(item?.provenance)
+    const index = types.findIndex(type => type === item?.type)
+    if (!item || index < 0 || item.purpose !== purposes[index] || typeof item.required !== 'boolean' || !doc || !provenance || !['GRANTED', 'WITHDRAWN'].includes(String(item.state)) || provenance.authority !== 'IAM_SERVER_RECORDED_CONSENT' || provenance.documentSource !== 'PUBLISHED_DOCUMENT_VERSION_AND_DIGEST' || provenance.policySource !== 'IAM_ACTIVE_POLICY_CONTROL_PLANE') throw new Error('Unreadable consent record')
+    for (const value of [doc.version, doc.digest, doc.publishedAt, provenance.recordedAt, item.policyRef, item.policyVersion, item.decisionRef]) if (typeof value !== 'string' || !value.trim()) throw new Error('Incomplete consent record')
+    return { type: types[index], purpose: purposes[index], required: item.required, state: item.state as ConsentRecord['state'], document: { version: doc.version as string, digest: doc.digest as string, publishedAt: doc.publishedAt as string }, provenance: { authority: 'IAM_SERVER_RECORDED_CONSENT', documentSource: 'PUBLISHED_DOCUMENT_VERSION_AND_DIGEST', policySource: 'IAM_ACTIVE_POLICY_CONTROL_PLANE', recordedAt: provenance.recordedAt as string }, policyRef: item.policyRef as string, policyVersion: item.policyVersion as string, decisionRef: item.decisionRef as string }
+  })
 }
-const progressLabel = computed(() => store.onboardingResume ? onboardingProgressLabel(store.onboardingResume) : '正在读取已保存进度')
-const stepRank = computed(() => step.value === 'gate' ? 0 : step.value === 'consent' ? 1 : step.value === 'goal' ? 2 : 3)
-const primaryLabel = computed(() => {
-  if (saving.value && step.value !== 'assessment') return step.value === 'goal' ? '正在保存…' : '正在确认…'
-  if (step.value === 'assessment') return '开始定级'
-  if (step.value === 'goal') return '保存并开始测评'
-  return '继续'
-})
-const targetUnreadable = computed(() => step.value === 'goal' && store.onboardingResume?.target.readable === false)
-
-function goLogin(url = '/pages/login/login'): void {
+async function readRecords(request: number, revision: number): Promise<void> {
+  consentRecords.value = []; recordsError.value = false
+  try {
+    const raw = await mobileApiClient.request<unknown>('/iam/consents')
+    if (current(request, revision) && step.value === 'consent') consentRecords.value = parseRecords(raw)
+  } catch { if (current(request, revision) && step.value === 'consent') recordsError.value = true }
+}
+function applySavedTarget(facts: NonNullable<typeof store.onboardingResume>): void {
+  const filled = prefillSavedTarget(facts.target)
+  savedGoal.value = filled.goal; savedQuota.value = filled.quota
+  goal.value = filled.goal; quota.value = filled.quota ?? 15
+}
+class OnboardingNavigationError extends Error {}
+async function navigate(url: string, login = false): Promise<void> {
   const runtime = getUniRuntime()
-  if (runtime.reLaunch) runtime.reLaunch({ url })
-  else runtime.navigateTo({ url })
+  try {
+    if (login && runtime.reLaunch) await runtime.reLaunch({ url })
+    else await runtime.navigateTo({ url })
+  } catch { throw new OnboardingNavigationError('Onboarding navigation failed') }
 }
-
-function leaveRejected(): void {
-  openUniPage('/pages/forbidden/forbidden')
-}
-
-function clearUnsubmitted(): void {
-  birthYear.value = null
-  ageConfirmed.value = false
-  clearConsentChoices()
-  savedGoal.value = null
-  savedQuota.value = null
-  adultError.value = null
-}
-
 async function loadResume(): Promise<void> {
-  if (session.adultGate === 'REJECTED') { leaveRejected(); return }
-  resumeError.value = null
-  clearUnsubmitted()
-  const revision = session.identityRevision
-  try {
-    const facts = await store.loadOnboardingResume(true)
-    if (revision !== session.identityRevision || !session.isAuthenticated) return
-    if (session.adultGate === 'REJECTED' || selectOnboardingResumeStep(facts) === 'rejected') { leaveRejected(); return }
-    step.value = selectOnboardingResumeStep(facts)
-    const filled = prefillSavedTarget(facts.target)
-    if (filled.goal && filled.quota) {
-      savedGoal.value = filled.goal
-      savedQuota.value = filled.quota
-      goal.value = filled.goal
-      quota.value = filled.quota
-    } else {
-      goal.value = null
-      quota.value = 15
-    }
-    if ((step.value === 'goal' || step.value === 'assessment') && session.isLearningReady) {
-      try { await store.loadOnboarding() } catch { /* local goal catalog remains usable */ }
-    }
-    if (step.value === 'consent') void loadPublishedConsentVersion()
-  } catch (error) {
-    resumeError.value = error instanceof Error ? error.message : '已保存进度暂时无法读取。'
-    step.value = session.adultGate === 'PASSED' ? 'consent' : 'gate'
-    if (step.value === 'consent') void loadPublishedConsentVersion()
-  }
-}
-
-onHide(() => { leftPage = true })
-
-onShow(async () => {
-  await session.restore()
-  if (!session.isAuthenticated) { goLogin('/pages/login/login?returnTo=%2Fpages%2Fonboarding%2Fonboarding'); return }
-  if (session.adultGate === 'REJECTED') { leaveRejected(); return }
-  if (loaded && !leftPage) return
-  leftPage = false
-  await loadResume()
-  loaded = true
-})
-
-function back(): void {
-  if (saving.value) return
-  if (step.value === 'consent') step.value = 'gate'
-  else if (step.value === 'goal') {
-    step.value = 'consent'
-    void loadPublishedConsentVersion()
-  }
-}
-
-async function saveEdits(): Promise<void> {
-  const wireGoal = mapUiGoal(goal.value)
-  if (!targetDirty.value || !wireGoal || !quota.value || saving.value) return
-  saving.value = true
-  try {
-    if (await store.saveTarget(wireGoal, quota.value)) {
-      savedGoal.value = goal.value
-      savedQuota.value = quota.value
-      step.value = 'assessment'
-    }
-  } finally {
-    saving.value = false
-  }
-}
-
-async function next(): Promise<void> {
-  if (!canContinue.value || saving.value) return
-  if (step.value === 'assessment') {
-    openUniPage('/pages/assessment/assessment')
+  if (!active || saving.value || reading.value) return
+  if (!session.isAuthenticated) {
+    try { await navigate('/pages/login/login?returnTo=%2Fpages%2Fonboarding%2Fonboarding', true) }
+    catch { if (active) actionError.value = mobileT('onboarding.navigationFailed') }
     return
   }
-  saving.value = true
-  adultError.value = null
+  const request = ++generation, revision = session.identityRevision
+  reading.value = true; actionError.value = null; clearDrafts()
   try {
-    if (step.value === 'gate') {
-      if (!(await session.confirmAdultGate(Number(birthYear.value)))) {
-        if (session.adultGate === 'REJECTED') leaveRejected()
-        else adultError.value = session.lastError ?? '身份确认未完成，请重试。本页还没提交的内容，离开后不会保留。'
+    let facts = await store.loadOnboardingResume(true)
+    if (!current(request, revision)) return
+    if (facts.sessionRefreshRequired || (facts.adultLearningAccess === 'ELIGIBLE' && requiredConsentsComplete(facts.consent) && !session.isLearningReady)) {
+      const identity = session.getMobileApiIdentity()
+      if (!identity || !await session.refreshSilentlyForIdentity(identity)) {
+        if (current(request, revision)) { step.value = 'consent'; actionError.value = mobileT('onboarding.readFailed') }
         return
       }
-      store.lastError = null
-      step.value = 'consent'
-      void loadPublishedConsentVersion()
-      return
+      if (!current(request, revision)) return
+      facts = await store.loadOnboardingResume(true)
+      if (!current(request, revision)) return
+      if (facts.sessionRefreshRequired || !session.isLearningReady) actionError.value = mobileT('onboarding.readFailed')
     }
-    if (step.value === 'consent') {
-      if (await store.recordRequiredConsents()) step.value = 'goal'
-      return
+    if (session.adultGate === 'REJECTED' || selectOnboardingResumeStep(facts) === 'rejected') { await navigate('/pages/forbidden/forbidden'); return }
+    step.value = selectOnboardingResumeStep(facts); applySavedTarget(facts)
+    if (step.value === 'consent') await readRecords(request, revision)
+  } catch (error) { if (current(request, revision)) { actionError.value = mobileT(error instanceof OnboardingNavigationError ? 'onboarding.navigationFailed' : 'onboarding.readFailed'); step.value = session.adultGate === 'PASSED' ? 'consent' : 'gate' } }
+  finally { if (active && request === generation) reading.value = false }
+}
+onHide(() => { active = false; showRequest++; invalidate() })
+onShow(async () => {
+  active = true; const request = ++showRequest; restoring.value = true
+  try {
+    await session.restore()
+    if (!active || request !== showRequest) return
+    if (!session.isAuthenticated) { await navigate('/pages/login/login?returnTo=%2Fpages%2Fonboarding%2Fonboarding', true); return }
+    await loadResume()
+  } catch { if (active && request === showRequest) actionError.value = mobileT('onboarding.readFailed') }
+  finally {
+    if (active && request === showRequest) {
+      restoring.value = false
+      if (!session.isAuthenticated) {
+        try { await navigate('/pages/login/login?returnTo=%2Fpages%2Fonboarding%2Fonboarding', true) }
+        catch { if (active && request === showRequest) actionError.value = mobileT('onboarding.navigationFailed') }
+      }
     }
-    const wireGoal = mapUiGoal(goal.value)
-    if (!wireGoal || !quota.value) return
-    if (await store.saveTarget(wireGoal, quota.value)) openUniPage('/pages/assessment/assessment')
-  } finally {
-    saving.value = false
+  }
+})
+function syncYear(value: unknown): void { if (!busy.value && typeof value === 'string') birthYear.value = value }
+function blurYear(event: { detail?: { value?: unknown } }): void { syncYear(event.detail?.value); yearFocused.value = false; reportErrors() }
+function changeAge(event: { detail?: { value?: unknown } }): void {
+  if (busy.value) return
+  const values = event.detail?.value
+  if (Array.isArray(values)) ageConfirmed.value = values.includes('adult-confirmed')
+}
+function activateAge(event: KeyboardEvent): void {
+  if (busy.value || event.repeat) return
+  // Keep the actual uni checkbox/change path; keyboard activation clicks it once.
+  // #ifdef H5
+  if (event.currentTarget instanceof HTMLElement) event.currentTarget.click()
+  // #endif
+}
+async function focusRequiredField(kind: 'year' | 'age'): Promise<void> {
+  const revision = session.identityRevision
+  yearFocused.value = false
+  await nextTick()
+  if (!active || busy.value || revision !== session.identityRevision) return
+  if (kind === 'year') yearFocused.value = true
+  else {
+    // #ifdef H5
+    pageRoot.value?.$el?.querySelector<HTMLElement>('#mobile-onboarding-age')?.focus()
+    // #endif
   }
 }
-
-async function cancel(): Promise<void> {
-  if (saving.value) return
+function chooseGoal(value: string): void { if (!busy.value && step.value === 'goal') goal.value = value }
+function chooseQuota(value: number): void { if (!busy.value && step.value === 'goal' && quotas.includes(value)) quota.value = value }
+function adjustGoal(): void { if (!busy.value) { goal.value = savedGoal.value; quota.value = savedQuota.value ?? 15; actionError.value = null; step.value = 'goal' } }
+async function next(event?: { detail?: { value?: { birthYear?: unknown } } }): Promise<void> {
+  if (busy.value) return
+  syncYear(event?.detail?.value?.birthYear)
+  attempted.value = true; reportErrors(); actionError.value = null
+  if (step.value === 'gate' && (!yearValid.value || !ageConfirmed.value)) {
+    await focusRequiredField(!yearValid.value ? 'year' : 'age')
+    return
+  }
+  if (step.value === 'goal' && targetUnreadable.value) { actionError.value = mobileT('onboarding.targetUnreadable'); return }
+  if (step.value === 'goal' && (!mapUiGoal(goal.value) || !quotas.includes(quota.value))) { actionError.value = mobileT('onboarding.chooseGoal'); return }
+  const request = ++generation, revision = session.identityRevision, action = step.value
+  const requestedGoal = mapUiGoal(goal.value), requestedQuota = quota.value
   saving.value = true
-  await session.logout()
-  goLogin()
-  saving.value = false
+  try {
+    if (action === 'gate') {
+      const passed = await session.confirmAdultGate(Number(birthYear.value))
+      if (!current(request, revision)) return
+      if (session.adultGate === 'REJECTED') { await navigate('/pages/forbidden/forbidden'); return }
+      if (!passed || session.adultGate !== 'PASSED') { actionError.value = mobileT('onboarding.confirmFailed'); return }
+      birthYear.value = ''; ageConfirmed.value = false; attempted.value = false; lastYearError.value = ''; lastAgeError.value = ''
+    } else if (action === 'goal') {
+      const saved = await store.saveTarget(mapUiGoal(goal.value)!, quota.value)
+      if (!current(request, revision)) return
+      if (!saved) {
+        const latest = await store.loadOnboardingResume(true)
+        if (!current(request, revision)) return
+        const recovered = selectOnboardingResumeStep(latest)
+        if (recovered === 'consent' || recovered === 'gate') {
+          step.value = recovered
+          if (recovered === 'consent') await readRecords(request, revision)
+          return
+        }
+        actionError.value = mobileT('onboarding.saveFailed'); return
+      }
+    }
+    // The current server summary permits continuing existing consent; it is
+    // never used as a catalog/version for signing unrecorded documents.
+    const facts = await store.loadOnboardingResume(true)
+    if (!current(request, revision)) return
+    const resolved = selectOnboardingResumeStep(facts)
+    if (resolved === 'rejected') { await navigate('/pages/forbidden/forbidden'); return }
+    if (action === 'goal' && resolved === 'assessment' && (mapUiGoal(facts.target.goal) !== requestedGoal || facts.target.quota !== requestedQuota)) {
+      const filled = prefillSavedTarget(facts.target)
+      savedGoal.value = filled.goal; savedQuota.value = filled.quota
+      actionError.value = mobileT('onboarding.savedReadFailed'); return
+    }
+    if (action === 'goal' && resolved === 'goal') { actionError.value = mobileT('onboarding.savedReadFailed'); return }
+    if ((action === 'goal' || action === 'assessment') && resolved === 'assessment' && session.isLearningReady) {
+      applySavedTarget(facts); await navigate('/pages/assessment/assessment'); return
+    }
+    applySavedTarget(facts); step.value = resolved
+    if (step.value === 'consent') await readRecords(request, revision)
+  } catch (error) { if (current(request, revision)) actionError.value = mobileT(error instanceof OnboardingNavigationError ? 'onboarding.navigationFailed' : action === 'goal' ? 'onboarding.saveFailed' : 'onboarding.confirmFailed') }
+  finally { if (active && request === generation) saving.value = false }
+}
+async function accountSettings(): Promise<void> { if (!busy.value) { try { await navigate('/pages/settings/settings') } catch { actionError.value = mobileT('onboarding.navigationFailed') } } }
+async function cancel(): Promise<void> {
+  if (busy.value) return
+  const request = ++generation; saving.value = true
+  try { await session.logout(); if (active && request === generation) await navigate('/pages/login/login', true) }
+  catch { if (active && request === generation) actionError.value = mobileT('onboarding.exitFailed') }
+  finally { if (active && request === generation) saving.value = false }
 }
 </script>
 
 <template>
-  <view class="yx-page yx-onboarding" :aria-busy="saving || store.onboardingStatus === 'loading'" :style="experienceStyle" :data-motion="experienceMotion">
-
-    <MobilePageHeader page="onboarding" />
-
-    <text class="section-kicker">按已保存进度继续</text>
-    <text class="section-description">{{ progressLabel }}</text>
-
-    <view class="yx-setup-progress" aria-label="设置进度">
-      <view :class="['yx-setup-progress__item', { active: stepRank === 0, done: stepRank > 0 }]">
-        <text class="yx-setup-progress__number">1</text>
-        <text>确认身份</text>
+  <view ref="pageRoot" class="yx-page yx-onboarding" :aria-busy="busy" :style="experienceStyle" :data-motion="experienceMotion">
+    <view class="onboarding-topline"><view class="onboarding-brand"><AppIcon name="brand" :size="25" /><text>{{ mobileT('brand') }}</text></view><text class="onboarding-note">{{ mobileT('onboarding.adultNote') }}</text></view>
+    <view class="onboarding-content" :class="{ 'is-wide': step === 'goal' || step === 'consent' }">
+      <view class="onboarding-progress" :aria-label="mobileT('onboarding.progress')">
+        <view v-for="(name, index) in ['identity', 'consents', 'target']" :key="name" class="onboarding-progress-item" :class="{ 'is-current': rank === index, 'is-done': rank > index }" :aria-current="rank === index ? 'step' : undefined"><text class="onboarding-step-number">{{ index + 1 }}</text><view class="onboarding-progress-copy"><text>{{ mobileT(`onboarding.${name}`) }}</text><text class="onboarding-step-state">{{ mobileT(rank > index ? 'onboarding.done' : rank === index ? 'onboarding.current' : 'onboarding.pending') }}</text></view></view>
       </view>
-      <view :class="['yx-setup-progress__item', { active: stepRank === 1, done: stepRank > 1 }]">
-        <text class="yx-setup-progress__number">2</text>
-        <text>必要同意</text>
+      <text id="mobile-onboarding-title" class="onboarding-title" role="heading" aria-level="1" tabindex="-1">{{ mobileT(`onboarding.${step}Title`) }}</text>
+      <text class="onboarding-description">{{ mobileT(`onboarding.${step}Description`) }}</text>
+      <text v-if="reading || restoring" class="onboarding-status" role="status">{{ mobileT('onboarding.reading') }}</text>
+      <form v-if="step === 'gate'" class="onboarding-body" @submit="next">
+        <view class="onboarding-field"><label id="mobile-onboarding-year-label" for="mobile-onboarding-year-host" class="onboarding-label" @click="!busy && (yearFocused = true)">{{ mobileT('onboarding.year') }}</label><input id="mobile-onboarding-year-host" ref="yearField" v-model="birthYear" name="birthYear" :maxlength="-1" class="onboarding-input" :class="{ 'is-invalid': feedback.year }" type="number" inputmode="numeric" :focus="yearFocused" :disabled="busy" confirm-type="go" :placeholder="mobileT('onboarding.yearPlaceholder')" @focus="yearFocused = true" @input="syncYear($event.detail?.value)" @blur="blurYear" @confirm="syncYear($event.detail?.value); next()" /><text v-if="feedback.lastYear" :id="feedback.year ? 'mobile-onboarding-year-error' : undefined" class="onboarding-error" :class="{ 'is-clear': !feedback.year }" :role="feedback.year ? 'alert' : undefined" :aria-hidden="!feedback.year">{{ feedback.year || feedback.lastYear }}</text></view>
+        <checkbox-group @change="changeAge"><label class="onboarding-check-row" for="mobile-onboarding-age"><checkbox id="mobile-onboarding-age" value="adult-confirmed" role="checkbox" tabindex="0" aria-required="true" aria-labelledby="mobile-onboarding-age-label" :aria-checked="ageConfirmed" :aria-disabled="busy" :aria-invalid="feedback.age ? true : undefined" :aria-describedby="feedback.age ? 'mobile-onboarding-age-error' : undefined" :checked="ageConfirmed" :disabled="busy" :color="'var(--v2-brand)'" @keydown.enter.stop.prevent="activateAge" @keydown.space.stop.prevent="activateAge" /><text id="mobile-onboarding-age-label">{{ mobileT('onboarding.ageConfirm') }}</text></label></checkbox-group>
+        <text v-if="feedback.lastAge" :id="feedback.age ? 'mobile-onboarding-age-error' : undefined" class="onboarding-error" :class="{ 'is-clear': !feedback.age }" :role="feedback.age ? 'alert' : undefined" :aria-hidden="!feedback.age">{{ feedback.age || feedback.lastAge }}</text>
+        <text v-if="feedback.action" class="onboarding-error" role="alert">{{ feedback.action }}</text>
+        <button class="onboarding-primary" form-type="submit" role="button" tabindex="0" :disabled="busy || !yearValid || !ageConfirmed" :aria-disabled="busy || !yearValid || !ageConfirmed" @keydown.enter.stop.prevent @keyup.enter.stop.prevent="next()" @keydown.space.stop.prevent @keyup.space.stop.prevent="next()">{{ primaryLabel }}</button>
+      </form>
+      <view v-else-if="step === 'consent'" class="onboarding-body">
+        <view v-for="record in consentRecords" :key="record.type" class="onboarding-record"><view class="onboarding-record-title"><text>{{ mobileT(`onboarding.purposes.${record.type}`) }}</text><text class="onboarding-help">{{ mobileT(record.required ? 'onboarding.required' : 'onboarding.optional') }}</text></view><text class="onboarding-help">{{ mobileT(record.state === 'GRANTED' ? 'onboarding.recorded' : 'onboarding.withdrawn') }}</text><text class="onboarding-help">{{ mobileT('onboarding.recordVersion') }} {{ record.document.version }}</text><view v-if="recordsOpen" class="onboarding-provenance"><text>{{ mobileT('onboarding.source') }}</text><text>{{ mobileT('onboarding.documentTime') }} {{ record.document.publishedAt }}</text><text>{{ mobileT('onboarding.recordTime') }} {{ record.provenance.recordedAt }}</text><text>{{ mobileT('onboarding.digest') }} {{ record.document.digest }}</text><text>{{ mobileT('onboarding.policy') }} {{ record.policyRef }} / {{ record.policyVersion }}</text><text>{{ mobileT('onboarding.decision') }} {{ record.decisionRef }}</text></view></view>
+        <button v-if="consentRecords.length" class="onboarding-record-toggle onboarding-text" role="button" tabindex="0" :disabled="busy" :aria-disabled="busy" :aria-expanded="recordsOpen" @click="!busy && (recordsOpen = !recordsOpen)">{{ mobileT(recordsOpen ? 'onboarding.hideSource' : 'onboarding.showSource') }}</button>
+        <text v-if="recordsError" class="onboarding-error" role="alert">{{ mobileT('onboarding.recordsFailed') }}</text>
+        <text v-if="!consentCurrent" class="onboarding-blocked" role="status">{{ mobileT('onboarding.consentBlocked') }}</text><text v-else class="onboarding-help">{{ mobileT('onboarding.currentConsent') }}</text>
+        <text v-if="feedback.action" class="onboarding-error" role="alert">{{ feedback.action }}</text>
+        <button v-if="consentCurrent" class="onboarding-primary" role="button" tabindex="0" :disabled="busy" :aria-disabled="busy" @click="next" @keydown.enter.stop.prevent @keyup.enter.stop.prevent="next()" @keydown.space.stop.prevent @keyup.space.stop.prevent="next()">{{ primaryLabel }}</button>
+        <button class="onboarding-text" role="button" tabindex="0" :disabled="busy" :aria-disabled="busy" @click="loadResume">{{ mobileT('onboarding.reload') }}</button>
       </view>
-      <view :class="['yx-setup-progress__item', { active: stepRank === 2, done: stepRank > 2 }]">
-        <text class="yx-setup-progress__number">3</text>
-        <text>学习目标</text>
+      <view v-else-if="step === 'goal'" class="onboarding-body">
+        <text v-if="targetUnreadable" class="onboarding-error" role="alert">{{ mobileT('onboarding.targetUnreadable') }}</text>
+        <view class="onboarding-field"><text class="onboarding-label">{{ mobileT('onboarding.target') }}</text><view class="onboarding-choices"><button v-for="item in goalOptions" :key="item.value" class="onboarding-choice" :class="{ 'is-selected': goal === item.value }" role="button" tabindex="0" :disabled="busy" :aria-disabled="busy" :aria-pressed="goal === item.value" :data-goal-code="item.value" @click="chooseGoal(item.value)"><view class="onboarding-choice-title"><text>{{ mobileT(`onboarding.goals.${item.value}.label`) }}</text><text v-if="goal === item.value" class="onboarding-help">{{ mobileT('onboarding.selected') }}</text></view><text class="onboarding-help">{{ mobileT(`onboarding.goals.${item.value}.description`) }}</text></button></view></view>
+        <view class="onboarding-field"><text class="onboarding-label">{{ mobileT('onboarding.dailyTime') }}</text><view class="onboarding-quotas"><button v-for="minutes in quotas" :key="minutes" class="onboarding-quota" :class="{ 'is-selected': quota === minutes }" role="button" tabindex="0" :disabled="busy" :aria-disabled="busy" :aria-pressed="quota === minutes" @click="chooseQuota(minutes)">{{ minuteLabel(minutes) }}<text v-if="quota === minutes" class="onboarding-help">{{ mobileT('onboarding.selected') }}</text></button></view></view>
+        <text v-if="feedback.action" class="onboarding-error" role="alert">{{ feedback.action }}</text><button class="onboarding-primary" role="button" tabindex="0" :disabled="busy || !goal || targetUnreadable" :aria-disabled="busy || !goal || targetUnreadable" @click="next" @keydown.enter.stop.prevent @keyup.enter.stop.prevent="next()" @keydown.space.stop.prevent @keyup.space.stop.prevent="next()">{{ primaryLabel }}</button><button class="onboarding-text" role="button" tabindex="0" :disabled="busy" :aria-disabled="busy" @click="loadResume">{{ mobileT('onboarding.reload') }}</button>
       </view>
+      <view v-else-if="step === 'assessment'" class="onboarding-body"><view class="onboarding-summary"><view><text class="onboarding-help">{{ mobileT('onboarding.savedTarget') }}</text><text class="onboarding-label">{{ mobileT(`onboarding.goals.${savedGoal}.label`) }}</text></view><view><text class="onboarding-help">{{ mobileT('onboarding.dailyTime') }}</text><text class="onboarding-label">{{ minuteLabel(savedQuota) }}</text></view></view><text v-if="feedback.action" class="onboarding-error" role="alert">{{ feedback.action }}</text><button class="onboarding-primary" role="button" tabindex="0" :disabled="busy" :aria-disabled="busy" @click="next" @keydown.enter.stop.prevent @keyup.enter.stop.prevent="next()" @keydown.space.stop.prevent @keyup.space.stop.prevent="next()">{{ primaryLabel }}</button><button class="onboarding-text" role="button" tabindex="0" :disabled="busy" :aria-disabled="busy" @click="adjustGoal">{{ mobileT('onboarding.adjustGoal') }}</button></view>
+      <view class="onboarding-exits"><button class="onboarding-text" role="button" tabindex="0" :disabled="busy" :aria-disabled="busy" @click="accountSettings">{{ mobileT('onboarding.accountSettings') }}</button><button class="onboarding-text" role="button" tabindex="0" :disabled="busy" :aria-disabled="busy" @click="cancel">{{ mobileT('onboarding.logout') }}</button></view>
     </view>
-
-    <view class="yx-card yx-onboarding-card">
-      <text v-if="session.adultGate === 'REJECTED'" class="flow-note" role="status">正在打开无权限页。</text>
-
-      <view v-else-if="step === 'gate'" class="yx-onboarding-step v2-gate-step">
-        <text class="section-kicker v2-gate-kicker">确认成人身份</text>
-        <text class="section-title v2-gate-title">确认成人身份</text>
-        <text class="section-description v2-gate-desc">只收集出生年份，用来判断是否已满 18 岁。现有成人门不需要月和日，所以不收集完整生日。成人门还没通过时，停在这一步。</text>
-        <text class="flow-note v2-gate-status">如果没有通过，仍可前往账号设置、帮助与反馈或退出登录。这里不提供再试一次，也不提供改年份。</text>
-        <label class="birth-year v2-gate-field"><text>出生年份</text><input class="v2-gate-input" v-model.number="birthYear" type="number" inputmode="numeric" min="1900" :max="birthYearMax" placeholder="例如 1995" aria-label="出生年份" /></label>
-        <label class="consent v2-gate-confirm"><checkbox :checked="ageConfirmed" @click="ageConfirmed = !ageConfirmed" /><text>我确认自己已满 18 周岁</text></label>
-      </view>
-
-      <view v-else-if="step === 'consent'" class="yx-onboarding-step v2-consent-step">
-        <text class="section-kicker v2-consent-kicker">必要同意</text>
-        <text class="section-title v2-consent-title">完成必要同意</text>
-        <text class="section-description v2-consent-desc">账号条款、隐私说明和成人学习资格要逐项看见。开始时不勾选，也不默认全选。</text>
-        <label v-for="item in requiredConsentItems" :key="item.purpose" class="consent v2-consent-item">
-          <checkbox :checked="consentChecked[item.purpose]" @click="toggleConsent(item.purpose)" />
-          <view class="consent-copy v2-consent-copy">
-            <text>{{ item.label }}</text>
-            <text>用途码 {{ item.purpose }}</text>
-            <text>必要</text>
-            <text>已发布版本 {{ publishedConsentVersion || '版本未读到' }}</text>
-          </view>
-        </label>
-        <text v-if="!requiredConsentsChecked" class="flow-note">未勾选时，受影响的是学习资格，不是把账号设置、帮助与反馈和退出登录一起禁掉。</text>
-        <text v-if="!publishedConsentVersion" class="flow-note">版本未读到。已发布版本暂时读不到，这一步先不提交同意。</text>
-      </view>
-
-      <view v-else class="yx-onboarding-step">
-        <text class="section-kicker">{{ step === 'assessment' ? '目标已保存' : '选择学习目标' }}</text>
-        <text class="section-title">{{ step === 'assessment' ? '目标已保存' : '你想先解决什么？' }}</text>
-        <text class="section-description">{{ step === 'assessment' ? '已保存的目标仍在服务端。没有改目标的话，直接开始定级，不必重填。' : '选一个目标并保存后，进入现有定级入口。' }}</text>
-        <text v-if="targetUnreadable" class="flow-note" role="status">学习目标暂时无法读取。本页不会把读失败当成没有目标。</text>
-        <text class="field-title">学习目标</text>
-        <view class="choice-list">
-          <button tabindex="0" role="button" v-for="item in goalOptions" :key="item.value" :class="['choice', { selected: goal === item.value }]" type="button" :aria-pressed="goal === item.value" :data-goal-code="item.value" @click="goal = item.value"><text>{{ item.label }}</text><text class="choice-description">{{ item.description }}</text></button>
-        </view>
-        <text class="field-title">每天愿意投入多久？</text>
-        <view class="choice-list choice-list--quota">
-          <button tabindex="0" role="button" v-for="item in store.quotas" :key="item" :class="['choice', 'quota-choice', { selected: quota === item }]" type="button" :aria-pressed="quota === item" @click="quota = item">{{ item }} 分钟</button>
-        </view>
-      </view>
-
-      <text class="flow-note">本页还没提交的内容只留在这一页，离开后不会保留。</text>
-      <text v-if="adultError" class="error" role="alert">{{ adultError }}</text>
-      <text v-if="resumeError" class="error" role="alert">{{ resumeError }}</text>
-      <text v-if="store.lastError" class="error" role="alert">{{ store.lastError }}</text>
-      <view v-if="session.adultGate !== 'REJECTED'" class="onboarding-actions">
-        <button tabindex="0" role="button" v-if="step === 'consent' || step === 'goal'" class="yx-button yx-button--secondary" type="button" :disabled="saving" @click="back">上一步</button>
-        <button tabindex="0" role="button" v-if="targetDirty" class="yx-button yx-button--secondary" type="button" :disabled="saving || !goal" @click="saveEdits">{{ saving ? '正在保存…' : '保存修改' }}</button>
-        <button tabindex="0" role="button" class="yx-button" type="button" :data-primary-action="step === 'assessment' ? 'assessment' : step === 'goal' ? 'save-target' : 'continue'" :disabled="!canContinue || saving || store.onboardingStatus === 'loading'" @click="next">{{ primaryLabel }}</button>
-      </view>
-    </view>
-
-    <button tabindex="0" role="button" class="yx-flow-cancel" type="button" :disabled="saving" @click="cancel">退出登录</button>
   </view>
 </template>
 
-<style scoped>
-.yx-onboarding { padding-top: 24rpx; }
-.yx-onboarding .yx-eyebrow { margin-top: 48rpx; }
-.yx-setup-progress { display: flex; gap: 12rpx; margin-top: 32rpx; }
-.yx-setup-progress__item { display: flex; flex: 1; align-items: center; gap: 10rpx; min-width: 0; padding: 14rpx; border: 1rpx solid var(--yx-border); border-radius: 14rpx; color: var(--yx-text-tertiary); background: var(--yx-brand-soft); font-size: 23rpx; font-weight: 600; }
-.yx-setup-progress__item.active, .yx-setup-progress__item.done { border-color: var(--yx-brand); color: var(--yx-brand); background: var(--yx-brand-soft); }
-.yx-setup-progress__number { display: flex; width: 34rpx; height: 34rpx; flex: 0 0 auto; align-items: center; justify-content: center; border-radius: 50%; color: var(--yx-text-secondary); background: var(--yx-surface-page); font-size: 21rpx; }
-.yx-setup-progress__item.active .yx-setup-progress__number, .yx-setup-progress__item.done .yx-setup-progress__number { color:var(--yx-on-brand); background: var(--yx-action); }
-.yx-onboarding-card { padding: 32rpx; }
-.yx-onboarding-step { display: flex; flex-direction: column; }
-.section-kicker { color: var(--yx-brand); font-size: 22rpx; font-weight: 700; letter-spacing: 2rpx; }
-.section-title { display: block; margin-top: 16rpx; color: var(--yx-text-primary); font-size: 38rpx; font-weight: 700; line-height: 1.3; }
-.section-description { display: block; margin-top: 14rpx; color: var(--yx-text-secondary); font-size: 25rpx; line-height: 1.65; }
-.field-title { display: block; margin: 30rpx 0 16rpx; color: var(--yx-text-primary); font-size: 25rpx; font-weight: 700; }
-.birth-year { display: grid; gap: 12rpx; margin-top: 30rpx; color: var(--yx-text-primary); font-size: 25rpx; font-weight: 700; }
-.birth-year input { box-sizing: border-box; width: 100%; height: 80rpx; padding: 0 18rpx; border: 1rpx solid var(--yx-border); border-radius: 12rpx; color: var(--yx-text-primary); background: var(--yx-surface-page); font-size: 28rpx; }
-.consent { display: flex; align-items: flex-start; gap: 10rpx; margin-top: 22rpx; color: var(--yx-text-secondary); font-size: 25rpx; line-height: 1.5; }
-.consent-copy { display: flex; flex-direction: column; gap: 4rpx; }
-.flow-note { display: block; margin-top: 24rpx; color: var(--yx-text-tertiary); font-size: 22rpx; line-height: 1.6; }
-.choice-list { display: grid; gap: 14rpx; }
-.choice { display: grid; gap: 6rpx; width: 100%; margin: 0; padding: 18rpx 20rpx; border: 1rpx solid var(--yx-border); border-radius: 14rpx; color: var(--yx-text-primary); background: var(--yx-surface-card); font-size: 26rpx; text-align: left; }
-.choice.selected { border-color: var(--yx-brand); color: var(--yx-brand); background: var(--yx-brand-soft); }
-.choice-description { color: var(--yx-text-secondary); font-size: 22rpx; line-height: 1.5; }
-.choice-list--quota { display: flex; flex-wrap: wrap; gap: 12rpx; }
-.quota-choice { display: block; width: auto; padding: 16rpx 22rpx; }
-.error { display: block; margin-top: 20rpx; color: var(--yx-danger); font-size: 22rpx; line-height: 1.6; }
-.onboarding-actions { display: grid; gap: 12rpx; margin-top: 30rpx; }
-.onboarding-actions .yx-button { margin-top: 0; }
-.yx-flow-cancel { display: block; margin: 20rpx auto 0; border: 0; color: var(--yx-text-tertiary); background: transparent; font-size: 23rpx; }
-@media (min-width: 700px) { .yx-onboarding { max-width: 760rpx; margin: 0 auto; } }
-/* v2 gate + consent：对齐 webDemo shared/components.css（.card h2/.d/.lb/input/.fb）与 mobile/refine.css（checkbox 行） */
-.v2-gate-step, .v2-consent-step { display: flex; flex-direction: column; }
-.v2-gate-kicker, .v2-consent-kicker { color: var(--v2-brand); font-family: var(--v2-font); font-size: var(--v2-text-xs); font-weight: 700; }
-.v2-gate-title, .v2-consent-title { display: block; margin-top: var(--v2-space-3); color: var(--v2-ink); font-family: var(--v2-font); font-size: var(--v2-text-lg); font-weight: 700; line-height: 1.35; }
-.v2-gate-desc, .v2-consent-desc { display: block; margin-top: var(--v2-space-2); color: var(--v2-mut); font-family: var(--v2-font); font-size: var(--v2-text-sm); line-height: 1.7; }
-.v2-gate-status { display: block; margin-top: var(--v2-space-3); padding: var(--v2-space-3) var(--v2-space-4); border-radius: var(--v2-radius-md); background: var(--v2-warn-soft); color: var(--v2-warn); font-family: var(--v2-font); font-size: var(--v2-text-sm); line-height: 1.6; }
-.v2-gate-field { display: block; margin-top: var(--v2-space-4); color: var(--v2-ink); font-family: var(--v2-font); font-size: var(--v2-text-sm); font-weight: 650; }
-.v2-gate-input { box-sizing: border-box; width: 100%; min-height: var(--v2-space-12); margin-top: var(--v2-space-2); padding: var(--v2-space-3); border: 1px solid var(--v2-line); border-radius: var(--v2-radius-md); background: var(--v2-card); color: var(--v2-ink); font-family: var(--v2-font); font-size: var(--v2-text-md); line-height: 1.5; }
-.v2-gate-input::placeholder { color: var(--v2-mut); }
-.v2-gate-input:focus, .v2-gate-input:focus-visible { border-color: var(--v2-brand); box-shadow: var(--v2-focus); outline: none; }
-.v2-gate-confirm, .v2-consent-item { display: flex; align-items: flex-start; gap: var(--v2-space-3); margin-top: var(--v2-space-3); padding: var(--v2-space-3) var(--v2-space-4); border: 1px solid var(--v2-line); border-radius: var(--v2-radius-md); background: var(--v2-surface); color: var(--v2-ink); font-family: var(--v2-font); font-size: var(--v2-text-sm); font-weight: 500; line-height: 1.5; cursor: pointer; }
-.v2-gate-confirm:hover, .v2-consent-item:hover { border-color: var(--v2-brand); }
-.v2-gate-confirm:has(:checked), .v2-consent-item:has(:checked) { border-color: var(--v2-brand); background: var(--v2-soft); }
-.v2-gate-confirm checkbox, .v2-consent-item checkbox, .v2-gate-confirm input[type="checkbox"], .v2-consent-item input[type="checkbox"] { flex: none; width: var(--v2-space-5); height: var(--v2-space-5); margin-top: var(--v2-space-1); accent-color: var(--v2-brand); }
-.v2-consent-copy { display: flex; flex-direction: column; gap: var(--v2-space-1); color: var(--v2-mut); font-family: var(--v2-font); font-size: var(--v2-text-sm); line-height: 1.6; }
+<style scoped lang="scss">
+.yx-page.yx-onboarding { max-width: none; min-height: 100vh; min-height: 100dvh; padding: calc(20px + env(safe-area-inset-top)) 24px calc(40px + env(safe-area-inset-bottom)); background: var(--v2-bg); color: var(--v2-ink); font-family: var(--v2-font); line-height: 1.6; }
+.onboarding-topline { display: flex; flex-direction: column; align-items: flex-start; max-width: 1080px; margin: 0 auto 40px; }
+.onboarding-brand { display: inline-flex; min-height: 44px; align-items: center; gap: 10px; color: var(--v2-ink); font-size: 20px; font-weight: 650; }
+.onboarding-brand :deep(.app-icon) { color: var(--v2-brand); }
+.onboarding-note, .onboarding-help { color: var(--v2-mut); font-size: 13px; line-height: 1.6; overflow-wrap: anywhere; }
+.onboarding-content { max-width: 420px; width: 100%; margin: 0 auto; }
+.onboarding-content.is-wide { max-width: 560px; }
+.onboarding-progress { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-bottom: 40px; }
+.onboarding-progress-item { display: flex; min-width: 0; flex-direction: column; align-items: center; gap: 6px; color: var(--v2-mut); text-align: center; font-size: 13px; }
+.onboarding-progress-copy { display: flex; min-width: 0; flex-direction: column; align-items: center; gap: 6px; word-break: normal; overflow-wrap: normal; }
+.onboarding-progress-copy text { word-break: normal; overflow-wrap: normal; }
+.onboarding-step-number { display: flex; width: 28px; height: 28px; align-items: center; justify-content: center; border: 1px solid var(--v2-line); border-radius: 50%; font-size: 14px; background: var(--v2-card); }
+.onboarding-progress-item.is-current, .onboarding-progress-item.is-done { color: var(--v2-brand); }
+.onboarding-progress-item.is-current .onboarding-step-number, .onboarding-progress-item.is-done .onboarding-step-number { background: var(--v2-brand); color: var(--v2-inverse); border-color: var(--v2-brand); }
+.onboarding-step-state { font-size: 13px; }
+.onboarding-title { display: block; margin-bottom: 8px; font-size: 28px; font-weight: 650; line-height: 1.4; letter-spacing: 0; }
+.onboarding-description { display: block; color: var(--v2-mut); font-size: 14px; line-height: 1.75; }
+.onboarding-body { display: grid; gap: 24px; margin-top: 32px; }
+.onboarding-field { display: grid; gap: 8px; min-width: 0; }
+.onboarding-label { display: block; font-size: 14px; font-weight: 500; line-height: 1.6; }
+.yx-onboarding .onboarding-input { width: 100%; min-height: 48px; height: calc(1.5em + 24px); padding: 0 14px; border: 1px solid var(--v2-mut); border-radius: 10px; background: var(--v2-card); color: var(--v2-ink); font-size: 16px; line-height: 1.5; }
+.onboarding-input :deep(.uni-input-input), .onboarding-input :deep(.uni-input-placeholder) { font: inherit; color: inherit; }
+.onboarding-input :deep(.uni-input-placeholder) { color: var(--v2-mut); }
+.onboarding-input.is-invalid { border-color: var(--v2-bad); }
+.onboarding-input:focus-within { outline: 2px solid var(--v2-brand); outline-offset: 2px; }
+.onboarding-check-row { display: flex; min-height: 44px; align-items: center; gap: 12px; padding: 8px 0; font-size: 14px; cursor: pointer; }
+.onboarding-check-row checkbox { display: flex; flex: none; width: 44px; min-width: 44px; height: 44px; align-items: center; justify-content: center; }
+.onboarding-check-row :deep(.uni-checkbox-input) { border-color: var(--v2-mut); background-color: var(--v2-card); }
+.onboarding-check-row checkbox:focus-visible { outline: 2px solid var(--v2-brand); outline-offset: 2px; border-radius: 4px; }
+.yx-onboarding .onboarding-primary { display: flex; width: 100%; min-height: 48px; padding: 12px 20px; margin: 0; align-items: center; justify-content: center; border: 1px solid transparent; border-radius: 10px; background: var(--v2-brand); color: var(--v2-inverse); font-size: 16px; font-weight: 600; line-height: 1.5; box-shadow: none; }
+.yx-onboarding .onboarding-primary:active:not([disabled]) { background: var(--v2-brand2); transform: none; }
+.yx-onboarding .onboarding-text { display: inline-flex; min-height: 44px; min-width: 44px; padding: 8px 0; margin: 0; align-items: center; justify-content: center; background: transparent; border: 0; border-radius: 0; color: var(--v2-brand); font-size: 14px; font-weight: 500; line-height: 1.6; }
+.onboarding-choices { display: grid; gap: 12px; }
+.yx-onboarding .onboarding-choice { display: grid; gap: 6px; width: 100%; margin: 0; padding: 14px 16px; min-height: 44px; border: 1px solid var(--v2-mut); border-radius: 10px; background: var(--v2-card); color: var(--v2-ink); text-align: left; font-size: 16px; line-height: 1.5; }
+.onboarding-choice-title, .onboarding-record-title { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.onboarding-quotas { --quota-basis: calc(50% - 6px); display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, max(6.5em, var(--quota-basis))), 1fr)); gap: 12px; font-size: 16px; }
+.yx-onboarding .onboarding-quota { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 48px; margin: 0; padding: 10px; border: 1px solid var(--v2-mut); border-radius: 10px; background: var(--v2-card); color: var(--v2-ink); font-size: 16px; line-height: 1.5; }
+.onboarding-quota { word-break: normal; overflow-wrap: normal; }
+.yx-onboarding .is-selected { border-color: var(--v2-brand); background: var(--v2-soft); }
+.onboarding-record { display: grid; gap: 6px; padding-bottom: 16px; border-bottom: 1px solid var(--v2-line); font-size: 14px; }
+.onboarding-provenance { display: grid; gap: 8px; font-size: 13px; color: var(--v2-mut); overflow-wrap: anywhere; }
+.onboarding-blocked, .onboarding-status { display: block; color: var(--v2-mut); font-size: 14px; line-height: 1.75; overflow-wrap: anywhere; }
+.onboarding-status { margin-top: 16px; }
+.onboarding-error { display: block; font-size: 14px; line-height: 1.6; color: var(--v2-bad); overflow-wrap: anywhere; }
+.onboarding-error.is-clear { visibility: hidden; }
+.onboarding-summary { display: grid; gap: 20px; }
+.onboarding-summary > view { display: grid; gap: 4px; }
+.onboarding-exits { display: grid; gap: 4px; margin-top: 28px; padding-top: 16px; border-top: 1px solid var(--v2-line); }
+.yx-onboarding button[disabled] { opacity: .6; cursor: default; }
+.yx-onboarding button:focus-visible { outline: 2px solid var(--v2-brand); outline-offset: 3px; }
+@media (max-width: 520px) { .onboarding-progress { grid-template-columns: 1fr; margin-bottom: 32px; } .onboarding-progress-item { flex-direction: row; align-items: flex-start; gap: 12px; text-align: left; } .onboarding-step-number { flex: none; width: 2em; height: 2em; } .onboarding-progress-copy { flex-direction: row; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; } }
+@media (min-width: 521px) { .yx-page.yx-onboarding { padding: calc(32px + env(safe-area-inset-top)) 32px calc(64px + env(safe-area-inset-bottom)); } .onboarding-topline { flex-direction: row; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 64px; } .onboarding-quotas { --quota-basis: calc(25% - 9px); } }
+@media (prefers-reduced-motion: reduce) { .yx-onboarding * { transition: none; animation: none; } }
 </style>
