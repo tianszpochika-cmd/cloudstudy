@@ -2,7 +2,7 @@
 import AppIcon from '../../components/AppIcon.vue'
 import { openUniPage } from '../../platform/uni-runtime'
 import { mobileT, useMobileExperience } from '../../platform/experience'
-import { onLoad, onShow } from '@dcloudio/uni-app'
+import { onLoad, onReady } from '@dcloudio/uni-app'
 import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import { authT } from '../../auth/i18n'
 import { mobileAuthFailureCopy } from '../../auth/auth-failure-copy'
@@ -119,7 +119,7 @@ async function initialize(options?: { returnTo?: string; redirect?: string }): P
 }
 
 onLoad((options) => { void initialize(options) })
-onShow(() => { uni.setNavigationBarTitle({ title: mobileT('auth.login.start') }) })
+onReady(() => { uni.setNavigationBarTitle({ title: mobileT('auth.login.start') }) })
 onMounted(() => {
   void initialize()
   // #ifdef H5

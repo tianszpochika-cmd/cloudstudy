@@ -1,5 +1,7 @@
 # MB-001 — Mobile 登录页逐页重设计与复验
 
+> **2026-10-15标题窄补修**：实际恢复/退出转回登录时捕获setNavigationBarTitle page not found，已独立定位为login onShow过早调用，正式源仅移到onReady。当前0c5 raw获中英8标题及3恢复边界独审、typecheck/H5 build通过，未改原排版/认证/键盘；[收口与证据](20261015-title-lifecycle/root-review.md)。推送收据由Root另录，原具名PASS/FAIL保留。
+
 > **2026-10-14当前键盘差量**：原da5空主按钮Enter跳过账号首错已真实复现并保留FAIL；当前1d347967局部keyup提交获[17项独立复签](20261014-1d34-independent-keyboard/review.md)与[root收口](20261014-1d34-independent-keyboard/root-review.md)，typecheck通过，PUSHED_SCOPED，提交`70ad42f41c844708400ca18ec1a87c95976649f1`已推origin/dev-redesign且远程SHA一致。无布局变更，本次不重签原26矩阵或真实IAM/native范围。
 
 日期：2026-10-14（北京时间）。正式入口：`http://127.0.0.1:18183/#/pages/login/login`。

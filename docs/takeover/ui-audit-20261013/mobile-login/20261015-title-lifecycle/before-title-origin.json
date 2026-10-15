@@ -1,0 +1,91 @@
+{
+  "at": "2026-10-15T10:17:10.232Z",
+  "scope": "TITLE_API_CALLSITE_METADATA_ONLY",
+  "sourceHashesBefore": {
+    "apps/mobile/src/pages/onboarding/onboarding.vue": "c4c691dd9ab74c8aa7f21a677d43f3541b22c4ea4642f733ad53c4cf94176086",
+    "packages/i18n/src/mobile-experience.ts": "7b21f6e074bf705463e27941cbc4c91847a242443cdbd1ad3deea155fc733dde",
+    "apps/mobile/src/auth/gateway-auth.ts": "746bb9d83d241162bce9d9cd701d2f6662d11a132977533e3ba2a11e428c3277",
+    "apps/mobile/src/stores/session.ts": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+    "apps/mobile/src/api/learner-content.ts": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6",
+    "apps/mobile/src/domain/onboarding-resume.ts": "ea6e26682e69a9f1c3d8fd47d284aa55d96e39d646e27e5d41d0f556ba902e26",
+    "apps/mobile/src/stores/learner-content.ts": "95cc92496db996242d91baed3301d76f985e4e3b9134e1e50c2b9ab8d41e4c61",
+    "apps/mobile/src/platform/pointer-feedback.ts": "24a1f9b26ad6797fc9a61a16cb43559d116230cd7e9cd66c1dd4d9a563d94a6c"
+  },
+  "pageErrors": [],
+  "metadata": {
+    "calls": [
+      {
+        "route": "#/pages/login/login",
+        "title": "登录",
+        "phase": null,
+        "stack": "Error: title-callsite\n    at Object.setNavigationBarTitle (eval at evaluate (:311:30), <anonymous>:1:507)\n    at Array.<anonymous> (http://127.0.0.1:18183/src/pages/login/login.vue:123:8)\n    at invokeArrayFns (http://127.0.0.1:18183/@fs/C:/Users/Administrator/Desktop/my/cloudstudy/node_modules/.pnpm/@dcloudio+uni-h5@3.0.0-alph_260a12a8d0f5eec261e63deece2314fd/node_modules/@vue/shared/dist/shared.esm-bundler.js?v=78288a10:72:9)\n    at http://127.0.0.1:18183/@fs/C:/Users/Administrator/Desktop/my/cloudstudy/node_modules/.pnpm/@dcloudio+uni-h5@3.0.0-alph_260a12a8d0f5eec261e63deece2314fd/node_modules/@dcloudio/uni-h5/dist/uni-h5.es.js:14437:17\n    at hook.__wdc.hook.__wdc (http://127.0.0.1:18183/node_modules/.vite/deps/@vue_runtime-dom.js?v=78288a10:3609:10)\n    at callWithErrorHandling (http://127.0.0.1:18183/node_modules/.vite/deps/@vue_runtime-dom.js?v=78288a10:1675:17)\n    at callWithAsyncErrorHandling (http://127.0.0.1:18183/node_modules/.vite/deps/@vue_runtime-dom.js?v=78288a10:1682:15)\n    at hook.__weh.hook.__weh (http://127.0.0.1:18183/node_modules/.vite/deps/@vue_runtime-dom.js?v=78288a10:3639:16)\n    at invokeArrayFns (http://127.0.0.1:18183/node_modules/@vue/shared/dist/shared.esm-bundler.js?v=78288a10:74:9)\n    at http://127.0.0.1:18183/node_modules/.vite/deps/@vue_runtime-dom.js?v=78288a10:3469:22",
+        "rejected": {
+          "errMsg": "setNavigationBarTitle:fail page not found"
+        }
+      }
+    ],
+    "rejections": [],
+    "route": "#/pages/login/login"
+  },
+  "fixtureRequests": [
+    {
+      "mode": "consent",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "mode": "consent",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "consent",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "consent",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/learner/targets"
+    },
+    {
+      "mode": "consent",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/consents"
+    },
+    {
+      "mode": "consent",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "consent",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/learner/targets"
+    },
+    {
+      "mode": "consent",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/token/refresh"
+    }
+  ],
+  "sourceHashesAfter": {
+    "apps/mobile/src/pages/onboarding/onboarding.vue": "c4c691dd9ab74c8aa7f21a677d43f3541b22c4ea4642f733ad53c4cf94176086",
+    "packages/i18n/src/mobile-experience.ts": "7b21f6e074bf705463e27941cbc4c91847a242443cdbd1ad3deea155fc733dde",
+    "apps/mobile/src/auth/gateway-auth.ts": "746bb9d83d241162bce9d9cd701d2f6662d11a132977533e3ba2a11e428c3277",
+    "apps/mobile/src/stores/session.ts": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+    "apps/mobile/src/api/learner-content.ts": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6",
+    "apps/mobile/src/domain/onboarding-resume.ts": "ea6e26682e69a9f1c3d8fd47d284aa55d96e39d646e27e5d41d0f556ba902e26",
+    "apps/mobile/src/stores/learner-content.ts": "95cc92496db996242d91baed3301d76f985e4e3b9134e1e50c2b9ab8d41e4c61",
+    "apps/mobile/src/platform/pointer-feedback.ts": "24a1f9b26ad6797fc9a61a16cb43559d116230cd7e9cd66c1dd4d9a563d94a6c"
+  },
+  "status": "DIAGNOSTIC_COMPLETE_NOT_UI_PASS"
+}

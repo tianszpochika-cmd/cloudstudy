@@ -1,0 +1,365 @@
+{
+  "at": "2026-10-15T10:26:36.411Z",
+  "scope": "AUTH3_NARROW_POINTER_BUSY_ERROR_REGRESSION_ONLY",
+  "sourceHashesBefore": {
+    "apps/mobile/src/pages/login/login.vue": "0c5fb5cd346d9e86271eaf65638cf2ffabbc9b466fb3d6cd1079e4fbc9a55460",
+    "apps/mobile/src/pages/register/register.vue": "9258cb03e36c97d53d2e88521ba29f95aaf81de794657c8c72689fa50bd66baf",
+    "apps/mobile/src/pages/reset-password/reset-password.vue": "c9a6da864e9ce8933cb5a42b6743ff99551fa433eafe701ea470c760d88cc936",
+    "apps/mobile/src/platform/pointer-feedback.ts": "24a1f9b26ad6797fc9a61a16cb43559d116230cd7e9cd66c1dd4d9a563d94a6c",
+    "apps/mobile/src/stores/session.ts": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+    "packages/i18n/src/mobile-experience.ts": "7b21f6e074bf705463e27941cbc4c91847a242443cdbd1ad3deea155fc733dde"
+  },
+  "cases": [
+    {
+      "name": "login-click-0-old-center-and-error-recovery",
+      "requests": 2,
+      "result": "PASS",
+      "point": {
+        "x": 195,
+        "y": 552.65625,
+        "top": 527.65625
+      },
+      "held": 0,
+      "helperUsed": false
+    },
+    {
+      "name": "login-click-160-old-center-and-error-recovery",
+      "requests": 2,
+      "result": "PASS",
+      "point": {
+        "x": 195,
+        "y": 552.65625,
+        "top": 527.65625
+      },
+      "held": 160,
+      "helperUsed": false
+    },
+    {
+      "name": "login-drag-160-old-center-and-error-recovery",
+      "requests": 2,
+      "result": "PASS",
+      "point": {
+        "x": 195,
+        "y": 552.65625,
+        "top": 527.65625
+      },
+      "held": 160,
+      "helperUsed": false
+    },
+    {
+      "name": "login-cancel-160-old-center-and-error-recovery",
+      "requests": 2,
+      "result": "PASS",
+      "point": {
+        "x": 195,
+        "y": 552.65625,
+        "top": 527.65625
+      },
+      "held": 160,
+      "helperUsed": false
+    },
+    {
+      "name": "register-click-0-old-center-and-error-recovery",
+      "requests": 2,
+      "result": "PASS",
+      "point": {
+        "x": 195,
+        "y": 658.234375,
+        "top": 633.234375
+      },
+      "held": 0,
+      "helperUsed": true
+    },
+    {
+      "name": "register-click-160-old-center-and-error-recovery",
+      "requests": 2,
+      "result": "PASS",
+      "point": {
+        "x": 195,
+        "y": 658.234375,
+        "top": 633.234375
+      },
+      "held": 160,
+      "helperUsed": true
+    },
+    {
+      "name": "register-drag-160-old-center-and-error-recovery",
+      "requests": 2,
+      "result": "PASS",
+      "point": {
+        "x": 195,
+        "y": 658.234375,
+        "top": 633.234375
+      },
+      "held": 160,
+      "helperUsed": true
+    },
+    {
+      "name": "register-cancel-160-old-center-and-error-recovery",
+      "requests": 2,
+      "result": "PASS",
+      "point": {
+        "x": 195,
+        "y": 658.234375,
+        "top": 633.234375
+      },
+      "held": 160,
+      "helperUsed": true
+    },
+    {
+      "name": "reset-click-0-old-center-and-error-recovery",
+      "requests": 2,
+      "result": "PASS",
+      "point": {
+        "x": 195,
+        "y": 660.34375,
+        "top": 635.34375
+      },
+      "held": 0,
+      "helperUsed": true
+    },
+    {
+      "name": "reset-click-160-old-center-and-error-recovery",
+      "requests": 2,
+      "result": "PASS",
+      "point": {
+        "x": 195,
+        "y": 660.34375,
+        "top": 635.34375
+      },
+      "held": 160,
+      "helperUsed": true
+    },
+    {
+      "name": "reset-drag-160-old-center-and-error-recovery",
+      "requests": 2,
+      "result": "PASS",
+      "point": {
+        "x": 195,
+        "y": 660.34375,
+        "top": 635.34375
+      },
+      "held": 160,
+      "helperUsed": true
+    },
+    {
+      "name": "reset-cancel-160-old-center-and-error-recovery",
+      "requests": 2,
+      "result": "PASS",
+      "point": {
+        "x": 195,
+        "y": 660.34375,
+        "top": 635.34375
+      },
+      "held": 160,
+      "helperUsed": true
+    },
+    {
+      "name": "login-pending-single-error-unlocks-and-retry",
+      "requests": 2,
+      "result": "PASS"
+    },
+    {
+      "name": "register-pending-single-error-unlocks-and-retry",
+      "requests": 2,
+      "result": "PASS"
+    },
+    {
+      "name": "reset-pending-single-error-unlocks-and-retry",
+      "requests": 2,
+      "result": "PASS"
+    }
+  ],
+  "pageErrors": [],
+  "requests": [
+    {
+      "mode": "login",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "mode": "login",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "mode": "login",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "mode": "login",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "mode": "login",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "mode": "login",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "mode": "login",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "mode": "login",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "mode": "register",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/register"
+    },
+    {
+      "mode": "register",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/register"
+    },
+    {
+      "mode": "register",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/register"
+    },
+    {
+      "mode": "register",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/register"
+    },
+    {
+      "mode": "register",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/register"
+    },
+    {
+      "mode": "register",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/register"
+    },
+    {
+      "mode": "register",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/register"
+    },
+    {
+      "mode": "register",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/register"
+    },
+    {
+      "mode": "reset",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/password-reset/confirm"
+    },
+    {
+      "mode": "reset",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/password-reset/confirm"
+    },
+    {
+      "mode": "reset",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/password-reset/confirm"
+    },
+    {
+      "mode": "reset",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/password-reset/confirm"
+    },
+    {
+      "mode": "reset",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/password-reset/confirm"
+    },
+    {
+      "mode": "reset",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/password-reset/confirm"
+    },
+    {
+      "mode": "reset",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/password-reset/confirm"
+    },
+    {
+      "mode": "reset",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/password-reset/confirm"
+    },
+    {
+      "mode": "login",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "mode": "login",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "mode": "register",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/register"
+    },
+    {
+      "mode": "register",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/register"
+    },
+    {
+      "mode": "reset",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/password-reset/confirm"
+    },
+    {
+      "mode": "reset",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/password-reset/confirm"
+    }
+  ],
+  "sourceHashesAfter": {
+    "apps/mobile/src/pages/login/login.vue": "0c5fb5cd346d9e86271eaf65638cf2ffabbc9b466fb3d6cd1079e4fbc9a55460",
+    "apps/mobile/src/pages/register/register.vue": "9258cb03e36c97d53d2e88521ba29f95aaf81de794657c8c72689fa50bd66baf",
+    "apps/mobile/src/pages/reset-password/reset-password.vue": "c9a6da864e9ce8933cb5a42b6743ff99551fa433eafe701ea470c760d88cc936",
+    "apps/mobile/src/platform/pointer-feedback.ts": "24a1f9b26ad6797fc9a61a16cb43559d116230cd7e9cd66c1dd4d9a563d94a6c",
+    "apps/mobile/src/stores/session.ts": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+    "packages/i18n/src/mobile-experience.ts": "7b21f6e074bf705463e27941cbc4c91847a242443cdbd1ad3deea155fc733dde"
+  },
+  "status": "UI_PASS_AUTH3_NARROW_POINTER_BUSY_ERROR"
+}
