@@ -1,78 +1,186 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
+import { onHide, onReady, onShow } from '@dcloudio/uni-app'
 import AppIcon from '../../components/AppIcon.vue'
-import MobilePageHeader from '../../components/MobilePageHeader.vue'
-import { useMobileExperience } from '../../platform/experience'
-const { experienceStyle, experienceMotion } = useMobileExperience()
-
-import { onLoad } from '@dcloudio/uni-app'
-import { authT } from '../../auth/i18n'
+import { mobileT, useMobileExperience } from '../../platform/experience'
+import { getUniRuntime } from '../../platform/uni-runtime'
 import { useSessionStore } from '../../stores/session'
-import { openUniPage } from '../../platform/uni-runtime'
-import { b10ThemeMode } from '../../platform/b10-foundation'
 
+type SessionStore = ReturnType<typeof useSessionStore>
+type Identity = NonNullable<ReturnType<SessionStore['getMobileApiIdentity']>>
+type Action = 'read' | 'account' | 'help' | 'logout' | 'login'
+const { experienceStyle, experienceMotion } = useMobileExperience()
 const session = useSessionStore()
-const themeClass = computed(() => `b10-theme--${b10ThemeMode.value}`)
-const isRejected = computed(() => session.adultGate === 'REJECTED')
-const explanation = computed(() => {
-  if (isRejected.value) {
-    return '当前版本仅面向 18 岁以上成人开放，暂不能向你开放学习功能。'
-  }
-  return '如果你认为这是误判，请联系帮助中心。'
-})
-
-onLoad((options) => { if (options?.returnTo) session.setReturnTo(options.returnTo) })
-
-async function logout(): Promise<void> {
-  await session.logout()
-  openUniPage('/pages/login/login')
+const pending = ref<Action | null>(null)
+const verifiedOwner = ref<Identity | null>(null)
+const readFailed = ref(false)
+const actionError = ref<string | null>(null)
+let active = false
+let operation = 0
+let restoringOperation: number | null = null
+let navigationReady = false
+const busy = computed(() => pending.value !== null)
+const canManageAccount = computed(() => session.isAuthenticated)
+function sameOwner(owner: Identity): boolean {
+  const current = session.getMobileApiIdentity()
+  return session.isAuthenticated && current?.subject === owner.subject && current.revision === owner.revision
 }
-function goToProfile(): void { openUniPage('/pages/profile/profile') }
-function goToSupport(): void { openUniPage('/pages/support/support') }
+function current(request: number): boolean { return active && operation === request }
+const reason = computed(() => {
+  if (readFailed.value || !verifiedOwner.value || !sameOwner(verifiedOwner.value) || session.adultGate === 'UNKNOWN') return 'unknown'
+  if (session.adultGate === 'REJECTED') return 'adult'
+  // A sticky safety marker does not establish an owner-scoped withdrawal.
+  if (session.learningConsentWithdrawn) return 'paused'
+  return 'generic'
+})
+const title = computed(() => mobileT('forbidden.' + reason.value + 'Title'))
+const description = computed(() => mobileT('forbidden.' + reason.value + 'Description'))
+const pendingLabel = computed(() => mobileT('forbidden.' + (pending.value === 'read' ? 'checking' : pending.value === 'logout' ? 'signingOut' : 'opening')))
+watch(title, () => { if (active && navigationReady) uni.setNavigationBarTitle({ title: title.value }) })
+onReady(() => { navigationReady = true; uni.setNavigationBarTitle({ title: title.value }) })
+
+function leave(): void {
+  active = false; operation++; restoringOperation = null
+  pending.value = null; verifiedOwner.value = null; readFailed.value = false; actionError.value = null
+}
+onHide(leave)
+onBeforeUnmount(leave)
+onBeforeUnmount(() => { navigationReady = false })
+onShow(() => { active = true; void readCurrent() })
+
+watch(() => session.identityRevision, () => {
+  verifiedOwner.value = null
+  if (restoringOperation === operation) return
+  // logout intentionally clears this owner's identity before its request settles.
+  if (pending.value === 'logout' && !session.getMobileApiIdentity() && !session.isAuthenticated) return
+  operation++; pending.value = null; readFailed.value = false; actionError.value = null
+  if (active) void nextTick().then(() => { if (active && !pending.value) void readCurrent() })
+}, { flush: 'sync' })
+
+async function readCurrent(): Promise<void> {
+  if (!active || busy.value) return
+  const request = ++operation
+  pending.value = 'read'; verifiedOwner.value = null; readFailed.value = false; actionError.value = null
+  try {
+    restoringOperation = request
+    await session.restore()
+    if (restoringOperation === request) restoringOperation = null
+    if (!current(request)) return
+    const owner = session.getMobileApiIdentity()
+    if (!session.isAuthenticated || !owner) return
+    await session.refreshGateFromServer()
+    if (current(request) && sameOwner(owner)) verifiedOwner.value = owner
+  } catch {
+    if (current(request)) { readFailed.value = true; actionError.value = 'readFailed' }
+  } finally {
+    if (restoringOperation === request) restoringOperation = null
+    if (current(request)) pending.value = null
+  }
+}
+class NavigationUnconfirmedError extends Error {}
+async function navigate(url: string, publicExit = false): Promise<void> {
+  const runtime = getUniRuntime()
+  // Bound the local wait when a uni interceptor leaves its Promise pending.
+  // An already dispatched platform navigation cannot be cancelled here.
+  await new Promise<void>((resolve, reject) => {
+    let settled = false
+    const timer = setTimeout(() => finish(new NavigationUnconfirmedError()), 4000)
+    function finish(error?: unknown): void {
+      if (settled) return
+      settled = true; clearTimeout(timer)
+      if (error) reject(error); else resolve()
+    }
+    try {
+      const result = publicExit && runtime.reLaunch ? runtime.reLaunch({ url }) : runtime.navigateTo({ url })
+      void Promise.resolve(result).then(() => finish(), error => finish(error))
+    } catch (error) { finish(error) }
+  })
+}
+const loginPath = '/pages/login/login?returnTo=%2Fpages%2Fsettings%2Fsettings'
+async function open(action: 'account' | 'help' | 'login'): Promise<void> {
+  if (!active || busy.value) return
+  const owner = session.getMobileApiIdentity()
+  if (action !== 'login' && (!owner || !session.isAuthenticated)) return
+  const request = ++operation
+  pending.value = action; actionError.value = null
+  try {
+    await session.restore()
+    if (!current(request)) return
+    if (action === 'login') {
+      if (session.isAuthenticated || session.getMobileApiIdentity()) {
+        pending.value = null; void readCurrent(); return
+      }
+      await navigate(loginPath, true)
+    } else {
+      if (!owner || !sameOwner(owner)) return
+      await navigate(action === 'account' ? '/pages/settings/settings' : '/pages/support/support')
+    }
+  } catch (error) { if (current(request)) actionError.value = error instanceof NavigationUnconfirmedError ? 'navigationUnconfirmed' : 'navigationFailed' }
+  finally { if (current(request)) pending.value = null }
+}
+async function logout(): Promise<void> {
+  if (!active || busy.value || !session.isAuthenticated || !session.getMobileApiIdentity()) return
+  const request = ++operation
+  pending.value = 'logout'; actionError.value = null
+  try {
+    const acknowledged = await session.logout()
+    if (!current(request) || session.getMobileApiIdentity() || session.status !== 'unauthenticated') return
+    if (!acknowledged) { actionError.value = 'logoutUnconfirmed'; return }
+    try { await navigate(loginPath, true) }
+    catch (error) { if (current(request)) actionError.value = error instanceof NavigationUnconfirmedError ? 'navigationUnconfirmed' : 'navigationFailed' }
+  } catch {
+    if (current(request)) actionError.value = 'logoutFailed'
+  } finally { if (current(request)) pending.value = null }
+}
 </script>
 
 <template>
-  <view class="yx-page v2-forbid-page" :style="experienceStyle" :data-motion="experienceMotion" :class="themeClass">
-    <MobilePageHeader page="forbidden" />
-    <view class="v2-forbid-body">
-      <view class="yx-card card v2-forbid-card">
-        <view class="v2-forbid-head">
-          <view class="v2-forbid-titles">
-            <text class="yx-eyebrow eyebrow v2-forbid-eyebrow"><AppIcon name="lock" :size="14" /><text>访问受限</text></text>
-            <text class="h2 v2-forbid-title v2-forbid-h2">暂不能开放学习</text>
-          </view>
+  <view class="yx-page forbidden-page" :style="experienceStyle" :data-motion="experienceMotion" :aria-busy="busy">
+    <view class="forbidden-shell">
+      <view class="forbidden-brand"><AppIcon name="brand" :size="25" /><text>{{ mobileT('brand') }}</text></view>
+      <view class="forbidden-content" aria-labelledby="mobile-forbidden-title" aria-describedby="mobile-forbidden-description">
+        <AppIcon class="forbidden-lock" name="lock" :size="22" />
+        <text id="mobile-forbidden-title" class="forbidden-title" role="heading" aria-level="1">{{ title }}</text>
+        <text id="mobile-forbidden-description" class="forbidden-description">{{ description }}</text>
+        <view class="forbidden-actions">
+          <template v-if="canManageAccount">
+            <button class="forbidden-primary" role="button" tabindex="0" :disabled="busy" :aria-disabled="busy" @click="open('account')" @keydown.enter.stop.prevent @keyup.enter.stop.prevent="open('account')" @keydown.space.stop.prevent @keyup.space.stop.prevent="open('account')">{{ mobileT('forbidden.account') }}</button>
+            <button class="forbidden-secondary" role="button" tabindex="0" :disabled="busy" :aria-disabled="busy" @click="open('help')" @keydown.enter.stop.prevent @keyup.enter.stop.prevent="open('help')" @keydown.space.stop.prevent @keyup.space.stop.prevent="open('help')">{{ mobileT('forbidden.help') }}</button>
+          </template>
+          <button v-else class="forbidden-primary" role="button" tabindex="0" :disabled="busy" :aria-disabled="busy" @click="open('login')" @keydown.enter.stop.prevent @keyup.enter.stop.prevent="open('login')" @keydown.space.stop.prevent @keyup.space.stop.prevent="open('login')">{{ mobileT('forbidden.login') }}</button>
+          <text v-if="pending" class="forbidden-status" role="status" aria-live="polite">{{ pendingLabel }}</text>
+          <text v-if="actionError" class="forbidden-error" role="alert">{{ mobileT('forbidden.' + actionError) }}</text>
+          <button v-if="readFailed" class="forbidden-text" role="button" tabindex="0" :disabled="busy" :aria-disabled="busy" @click="readCurrent" @keydown.enter.stop.prevent @keyup.enter.stop.prevent="readCurrent()" @keydown.space.stop.prevent @keyup.space.stop.prevent="readCurrent()">{{ mobileT('forbidden.reload') }}</button>
         </view>
-        <text class="yx-description d v2-forbid-d" role="alert">{{ explanation }}</text>
-        <view class="yx-actions v2-forbid-list" style="display: grid; gap: 12rpx; margin-top: 30rpx;">
-          <button v-if="isRejected" tabindex="0" role="button" class="yx-button yx-button--secondary btn opt list-row row v2-forbid-btn v2-forbid-opt v2-forbid-row" type="button" @click="goToProfile"><AppIcon name="me" :size="14" />个人中心与设置</button>
-          <button v-if="isRejected" tabindex="0" role="button" class="yx-button yx-button--secondary btn opt list-row row v2-forbid-btn v2-forbid-opt v2-forbid-row" type="button" @click="goToSupport"><AppIcon name="help" :size="14" />帮助与反馈</button>
-          <button tabindex="0" role="button" class="yx-button btn opt v2-forbid-btn v2-forbid-opt v2-forbid-submit" type="button" @click="logout">{{ authT('forbidden.login') }}<AppIcon name="back" :size="14" /></button>
-        </view>
+      </view>
+      <view v-if="canManageAccount" class="forbidden-exit">
+        <button class="forbidden-text" role="button" tabindex="0" :disabled="busy" :aria-disabled="busy" @click="logout" @keydown.enter.stop.prevent @keyup.enter.stop.prevent="logout()" @keydown.space.stop.prevent @keyup.space.stop.prevent="logout()">{{ mobileT('forbidden.logout') }}</button>
       </view>
     </view>
   </view>
 </template>
 
 <style scoped>
-/* v2 无权限页换皮：对齐 practice.vue v2-practice-* 与 today.vue v2-today-* 卡片/eyebrow/标题/列表行/按钮同样数值，对齐 webDemo/mobile/styles.css、refine.css，仅用 var(--v2-*)。 */
-.v2-forbid-page{box-sizing:border-box;min-width:0;max-width:100%;overflow-x:hidden;font-family:var(--v2-font);overflow-wrap:anywhere}
-.v2-forbid-body{display:flex;flex-direction:column;gap:var(--v2-space-4);box-sizing:border-box;min-width:0;max-width:100%;font-family:var(--v2-font);overflow-wrap:anywhere}
-.v2-forbid-card{display:grid;gap:var(--v2-space-2);box-sizing:border-box;min-width:0;max-width:100%;padding:var(--v2-space-5);border:1px solid var(--v2-line);border-radius:var(--v2-radius-lg);background:var(--v2-card);box-shadow:var(--v2-shadow);font-family:var(--v2-font);overflow-wrap:anywhere}
-.v2-forbid-card:hover{border-color:var(--v2-brand)}
-.v2-forbid-head{display:flex;align-items:center;gap:var(--v2-space-2);box-sizing:border-box;min-width:0;max-width:100%;font-family:var(--v2-font)}
-.v2-forbid-titles{display:flex;flex-direction:column;gap:var(--v2-space-1);box-sizing:border-box;flex:1 1 auto;min-width:0;max-width:100%;font-family:var(--v2-font);overflow-wrap:anywhere}
-.v2-forbid-eyebrow{display:flex;align-items:center;gap:var(--v2-space-2);box-sizing:border-box;min-width:0;max-width:100%;margin:0 0 var(--v2-space-2);color:var(--v2-mut);font-family:var(--v2-font);font-size:var(--v2-text-xs);font-weight:700;letter-spacing:.06em;text-transform:uppercase;overflow-wrap:anywhere}
-.v2-forbid-title,.v2-forbid-h2{display:block;box-sizing:border-box;min-width:0;max-width:100%;margin:var(--v2-space-1) 0 0;color:var(--v2-ink);font-family:var(--v2-font);font-size:var(--v2-text-lg);font-weight:700;line-height:1.45;overflow-wrap:anywhere}
-.v2-forbid-d{display:block;box-sizing:border-box;min-width:0;max-width:100%;margin-top:var(--v2-space-2);color:var(--v2-mut);font-family:var(--v2-font);font-size:var(--v2-text-sm);line-height:1.7;overflow-wrap:anywhere}
-.v2-forbid-list{display:grid;gap:var(--v2-space-4);box-sizing:border-box;min-width:0;max-width:100%;font-family:var(--v2-font);overflow-wrap:anywhere}
-.v2-forbid-btn{box-sizing:border-box;display:flex;align-items:center;justify-content:center;gap:var(--v2-space-2);width:100%;min-width:0;max-width:100%;min-height:var(--v2-space-12);padding:var(--v2-space-3) var(--v2-space-4);border:1px solid var(--v2-line);border-radius:var(--v2-radius-md);background:var(--v2-card);color:var(--v2-ink);font-family:var(--v2-font);font-size:var(--v2-text-sm);font-weight:600;line-height:1.5;white-space:nowrap;overflow-wrap:anywhere}
-.v2-forbid-btn:hover{border-color:var(--v2-brand)}
-.v2-forbid-btn:active{transform:scale(.97)}
-.v2-forbid-btn:focus-visible{box-shadow:var(--v2-focus);outline:none}
-.v2-forbid-btn:disabled{background:var(--v2-surface);color:var(--v2-mut);border:1px dashed var(--v2-line);box-shadow:none}
-.v2-forbid-opt{box-sizing:border-box;display:flex;align-items:center;justify-content:center;min-width:0;max-width:100%;font-family:var(--v2-font);font-size:var(--v2-text-sm);font-weight:600;white-space:nowrap;overflow-wrap:anywhere}
-.v2-forbid-row{display:flex;align-items:center;gap:var(--v2-space-2);box-sizing:border-box;min-width:0;max-width:100%;padding:var(--v2-space-4);border:1px solid var(--v2-line);border-radius:var(--v2-radius-md);background:var(--v2-card);font-family:var(--v2-font);overflow-wrap:anywhere}
-.v2-forbid-row:hover{border-color:var(--v2-brand)}
-.v2-forbid-submit{box-sizing:border-box;min-width:0;max-width:100%;border-color:transparent;background:var(--v2-brand);color:var(--v2-inverse);font-family:var(--v2-font);font-weight:700;overflow-wrap:anywhere}
-.v2-forbid-submit:hover{border-color:var(--v2-brand)}
+.forbidden-page { box-sizing: border-box; min-width: 0; min-height: 100vh; padding: calc(24px + env(safe-area-inset-top)) 24px calc(40px + env(safe-area-inset-bottom)); background: var(--v2-bg); color: var(--v2-ink); font-family: var(--v2-font); }
+.forbidden-shell { width: 100%; max-width: 420px; min-width: 0; margin: 0 auto; }
+.forbidden-brand { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; font-size: 20px; font-weight: 650; }
+.forbidden-brand :deep(.app-icon) { color: var(--v2-brand); }
+.forbidden-content { margin-top: clamp(40px, 10vh, 88px); }
+.forbidden-lock { margin-bottom: 20px; color: var(--v2-mut); }
+.forbidden-title { display: block; margin: 0; font-size: 28px; font-weight: 650; line-height: 1.4; overflow-wrap: break-word; }
+.forbidden-description { display: block; margin-top: 20px; color: var(--v2-mut); font-size: 14px; line-height: 1.75; overflow-wrap: break-word; }
+.forbidden-actions { display: grid; gap: 16px; margin-top: clamp(32px, 7vh, 64px); }
+.forbidden-primary, .forbidden-secondary { box-sizing: border-box; display: flex; align-items: center; justify-content: center; width: 100%; min-width: 0; min-height: 48px; margin: 0; padding: 12px 18px; border: 1px solid transparent; border-radius: 10px; font: inherit; font-size: 16px; font-weight: 600; line-height: 1.5; white-space: normal; overflow-wrap: break-word; }
+.forbidden-primary { background: var(--v2-brand); color: var(--v2-inverse); }
+.forbidden-primary:active:not([disabled]) { background: var(--v2-brand2); }
+.forbidden-secondary { border-color: var(--v2-mut); background: transparent; color: var(--v2-ink); }
+.forbidden-exit { margin-top: clamp(32px, 8vh, 64px); padding-top: 16px; border-top: 1px solid var(--v2-line); }
+.forbidden-text { display: flex; align-items: center; justify-content: center; min-height: 44px; min-width: 44px; width: 100%; margin: 0; padding: 10px 0; border: 0; border-radius: 6px; background: transparent; color: var(--v2-mut); font: inherit; font-size: 14px; line-height: 1.6; white-space: normal; overflow-wrap: break-word; }
+.forbidden-error, .forbidden-status { display: block; font-size: 13px; line-height: 1.6; overflow-wrap: anywhere; }
+.forbidden-error { color: var(--v2-bad); }
+.forbidden-status { color: var(--v2-mut); }
+.forbidden-page button[disabled] { opacity: .6; cursor: default; }
+.forbidden-page button:focus-visible { outline: 2px solid var(--v2-brand); outline-offset: 3px; }
+@media (max-height: 600px) { .forbidden-content { margin-top: 32px; } .forbidden-actions, .forbidden-exit { margin-top: 28px; } }
+@media (min-width: 768px) { .forbidden-page { padding-top: calc(40px + env(safe-area-inset-top)); padding-bottom: calc(64px + env(safe-area-inset-bottom)); } }
 </style>

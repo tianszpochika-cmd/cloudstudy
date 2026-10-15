@@ -1,0 +1,72 @@
+{
+  "signedAt": "2026-10-16T04:02:07.0580037+08:00",
+  "reviewer": "/root/mb003_final",
+  "status": "UI_PASS_MB005_C4_NAMED_H5_FIXTURE_SCOPE",
+  "sourceHashes": {
+    "apps/mobile/src/pages/forbidden/forbidden.vue": "d38dd97ccb717d3b477327cef5af49fa84d265df0a0032a17e2725ad6e85e718",
+    "packages/i18n/src/mobile-experience.ts": "cb47a78d810e2c2b08fc280f237cae726ee7a66cc2c0bf2dccf7c1112baaca83",
+    "apps/mobile/tests/ui-forbidden.e2e.cjs": "04ff778848e3f8746430b1579feff2e4d27ec75b9415928a021e178a6588b2de",
+    "apps/mobile/tests/adult-consent-copy.test.mjs": "14e90f2993e0f8b1ae446e50c33320c3d6c0165e4f6f07b18aca49c201740886",
+    "apps/mobile/src/stores/session.ts": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+    "apps/mobile/src/auth/gateway-auth.ts": "746bb9d83d241162bce9d9cd701d2f6662d11a132977533e3ba2a11e428c3277",
+    "apps/mobile/src/auth/navigation.ts": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5",
+    "apps/mobile/src/platform/pointer-feedback.ts": "24a1f9b26ad6797fc9a61a16cb43559d116230cd7e9cd66c1dd4d9a563d94a6c"
+  },
+  "groups": [
+    {
+      "path": "visual-results.json",
+      "status": "UI_PASS_CURRENT_VISUAL_AND_ACTUAL_CONTROLS",
+      "cases": 22,
+      "pageErrors": 0
+    },
+    {
+      "path": "text-results.json",
+      "status": "UI_PASS_TEXT200_SELECTED_WIDTHS",
+      "cases": 10,
+      "pageErrors": 0
+    },
+    {
+      "path": "interaction-run2/interaction-results.json",
+      "status": "UI_PASS_REMAINING_POINTER_KEYBOARD",
+      "cases": 16,
+      "pageErrors": 0
+    },
+    {
+      "path": "owner-query-run2/owner-query-results.json",
+      "status": "UI_PASS_PENDING_LOGIN_AND_QUERY",
+      "cases": 2,
+      "pageErrors": 0
+    },
+    {
+      "path": "closure-results.json",
+      "status": "UI_PASS_C4_CLOSURE",
+      "cases": 2,
+      "pageErrors": 0
+    }
+  ],
+  "currentRecords": 52,
+  "olderRiskScope": {
+    "cases": 11,
+    "copy": "2a143436",
+    "page": "d38dd97c",
+    "candidate": 2,
+    "relabeledAsC4": false
+  },
+  "native": "NOT_RUN",
+  "realBackendBusiness": "NOT_RUN",
+  "assistiveDevice": "NOT_RUN",
+  "sourceOrGitModifiedByReviewer": false,
+  "service": {
+    "reviewerInflight": false,
+    "session": 10670,
+    "pid": 36440,
+    "port": 18183,
+    "creation": "2026-10-16T03:55:51.253027+08:00"
+  },
+  "lastNewGroupQuota": {
+    "ordinaryUsageAllowed": true,
+    "primary": 30,
+    "resetCreditUsed": false,
+    "weekly": 36
+  }
+}

@@ -22,6 +22,7 @@ function load(relativePath) {
 const copy = load('src/domain/onboarding-consent-copy.ts')
 const page = read('src/pages/onboarding/onboarding.vue')
 const forbidden = read('src/pages/forbidden/forbidden.vue')
+const forbiddenMessages = load('../../packages/i18n/src/mobile-experience.ts').mobileExperienceMessages
 const resume = read('src/domain/onboarding-resume.ts')
 const webCopy = fs.readFileSync(path.resolve(appRoot, '../learner-web/src/domain/onboarding-consent-copy.ts'), 'utf8')
 
@@ -60,8 +61,18 @@ test('the redesigned wizard keeps year-only collection and restricted exits with
   assert.doesNotMatch(page, /出生月|出生日|type="date"|bday-day|bday-month/)
   assert.doesNotMatch(page, /本隐私政策|隐私政策正文/)
   assert.doesNotMatch(page, /ACCOUNT_TERMS:\s*true|PRIVACY_NOTICE:\s*true|ADULT_LEARNING_ELIGIBILITY:\s*true/)
-  assert.match(forbidden, /个人中心与设置/)
-  assert.match(forbidden, /帮助与反馈/)
+  assert.match(forbidden, /\/pages\/settings\/settings/)
+  assert.match(forbidden, /\/pages\/support\/support/)
+  assert.equal(forbiddenMessages['zh-CN'].mobile.forbidden.account, '管理账号')
+  assert.equal(forbiddenMessages['zh-CN'].mobile.forbidden.help, '帮助与反馈')
+  for (const locale of ['zh-CN', 'en-US']) {
+    const resources = forbiddenMessages[locale].mobile.forbidden
+    assert.doesNotMatch(resources.pausedDescription, /撤回|withdraw/i, 'Sticky marker cannot assert an owner withdrawal')
+    assert.match(resources.adultDescription, /18/)
+    assert.doesNotMatch(Object.values(resources).join(' '), /改年份|再注册|retry.{0,12}adult/i)
+  }
+  assert.doesNotMatch(Object.values(forbiddenMessages['en-US'].mobile.forbidden).join(' '), /[\u3400-\u9fff]/)
+  assert.doesNotMatch(forbidden, /confirmAdultGate\(|recordRequiredConsents\(/)
   assert.match(forbidden, /async function logout/)
   assert.doesNotMatch(forbidden, /再试一次|改年份/)
 })

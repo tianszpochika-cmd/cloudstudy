@@ -1,0 +1,16 @@
+{
+  "at": "2026-10-16T03:48:48.122592+08:00",
+  "status": "COPY_ONLY_CANDIDATE3_BROWSER_PENDING",
+  "sourceHashes": {
+    "apps/mobile/src/pages/forbidden/forbidden.vue": "d38dd97ccb717d3b477327cef5af49fa84d265df0a0032a17e2725ad6e85e718",
+    "packages/i18n/src/mobile-experience.ts": "3658267fc51a425a389e817e07735814f7476b76c119a4c011341a7c9efcb28e",
+    "apps/mobile/tests/ui-forbidden.e2e.cjs": "e2186c867f1d06a88ff59916d79d043ef0106dde99abfb485141153ef5002e71",
+    "apps/mobile/tests/adult-consent-copy.test.mjs": "14e90f2993e0f8b1ae446e50c33320c3d6c0165e4f6f07b18aca49c201740886",
+    "apps/mobile/src/stores/session.ts": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+    "apps/mobile/src/auth/gateway-auth.ts": "746bb9d83d241162bce9d9cd701d2f6662d11a132977533e3ba2a11e428c3277",
+    "apps/mobile/src/auth/navigation.ts": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5",
+    "apps/mobile/src/platform/pointer-feedback.ts": "24a1f9b26ad6797fc9a61a16cb43559d116230cd7e9cd66c1dd4d9a563d94a6c"
+  },
+  "change": "Only English genericTitle uses not available to avoid splitting unavailable at320px 200%; exact E2E expectation follows. Page and shared security files unchanged.",
+  "oldVersion": "candidate2 current frozen before change; exact8-source private backup .git/codex-local-backups/mb005-20261015-candidate2/source"
+}

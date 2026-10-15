@@ -1,0 +1,570 @@
+{
+  "at": "2026-10-15T19:51:16.248Z",
+  "scope": "CURRENT_CANDIDATE2_TEXT200_SHORT_SCREEN",
+  "sourceHashesBefore": {
+    "apps/mobile/src/pages/forbidden/forbidden.vue": "d38dd97ccb717d3b477327cef5af49fa84d265df0a0032a17e2725ad6e85e718",
+    "packages/i18n/src/mobile-experience.ts": "3658267fc51a425a389e817e07735814f7476b76c119a4c011341a7c9efcb28e",
+    "apps/mobile/tests/ui-forbidden.e2e.cjs": "e2186c867f1d06a88ff59916d79d043ef0106dde99abfb485141153ef5002e71",
+    "apps/mobile/tests/adult-consent-copy.test.mjs": "14e90f2993e0f8b1ae446e50c33320c3d6c0165e4f6f07b18aca49c201740886",
+    "apps/mobile/src/stores/session.ts": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+    "apps/mobile/src/auth/gateway-auth.ts": "746bb9d83d241162bce9d9cd701d2f6662d11a132977533e3ba2a11e428c3277",
+    "apps/mobile/src/auth/navigation.ts": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5",
+    "apps/mobile/src/platform/pointer-feedback.ts": "24a1f9b26ad6797fc9a61a16cb43559d116230cd7e9cd66c1dd4d9a563d94a6c"
+  },
+  "cases": [
+    {
+      "mode": "adult",
+      "width": 320,
+      "locale": "en-US",
+      "theme": "dark",
+      "facts": {
+        "route": "#/pages/forbidden/forbidden",
+        "title": "Learning is not available yet",
+        "heading": "Learning is not available yet",
+        "description": "The current version offers learning to users aged 18 and over. You can still manage your account or get help.",
+        "reason": "adult",
+        "busy": false,
+        "authenticated": true,
+        "actualLocale": "en-US",
+        "actualTheme": "dark",
+        "buttons": [
+          {
+            "text": "Manage account",
+            "disabled": false,
+            "ariaDisabled": "false"
+          },
+          {
+            "text": "Help and feedback",
+            "disabled": false,
+            "ariaDisabled": "false"
+          },
+          {
+            "text": "Sign out",
+            "disabled": false,
+            "ariaDisabled": "false"
+          }
+        ],
+        "alerts": 0,
+        "overlay": false,
+        "rawKey": false,
+        "overflow": false
+      },
+      "layout": {
+        "splitWords": [],
+        "buttons": [
+          {
+            "w": 272,
+            "h": 122
+          },
+          {
+            "w": 272,
+            "h": 122
+          },
+          {
+            "w": 272,
+            "h": 64.796875
+          }
+        ]
+      },
+      "result": "PASS"
+    },
+    {
+      "mode": "generic",
+      "width": 320,
+      "locale": "en-US",
+      "theme": "dark",
+      "facts": {
+        "route": "#/pages/forbidden/forbidden",
+        "title": "This content is not available.",
+        "heading": "This content is not available.",
+        "description": "Your account cannot open this content. You can still manage your account or get help.",
+        "reason": "generic",
+        "busy": false,
+        "authenticated": true,
+        "actualLocale": "en-US",
+        "actualTheme": "dark",
+        "buttons": [
+          {
+            "text": "Manage account",
+            "disabled": false,
+            "ariaDisabled": "false"
+          },
+          {
+            "text": "Help and feedback",
+            "disabled": false,
+            "ariaDisabled": "false"
+          },
+          {
+            "text": "Sign out",
+            "disabled": false,
+            "ariaDisabled": "false"
+          }
+        ],
+        "alerts": 0,
+        "overlay": false,
+        "rawKey": false,
+        "overflow": false
+      },
+      "layout": {
+        "splitWords": [],
+        "buttons": [
+          {
+            "w": 272,
+            "h": 122
+          },
+          {
+            "w": 272,
+            "h": 122
+          },
+          {
+            "w": 272,
+            "h": 64.796875
+          }
+        ]
+      },
+      "result": "PASS"
+    },
+    {
+      "mode": "paused",
+      "width": 320,
+      "locale": "en-US",
+      "theme": "dark",
+      "facts": {
+        "route": "#/pages/forbidden/forbidden",
+        "title": "Learning access is paused",
+        "heading": "Learning access is paused",
+        "description": "Learning content cannot be opened right now. You can still manage your account or get help.",
+        "reason": "paused",
+        "busy": false,
+        "authenticated": true,
+        "actualLocale": "en-US",
+        "actualTheme": "dark",
+        "buttons": [
+          {
+            "text": "Manage account",
+            "disabled": false,
+            "ariaDisabled": "false"
+          },
+          {
+            "text": "Help and feedback",
+            "disabled": false,
+            "ariaDisabled": "false"
+          },
+          {
+            "text": "Sign out",
+            "disabled": false,
+            "ariaDisabled": "false"
+          }
+        ],
+        "alerts": 0,
+        "overlay": false,
+        "rawKey": false,
+        "overflow": false
+      },
+      "layout": {
+        "splitWords": [],
+        "buttons": [
+          {
+            "w": 272,
+            "h": 122
+          },
+          {
+            "w": 272,
+            "h": 122
+          },
+          {
+            "w": 272,
+            "h": 64.796875
+          }
+        ]
+      },
+      "result": "PASS"
+    },
+    {
+      "mode": "unknown",
+      "width": 320,
+      "locale": "en-US",
+      "theme": "dark",
+      "facts": {
+        "route": "#/pages/forbidden/forbidden",
+        "title": "Access status is not confirmed",
+        "heading": "Access status is not confirmed",
+        "description": "We cannot confirm the access status of your account right now.",
+        "reason": "unknown",
+        "busy": false,
+        "authenticated": true,
+        "actualLocale": "en-US",
+        "actualTheme": "dark",
+        "buttons": [
+          {
+            "text": "Manage account",
+            "disabled": false,
+            "ariaDisabled": "false"
+          },
+          {
+            "text": "Help and feedback",
+            "disabled": false,
+            "ariaDisabled": "false"
+          },
+          {
+            "text": "Sign out",
+            "disabled": false,
+            "ariaDisabled": "false"
+          }
+        ],
+        "alerts": 0,
+        "overlay": false,
+        "rawKey": false,
+        "overflow": false
+      },
+      "layout": {
+        "splitWords": [
+          {
+            "kind": "forbidden-title",
+            "word": "confirmed"
+          }
+        ],
+        "buttons": [
+          {
+            "w": 272,
+            "h": 122
+          },
+          {
+            "w": 272,
+            "h": 122
+          },
+          {
+            "w": 272,
+            "h": 64.796875
+          }
+        ]
+      },
+      "result": "FAIL"
+    },
+    {
+      "mode": "anonymous-marker",
+      "width": 320,
+      "locale": "en-US",
+      "theme": "dark",
+      "facts": {
+        "route": "#/pages/forbidden/forbidden",
+        "title": "Access status is not confirmed",
+        "heading": "Access status is not confirmed",
+        "description": "We cannot confirm the access status of your account right now.",
+        "reason": "unknown",
+        "busy": false,
+        "authenticated": false,
+        "actualLocale": "en-US",
+        "actualTheme": "dark",
+        "buttons": [
+          {
+            "text": "Return to sign in",
+            "disabled": false,
+            "ariaDisabled": "false"
+          }
+        ],
+        "alerts": 0,
+        "overlay": false,
+        "rawKey": false,
+        "overflow": false
+      },
+      "layout": {
+        "splitWords": [
+          {
+            "kind": "forbidden-title",
+            "word": "confirmed"
+          }
+        ],
+        "buttons": [
+          {
+            "w": 272,
+            "h": 122
+          }
+        ]
+      },
+      "result": "FAIL"
+    },
+    {
+      "mode": "adult",
+      "width": 390,
+      "locale": "zh-CN",
+      "theme": "light",
+      "facts": {
+        "route": "#/pages/forbidden/forbidden",
+        "title": "暂时无法开始学习",
+        "heading": "暂时无法开始学习",
+        "description": "当前版本仅向年满18周岁的用户开放学习。你仍可管理账号或查看帮助。",
+        "reason": "adult",
+        "busy": false,
+        "authenticated": true,
+        "actualLocale": "zh-CN",
+        "actualTheme": "light",
+        "buttons": [
+          {
+            "text": "管理账号",
+            "disabled": false,
+            "ariaDisabled": "false"
+          },
+          {
+            "text": "帮助与反馈",
+            "disabled": false,
+            "ariaDisabled": "false"
+          },
+          {
+            "text": "退出登录",
+            "disabled": false,
+            "ariaDisabled": "false"
+          }
+        ],
+        "alerts": 0,
+        "overlay": false,
+        "rawKey": false,
+        "overflow": false
+      },
+      "layout": {
+        "splitWords": [],
+        "buttons": [
+          {
+            "w": 342,
+            "h": 74
+          },
+          {
+            "w": 342,
+            "h": 74
+          },
+          {
+            "w": 342,
+            "h": 64.796875
+          }
+        ]
+      },
+      "result": "PASS"
+    },
+    {
+      "mode": "paused",
+      "width": 1280,
+      "locale": "en-US",
+      "theme": "high-contrast",
+      "facts": {
+        "route": "#/pages/forbidden/forbidden",
+        "title": "Learning access is paused",
+        "heading": "Learning access is paused",
+        "description": "Learning content cannot be opened right now. You can still manage your account or get help.",
+        "reason": "paused",
+        "busy": false,
+        "authenticated": true,
+        "actualLocale": "en-US",
+        "actualTheme": "high-contrast",
+        "buttons": [
+          {
+            "text": "Manage account",
+            "disabled": false,
+            "ariaDisabled": "false"
+          },
+          {
+            "text": "Help and feedback",
+            "disabled": false,
+            "ariaDisabled": "false"
+          },
+          {
+            "text": "Sign out",
+            "disabled": false,
+            "ariaDisabled": "false"
+          }
+        ],
+        "alerts": 0,
+        "overlay": false,
+        "rawKey": false,
+        "overflow": false
+      },
+      "layout": {
+        "splitWords": [],
+        "buttons": [
+          {
+            "w": 420,
+            "h": 74
+          },
+          {
+            "w": 420,
+            "h": 74
+          },
+          {
+            "w": 420,
+            "h": 64.796875
+          }
+        ]
+      },
+      "result": "PASS"
+    },
+    {
+      "mode": "generic",
+      "width": 390,
+      "locale": "en-US",
+      "theme": "light",
+      "facts": {
+        "route": "#/pages/forbidden/forbidden",
+        "title": "This content is not available.",
+        "heading": "This content is not available.",
+        "description": "Your account cannot open this content. You can still manage your account or get help.",
+        "reason": "generic",
+        "busy": false,
+        "authenticated": true,
+        "actualLocale": "en-US",
+        "actualTheme": "light",
+        "buttons": [
+          {
+            "text": "Manage account",
+            "disabled": false,
+            "ariaDisabled": "false"
+          },
+          {
+            "text": "Help and feedback",
+            "disabled": false,
+            "ariaDisabled": "false"
+          },
+          {
+            "text": "Sign out",
+            "disabled": false,
+            "ariaDisabled": "false"
+          }
+        ],
+        "alerts": 0,
+        "overlay": false,
+        "rawKey": false,
+        "overflow": false
+      },
+      "layout": {
+        "splitWords": [],
+        "buttons": [
+          {
+            "w": 342,
+            "h": 74
+          },
+          {
+            "w": 342,
+            "h": 74
+          },
+          {
+            "w": 342,
+            "h": 64.796875
+          }
+        ]
+      },
+      "result": "PASS"
+    },
+    {
+      "mode": "generic",
+      "width": 320,
+      "locale": "en-US",
+      "theme": "high-contrast",
+      "facts": {
+        "route": "#/pages/forbidden/forbidden",
+        "title": "This content is not available.",
+        "heading": "This content is not available.",
+        "description": "Your account cannot open this content. You can still manage your account or get help.",
+        "reason": "generic",
+        "busy": false,
+        "authenticated": true,
+        "actualLocale": "en-US",
+        "actualTheme": "high-contrast",
+        "buttons": [
+          {
+            "text": "Manage account",
+            "disabled": false,
+            "ariaDisabled": "false"
+          },
+          {
+            "text": "Help and feedback",
+            "disabled": false,
+            "ariaDisabled": "false"
+          },
+          {
+            "text": "Sign out",
+            "disabled": false,
+            "ariaDisabled": "false"
+          }
+        ],
+        "alerts": 0,
+        "overlay": false,
+        "rawKey": false,
+        "overflow": false
+      },
+      "layout": {
+        "splitWords": [],
+        "buttons": [
+          {
+            "w": 272,
+            "h": 122
+          },
+          {
+            "w": 272,
+            "h": 122
+          },
+          {
+            "w": 272,
+            "h": 64.796875
+          }
+        ]
+      },
+      "result": "PASS"
+    },
+    {
+      "mode": "generic",
+      "width": 1280,
+      "locale": "en-US",
+      "theme": "system",
+      "facts": {
+        "route": "#/pages/forbidden/forbidden",
+        "title": "This content is not available.",
+        "heading": "This content is not available.",
+        "description": "Your account cannot open this content. You can still manage your account or get help.",
+        "reason": "generic",
+        "busy": false,
+        "authenticated": true,
+        "actualLocale": "en-US",
+        "actualTheme": "light",
+        "buttons": [
+          {
+            "text": "Manage account",
+            "disabled": false,
+            "ariaDisabled": "false"
+          },
+          {
+            "text": "Help and feedback",
+            "disabled": false,
+            "ariaDisabled": "false"
+          },
+          {
+            "text": "Sign out",
+            "disabled": false,
+            "ariaDisabled": "false"
+          }
+        ],
+        "alerts": 0,
+        "overlay": false,
+        "rawKey": false,
+        "overflow": false
+      },
+      "layout": {
+        "splitWords": [],
+        "buttons": [
+          {
+            "w": 420,
+            "h": 74
+          },
+          {
+            "w": 420,
+            "h": 74
+          },
+          {
+            "w": 420,
+            "h": 64.796875
+          }
+        ]
+      },
+      "result": "PASS"
+    }
+  ],
+  "status": "FAIL",
+  "failure": "AssertionError [ERR_ASSERTION]: All cases saved; actual word splits remain FAIL\n    at C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-forbidden\\20261016-independent\\final-0342\\candidate3\\text-all-diagnostic.cjs:4:50"
+}

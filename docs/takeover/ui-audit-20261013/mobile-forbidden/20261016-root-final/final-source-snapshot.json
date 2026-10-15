@@ -1,0 +1,52 @@
+{
+  "status": "UI_VERIFIED_LOCAL_PENDING_PUSH",
+  "at": "2026-10-16T04:08:05.433210+08:00",
+  "parent": "4c9d97d50c6576199e0da0365bb3ebf20f7bfa53",
+  "source": {
+    "apps/mobile/src/pages/forbidden/forbidden.vue": {
+      "rawSha256": "d38dd97ccb717d3b477327cef5af49fa84d265df0a0032a17e2725ad6e85e718",
+      "lfSha256": "d38dd97ccb717d3b477327cef5af49fa84d265df0a0032a17e2725ad6e85e718",
+      "bytes": 12191
+    },
+    "packages/i18n/src/mobile-experience.ts": {
+      "rawSha256": "cb47a78d810e2c2b08fc280f237cae726ee7a66cc2c0bf2dccf7c1112baaca83",
+      "lfSha256": "e2aca23accc763fff82fa15890668c80f245f63d5f459e4e928de4d3c3e9b56e",
+      "bytes": 26624
+    },
+    "apps/mobile/tests/ui-forbidden.e2e.cjs": {
+      "rawSha256": "04ff778848e3f8746430b1579feff2e4d27ec75b9415928a021e178a6588b2de",
+      "lfSha256": "04ff778848e3f8746430b1579feff2e4d27ec75b9415928a021e178a6588b2de",
+      "bytes": 19959
+    },
+    "apps/mobile/tests/adult-consent-copy.test.mjs": {
+      "rawSha256": "14e90f2993e0f8b1ae446e50c33320c3d6c0165e4f6f07b18aca49c201740886",
+      "lfSha256": "d9ac784d4706d2d4439abcff33ddfa81eb577019153a739cf54026ffa7b82308",
+      "bytes": 4502
+    },
+    "apps/mobile/src/stores/session.ts": {
+      "rawSha256": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+      "lfSha256": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+      "bytes": 19841
+    },
+    "apps/mobile/src/auth/gateway-auth.ts": {
+      "rawSha256": "746bb9d83d241162bce9d9cd701d2f6662d11a132977533e3ba2a11e428c3277",
+      "lfSha256": "746bb9d83d241162bce9d9cd701d2f6662d11a132977533e3ba2a11e428c3277",
+      "bytes": 9741
+    },
+    "apps/mobile/src/auth/navigation.ts": {
+      "rawSha256": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5",
+      "lfSha256": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5",
+      "bytes": 14455
+    },
+    "apps/mobile/src/platform/pointer-feedback.ts": {
+      "rawSha256": "24a1f9b26ad6797fc9a61a16cb43559d116230cd7e9cd66c1dd4d9a563d94a6c",
+      "lfSha256": "24a1f9b26ad6797fc9a61a16cb43559d116230cd7e9cd66c1dd4d9a563d94a6c",
+      "bytes": 3265
+    }
+  },
+  "independentCurrentCases": 52,
+  "protectedChecked": 56,
+  "protectedDrift": [],
+  "privateBackup": ".git/codex-local-backups/mb005-20261016-candidate4/source",
+  "realBackendNative": "NOT_RUN"
+}

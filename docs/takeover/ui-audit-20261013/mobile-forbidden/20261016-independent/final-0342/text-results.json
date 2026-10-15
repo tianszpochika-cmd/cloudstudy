@@ -1,0 +1,135 @@
+{
+  "at": "2026-10-15T19:47:13.377Z",
+  "scope": "CURRENT_CANDIDATE2_TEXT200_SHORT_SCREEN",
+  "sourceHashesBefore": {
+    "apps/mobile/src/pages/forbidden/forbidden.vue": "d38dd97ccb717d3b477327cef5af49fa84d265df0a0032a17e2725ad6e85e718",
+    "packages/i18n/src/mobile-experience.ts": "2a143436a7cd84544dc679eef1ed489e785e3202dd6803b082bba844de53c130",
+    "apps/mobile/tests/ui-forbidden.e2e.cjs": "53fa5f889b2b9ac2116ad36e72d1335f549409c3f2eacd6331b676008ba4359a",
+    "apps/mobile/tests/adult-consent-copy.test.mjs": "14e90f2993e0f8b1ae446e50c33320c3d6c0165e4f6f07b18aca49c201740886",
+    "apps/mobile/src/stores/session.ts": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+    "apps/mobile/src/auth/gateway-auth.ts": "746bb9d83d241162bce9d9cd701d2f6662d11a132977533e3ba2a11e428c3277",
+    "apps/mobile/src/auth/navigation.ts": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5",
+    "apps/mobile/src/platform/pointer-feedback.ts": "24a1f9b26ad6797fc9a61a16cb43559d116230cd7e9cd66c1dd4d9a563d94a6c"
+  },
+  "cases": [
+    {
+      "mode": "adult",
+      "width": 320,
+      "locale": "en-US",
+      "theme": "dark",
+      "facts": {
+        "route": "#/pages/forbidden/forbidden",
+        "title": "Learning is not available yet",
+        "heading": "Learning is not available yet",
+        "description": "The current version offers learning to users aged 18 and over. You can still manage your account or get help.",
+        "reason": "adult",
+        "busy": false,
+        "authenticated": true,
+        "actualLocale": "en-US",
+        "actualTheme": "dark",
+        "buttons": [
+          {
+            "text": "Manage account",
+            "disabled": false,
+            "ariaDisabled": "false"
+          },
+          {
+            "text": "Help and feedback",
+            "disabled": false,
+            "ariaDisabled": "false"
+          },
+          {
+            "text": "Sign out",
+            "disabled": false,
+            "ariaDisabled": "false"
+          }
+        ],
+        "alerts": 0,
+        "overlay": false,
+        "rawKey": false,
+        "overflow": false
+      },
+      "layout": {
+        "splitWords": [],
+        "buttons": [
+          {
+            "w": 272,
+            "h": 122
+          },
+          {
+            "w": 272,
+            "h": 122
+          },
+          {
+            "w": 272,
+            "h": 64.796875
+          }
+        ]
+      },
+      "result": "PASS"
+    },
+    {
+      "mode": "generic",
+      "width": 320,
+      "locale": "en-US",
+      "theme": "dark",
+      "facts": {
+        "route": "#/pages/forbidden/forbidden",
+        "title": "This content is unavailable.",
+        "heading": "This content is unavailable.",
+        "description": "Your account cannot open this content. You can still manage your account or get help.",
+        "reason": "generic",
+        "busy": false,
+        "authenticated": true,
+        "actualLocale": "en-US",
+        "actualTheme": "dark",
+        "buttons": [
+          {
+            "text": "Manage account",
+            "disabled": false,
+            "ariaDisabled": "false"
+          },
+          {
+            "text": "Help and feedback",
+            "disabled": false,
+            "ariaDisabled": "false"
+          },
+          {
+            "text": "Sign out",
+            "disabled": false,
+            "ariaDisabled": "false"
+          }
+        ],
+        "alerts": 0,
+        "overlay": false,
+        "rawKey": false,
+        "overflow": false
+      },
+      "layout": {
+        "splitWords": [
+          {
+            "kind": "forbidden-title",
+            "word": "unavailable"
+          }
+        ],
+        "buttons": [
+          {
+            "w": 272,
+            "h": 122
+          },
+          {
+            "w": 272,
+            "h": 122
+          },
+          {
+            "w": 272,
+            "h": 64.796875
+          }
+        ]
+      },
+      "result": "FAIL"
+    }
+  ],
+  "status": "FAIL",
+  "failure": "AssertionError [ERR_ASSERTION]: Actual text words must remain readable at200\n+ actual - expected\n\n+ [\n+   {\n+     kind: 'forbidden-title',\n+     word: 'unavailable'\n+   }\n+ ]\n- []\n    at C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-forbidden\\20261016-independent\\final-0342\\text-review.cjs:3:1490"
+}

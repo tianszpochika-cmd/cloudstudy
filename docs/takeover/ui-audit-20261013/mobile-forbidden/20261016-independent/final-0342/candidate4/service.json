@@ -1,0 +1,6 @@
+{
+  "session": 10670,
+  "pid": 36440,
+  "creation": "2026-10-16T03:55:51.2530270+08:00",
+  "command": "node   \"C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\apps\\mobile\\node_modules\\.bin\\\\..\\@dcloudio\\vite-plugin-uni\\bin\\uni.js\" -p h5 --host 127.0.0.1 --port 18183 --strictPort --force"
+}
