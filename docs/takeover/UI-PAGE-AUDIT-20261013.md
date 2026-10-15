@@ -1,5 +1,7 @@
 # V2 UI 逐页审查索引 — 2026-10-13
 
+> **2026-10-15 18:53额度暂停（最新）**：五小时首次实读90%/周14%即停新修/测。MB004整页a7d26107与登录标题54f5ac0e已推、远程SHA一致；MB005已有before/重排概念与可靠状态计划，正式源仍未改，无候选/未签UI。无owner暂停marker不得描述成当前账号明确撤回。断点与待验见[本次交接](ui-audit-20261013/PAUSE-20261015-1853.md)。实际reset今天22:35:56，ui下一复查22:37后每五小时，未用券。以下为历史。
+
 > **2026-10-15本轮已推（最新）**：MB004四态H5实际视觉/交互/独审收口并推a7d26107，登录标题窄补修54f5ac0e也已推，各自远程完整SHA一致；[收据与范围](ui-audit-20261013/PUSH-RECEIPT-20261015-MB004.md)。下一MB005受限页只有只读预审，未开正式实现/签UI；真实后台/native与发布文档GAP另列，不以UI通过覆盖。下方继续/暂停为历史。
 
 > **2026-10-15 17:35继续（最新）**：官方实读五小时1%/周0%、普通使用允许，接续MB004；12:39周限中断前的checkbox/指针/200%拆词/restoring成功误跳登录FAIL全部保留。当前c4/7b/helper24a/sessiond944候选复验中，尚未签UI/推正式源，旧PASS不升级新版本；[本轮事实与断点](ui-audit-20261013/RESUME-20261015-1735.md)。真实reset22:35:56，每五小时继续，不用券。
@@ -152,7 +154,7 @@
 | MB-002 | `#/pages/register/register` | [apps/mobile/src/pages/register/register.vue](../../apps/mobile/src/pages/register/register.vue) | 注册 | PUSHED_SCOPED | 原重设计收据保留；当前9258长度/指针/键盘补修获[44项独审](ui-audit-20261013/mobile-register/20261015-9258-independent-final/review.md)及工程收口，`4b3a40f1`已推且远程SHA一致；原FAIL/native/IAM边界保留 |
 | MB-003 | `#/pages/reset-password/reset-password` | [apps/mobile/src/pages/reset-password/reset-password.vue](../../apps/mobile/src/pages/reset-password/reset-password.vue) | 请求/确认两步、完成态 | PUSHED_SCOPED | [正式两步重设计报告](ui-audit-20261013/mobile-reset/report.md)、[当前c9a6独立49项复签](ui-audit-20261013/mobile-reset/20261014-c9a6-final-interaction/review.md)及[root视觉/工程收口](ui-audit-20261013/mobile-reset/20261014-2239-root/final-review.md)通过；`fe6e027c`已推且远程SHA一致，旧FAIL/IAM/native GAP保留 |
 | MB-004 | `#/pages/onboarding/onboarding` | [apps/mobile/src/pages/onboarding/onboarding.vue](../../apps/mobile/src/pages/onboarding/onboarding.vue) | 成人门、同意、目标、已保存摘要四态 | PUSHED_UI_SCOPED | [当前验收与版本](ui-audit-20261013/mobile-onboarding/FINAL-UI-REVIEW-20261015.md)；a7d26107远程同SHA，实际四态矩阵/交互/独立复审完成；真实后台/native及发布目录GAP另列 |
-| MB-005 | `#/pages/forbidden/forbidden` | [apps/mobile/src/pages/forbidden/forbidden.vue](../../apps/mobile/src/pages/forbidden/forbidden.vue) | 限制说明、退出与可用出口 | PENDING | — |
+| MB-005 | `#/pages/forbidden/forbidden` | [apps/mobile/src/pages/forbidden/forbidden.vue](../../apps/mobile/src/pages/forbidden/forbidden.vue) | 限制说明、退出与可用出口 | DESIGN_PAUSED（无候选/未验） | [18:53断点](ui-audit-20261013/PAUSE-20261015-1853.md) |
 | MB-006 | `#/pages/assessment/assessment` | [apps/mobile/src/pages/assessment/assessment.vue](../../apps/mobile/src/pages/assessment/assessment.vue) | 开场、作答、反馈、结果与重测 | PENDING | — |
 | MB-007 | `#/pages/home/home` | [apps/mobile/src/pages/home/home.vue](../../apps/mobile/src/pages/home/home.vue) | 首页、计划横幅、任务与首次引导 | PENDING | — |
 | MB-008 | `#/pages/today/today` | [apps/mobile/src/pages/today/today.vue](../../apps/mobile/src/pages/today/today.vue) | 今日任务与各类空/错态 | PENDING | — |

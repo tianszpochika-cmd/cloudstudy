@@ -1,0 +1,41 @@
+{
+  "status": "DESIGN_PAUSED_NO_SOURCE_EDIT_NO_CANDIDATE_NO_NEW_TEST",
+  "parent": "8c26f1de0d5a1337bac2141f8301e5d9b2cef766",
+  "at": "2026-10-15T18:53:10+08:00",
+  "usage": {
+    "ordinaryUsageAllowed": true,
+    "primaryUsedPercent": 90,
+    "secondaryUsedPercent": 14,
+    "primaryResetsAt": 1792074956
+  },
+  "source": {
+    "apps/mobile/src/pages/forbidden/forbidden.vue": {
+      "rawSha256": "ea32cc53d929fc4b7f475ed82e2d9427813881cd4b16c928f0685bf502fe4e61",
+      "lfSha256": "ea32cc53d929fc4b7f475ed82e2d9427813881cd4b16c928f0685bf502fe4e61",
+      "bytes": 6658
+    },
+    "packages/i18n/src/mobile-experience.ts": {
+      "rawSha256": "7b21f6e074bf705463e27941cbc4c91847a242443cdbd1ad3deea155fc733dde",
+      "lfSha256": "1011750f09fad8b2f91b742b9931e0bf23c24500e7df9d0162a1648fe1cf93a6",
+      "bytes": 24017
+    },
+    "apps/mobile/src/stores/session.ts": {
+      "rawSha256": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+      "lfSha256": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+      "bytes": 19841
+    },
+    "apps/mobile/src/platform/pointer-feedback.ts": {
+      "rawSha256": "24a1f9b26ad6797fc9a61a16cb43559d116230cd7e9cd66c1dd4d9a563d94a6c",
+      "lfSha256": "24a1f9b26ad6797fc9a61a16cb43559d116230cd7e9cd66c1dd4d9a563d94a6c",
+      "bytes": 3265
+    },
+    "apps/mobile/src/auth/navigation.ts": {
+      "rawSha256": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5",
+      "lfSha256": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5",
+      "bytes": 14455
+    }
+  },
+  "privateBackup": ".git/codex-local-backups/mb005-pause-20261015-1853/source",
+  "protectedChecked": 56,
+  "protectedDrift": []
+}

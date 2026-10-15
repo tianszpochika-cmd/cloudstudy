@@ -1,0 +1,25 @@
+{
+  "at": "2026-10-15T18:53:17.0520726+08:00",
+  "status": "QUOTA_STOP_READ_ONLY_NO_CANDIDATE_NO_TEST",
+  "sourceHashes": {
+    "apps/mobile/src/pages/forbidden/forbidden.vue": "ea32cc53d929fc4b7f475ed82e2d9427813881cd4b16c928f0685bf502fe4e61",
+    "packages/i18n/src/mobile-experience.ts": "7b21f6e074bf705463e27941cbc4c91847a242443cdbd1ad3deea155fc733dde",
+    "apps/mobile/src/stores/session.ts": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+    "apps/mobile/src/auth/navigation.ts": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5",
+    "apps/mobile/src/platform/pointer-feedback.ts": "24a1f9b26ad6797fc9a61a16cb43559d116230cd7e9cd66c1dd4d9a563d94a6c"
+  },
+  "lfNormalizedSourceHashes": {
+    "apps/mobile/src/pages/forbidden/forbidden.vue": "ea32cc53d929fc4b7f475ed82e2d9427813881cd4b16c928f0685bf502fe4e61",
+    "packages/i18n/src/mobile-experience.ts": "1011750f09fad8b2f91b742b9931e0bf23c24500e7df9d0162a1648fe1cf93a6",
+    "apps/mobile/src/stores/session.ts": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+    "apps/mobile/src/auth/navigation.ts": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5",
+    "apps/mobile/src/platform/pointer-feedback.ts": "24a1f9b26ad6797fc9a61a16cb43559d116230cd7e9cd66c1dd4d9a563d94a6c"
+  },
+  "stopQuota": {
+    "ordinaryUsageAllowed": true,
+    "primary": 90,
+    "secondary": 14,
+    "resetsAt": 1792074956,
+    "resetLocal": "2026-10-15 22:35:56 Asia/Shanghai"
+  }
+}

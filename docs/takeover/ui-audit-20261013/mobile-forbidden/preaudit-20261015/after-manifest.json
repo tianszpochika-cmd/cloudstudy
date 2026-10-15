@@ -1,0 +1,56 @@
+{
+  "at": "2026-10-15T10:32:43.3139643Z",
+  "scope": "READ_ONLY_PREAUDIT_NO_UI_SIGNOFF",
+  "sourceHashes": [
+    {
+      "Path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\apps\\mobile\\src\\pages\\forbidden\\forbidden.vue",
+      "Hash": "EA32CC53D929FC4B7F475ED82E2D9427813881CD4B16C928F0685BF502FE4E61"
+    },
+    {
+      "Path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\apps\\mobile\\src\\auth\\navigation.ts",
+      "Hash": "7365FEC07C55857445FDB1D87B60659734E9E94DC06CFB65AFABCB3E8863A4B5"
+    },
+    {
+      "Path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\apps\\mobile\\src\\stores\\session.ts",
+      "Hash": "D944C9E84617AF5AD553D2FBC1FD0C07120CE790411DBE02603F9338333F8931"
+    },
+    {
+      "Path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\apps\\mobile\\src\\components\\MobilePageHeader.vue",
+      "Hash": "003147D89D8D89CFDBEFC1A700AB6199EDFDA0EB7EC27F5C045272207BDE1B5C"
+    },
+    {
+      "Path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\apps\\mobile\\src\\auth\\i18n.ts",
+      "Hash": "0A9DCB16EAD455C77C34FBD277032B2FC8E3CFB384F47BBEDA598A68E378CC0D"
+    },
+    {
+      "Path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\apps\\mobile\\src\\platform\\experience.ts",
+      "Hash": "2A5859F672FC02239FD784BA26D7327AB6D8AC71F043F558FA3E350D4D05D240"
+    },
+    {
+      "Path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\apps\\mobile\\src\\platform\\v2-foundation.ts",
+      "Hash": "8CBFE6C7665DE68DFBA0C281E3B0A2ABC296D091DC043782E5FF7AF775018C37"
+    },
+    {
+      "Path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\packages\\i18n\\src\\mobile-experience.ts",
+      "Hash": "7B21F6E074BF705463E27941CBC4C91847A242443CDBD1AD3DEEA155FC733DDE"
+    }
+  ],
+  "sourceChangedDuringReview": [],
+  "browser": {
+    "consoleErrors": 0,
+    "apiIntercepted": true,
+    "fixtures": 5,
+    "extraPendingScreenshot": 1,
+    "realBusinessAcceptance": false,
+    "viewports": [
+      "390x844"
+    ],
+    "pageErrors": 0
+  },
+  "quota": {
+    "primaryUsedPercent": 71,
+    "weeklyUsedPercent": 11,
+    "ordinaryUsageAllowed": true,
+    "resetCreditsUsed": 0
+  }
+}

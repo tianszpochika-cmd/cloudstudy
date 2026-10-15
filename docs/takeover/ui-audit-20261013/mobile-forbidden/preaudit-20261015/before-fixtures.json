@@ -1,0 +1,356 @@
+{
+  "scope": "MB005_BEFORE_SYNTHETIC_UI_ONLY_NOT_BUSINESS_ACCEPTANCE",
+  "at": "2026-10-15T10:29:07.434Z",
+  "browser": "Browser plugin not available; existing Playwright Chromium",
+  "cases": [
+    {
+      "reason": "adult-rejected",
+      "locale": "zh-CN",
+      "theme": "light",
+      "actor": {
+        "authenticated": true,
+        "adultGate": "REJECTED",
+        "withdrawn": false,
+        "actualLocale": "zh-CN",
+        "actualTheme": "light"
+      },
+      "state": {
+        "title": "访问权限",
+        "mainHeading": "这里暂时还不能进入。",
+        "intro": "稍等确认这里暂时还不能进入。请确认登录状态或学习权限，也可以联系帮助中心。",
+        "repeatedTitle": "暂不能开放学习",
+        "explanation": "当前版本仅面向 18 岁以上成人开放，暂不能向你开放学习功能。",
+        "buttons": [
+          {
+            "text": "‹返回",
+            "disabled": false,
+            "ariaDisabled": null
+          },
+          {
+            "text": "☷",
+            "disabled": false,
+            "ariaDisabled": null
+          },
+          {
+            "text": "个人中心与设置",
+            "disabled": false,
+            "ariaDisabled": null
+          },
+          {
+            "text": "帮助与反馈",
+            "disabled": false,
+            "ariaDisabled": null
+          },
+          {
+            "text": "返回登录",
+            "disabled": false,
+            "ariaDisabled": null
+          }
+        ],
+        "horizontalOverflow": false,
+        "background": "rgb(247, 248, 252)"
+      },
+      "keyboardFocus": true,
+      "screenshot": "adult-rejected-zh-CN-light.png",
+      "overlay": false,
+      "pendingLogout": {
+        "busy": null,
+        "buttons": [
+          {
+            "text": "‹返回",
+            "disabled": false,
+            "ariaDisabled": null
+          },
+          {
+            "text": "☷",
+            "disabled": false,
+            "ariaDisabled": null
+          },
+          {
+            "text": "个人中心与设置",
+            "disabled": false,
+            "ariaDisabled": null
+          },
+          {
+            "text": "帮助与反馈",
+            "disabled": false,
+            "ariaDisabled": null
+          },
+          {
+            "text": "返回登录",
+            "disabled": false,
+            "ariaDisabled": null
+          }
+        ]
+      },
+      "logoutRoute": "#/pages/login/login"
+    },
+    {
+      "reason": "withdrawn",
+      "locale": "zh-CN",
+      "theme": "light",
+      "actor": {
+        "authenticated": true,
+        "adultGate": "PASSED",
+        "withdrawn": true,
+        "actualLocale": "zh-CN",
+        "actualTheme": "light"
+      },
+      "state": {
+        "title": "访问权限",
+        "mainHeading": "这里暂时还不能进入。",
+        "intro": "稍等确认这里暂时还不能进入。请确认登录状态或学习权限，也可以联系帮助中心。",
+        "repeatedTitle": "暂不能开放学习",
+        "explanation": "如果你认为这是误判，请联系帮助中心。",
+        "buttons": [
+          {
+            "text": "‹返回",
+            "disabled": false,
+            "ariaDisabled": null
+          },
+          {
+            "text": "☷",
+            "disabled": false,
+            "ariaDisabled": null
+          },
+          {
+            "text": "返回登录",
+            "disabled": false,
+            "ariaDisabled": null
+          }
+        ],
+        "horizontalOverflow": false,
+        "background": "rgb(247, 248, 252)"
+      },
+      "keyboardFocus": true,
+      "screenshot": "withdrawn-zh-CN-light.png",
+      "overlay": false
+    },
+    {
+      "reason": "permission",
+      "locale": "zh-CN",
+      "theme": "light",
+      "actor": {
+        "authenticated": true,
+        "adultGate": "PASSED",
+        "withdrawn": false,
+        "actualLocale": "zh-CN",
+        "actualTheme": "light"
+      },
+      "state": {
+        "title": "访问权限",
+        "mainHeading": "这里暂时还不能进入。",
+        "intro": "稍等确认这里暂时还不能进入。请确认登录状态或学习权限，也可以联系帮助中心。",
+        "repeatedTitle": "暂不能开放学习",
+        "explanation": "如果你认为这是误判，请联系帮助中心。",
+        "buttons": [
+          {
+            "text": "‹返回",
+            "disabled": false,
+            "ariaDisabled": null
+          },
+          {
+            "text": "☷",
+            "disabled": false,
+            "ariaDisabled": null
+          },
+          {
+            "text": "返回登录",
+            "disabled": false,
+            "ariaDisabled": null
+          }
+        ],
+        "horizontalOverflow": false,
+        "background": "rgb(247, 248, 252)"
+      },
+      "keyboardFocus": true,
+      "screenshot": "permission-zh-CN-light.png",
+      "overlay": false
+    },
+    {
+      "reason": "adult-rejected",
+      "locale": "en-US",
+      "theme": "light",
+      "actor": {
+        "authenticated": true,
+        "adultGate": "REJECTED",
+        "withdrawn": false,
+        "actualLocale": "en-US",
+        "actualTheme": "light"
+      },
+      "state": {
+        "title": "访问权限",
+        "mainHeading": "This space is not available yet.",
+        "intro": "A MOMENT TO CHECKThis space is not available yet.Check your account or contact support for help.",
+        "repeatedTitle": "暂不能开放学习",
+        "explanation": "当前版本仅面向 18 岁以上成人开放，暂不能向你开放学习功能。",
+        "buttons": [
+          {
+            "text": "‹Back",
+            "disabled": false,
+            "ariaDisabled": null
+          },
+          {
+            "text": "☷",
+            "disabled": false,
+            "ariaDisabled": null
+          },
+          {
+            "text": "个人中心与设置",
+            "disabled": false,
+            "ariaDisabled": null
+          },
+          {
+            "text": "帮助与反馈",
+            "disabled": false,
+            "ariaDisabled": null
+          },
+          {
+            "text": "Return to sign in",
+            "disabled": false,
+            "ariaDisabled": null
+          }
+        ],
+        "horizontalOverflow": false,
+        "background": "rgb(247, 248, 252)"
+      },
+      "keyboardFocus": true,
+      "screenshot": "adult-rejected-en-US-light.png",
+      "overlay": false
+    },
+    {
+      "reason": "withdrawn",
+      "locale": "en-US",
+      "theme": "dark",
+      "actor": {
+        "authenticated": true,
+        "adultGate": "PASSED",
+        "withdrawn": true,
+        "actualLocale": "en-US",
+        "actualTheme": "dark"
+      },
+      "state": {
+        "title": "访问权限",
+        "mainHeading": "This space is not available yet.",
+        "intro": "A MOMENT TO CHECKThis space is not available yet.Check your account or contact support for help.",
+        "repeatedTitle": "暂不能开放学习",
+        "explanation": "如果你认为这是误判，请联系帮助中心。",
+        "buttons": [
+          {
+            "text": "‹Back",
+            "disabled": false,
+            "ariaDisabled": null
+          },
+          {
+            "text": "☷",
+            "disabled": false,
+            "ariaDisabled": null
+          },
+          {
+            "text": "Return to sign in",
+            "disabled": false,
+            "ariaDisabled": null
+          }
+        ],
+        "horizontalOverflow": false,
+        "background": "rgb(22, 25, 37)"
+      },
+      "keyboardFocus": true,
+      "screenshot": "withdrawn-en-US-dark.png",
+      "overlay": false
+    }
+  ],
+  "apiRequests": [
+    {
+      "reason": "adult-rejected",
+      "locale": "zh-CN",
+      "theme": "light",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "reason": "adult-rejected",
+      "locale": "zh-CN",
+      "theme": "light",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "reason": "adult-rejected",
+      "locale": "zh-CN",
+      "theme": "light",
+      "method": "POST",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/auth/logout"
+    },
+    {
+      "reason": "withdrawn",
+      "locale": "zh-CN",
+      "theme": "light",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "reason": "withdrawn",
+      "locale": "zh-CN",
+      "theme": "light",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "reason": "permission",
+      "locale": "zh-CN",
+      "theme": "light",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "reason": "permission",
+      "locale": "zh-CN",
+      "theme": "light",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "reason": "adult-rejected",
+      "locale": "en-US",
+      "theme": "light",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "reason": "adult-rejected",
+      "locale": "en-US",
+      "theme": "light",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "reason": "withdrawn",
+      "locale": "en-US",
+      "theme": "dark",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "reason": "withdrawn",
+      "locale": "en-US",
+      "theme": "dark",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    }
+  ],
+  "pageErrors": [],
+  "consoleErrors": [],
+  "result": "BEFORE_UI_CAPTURED_WITH_FINDINGS"
+}
