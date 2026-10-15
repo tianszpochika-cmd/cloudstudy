@@ -1,0 +1,9 @@
+{
+  "session": 94835,
+  "pid": 30192,
+  "creation": "2026-10-15T23:00:00.6156770+08:00",
+  "host": "127.0.0.1",
+  "port": 18183,
+  "flags": "strictPort --force",
+  "previousPortWasFree": true
+}

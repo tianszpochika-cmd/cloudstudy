@@ -1,0 +1,68 @@
+{
+  "at": "2026-10-15T15:10:28.716Z",
+  "scope": "ACTUAL_UNI_INTERCEPTOR_CANCEL_NO_PROMISE_STUB",
+  "sourceHashesBefore": {
+    "apps/mobile/src/pages/forbidden/forbidden.vue": "52709e83ad97fb98b6d81e8a3cdfcde65f69f9d647559b7a76309526ebdd30ab",
+    "packages/i18n/src/mobile-experience.ts": "ae269975647c45f5cf82321bfb7ae763fb9cbadd199bf3bf82f74fa91488e3fe",
+    "apps/mobile/tests/adult-consent-copy.test.mjs": "14e90f2993e0f8b1ae446e50c33320c3d6c0165e4f6f07b18aca49c201740886",
+    "apps/mobile/src/stores/session.ts": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+    "apps/mobile/src/auth/gateway-auth.ts": "746bb9d83d241162bce9d9cd701d2f6662d11a132977533e3ba2a11e428c3277",
+    "apps/mobile/src/auth/navigation.ts": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5",
+    "apps/mobile/src/platform/pointer-feedback.ts": "24a1f9b26ad6797fc9a61a16cb43559d116230cd7e9cd66c1dd4d9a563d94a6c"
+  },
+  "runtime": {
+    "addInterceptor": "function",
+    "removeInterceptor": "function",
+    "supported": true
+  },
+  "observed": {
+    "route": "#/pages/forbidden/forbidden",
+    "title": "暂时无法访问这项内容",
+    "heading": "暂时无法访问这项内容",
+    "description": "当前账号无法打开这项内容。你仍可管理账号或查看帮助。",
+    "reason": "generic",
+    "busy": true,
+    "authenticated": true,
+    "actualLocale": "zh-CN",
+    "actualTheme": "light",
+    "buttons": [
+      {
+        "text": "管理账号",
+        "disabled": true,
+        "ariaDisabled": "true"
+      },
+      {
+        "text": "帮助与反馈",
+        "disabled": true,
+        "ariaDisabled": "true"
+      },
+      {
+        "text": "退出登录",
+        "disabled": true,
+        "ariaDisabled": "true"
+      }
+    ],
+    "alerts": 0,
+    "overlay": false,
+    "rawKey": false,
+    "overflow": false
+  },
+  "invocations": 1,
+  "counts": {
+    "login": 1,
+    "principal": 2,
+    "logout": 0,
+    "otherWrites": 0
+  },
+  "sourceHashesAfter": {
+    "apps/mobile/src/pages/forbidden/forbidden.vue": "52709e83ad97fb98b6d81e8a3cdfcde65f69f9d647559b7a76309526ebdd30ab",
+    "packages/i18n/src/mobile-experience.ts": "ae269975647c45f5cf82321bfb7ae763fb9cbadd199bf3bf82f74fa91488e3fe",
+    "apps/mobile/tests/adult-consent-copy.test.mjs": "14e90f2993e0f8b1ae446e50c33320c3d6c0165e4f6f07b18aca49c201740886",
+    "apps/mobile/src/stores/session.ts": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+    "apps/mobile/src/auth/gateway-auth.ts": "746bb9d83d241162bce9d9cd701d2f6662d11a132977533e3ba2a11e428c3277",
+    "apps/mobile/src/auth/navigation.ts": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5",
+    "apps/mobile/src/platform/pointer-feedback.ts": "24a1f9b26ad6797fc9a61a16cb43559d116230cd7e9cd66c1dd4d9a563d94a6c"
+  },
+  "pageErrors": [],
+  "status": "UI_FAIL_NATIVE_CANCEL_LEAVES_BUSY"
+}

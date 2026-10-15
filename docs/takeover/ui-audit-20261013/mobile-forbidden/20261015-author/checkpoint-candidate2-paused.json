@@ -1,0 +1,188 @@
+{
+  "savedAt": "2026-10-15T15:44:16.440Z",
+  "status": "PAUSED_QUOTA_92_CANDIDATE2_NOT_SIGNED",
+  "quota": {
+    "primary": 92,
+    "weekly": 29,
+    "ordinaryUsageAllowed": true,
+    "resetUnix": 1792092985
+  },
+  "activeAuthorProcesses": 0,
+  "sourceFiles": [
+    {
+      "path": "apps/mobile/src/pages/forbidden/forbidden.vue",
+      "raw": "d38dd97ccb717d3b477327cef5af49fa84d265df0a0032a17e2725ad6e85e718",
+      "lf": "d38dd97ccb717d3b477327cef5af49fa84d265df0a0032a17e2725ad6e85e718",
+      "bytes": 12191
+    },
+    {
+      "path": "packages/i18n/src/mobile-experience.ts",
+      "raw": "2a143436a7cd84544dc679eef1ed489e785e3202dd6803b082bba844de53c130",
+      "lf": "066a032c96398fd718d7cae8c17b692f070650948505687cea05f0f4daa8e00a",
+      "bytes": 26628
+    },
+    {
+      "path": "apps/mobile/tests/ui-forbidden.e2e.cjs",
+      "raw": "53fa5f889b2b9ac2116ad36e72d1335f549409c3f2eacd6331b676008ba4359a",
+      "lf": "53fa5f889b2b9ac2116ad36e72d1335f549409c3f2eacd6331b676008ba4359a",
+      "bytes": 19975
+    },
+    {
+      "path": "apps/mobile/tests/adult-consent-copy.test.mjs",
+      "raw": "14e90f2993e0f8b1ae446e50c33320c3d6c0165e4f6f07b18aca49c201740886",
+      "lf": "d9ac784d4706d2d4439abcff33ddfa81eb577019153a739cf54026ffa7b82308",
+      "bytes": 4502
+    },
+    {
+      "path": "apps/mobile/src/stores/session.ts",
+      "raw": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+      "lf": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+      "bytes": 19841
+    },
+    {
+      "path": "apps/mobile/src/auth/gateway-auth.ts",
+      "raw": "746bb9d83d241162bce9d9cd701d2f6662d11a132977533e3ba2a11e428c3277",
+      "lf": "746bb9d83d241162bce9d9cd701d2f6662d11a132977533e3ba2a11e428c3277",
+      "bytes": 9741
+    },
+    {
+      "path": "apps/mobile/src/auth/navigation.ts",
+      "raw": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5",
+      "lf": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5",
+      "bytes": 14455
+    },
+    {
+      "path": "apps/mobile/src/platform/pointer-feedback.ts",
+      "raw": "24a1f9b26ad6797fc9a61a16cb43559d116230cd7e9cd66c1dd4d9a563d94a6c",
+      "lf": "24a1f9b26ad6797fc9a61a16cb43559d116230cd7e9cd66c1dd4d9a563d94a6c",
+      "bytes": 3265
+    }
+  ],
+  "groups": [
+    {
+      "group": "candidate2-smoke",
+      "status": "PASS_GROUP_SYNTHETIC_UI_NOT_BUSINESS_ACCEPTANCE",
+      "checks": 12,
+      "matrix": 0,
+      "sourceHashes": {
+        "apps/mobile/src/pages/forbidden/forbidden.vue": "d38dd97ccb717d3b477327cef5af49fa84d265df0a0032a17e2725ad6e85e718",
+        "packages/i18n/src/mobile-experience.ts": "2a143436a7cd84544dc679eef1ed489e785e3202dd6803b082bba844de53c130",
+        "apps/mobile/src/stores/session.ts": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+        "apps/mobile/src/auth/gateway-auth.ts": "746bb9d83d241162bce9d9cd701d2f6662d11a132977533e3ba2a11e428c3277",
+        "apps/mobile/src/auth/navigation.ts": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5",
+        "apps/mobile/src/platform/pointer-feedback.ts": "24a1f9b26ad6797fc9a61a16cb43559d116230cd7e9cd66c1dd4d9a563d94a6c",
+        "apps/mobile/tests/ui-forbidden.e2e.cjs": "53fa5f889b2b9ac2116ad36e72d1335f549409c3f2eacd6331b676008ba4359a"
+      },
+      "sourceHashesAfter": {
+        "apps/mobile/src/pages/forbidden/forbidden.vue": "d38dd97ccb717d3b477327cef5af49fa84d265df0a0032a17e2725ad6e85e718",
+        "packages/i18n/src/mobile-experience.ts": "2a143436a7cd84544dc679eef1ed489e785e3202dd6803b082bba844de53c130",
+        "apps/mobile/src/stores/session.ts": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+        "apps/mobile/src/auth/gateway-auth.ts": "746bb9d83d241162bce9d9cd701d2f6662d11a132977533e3ba2a11e428c3277",
+        "apps/mobile/src/auth/navigation.ts": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5",
+        "apps/mobile/src/platform/pointer-feedback.ts": "24a1f9b26ad6797fc9a61a16cb43559d116230cd7e9cd66c1dd4d9a563d94a6c",
+        "apps/mobile/tests/ui-forbidden.e2e.cjs": "53fa5f889b2b9ac2116ad36e72d1335f549409c3f2eacd6331b676008ba4359a"
+      },
+      "pageErrors": [],
+      "unexpected": []
+    },
+    {
+      "group": "candidate2-text",
+      "status": "PASS_GROUP_SYNTHETIC_UI_NOT_BUSINESS_ACCEPTANCE",
+      "checks": 8,
+      "matrix": 0,
+      "sourceHashes": {
+        "apps/mobile/src/pages/forbidden/forbidden.vue": "d38dd97ccb717d3b477327cef5af49fa84d265df0a0032a17e2725ad6e85e718",
+        "packages/i18n/src/mobile-experience.ts": "2a143436a7cd84544dc679eef1ed489e785e3202dd6803b082bba844de53c130",
+        "apps/mobile/src/stores/session.ts": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+        "apps/mobile/src/auth/gateway-auth.ts": "746bb9d83d241162bce9d9cd701d2f6662d11a132977533e3ba2a11e428c3277",
+        "apps/mobile/src/auth/navigation.ts": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5",
+        "apps/mobile/src/platform/pointer-feedback.ts": "24a1f9b26ad6797fc9a61a16cb43559d116230cd7e9cd66c1dd4d9a563d94a6c",
+        "apps/mobile/tests/ui-forbidden.e2e.cjs": "53fa5f889b2b9ac2116ad36e72d1335f549409c3f2eacd6331b676008ba4359a"
+      },
+      "sourceHashesAfter": {
+        "apps/mobile/src/pages/forbidden/forbidden.vue": "d38dd97ccb717d3b477327cef5af49fa84d265df0a0032a17e2725ad6e85e718",
+        "packages/i18n/src/mobile-experience.ts": "2a143436a7cd84544dc679eef1ed489e785e3202dd6803b082bba844de53c130",
+        "apps/mobile/src/stores/session.ts": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+        "apps/mobile/src/auth/gateway-auth.ts": "746bb9d83d241162bce9d9cd701d2f6662d11a132977533e3ba2a11e428c3277",
+        "apps/mobile/src/auth/navigation.ts": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5",
+        "apps/mobile/src/platform/pointer-feedback.ts": "24a1f9b26ad6797fc9a61a16cb43559d116230cd7e9cd66c1dd4d9a563d94a6c",
+        "apps/mobile/tests/ui-forbidden.e2e.cjs": "53fa5f889b2b9ac2116ad36e72d1335f549409c3f2eacd6331b676008ba4359a"
+      },
+      "pageErrors": [],
+      "unexpected": []
+    },
+    {
+      "group": "candidate2-pointer",
+      "status": "PASS_GROUP_SYNTHETIC_UI_NOT_BUSINESS_ACCEPTANCE",
+      "checks": 3,
+      "matrix": 0,
+      "sourceHashes": {
+        "apps/mobile/src/pages/forbidden/forbidden.vue": "d38dd97ccb717d3b477327cef5af49fa84d265df0a0032a17e2725ad6e85e718",
+        "packages/i18n/src/mobile-experience.ts": "2a143436a7cd84544dc679eef1ed489e785e3202dd6803b082bba844de53c130",
+        "apps/mobile/src/stores/session.ts": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+        "apps/mobile/src/auth/gateway-auth.ts": "746bb9d83d241162bce9d9cd701d2f6662d11a132977533e3ba2a11e428c3277",
+        "apps/mobile/src/auth/navigation.ts": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5",
+        "apps/mobile/src/platform/pointer-feedback.ts": "24a1f9b26ad6797fc9a61a16cb43559d116230cd7e9cd66c1dd4d9a563d94a6c",
+        "apps/mobile/tests/ui-forbidden.e2e.cjs": "53fa5f889b2b9ac2116ad36e72d1335f549409c3f2eacd6331b676008ba4359a"
+      },
+      "sourceHashesAfter": {
+        "apps/mobile/src/pages/forbidden/forbidden.vue": "d38dd97ccb717d3b477327cef5af49fa84d265df0a0032a17e2725ad6e85e718",
+        "packages/i18n/src/mobile-experience.ts": "2a143436a7cd84544dc679eef1ed489e785e3202dd6803b082bba844de53c130",
+        "apps/mobile/src/stores/session.ts": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+        "apps/mobile/src/auth/gateway-auth.ts": "746bb9d83d241162bce9d9cd701d2f6662d11a132977533e3ba2a11e428c3277",
+        "apps/mobile/src/auth/navigation.ts": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5",
+        "apps/mobile/src/platform/pointer-feedback.ts": "24a1f9b26ad6797fc9a61a16cb43559d116230cd7e9cd66c1dd4d9a563d94a6c",
+        "apps/mobile/tests/ui-forbidden.e2e.cjs": "53fa5f889b2b9ac2116ad36e72d1335f549409c3f2eacd6331b676008ba4359a"
+      },
+      "pageErrors": [],
+      "unexpected": []
+    },
+    {
+      "group": "candidate2-matrix",
+      "status": "PASS_GROUP_SYNTHETIC_UI_NOT_BUSINESS_ACCEPTANCE",
+      "checks": 0,
+      "matrix": 128,
+      "sourceHashes": {
+        "apps/mobile/src/pages/forbidden/forbidden.vue": "d38dd97ccb717d3b477327cef5af49fa84d265df0a0032a17e2725ad6e85e718",
+        "packages/i18n/src/mobile-experience.ts": "2a143436a7cd84544dc679eef1ed489e785e3202dd6803b082bba844de53c130",
+        "apps/mobile/src/stores/session.ts": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+        "apps/mobile/src/auth/gateway-auth.ts": "746bb9d83d241162bce9d9cd701d2f6662d11a132977533e3ba2a11e428c3277",
+        "apps/mobile/src/auth/navigation.ts": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5",
+        "apps/mobile/src/platform/pointer-feedback.ts": "24a1f9b26ad6797fc9a61a16cb43559d116230cd7e9cd66c1dd4d9a563d94a6c",
+        "apps/mobile/tests/ui-forbidden.e2e.cjs": "53fa5f889b2b9ac2116ad36e72d1335f549409c3f2eacd6331b676008ba4359a"
+      },
+      "sourceHashesAfter": {
+        "apps/mobile/src/pages/forbidden/forbidden.vue": "d38dd97ccb717d3b477327cef5af49fa84d265df0a0032a17e2725ad6e85e718",
+        "packages/i18n/src/mobile-experience.ts": "2a143436a7cd84544dc679eef1ed489e785e3202dd6803b082bba844de53c130",
+        "apps/mobile/src/stores/session.ts": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+        "apps/mobile/src/auth/gateway-auth.ts": "746bb9d83d241162bce9d9cd701d2f6662d11a132977533e3ba2a11e428c3277",
+        "apps/mobile/src/auth/navigation.ts": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5",
+        "apps/mobile/src/platform/pointer-feedback.ts": "24a1f9b26ad6797fc9a61a16cb43559d116230cd7e9cd66c1dd4d9a563d94a6c",
+        "apps/mobile/tests/ui-forbidden.e2e.cjs": "53fa5f889b2b9ac2116ad36e72d1335f549409c3f2eacd6331b676008ba4359a"
+      },
+      "pageErrors": [],
+      "unexpected": []
+    }
+  ],
+  "sourceArchive": "source-candidate2",
+  "oldSourceArchive": "source-candidate1",
+  "oldHarnessFailures": [
+    {
+      "group": "smoke-run1",
+      "testHash": "612579b6d022fd49ae5e4c8dffd97a20035b943e33f726f9aa460f8a6176ca6b",
+      "failure": "AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\n\n  assert.ok(f.nativeTitles.includes(f.title))\n\n    at smoke (C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\apps\\mobile\\tests\\ui-forbidden.e2e.cjs:44:275)\n    at async C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\apps\\mobile\\tests\\ui-forbidden.e2e.cjs:57:63"
+    },
+    {
+      "group": "smoke-run2",
+      "testHash": "72cef0be0e79ab61cdfe5d090677ce26d43ae98a8a7fea8f291a80b7e9a52b9b",
+      "failure": "locator.waitFor: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('heading', { name: 'Access status is not confirmed', exact: true }) to be visible\u001b[22m\n\n    at open (C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\apps\\mobile\\tests\\ui-forbidden.e2e.cjs:39:74)\n    at async smoke (C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\apps\\mobile\\tests\\ui-forbidden.e2e.cjs:44:148)\n    at async C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\apps\\mobile\\tests\\ui-forbidden.e2e.cjs:57:63"
+    }
+  ],
+  "oldHarnessSourceGap": "Old results retain historical test hashes. Exact smoke run1/run2 script bytes were not separately archived; the current candidate2 script is not claimed as their execution version.",
+  "remaining": [
+    "Independent actual host control boundary/contrast",
+    "Independent final 200% text, pointer and theme visual review",
+    "Candidate2 author interactions/cancel/races not rerun; independent 11-risk group is separate evidence",
+    "Real native and real backend acceptance remain unverified"
+  ]
+}

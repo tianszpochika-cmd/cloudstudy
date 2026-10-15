@@ -1,0 +1,516 @@
+{
+  "at": "2026-10-15T15:15:49.003Z",
+  "scope": "FIVE_STATE_ACTUAL_RENDER_CONCEPT_COMPARISON",
+  "sourceHashesBefore": {
+    "apps/mobile/src/pages/forbidden/forbidden.vue": "52709e83ad97fb98b6d81e8a3cdfcde65f69f9d647559b7a76309526ebdd30ab",
+    "packages/i18n/src/mobile-experience.ts": "ae269975647c45f5cf82321bfb7ae763fb9cbadd199bf3bf82f74fa91488e3fe",
+    "apps/mobile/tests/adult-consent-copy.test.mjs": "14e90f2993e0f8b1ae446e50c33320c3d6c0165e4f6f07b18aca49c201740886",
+    "apps/mobile/src/stores/session.ts": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+    "apps/mobile/src/auth/gateway-auth.ts": "746bb9d83d241162bce9d9cd701d2f6662d11a132977533e3ba2a11e428c3277",
+    "apps/mobile/src/auth/navigation.ts": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5",
+    "apps/mobile/src/platform/pointer-feedback.ts": "24a1f9b26ad6797fc9a61a16cb43559d116230cd7e9cd66c1dd4d9a563d94a6c"
+  },
+  "cases": [
+    {
+      "mode": "adult",
+      "locale": "zh-CN",
+      "theme": "light",
+      "route": "#/pages/forbidden/forbidden",
+      "title": "暂时无法开始学习",
+      "heading": "暂时无法开始学习",
+      "description": "当前版本仅向年满18周岁的用户开放学习。你仍可管理账号或查看帮助。",
+      "reason": "adult",
+      "busy": false,
+      "authenticated": true,
+      "actualLocale": "zh-CN",
+      "actualTheme": "light",
+      "buttons": [
+        {
+          "text": "管理账号",
+          "disabled": false,
+          "ariaDisabled": "false"
+        },
+        {
+          "text": "帮助与反馈",
+          "disabled": false,
+          "ariaDisabled": "false"
+        },
+        {
+          "text": "退出登录",
+          "disabled": false,
+          "ariaDisabled": "false"
+        }
+      ],
+      "alerts": 0,
+      "overlay": false,
+      "rawKey": false,
+      "overflow": false,
+      "visual": {
+        "h1": 1,
+        "titleFont": "28px",
+        "text": [
+          {
+            "kind": "forbidden-title",
+            "ratio": 14.171267244103936
+          },
+          {
+            "kind": "forbidden-description",
+            "ratio": 5.504103371100126
+          }
+        ],
+        "controls": []
+      },
+      "result": "PASS"
+    },
+    {
+      "mode": "adult",
+      "locale": "en-US",
+      "theme": "dark",
+      "route": "#/pages/forbidden/forbidden",
+      "title": "Learning is not available yet",
+      "heading": "Learning is not available yet",
+      "description": "The current version offers learning to users aged 18 and over. You can still manage your account or get help.",
+      "reason": "adult",
+      "busy": false,
+      "authenticated": true,
+      "actualLocale": "en-US",
+      "actualTheme": "dark",
+      "buttons": [
+        {
+          "text": "Manage account",
+          "disabled": false,
+          "ariaDisabled": "false"
+        },
+        {
+          "text": "Help and feedback",
+          "disabled": false,
+          "ariaDisabled": "false"
+        },
+        {
+          "text": "Sign out",
+          "disabled": false,
+          "ariaDisabled": "false"
+        }
+      ],
+      "alerts": 0,
+      "overlay": false,
+      "rawKey": false,
+      "overflow": false,
+      "visual": {
+        "h1": 1,
+        "titleFont": "28px",
+        "text": [
+          {
+            "kind": "forbidden-title",
+            "ratio": 15.923775297667023
+          },
+          {
+            "kind": "forbidden-description",
+            "ratio": 9.357719562635204
+          }
+        ],
+        "controls": []
+      },
+      "result": "PASS"
+    },
+    {
+      "mode": "generic",
+      "locale": "zh-CN",
+      "theme": "light",
+      "route": "#/pages/forbidden/forbidden",
+      "title": "暂时无法访问这项内容",
+      "heading": "暂时无法访问这项内容",
+      "description": "当前账号无法打开这项内容。你仍可管理账号或查看帮助。",
+      "reason": "generic",
+      "busy": false,
+      "authenticated": true,
+      "actualLocale": "zh-CN",
+      "actualTheme": "light",
+      "buttons": [
+        {
+          "text": "管理账号",
+          "disabled": false,
+          "ariaDisabled": "false"
+        },
+        {
+          "text": "帮助与反馈",
+          "disabled": false,
+          "ariaDisabled": "false"
+        },
+        {
+          "text": "退出登录",
+          "disabled": false,
+          "ariaDisabled": "false"
+        }
+      ],
+      "alerts": 0,
+      "overlay": false,
+      "rawKey": false,
+      "overflow": false,
+      "visual": {
+        "h1": 1,
+        "titleFont": "28px",
+        "text": [
+          {
+            "kind": "forbidden-title",
+            "ratio": 14.171267244103936
+          },
+          {
+            "kind": "forbidden-description",
+            "ratio": 5.504103371100126
+          }
+        ],
+        "controls": []
+      },
+      "result": "PASS"
+    },
+    {
+      "mode": "generic",
+      "locale": "en-US",
+      "theme": "dark",
+      "route": "#/pages/forbidden/forbidden",
+      "title": "This content is unavailable.",
+      "heading": "This content is unavailable.",
+      "description": "Your account cannot open this content. You can still manage your account or get help.",
+      "reason": "generic",
+      "busy": false,
+      "authenticated": true,
+      "actualLocale": "en-US",
+      "actualTheme": "dark",
+      "buttons": [
+        {
+          "text": "Manage account",
+          "disabled": false,
+          "ariaDisabled": "false"
+        },
+        {
+          "text": "Help and feedback",
+          "disabled": false,
+          "ariaDisabled": "false"
+        },
+        {
+          "text": "Sign out",
+          "disabled": false,
+          "ariaDisabled": "false"
+        }
+      ],
+      "alerts": 0,
+      "overlay": false,
+      "rawKey": false,
+      "overflow": false,
+      "visual": {
+        "h1": 1,
+        "titleFont": "28px",
+        "text": [
+          {
+            "kind": "forbidden-title",
+            "ratio": 15.923775297667023
+          },
+          {
+            "kind": "forbidden-description",
+            "ratio": 9.357719562635204
+          }
+        ],
+        "controls": []
+      },
+      "result": "PASS"
+    },
+    {
+      "mode": "paused",
+      "locale": "zh-CN",
+      "theme": "light",
+      "route": "#/pages/forbidden/forbidden",
+      "title": "学习访问已暂停",
+      "heading": "学习访问已暂停",
+      "description": "当前无法继续打开学习内容。你仍可管理账号或查看帮助。",
+      "reason": "paused",
+      "busy": false,
+      "authenticated": true,
+      "actualLocale": "zh-CN",
+      "actualTheme": "light",
+      "buttons": [
+        {
+          "text": "管理账号",
+          "disabled": false,
+          "ariaDisabled": "false"
+        },
+        {
+          "text": "帮助与反馈",
+          "disabled": false,
+          "ariaDisabled": "false"
+        },
+        {
+          "text": "退出登录",
+          "disabled": false,
+          "ariaDisabled": "false"
+        }
+      ],
+      "alerts": 0,
+      "overlay": false,
+      "rawKey": false,
+      "overflow": false,
+      "visual": {
+        "h1": 1,
+        "titleFont": "28px",
+        "text": [
+          {
+            "kind": "forbidden-title",
+            "ratio": 14.171267244103936
+          },
+          {
+            "kind": "forbidden-description",
+            "ratio": 5.504103371100126
+          }
+        ],
+        "controls": []
+      },
+      "result": "PASS"
+    },
+    {
+      "mode": "paused",
+      "locale": "en-US",
+      "theme": "dark",
+      "route": "#/pages/forbidden/forbidden",
+      "title": "Learning access is paused",
+      "heading": "Learning access is paused",
+      "description": "Learning content cannot be opened right now. You can still manage your account or get help.",
+      "reason": "paused",
+      "busy": false,
+      "authenticated": true,
+      "actualLocale": "en-US",
+      "actualTheme": "dark",
+      "buttons": [
+        {
+          "text": "Manage account",
+          "disabled": false,
+          "ariaDisabled": "false"
+        },
+        {
+          "text": "Help and feedback",
+          "disabled": false,
+          "ariaDisabled": "false"
+        },
+        {
+          "text": "Sign out",
+          "disabled": false,
+          "ariaDisabled": "false"
+        }
+      ],
+      "alerts": 0,
+      "overlay": false,
+      "rawKey": false,
+      "overflow": false,
+      "visual": {
+        "h1": 1,
+        "titleFont": "28px",
+        "text": [
+          {
+            "kind": "forbidden-title",
+            "ratio": 15.923775297667023
+          },
+          {
+            "kind": "forbidden-description",
+            "ratio": 9.357719562635204
+          }
+        ],
+        "controls": []
+      },
+      "result": "PASS"
+    },
+    {
+      "mode": "unknown",
+      "locale": "zh-CN",
+      "theme": "light",
+      "route": "#/pages/forbidden/forbidden",
+      "title": "暂时无法确认访问状态",
+      "heading": "暂时无法确认访问状态",
+      "description": "暂时无法确认账号的访问状态。",
+      "reason": "unknown",
+      "busy": false,
+      "authenticated": true,
+      "actualLocale": "zh-CN",
+      "actualTheme": "light",
+      "buttons": [
+        {
+          "text": "管理账号",
+          "disabled": false,
+          "ariaDisabled": "false"
+        },
+        {
+          "text": "帮助与反馈",
+          "disabled": false,
+          "ariaDisabled": "false"
+        },
+        {
+          "text": "退出登录",
+          "disabled": false,
+          "ariaDisabled": "false"
+        }
+      ],
+      "alerts": 0,
+      "overlay": false,
+      "rawKey": false,
+      "overflow": false,
+      "visual": {
+        "h1": 1,
+        "titleFont": "28px",
+        "text": [
+          {
+            "kind": "forbidden-title",
+            "ratio": 14.171267244103936
+          },
+          {
+            "kind": "forbidden-description",
+            "ratio": 5.504103371100126
+          }
+        ],
+        "controls": []
+      },
+      "result": "PASS"
+    },
+    {
+      "mode": "unknown",
+      "locale": "en-US",
+      "theme": "dark",
+      "route": "#/pages/forbidden/forbidden",
+      "title": "Access status is not confirmed",
+      "heading": "Access status is not confirmed",
+      "description": "We cannot confirm the access status of your account right now.",
+      "reason": "unknown",
+      "busy": false,
+      "authenticated": true,
+      "actualLocale": "en-US",
+      "actualTheme": "dark",
+      "buttons": [
+        {
+          "text": "Manage account",
+          "disabled": false,
+          "ariaDisabled": "false"
+        },
+        {
+          "text": "Help and feedback",
+          "disabled": false,
+          "ariaDisabled": "false"
+        },
+        {
+          "text": "Sign out",
+          "disabled": false,
+          "ariaDisabled": "false"
+        }
+      ],
+      "alerts": 0,
+      "overlay": false,
+      "rawKey": false,
+      "overflow": false,
+      "visual": {
+        "h1": 1,
+        "titleFont": "28px",
+        "text": [
+          {
+            "kind": "forbidden-title",
+            "ratio": 15.923775297667023
+          },
+          {
+            "kind": "forbidden-description",
+            "ratio": 9.357719562635204
+          }
+        ],
+        "controls": []
+      },
+      "result": "PASS"
+    },
+    {
+      "mode": "anonymous-marker",
+      "locale": "zh-CN",
+      "theme": "light",
+      "route": "#/pages/forbidden/forbidden",
+      "title": "暂时无法确认访问状态",
+      "heading": "暂时无法确认访问状态",
+      "description": "暂时无法确认账号的访问状态。",
+      "reason": "unknown",
+      "busy": false,
+      "authenticated": false,
+      "actualLocale": "zh-CN",
+      "actualTheme": "light",
+      "buttons": [
+        {
+          "text": "返回登录",
+          "disabled": false,
+          "ariaDisabled": "false"
+        }
+      ],
+      "alerts": 0,
+      "overlay": false,
+      "rawKey": false,
+      "overflow": false,
+      "visual": {
+        "h1": 1,
+        "titleFont": "28px",
+        "text": [
+          {
+            "kind": "forbidden-title",
+            "ratio": 14.171267244103936
+          },
+          {
+            "kind": "forbidden-description",
+            "ratio": 5.504103371100126
+          }
+        ],
+        "controls": []
+      },
+      "result": "PASS"
+    },
+    {
+      "mode": "anonymous-marker",
+      "locale": "en-US",
+      "theme": "dark",
+      "route": "#/pages/forbidden/forbidden",
+      "title": "Access status is not confirmed",
+      "heading": "Access status is not confirmed",
+      "description": "We cannot confirm the access status of your account right now.",
+      "reason": "unknown",
+      "busy": false,
+      "authenticated": false,
+      "actualLocale": "en-US",
+      "actualTheme": "dark",
+      "buttons": [
+        {
+          "text": "Return to sign in",
+          "disabled": false,
+          "ariaDisabled": "false"
+        }
+      ],
+      "alerts": 0,
+      "overlay": false,
+      "rawKey": false,
+      "overflow": false,
+      "visual": {
+        "h1": 1,
+        "titleFont": "28px",
+        "text": [
+          {
+            "kind": "forbidden-title",
+            "ratio": 15.923775297667023
+          },
+          {
+            "kind": "forbidden-description",
+            "ratio": 9.357719562635204
+          }
+        ],
+        "controls": []
+      },
+      "result": "PASS"
+    }
+  ],
+  "pageErrors": [],
+  "sourceHashesAfter": {
+    "apps/mobile/src/pages/forbidden/forbidden.vue": "52709e83ad97fb98b6d81e8a3cdfcde65f69f9d647559b7a76309526ebdd30ab",
+    "packages/i18n/src/mobile-experience.ts": "ae269975647c45f5cf82321bfb7ae763fb9cbadd199bf3bf82f74fa91488e3fe",
+    "apps/mobile/tests/adult-consent-copy.test.mjs": "14e90f2993e0f8b1ae446e50c33320c3d6c0165e4f6f07b18aca49c201740886",
+    "apps/mobile/src/stores/session.ts": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+    "apps/mobile/src/auth/gateway-auth.ts": "746bb9d83d241162bce9d9cd701d2f6662d11a132977533e3ba2a11e428c3277",
+    "apps/mobile/src/auth/navigation.ts": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5",
+    "apps/mobile/src/platform/pointer-feedback.ts": "24a1f9b26ad6797fc9a61a16cb43559d116230cd7e9cd66c1dd4d9a563d94a6c"
+  },
+  "status": "UI_PASS_FIVE_STATE_VISUAL_ONLY"
+}

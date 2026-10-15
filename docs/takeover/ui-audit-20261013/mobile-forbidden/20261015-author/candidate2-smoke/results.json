@@ -1,0 +1,780 @@
+{
+  "at": "2026-10-15T15:38:56.312Z",
+  "scope": "MB005_H5_SYNTHETIC_UI_NOT_BUSINESS_ACCEPTANCE",
+  "browser": "Browser plugin not available; existing Playwright Chromium",
+  "group": "smoke",
+  "sourceHashes": {
+    "apps/mobile/src/pages/forbidden/forbidden.vue": "d38dd97ccb717d3b477327cef5af49fa84d265df0a0032a17e2725ad6e85e718",
+    "packages/i18n/src/mobile-experience.ts": "2a143436a7cd84544dc679eef1ed489e785e3202dd6803b082bba844de53c130",
+    "apps/mobile/src/stores/session.ts": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+    "apps/mobile/src/auth/gateway-auth.ts": "746bb9d83d241162bce9d9cd701d2f6662d11a132977533e3ba2a11e428c3277",
+    "apps/mobile/src/auth/navigation.ts": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5",
+    "apps/mobile/src/platform/pointer-feedback.ts": "24a1f9b26ad6797fc9a61a16cb43559d116230cd7e9cd66c1dd4d9a563d94a6c",
+    "apps/mobile/tests/ui-forbidden.e2e.cjs": "53fa5f889b2b9ac2116ad36e72d1335f549409c3f2eacd6331b676008ba4359a"
+  },
+  "checks": [
+    {
+      "name": "adult-zh-CN",
+      "state": {
+        "route": "#/pages/forbidden/forbidden",
+        "documentTitle": "暂时无法开始学习",
+        "title": "暂时无法开始学习",
+        "nativeTitles": [],
+        "headings": 1,
+        "titleFont": "28px",
+        "titleWeight": "650",
+        "descriptionFont": "14px",
+        "descriptionContrast": 5.504103371100126,
+        "titleContrast": 14.171267244103936,
+        "brandIcon": 25,
+        "lock": 22,
+        "width": 342,
+        "overflow": false,
+        "overlay": 0,
+        "rawKeys": false,
+        "buttons": [
+          {
+            "text": "管理账号",
+            "width": 342,
+            "height": 50,
+            "font": "16px"
+          },
+          {
+            "text": "帮助与反馈",
+            "width": 342,
+            "height": 50,
+            "font": "16px"
+          },
+          {
+            "text": "退出登录",
+            "width": 342,
+            "height": 44,
+            "font": "14px"
+          }
+        ]
+      },
+      "counts": {
+        "me": 2,
+        "logout": 0,
+        "login": 1,
+        "writes": 0
+      },
+      "result": "PASS"
+    },
+    {
+      "name": "adult-en-US",
+      "state": {
+        "route": "#/pages/forbidden/forbidden",
+        "documentTitle": "Learning is not available yet",
+        "title": "Learning is not available yet",
+        "nativeTitles": [],
+        "headings": 1,
+        "titleFont": "28px",
+        "titleWeight": "650",
+        "descriptionFont": "14px",
+        "descriptionContrast": 5.504103371100126,
+        "titleContrast": 14.171267244103936,
+        "brandIcon": 25,
+        "lock": 22,
+        "width": 342,
+        "overflow": false,
+        "overlay": 0,
+        "rawKeys": false,
+        "buttons": [
+          {
+            "text": "Manage account",
+            "width": 342,
+            "height": 50,
+            "font": "16px"
+          },
+          {
+            "text": "Help and feedback",
+            "width": 342,
+            "height": 50,
+            "font": "16px"
+          },
+          {
+            "text": "Sign out",
+            "width": 342,
+            "height": 44,
+            "font": "14px"
+          }
+        ]
+      },
+      "counts": {
+        "me": 2,
+        "logout": 0,
+        "login": 1,
+        "writes": 0
+      },
+      "result": "PASS"
+    },
+    {
+      "name": "paused-zh-CN",
+      "state": {
+        "route": "#/pages/forbidden/forbidden",
+        "documentTitle": "学习访问已暂停",
+        "title": "学习访问已暂停",
+        "nativeTitles": [],
+        "headings": 1,
+        "titleFont": "28px",
+        "titleWeight": "650",
+        "descriptionFont": "14px",
+        "descriptionContrast": 5.504103371100126,
+        "titleContrast": 14.171267244103936,
+        "brandIcon": 25,
+        "lock": 22,
+        "width": 342,
+        "overflow": false,
+        "overlay": 0,
+        "rawKeys": false,
+        "buttons": [
+          {
+            "text": "管理账号",
+            "width": 342,
+            "height": 50,
+            "font": "16px"
+          },
+          {
+            "text": "帮助与反馈",
+            "width": 342,
+            "height": 50,
+            "font": "16px"
+          },
+          {
+            "text": "退出登录",
+            "width": 342,
+            "height": 44,
+            "font": "14px"
+          }
+        ]
+      },
+      "counts": {
+        "me": 2,
+        "logout": 0,
+        "login": 1,
+        "writes": 0
+      },
+      "result": "PASS"
+    },
+    {
+      "name": "paused-en-US",
+      "state": {
+        "route": "#/pages/forbidden/forbidden",
+        "documentTitle": "Learning access is paused",
+        "title": "Learning access is paused",
+        "nativeTitles": [],
+        "headings": 1,
+        "titleFont": "28px",
+        "titleWeight": "650",
+        "descriptionFont": "14px",
+        "descriptionContrast": 5.504103371100126,
+        "titleContrast": 14.171267244103936,
+        "brandIcon": 25,
+        "lock": 22,
+        "width": 342,
+        "overflow": false,
+        "overlay": 0,
+        "rawKeys": false,
+        "buttons": [
+          {
+            "text": "Manage account",
+            "width": 342,
+            "height": 50,
+            "font": "16px"
+          },
+          {
+            "text": "Help and feedback",
+            "width": 342,
+            "height": 50,
+            "font": "16px"
+          },
+          {
+            "text": "Sign out",
+            "width": 342,
+            "height": 44,
+            "font": "14px"
+          }
+        ]
+      },
+      "counts": {
+        "me": 2,
+        "logout": 0,
+        "login": 1,
+        "writes": 0
+      },
+      "result": "PASS"
+    },
+    {
+      "name": "generic-zh-CN",
+      "state": {
+        "route": "#/pages/forbidden/forbidden",
+        "documentTitle": "暂时无法访问这项内容",
+        "title": "暂时无法访问这项内容",
+        "nativeTitles": [],
+        "headings": 1,
+        "titleFont": "28px",
+        "titleWeight": "650",
+        "descriptionFont": "14px",
+        "descriptionContrast": 5.504103371100126,
+        "titleContrast": 14.171267244103936,
+        "brandIcon": 25,
+        "lock": 22,
+        "width": 342,
+        "overflow": false,
+        "overlay": 0,
+        "rawKeys": false,
+        "buttons": [
+          {
+            "text": "管理账号",
+            "width": 342,
+            "height": 50,
+            "font": "16px"
+          },
+          {
+            "text": "帮助与反馈",
+            "width": 342,
+            "height": 50,
+            "font": "16px"
+          },
+          {
+            "text": "退出登录",
+            "width": 342,
+            "height": 44,
+            "font": "14px"
+          }
+        ]
+      },
+      "counts": {
+        "me": 2,
+        "logout": 0,
+        "login": 1,
+        "writes": 0
+      },
+      "result": "PASS"
+    },
+    {
+      "name": "generic-en-US",
+      "state": {
+        "route": "#/pages/forbidden/forbidden",
+        "documentTitle": "This content is unavailable.",
+        "title": "This content is unavailable.",
+        "nativeTitles": [],
+        "headings": 1,
+        "titleFont": "28px",
+        "titleWeight": "650",
+        "descriptionFont": "14px",
+        "descriptionContrast": 5.504103371100126,
+        "titleContrast": 14.171267244103936,
+        "brandIcon": 25,
+        "lock": 22,
+        "width": 342,
+        "overflow": false,
+        "overlay": 0,
+        "rawKeys": false,
+        "buttons": [
+          {
+            "text": "Manage account",
+            "width": 342,
+            "height": 50,
+            "font": "16px"
+          },
+          {
+            "text": "Help and feedback",
+            "width": 342,
+            "height": 50,
+            "font": "16px"
+          },
+          {
+            "text": "Sign out",
+            "width": 342,
+            "height": 44,
+            "font": "14px"
+          }
+        ]
+      },
+      "counts": {
+        "me": 2,
+        "logout": 0,
+        "login": 1,
+        "writes": 0
+      },
+      "result": "PASS"
+    },
+    {
+      "name": "unknown-zh-CN",
+      "state": {
+        "route": "#/pages/forbidden/forbidden",
+        "documentTitle": "暂时无法确认访问状态",
+        "title": "暂时无法确认访问状态",
+        "nativeTitles": [],
+        "headings": 1,
+        "titleFont": "28px",
+        "titleWeight": "650",
+        "descriptionFont": "14px",
+        "descriptionContrast": 5.504103371100126,
+        "titleContrast": 14.171267244103936,
+        "brandIcon": 25,
+        "lock": 22,
+        "width": 342,
+        "overflow": false,
+        "overlay": 0,
+        "rawKeys": false,
+        "buttons": [
+          {
+            "text": "管理账号",
+            "width": 342,
+            "height": 50,
+            "font": "16px"
+          },
+          {
+            "text": "帮助与反馈",
+            "width": 342,
+            "height": 50,
+            "font": "16px"
+          },
+          {
+            "text": "退出登录",
+            "width": 342,
+            "height": 44,
+            "font": "14px"
+          }
+        ]
+      },
+      "counts": {
+        "me": 2,
+        "logout": 0,
+        "login": 1,
+        "writes": 0
+      },
+      "result": "PASS"
+    },
+    {
+      "name": "unknown-en-US",
+      "state": {
+        "route": "#/pages/forbidden/forbidden",
+        "documentTitle": "Access status is not confirmed",
+        "title": "Access status is not confirmed",
+        "nativeTitles": [],
+        "headings": 1,
+        "titleFont": "28px",
+        "titleWeight": "650",
+        "descriptionFont": "14px",
+        "descriptionContrast": 5.504103371100126,
+        "titleContrast": 14.171267244103936,
+        "brandIcon": 25,
+        "lock": 22,
+        "width": 342,
+        "overflow": false,
+        "overlay": 0,
+        "rawKeys": false,
+        "buttons": [
+          {
+            "text": "Manage account",
+            "width": 342,
+            "height": 50,
+            "font": "16px"
+          },
+          {
+            "text": "Help and feedback",
+            "width": 342,
+            "height": 50,
+            "font": "16px"
+          },
+          {
+            "text": "Sign out",
+            "width": 342,
+            "height": 44,
+            "font": "14px"
+          }
+        ]
+      },
+      "counts": {
+        "me": 2,
+        "logout": 0,
+        "login": 1,
+        "writes": 0
+      },
+      "result": "PASS"
+    },
+    {
+      "name": "anonymous-zh-CN",
+      "state": {
+        "route": "#/pages/forbidden/forbidden",
+        "documentTitle": "暂时无法确认访问状态",
+        "title": "暂时无法确认访问状态",
+        "nativeTitles": [],
+        "headings": 1,
+        "titleFont": "28px",
+        "titleWeight": "650",
+        "descriptionFont": "14px",
+        "descriptionContrast": 5.504103371100126,
+        "titleContrast": 14.171267244103936,
+        "brandIcon": 25,
+        "lock": 22,
+        "width": 342,
+        "overflow": false,
+        "overlay": 0,
+        "rawKeys": false,
+        "buttons": [
+          {
+            "text": "返回登录",
+            "width": 342,
+            "height": 50,
+            "font": "16px"
+          }
+        ]
+      },
+      "counts": {
+        "me": 0,
+        "logout": 0,
+        "login": 0,
+        "writes": 0
+      },
+      "result": "PASS"
+    },
+    {
+      "name": "anonymous-en-US",
+      "state": {
+        "route": "#/pages/forbidden/forbidden",
+        "documentTitle": "Access status is not confirmed",
+        "title": "Access status is not confirmed",
+        "nativeTitles": [],
+        "headings": 1,
+        "titleFont": "28px",
+        "titleWeight": "650",
+        "descriptionFont": "14px",
+        "descriptionContrast": 5.504103371100126,
+        "titleContrast": 14.171267244103936,
+        "brandIcon": 25,
+        "lock": 22,
+        "width": 342,
+        "overflow": false,
+        "overlay": 0,
+        "rawKeys": false,
+        "buttons": [
+          {
+            "text": "Return to sign in",
+            "width": 342,
+            "height": 50,
+            "font": "16px"
+          }
+        ]
+      },
+      "counts": {
+        "me": 0,
+        "logout": 0,
+        "login": 0,
+        "writes": 0
+      },
+      "result": "PASS"
+    },
+    {
+      "name": "error-zh-CN",
+      "state": {
+        "route": "#/pages/forbidden/forbidden",
+        "documentTitle": "暂时无法确认访问状态",
+        "title": "暂时无法确认访问状态",
+        "nativeTitles": [],
+        "headings": 1,
+        "titleFont": "28px",
+        "titleWeight": "650",
+        "descriptionFont": "14px",
+        "descriptionContrast": 5.504103371100126,
+        "titleContrast": 14.171267244103936,
+        "brandIcon": 25,
+        "lock": 22,
+        "width": 342,
+        "overflow": false,
+        "overlay": 0,
+        "rawKeys": false,
+        "buttons": [
+          {
+            "text": "管理账号",
+            "width": 342,
+            "height": 50,
+            "font": "16px"
+          },
+          {
+            "text": "帮助与反馈",
+            "width": 342,
+            "height": 50,
+            "font": "16px"
+          },
+          {
+            "text": "重新读取状态",
+            "width": 342,
+            "height": 44,
+            "font": "14px"
+          },
+          {
+            "text": "退出登录",
+            "width": 342,
+            "height": 44,
+            "font": "14px"
+          }
+        ]
+      },
+      "counts": {
+        "me": 2,
+        "logout": 0,
+        "login": 1,
+        "writes": 0
+      },
+      "result": "PASS"
+    },
+    {
+      "name": "error-en-US",
+      "state": {
+        "route": "#/pages/forbidden/forbidden",
+        "documentTitle": "Access status is not confirmed",
+        "title": "Access status is not confirmed",
+        "nativeTitles": [],
+        "headings": 1,
+        "titleFont": "28px",
+        "titleWeight": "650",
+        "descriptionFont": "14px",
+        "descriptionContrast": 5.504103371100126,
+        "titleContrast": 14.171267244103936,
+        "brandIcon": 25,
+        "lock": 22,
+        "width": 342,
+        "overflow": false,
+        "overlay": 0,
+        "rawKeys": false,
+        "buttons": [
+          {
+            "text": "Manage account",
+            "width": 342,
+            "height": 50,
+            "font": "16px"
+          },
+          {
+            "text": "Help and feedback",
+            "width": 342,
+            "height": 50,
+            "font": "16px"
+          },
+          {
+            "text": "Read status again",
+            "width": 342,
+            "height": 44,
+            "font": "14px"
+          },
+          {
+            "text": "Sign out",
+            "width": 342,
+            "height": 44,
+            "font": "14px"
+          }
+        ]
+      },
+      "counts": {
+        "me": 2,
+        "logout": 0,
+        "login": 1,
+        "writes": 0
+      },
+      "result": "PASS"
+    }
+  ],
+  "matrix": [],
+  "requests": [
+    {
+      "mode": "adult",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "origin": "https://127.0.0.1:18087"
+    },
+    {
+      "mode": "adult",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me",
+      "origin": "http://127.0.0.1:18070"
+    },
+    {
+      "mode": "adult",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me",
+      "origin": "http://127.0.0.1:18070"
+    },
+    {
+      "mode": "adult",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "origin": "https://127.0.0.1:18087"
+    },
+    {
+      "mode": "adult",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me",
+      "origin": "http://127.0.0.1:18070"
+    },
+    {
+      "mode": "adult",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me",
+      "origin": "http://127.0.0.1:18070"
+    },
+    {
+      "mode": "paused",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "origin": "https://127.0.0.1:18087"
+    },
+    {
+      "mode": "paused",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me",
+      "origin": "http://127.0.0.1:18070"
+    },
+    {
+      "mode": "paused",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me",
+      "origin": "http://127.0.0.1:18070"
+    },
+    {
+      "mode": "paused",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "origin": "https://127.0.0.1:18087"
+    },
+    {
+      "mode": "paused",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me",
+      "origin": "http://127.0.0.1:18070"
+    },
+    {
+      "mode": "paused",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me",
+      "origin": "http://127.0.0.1:18070"
+    },
+    {
+      "mode": "generic",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "origin": "https://127.0.0.1:18087"
+    },
+    {
+      "mode": "generic",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me",
+      "origin": "http://127.0.0.1:18070"
+    },
+    {
+      "mode": "generic",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me",
+      "origin": "http://127.0.0.1:18070"
+    },
+    {
+      "mode": "generic",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "origin": "https://127.0.0.1:18087"
+    },
+    {
+      "mode": "generic",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me",
+      "origin": "http://127.0.0.1:18070"
+    },
+    {
+      "mode": "generic",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me",
+      "origin": "http://127.0.0.1:18070"
+    },
+    {
+      "mode": "unknown",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "origin": "https://127.0.0.1:18087"
+    },
+    {
+      "mode": "unknown",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me",
+      "origin": "http://127.0.0.1:18070"
+    },
+    {
+      "mode": "unknown",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me",
+      "origin": "http://127.0.0.1:18070"
+    },
+    {
+      "mode": "unknown",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "origin": "https://127.0.0.1:18087"
+    },
+    {
+      "mode": "unknown",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me",
+      "origin": "http://127.0.0.1:18070"
+    },
+    {
+      "mode": "unknown",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me",
+      "origin": "http://127.0.0.1:18070"
+    },
+    {
+      "mode": "error",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "origin": "https://127.0.0.1:18087"
+    },
+    {
+      "mode": "error",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me",
+      "origin": "http://127.0.0.1:18070"
+    },
+    {
+      "mode": "error",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me",
+      "origin": "http://127.0.0.1:18070"
+    },
+    {
+      "mode": "error",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "origin": "https://127.0.0.1:18087"
+    },
+    {
+      "mode": "error",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me",
+      "origin": "http://127.0.0.1:18070"
+    },
+    {
+      "mode": "error",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me",
+      "origin": "http://127.0.0.1:18070"
+    }
+  ],
+  "pageErrors": [],
+  "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+    "Failed to load resource: the server responded with a status of 503 (Service Unavailable)"
+  ],
+  "unexpected": [],
+  "status": "PASS_GROUP_SYNTHETIC_UI_NOT_BUSINESS_ACCEPTANCE",
+  "sourceHashesAfter": {
+    "apps/mobile/src/pages/forbidden/forbidden.vue": "d38dd97ccb717d3b477327cef5af49fa84d265df0a0032a17e2725ad6e85e718",
+    "packages/i18n/src/mobile-experience.ts": "2a143436a7cd84544dc679eef1ed489e785e3202dd6803b082bba844de53c130",
+    "apps/mobile/src/stores/session.ts": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+    "apps/mobile/src/auth/gateway-auth.ts": "746bb9d83d241162bce9d9cd701d2f6662d11a132977533e3ba2a11e428c3277",
+    "apps/mobile/src/auth/navigation.ts": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5",
+    "apps/mobile/src/platform/pointer-feedback.ts": "24a1f9b26ad6797fc9a61a16cb43559d116230cd7e9cd66c1dd4d9a563d94a6c",
+    "apps/mobile/tests/ui-forbidden.e2e.cjs": "53fa5f889b2b9ac2116ad36e72d1335f549409c3f2eacd6331b676008ba4359a"
+  }
+}

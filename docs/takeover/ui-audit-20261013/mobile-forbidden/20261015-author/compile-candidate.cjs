@@ -1,0 +1,22 @@
+const fs = require('node:fs');
+const path = require('node:path');
+const root = path.resolve(__dirname, '../../../../..');
+const ts = require(path.join(root, 'apps/mobile/node_modules/typescript'));
+const vue = require(path.join(root, 'apps/mobile/node_modules/@vue/compiler-sfc'));
+const filename = path.join(root, 'apps/mobile/src/pages/forbidden/forbidden.vue');
+const { descriptor, errors } = vue.parse(fs.readFileSync(filename, 'utf8'), { filename });
+if (errors.length) throw new Error(JSON.stringify(errors));
+const script = vue.compileScript(descriptor, { id: 'mb005-candidate' });
+const template = vue.compileTemplate({ filename, id: 'mb005-candidate', source: descriptor.template.content, compilerOptions: { bindingMetadata: script.bindings } });
+if (template.errors.length) throw new Error(JSON.stringify(template.errors));
+const configFile = path.join(root, 'apps/mobile/tsconfig.json');
+const configRead = ts.readConfigFile(configFile, ts.sys.readFile);
+const config = ts.parseJsonConfigFileContent(configRead.config, ts.sys, path.dirname(configFile));
+const virtual = filename + '.candidate.ts';
+const host = ts.createCompilerHost(config.options);
+const original = host.getSourceFile.bind(host);
+host.getSourceFile = (name, language, onError, createNew) => name === virtual ? ts.createSourceFile(name, script.content, language, true, ts.ScriptKind.TS) : original(name, language, onError, createNew);
+const program = ts.createProgram([...config.fileNames, virtual], { ...config.options, noEmit: true }, host);
+const diagnostics = ts.getPreEmitDiagnostics(program).filter(item => item.file?.fileName === virtual);
+if (diagnostics.length) { console.error(ts.formatDiagnosticsWithColorAndContext(diagnostics, { getCanonicalFileName: value => value, getCurrentDirectory: () => root, getNewLine: () => '\n' })); process.exitCode = 1; }
+else console.log(JSON.stringify({ status: 'PASS_TEMPLATE_AND_VIRTUAL_SFC_TYPES', file: 'apps/mobile/src/pages/forbidden/forbidden.vue' }));

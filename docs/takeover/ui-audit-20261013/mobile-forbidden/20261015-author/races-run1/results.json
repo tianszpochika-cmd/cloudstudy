@@ -1,0 +1,153 @@
+{
+  "at": "2026-10-15T15:10:31.301Z",
+  "scope": "MB005_H5_SYNTHETIC_UI_NOT_BUSINESS_ACCEPTANCE",
+  "browser": "Browser plugin not available; existing Playwright Chromium",
+  "group": "races",
+  "sourceHashes": {
+    "apps/mobile/src/pages/forbidden/forbidden.vue": "52709e83ad97fb98b6d81e8a3cdfcde65f69f9d647559b7a76309526ebdd30ab",
+    "packages/i18n/src/mobile-experience.ts": "ae269975647c45f5cf82321bfb7ae763fb9cbadd199bf3bf82f74fa91488e3fe",
+    "apps/mobile/src/stores/session.ts": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+    "apps/mobile/src/auth/gateway-auth.ts": "746bb9d83d241162bce9d9cd701d2f6662d11a132977533e3ba2a11e428c3277",
+    "apps/mobile/src/auth/navigation.ts": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5",
+    "apps/mobile/src/platform/pointer-feedback.ts": "24a1f9b26ad6797fc9a61a16cb43559d116230cd7e9cd66c1dd4d9a563d94a6c",
+    "apps/mobile/tests/ui-forbidden.e2e.cjs": "612579b6d022fd49ae5e4c8dffd97a20035b943e33f726f9aa460f8a6176ca6b"
+  },
+  "checks": [
+    {
+      "name": "old-logout-new-owner-authenticated-no-stale-navigation",
+      "result": "PASS"
+    },
+    {
+      "name": "old-logout-new-owner-login-pending-no-stale-navigation",
+      "result": "PASS"
+    },
+    {
+      "name": "hide-during-logout-late-result-no-navigation",
+      "result": "PASS"
+    }
+  ],
+  "matrix": [],
+  "requests": [
+    {
+      "mode": "adult",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "origin": "https://127.0.0.1:18087"
+    },
+    {
+      "mode": "adult",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me",
+      "origin": "http://127.0.0.1:18070"
+    },
+    {
+      "mode": "adult",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me",
+      "origin": "http://127.0.0.1:18070"
+    },
+    {
+      "mode": "adult",
+      "method": "POST",
+      "path": "/api/v1/auth/logout",
+      "origin": "http://127.0.0.1:18070"
+    },
+    {
+      "mode": "adult",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "origin": "https://127.0.0.1:18087"
+    },
+    {
+      "mode": "adult",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me",
+      "origin": "http://127.0.0.1:18070"
+    },
+    {
+      "mode": "adult",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me",
+      "origin": "http://127.0.0.1:18070"
+    },
+    {
+      "mode": "adult",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "origin": "https://127.0.0.1:18087"
+    },
+    {
+      "mode": "adult",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me",
+      "origin": "http://127.0.0.1:18070"
+    },
+    {
+      "mode": "adult",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me",
+      "origin": "http://127.0.0.1:18070"
+    },
+    {
+      "mode": "adult",
+      "method": "POST",
+      "path": "/api/v1/auth/logout",
+      "origin": "http://127.0.0.1:18070"
+    },
+    {
+      "mode": "adult",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "origin": "https://127.0.0.1:18087"
+    },
+    {
+      "mode": "adult",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me",
+      "origin": "http://127.0.0.1:18070"
+    },
+    {
+      "mode": "adult",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me",
+      "origin": "http://127.0.0.1:18070"
+    },
+    {
+      "mode": "adult",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "origin": "https://127.0.0.1:18087"
+    },
+    {
+      "mode": "adult",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me",
+      "origin": "http://127.0.0.1:18070"
+    },
+    {
+      "mode": "adult",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me",
+      "origin": "http://127.0.0.1:18070"
+    },
+    {
+      "mode": "adult",
+      "method": "POST",
+      "path": "/api/v1/auth/logout",
+      "origin": "http://127.0.0.1:18070"
+    }
+  ],
+  "pageErrors": [],
+  "consoleErrors": [],
+  "unexpected": [],
+  "status": "PASS_GROUP_SYNTHETIC_UI_NOT_BUSINESS_ACCEPTANCE",
+  "sourceHashesAfter": {
+    "apps/mobile/src/pages/forbidden/forbidden.vue": "52709e83ad97fb98b6d81e8a3cdfcde65f69f9d647559b7a76309526ebdd30ab",
+    "packages/i18n/src/mobile-experience.ts": "ae269975647c45f5cf82321bfb7ae763fb9cbadd199bf3bf82f74fa91488e3fe",
+    "apps/mobile/src/stores/session.ts": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+    "apps/mobile/src/auth/gateway-auth.ts": "746bb9d83d241162bce9d9cd701d2f6662d11a132977533e3ba2a11e428c3277",
+    "apps/mobile/src/auth/navigation.ts": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5",
+    "apps/mobile/src/platform/pointer-feedback.ts": "24a1f9b26ad6797fc9a61a16cb43559d116230cd7e9cd66c1dd4d9a563d94a6c",
+    "apps/mobile/tests/ui-forbidden.e2e.cjs": "612579b6d022fd49ae5e4c8dffd97a20035b943e33f726f9aa460f8a6176ca6b"
+  }
+}

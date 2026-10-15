@@ -1,0 +1,236 @@
+{
+  "at": "2026-10-15T15:10:31.316Z",
+  "scope": "MB005_H5_SYNTHETIC_UI_NOT_BUSINESS_ACCEPTANCE",
+  "browser": "Browser plugin not available; existing Playwright Chromium",
+  "group": "interactions",
+  "sourceHashes": {
+    "apps/mobile/src/pages/forbidden/forbidden.vue": "52709e83ad97fb98b6d81e8a3cdfcde65f69f9d647559b7a76309526ebdd30ab",
+    "packages/i18n/src/mobile-experience.ts": "ae269975647c45f5cf82321bfb7ae763fb9cbadd199bf3bf82f74fa91488e3fe",
+    "apps/mobile/src/stores/session.ts": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+    "apps/mobile/src/auth/gateway-auth.ts": "746bb9d83d241162bce9d9cd701d2f6662d11a132977533e3ba2a11e428c3277",
+    "apps/mobile/src/auth/navigation.ts": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5",
+    "apps/mobile/src/platform/pointer-feedback.ts": "24a1f9b26ad6797fc9a61a16cb43559d116230cd7e9cd66c1dd4d9a563d94a6c",
+    "apps/mobile/tests/ui-forbidden.e2e.cjs": "612579b6d022fd49ae5e4c8dffd97a20035b943e33f726f9aa460f8a6176ca6b"
+  },
+  "checks": [
+    {
+      "name": "account-Enter-fixed-account-route",
+      "result": "PASS"
+    },
+    {
+      "name": "account-Space-fixed-account-route",
+      "result": "PASS"
+    },
+    {
+      "name": "help-Enter-fixed-account-route",
+      "result": "PASS"
+    },
+    {
+      "name": "help-Space-fixed-account-route",
+      "result": "PASS"
+    },
+    {
+      "name": "navigation-rejected-unlocks-and-fixed-retry",
+      "result": "PASS"
+    },
+    {
+      "name": "logout-204-single-locked-correct-public-exit",
+      "result": "PASS"
+    },
+    {
+      "name": "logout-503-single-locked-correct-public-exit",
+      "result": "PASS"
+    },
+    {
+      "name": "anonymous-sticky-marker-stays-unknown",
+      "state": {
+        "route": "#/pages/forbidden/forbidden",
+        "title": "暂时无法确认访问状态",
+        "nativeTitles": [],
+        "headings": 1,
+        "titleFont": "28px",
+        "titleWeight": "650",
+        "descriptionFont": "14px",
+        "descriptionContrast": 5.504103371100126,
+        "titleContrast": 14.171267244103936,
+        "brandIcon": 25,
+        "lock": 22,
+        "width": 342,
+        "overflow": false,
+        "overlay": 0,
+        "rawKeys": false,
+        "buttons": [
+          {
+            "text": "返回登录",
+            "width": 342,
+            "height": 50,
+            "font": "16px"
+          }
+        ]
+      },
+      "counts": {
+        "me": 0,
+        "logout": 0,
+        "login": 0,
+        "writes": 0
+      },
+      "result": "PASS"
+    }
+  ],
+  "matrix": [],
+  "requests": [
+    {
+      "mode": "generic",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "origin": "https://127.0.0.1:18087"
+    },
+    {
+      "mode": "generic",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me",
+      "origin": "http://127.0.0.1:18070"
+    },
+    {
+      "mode": "generic",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me",
+      "origin": "http://127.0.0.1:18070"
+    },
+    {
+      "mode": "generic",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "origin": "https://127.0.0.1:18087"
+    },
+    {
+      "mode": "generic",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me",
+      "origin": "http://127.0.0.1:18070"
+    },
+    {
+      "mode": "generic",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me",
+      "origin": "http://127.0.0.1:18070"
+    },
+    {
+      "mode": "generic",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "origin": "https://127.0.0.1:18087"
+    },
+    {
+      "mode": "generic",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me",
+      "origin": "http://127.0.0.1:18070"
+    },
+    {
+      "mode": "generic",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me",
+      "origin": "http://127.0.0.1:18070"
+    },
+    {
+      "mode": "generic",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "origin": "https://127.0.0.1:18087"
+    },
+    {
+      "mode": "generic",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me",
+      "origin": "http://127.0.0.1:18070"
+    },
+    {
+      "mode": "generic",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me",
+      "origin": "http://127.0.0.1:18070"
+    },
+    {
+      "mode": "adult",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "origin": "https://127.0.0.1:18087"
+    },
+    {
+      "mode": "adult",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me",
+      "origin": "http://127.0.0.1:18070"
+    },
+    {
+      "mode": "adult",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me",
+      "origin": "http://127.0.0.1:18070"
+    },
+    {
+      "mode": "adult",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "origin": "https://127.0.0.1:18087"
+    },
+    {
+      "mode": "adult",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me",
+      "origin": "http://127.0.0.1:18070"
+    },
+    {
+      "mode": "adult",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me",
+      "origin": "http://127.0.0.1:18070"
+    },
+    {
+      "mode": "adult",
+      "method": "POST",
+      "path": "/api/v1/auth/logout",
+      "origin": "http://127.0.0.1:18070"
+    },
+    {
+      "mode": "adult",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "origin": "https://127.0.0.1:18087"
+    },
+    {
+      "mode": "adult",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me",
+      "origin": "http://127.0.0.1:18070"
+    },
+    {
+      "mode": "adult",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me",
+      "origin": "http://127.0.0.1:18070"
+    },
+    {
+      "mode": "adult",
+      "method": "POST",
+      "path": "/api/v1/auth/logout",
+      "origin": "http://127.0.0.1:18070"
+    }
+  ],
+  "pageErrors": [],
+  "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 503 (Service Unavailable)"
+  ],
+  "unexpected": [],
+  "status": "PASS_GROUP_SYNTHETIC_UI_NOT_BUSINESS_ACCEPTANCE",
+  "sourceHashesAfter": {
+    "apps/mobile/src/pages/forbidden/forbidden.vue": "52709e83ad97fb98b6d81e8a3cdfcde65f69f9d647559b7a76309526ebdd30ab",
+    "packages/i18n/src/mobile-experience.ts": "ae269975647c45f5cf82321bfb7ae763fb9cbadd199bf3bf82f74fa91488e3fe",
+    "apps/mobile/src/stores/session.ts": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+    "apps/mobile/src/auth/gateway-auth.ts": "746bb9d83d241162bce9d9cd701d2f6662d11a132977533e3ba2a11e428c3277",
+    "apps/mobile/src/auth/navigation.ts": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5",
+    "apps/mobile/src/platform/pointer-feedback.ts": "24a1f9b26ad6797fc9a61a16cb43559d116230cd7e9cd66c1dd4d9a563d94a6c",
+    "apps/mobile/tests/ui-forbidden.e2e.cjs": "612579b6d022fd49ae5e4c8dffd97a20035b943e33f726f9aa460f8a6176ca6b"
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "at": "2026-10-15T14:54:44.9470439Z",
+  "scope": "READ_ONLY_RELIABILITY_BASELINE_CANDIDATE_NOT_YET_FROZEN",
+  "reviewedOriginalPage": {
+    "source": "Actual initial read of existing original, candidate author still editing",
+    "path": "apps/mobile/src/pages/forbidden/forbidden.vue",
+    "rawSha256": "ea32cc53d929fc4b7f475ed82e2d9427813881cd4b16c928f0685bf502fe4e61"
+  },
+  "stableSourceHashes": [
+    {
+      "Path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\apps\\mobile\\src\\stores\\session.ts",
+      "Hash": "D944C9E84617AF5AD553D2FBC1FD0C07120CE790411DBE02603F9338333F8931"
+    },
+    {
+      "Path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\apps\\mobile\\src\\platform\\uni-runtime.ts",
+      "Hash": "FCBEBA8626D8364AF0AE96DB64A05FCFF9A3BB2B46A7D8FBCBA21507EF609751"
+    },
+    {
+      "Path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\apps\\mobile\\src\\auth\\navigation.ts",
+      "Hash": "7365FEC07C55857445FDB1D87B60659734E9E94DC06CFB65AFABCB3E8863A4B5"
+    },
+    {
+      "Path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\apps\\mobile\\src\\auth\\gateway-auth.ts",
+      "Hash": "746BB9D83D241162BCE9D9CD701D2F6662D11A132977533E3BA2A11E428C3277"
+    },
+    {
+      "Path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\apps\\mobile\\src\\pages.json",
+      "Hash": "949F390C7C3C8B127C980A0F53FC61E3E54459FDF4169BBB1597B065D9DC6518"
+    },
+    {
+      "Path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\packages\\contracts\\fragments\\b8\\b8-auth-iam.openapi.json",
+      "Hash": "DF44CFE09A1200626BC48E697BDD98F0BAFE9E7192D3F681CF31C83C50919360"
+    }
+  ],
+  "quota": {
+    "primaryUsedPercent": 16,
+    "ordinaryUsageAllowed": true,
+    "weeklyUsedPercent": 18,
+    "resetCreditsUsed": 0
+  }
+}

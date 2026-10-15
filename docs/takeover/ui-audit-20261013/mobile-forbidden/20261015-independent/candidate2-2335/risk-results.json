@@ -1,0 +1,61 @@
+{
+  "at": "2026-10-15T15:37:33.632Z",
+  "scope": "INDEPENDENT_MB005_ACTUAL_EXITS_AND_OWNER_RACES",
+  "sourceHashesBefore": {
+    "apps/mobile/src/pages/forbidden/forbidden.vue": "d38dd97ccb717d3b477327cef5af49fa84d265df0a0032a17e2725ad6e85e718",
+    "packages/i18n/src/mobile-experience.ts": "2a143436a7cd84544dc679eef1ed489e785e3202dd6803b082bba844de53c130",
+    "apps/mobile/tests/ui-forbidden.e2e.cjs": "53fa5f889b2b9ac2116ad36e72d1335f549409c3f2eacd6331b676008ba4359a",
+    "apps/mobile/tests/adult-consent-copy.test.mjs": "14e90f2993e0f8b1ae446e50c33320c3d6c0165e4f6f07b18aca49c201740886",
+    "apps/mobile/src/stores/session.ts": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+    "apps/mobile/src/auth/gateway-auth.ts": "746bb9d83d241162bce9d9cd701d2f6662d11a132977533e3ba2a11e428c3277",
+    "apps/mobile/src/auth/navigation.ts": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5",
+    "apps/mobile/src/platform/pointer-feedback.ts": "24a1f9b26ad6797fc9a61a16cb43559d116230cd7e9cd66c1dd4d9a563d94a6c"
+  },
+  "cases": [
+    {
+      "name": "actual-safe-exit-settings/settings",
+      "result": "PASS",
+      "facts": {
+        "route": "#/pages/settings/settings",
+        "title": "设置",
+        "actualLocale": "zh-CN",
+        "actualTheme": "light",
+        "buttons": [],
+        "alerts": 0,
+        "overlay": false,
+        "rawKey": false,
+        "overflow": false
+      },
+      "counts": {
+        "login": 1,
+        "principal": 2,
+        "logout": 0,
+        "otherWrites": 0
+      }
+    },
+    {
+      "name": "actual-safe-exit-support/support",
+      "result": "PASS",
+      "facts": {
+        "route": "#/pages/support/support",
+        "title": "客服与帮助",
+        "actualLocale": "zh-CN",
+        "actualTheme": "light",
+        "buttons": [],
+        "alerts": 0,
+        "overlay": false,
+        "rawKey": false,
+        "overflow": false
+      },
+      "counts": {
+        "login": 1,
+        "principal": 2,
+        "logout": 0,
+        "otherWrites": 0
+      }
+    }
+  ],
+  "pageErrors": [],
+  "status": "FAIL",
+  "failure": "locator.click: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('.forbidden-exit button')\u001b[22m\n\n    at C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-forbidden\\20261015-independent\\candidate2-2335\\risk-review.cjs:9:202"
+}
