@@ -1,0 +1,23 @@
+{
+  "scope": "ARCHIVE_ONLY_NO_NEW_TEST_OR_CHECK",
+  "rootReportedPrimaryUsedPercent": 91,
+  "rootReportedSecondaryUsedPercent": 95,
+  "authorReportedPrimaryUsedPercentAtStop": 90,
+  "finalIndependentUi": "NOT_RUN",
+  "latestPageFromExistingSnapshot": "f56f77954e12a9ea2fabb1717b4ad2e53cbf382f26481824c95bcdbdea4ebf97",
+  "latestCopyFromExistingSnapshot": "5e0e045c0118226ef8e2f80b1fa1db072bdfdbd2d171c13a904075fe3c4f8743",
+  "authorTestPrefixReportedOnly": "8cdc",
+  "authorCheckpoint": "../20261015-resume-author/checkpoint-0810.md",
+  "sourceSnapshot": "pending-final-review-snapshot.json",
+  "service": { "session": 87595, "pid": 24472, "host": "127.0.0.1", "port": 18183, "leftRunning": true, "verifyOwnershipOnResume": true },
+  "nextWindowRootReported": "2026-10-15 12:34 Beijing",
+  "newDesignFixTestOrBrowserCheckAfterStop": false,
+  "resetCreditUsed": false,
+  "remaining": [
+    "final frozen nine-source independent browser signoff",
+    "actual controls boundary contrast >=3:1 with original dark1.67 FAIL preserved",
+    "final candidate race/pointer/hold/drag/nativecancel/200-percent visual and ARIA checks",
+    "one owner-scoped refresh and reread for current IAM valid consent plus target403",
+    "fixture versus real IAM/learner/audit/native evidence separation"
+  ]
+}

@@ -1,0 +1,165 @@
+{
+  "at": "2026-10-15T00:08:45.765Z",
+  "scope": "MB004_FORMAL_H5_SYNTHETIC_UI_ONLY",
+  "group": "race",
+  "browserPlugin": "Browser plugin not available; Playwright Chromium",
+  "sourceHashes": {
+    "apps/mobile/src/pages/onboarding/onboarding.vue": "bc46cf2c23e640729266896d12df46d9ab52372839a0e6a329adabafc148ab8c",
+    "packages/i18n/src/mobile-experience.ts": "5e0e045c0118226ef8e2f80b1fa1db072bdfdbd2d171c13a904075fe3c4f8743",
+    "apps/mobile/src/api/learner-content.ts": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6",
+    "apps/mobile/src/stores/session.ts": "ba479dfebf777599ed40b05218549afc23712f1077720b748f973ec3d3fadc99",
+    "apps/mobile/src/auth/gateway-auth.ts": "746bb9d83d241162bce9d9cd701d2f6662d11a132977533e3ba2a11e428c3277",
+    "apps/mobile/src/domain/onboarding-resume.ts": "ea6e26682e69a9f1c3d8fd47d284aa55d96e39d646e27e5d41d0f556ba902e26",
+    "apps/mobile/src/stores/learner-content.ts": "95cc92496db996242d91baed3301d76f985e4e3b9134e1e50c2b9ab8d41e4c61",
+    "apps/mobile/src/platform/pointer-feedback.ts": "6464f4c1712b5a0f2fd4ab01d451d5bb6ffaa13bde486826a424511059ef6425",
+    "apps/mobile/tests/ui-onboarding.e2e.cjs": "63a08a77a5507fd99bc143e4027e121f801d1799a0d3596058f6ed24bb48cdd6"
+  },
+  "checks": [
+    {
+      "name": "actual-hide-clears-sensitive-draft-late-adult-does-not-navigate",
+      "result": "PASS"
+    },
+    {
+      "name": "identity-revocation-late-adult-stays-public-no-write",
+      "result": "PASS"
+    }
+  ],
+  "matrix": [],
+  "pageErrors": [],
+  "consoleErrors": [],
+  "fixtureRequests": [
+    {
+      "mode": "gate",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "mode": "gate",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "gate",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "gate",
+      "method": "POST",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/adult-gate"
+    },
+    {
+      "mode": "gate",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "mode": "gate",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "gate",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "gate",
+      "method": "POST",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/adult-gate"
+    },
+    {
+      "mode": "gate",
+      "method": "POST",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/auth/logout"
+    },
+    {
+      "mode": "assessment",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "mode": "assessment",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "assessment",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "assessment",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/learner/targets"
+    },
+    {
+      "mode": "assessment",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "assessment",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/learner/targets"
+    },
+    {
+      "mode": "assessment",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "assessment",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "assessment",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/learner/targets"
+    },
+    {
+      "mode": "assessment",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/learner/profile"
+    },
+    {
+      "mode": "assessment",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/learner/targets"
+    },
+    {
+      "mode": "assessment",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/learner/preferences"
+    }
+  ],
+  "status": "FAIL",
+  "failure": "locator.waitFor: Timeout 3000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByText('页面未能打开，请重试。', { exact: true }) to be visible\u001b[22m\n\n    at race (C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\apps\\mobile\\tests\\ui-onboarding.e2e.cjs:283:101)\n    at async C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\apps\\mobile\\tests\\ui-onboarding.e2e.cjs:297:40",
+  "failureState": {
+    "route": "#/pages/assessment/assessment",
+    "focusId": "",
+    "errorPresent": 0
+  }
+}

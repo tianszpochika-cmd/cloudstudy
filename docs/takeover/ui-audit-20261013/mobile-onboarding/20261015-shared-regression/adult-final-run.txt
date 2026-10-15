@@ -1,0 +1,20 @@
+TAP version 13
+# Subtest: birth year validation accepts integer year bounds without deciding adulthood
+ok 1 - birth year validation accepts integer year bounds without deciding adulthood
+  ---
+  duration_ms: 1.5225
+  ...
+# Subtest: mobile onboarding submits a minor year and opens the no-access page
+ok 2 - mobile onboarding submits a minor year and opens the no-access page
+  ---
+  duration_ms: 107.3127
+  ...
+1..2
+# tests 2
+# suites 0
+# pass 2
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 623.3508

@@ -1,0 +1,183 @@
+{
+  "savedAt": "2026-10-15T00:15:09.5946587+00:00",
+  "activity": "ARCHIVE_ONLY_NO_SOURCE_CHANGE_NO_TEST_EXECUTION",
+  "originalRunRoot": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author",
+  "privateRunRoot": null,
+  "historicalScriptLimitation": "Historical run script SHA is retained in each result; original historical script bytes were not saved per run. Latest PASS execution script is archived byte-for-byte.",
+  "copies": [
+    {
+      "origin": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\smoke-run1\\results.json",
+      "archived": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\archive-0818\\smoke-run1-results.json",
+      "sha256": "d646e0dbdfd8a82be059b2ded4885e7a2867e331b524cef7821ebdc3d1a2b311",
+      "bytes": 1877
+    },
+    {
+      "origin": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\smoke-run2\\results.json",
+      "archived": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\archive-0818\\smoke-run2-results.json",
+      "sha256": "ff2b0ac490c59356d5acf1f2d03ece8d5cc78ee82511f896cad324fd4961b223",
+      "bytes": 8241
+    },
+    {
+      "origin": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\smoke-run3\\results.json",
+      "archived": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\archive-0818\\smoke-run3-results.json",
+      "sha256": "782930b3f5f54b22e1677b48e7ce664ea93c1f32ec6e7e15421edb88eef7b236",
+      "bytes": 8241
+    },
+    {
+      "origin": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\controls-run1\\results.json",
+      "archived": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\archive-0818\\controls-run1-results.json",
+      "sha256": "ffc182384430c58d19c9d28451d4619892ada60c0e12916a5afe54583c5c0f5d",
+      "bytes": 1852
+    },
+    {
+      "origin": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\controls-run2\\results.json",
+      "archived": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\archive-0818\\controls-run2-results.json",
+      "sha256": "51ce30d80accc22d02d8fa5221c3a71493fff4e976f8e7f2812292d9c003e835",
+      "bytes": 1984
+    },
+    {
+      "origin": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\controls-run3\\results.json",
+      "archived": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\archive-0818\\controls-run3-results.json",
+      "sha256": "ea8c4c3271e7c7bf7153900da44c2a949cb37729d88ce2c041cd140b64ffb191",
+      "bytes": 2767
+    },
+    {
+      "origin": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\controls-run4\\results.json",
+      "archived": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\archive-0818\\controls-run4-results.json",
+      "sha256": "247c2466316b001995c6e725c749dac0e32dc289764b2d585a6c8a8e652c6a39",
+      "bytes": 2768
+    },
+    {
+      "origin": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\controls-run5\\results.json",
+      "archived": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\archive-0818\\controls-run5-results.json",
+      "sha256": "eaa7e751b8f61f31b990eed853efa0399c0b1a6b44739dabbc7b4bd8e099a4a9",
+      "bytes": 4088
+    },
+    {
+      "origin": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\flow-run1\\results.json",
+      "archived": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\archive-0818\\flow-run1-results.json",
+      "sha256": "66dd2fca721a28722ffae2b92129e507e0f6cec19dd3f106eae7834d4f888f93",
+      "bytes": 15382
+    },
+    {
+      "origin": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\flow-run2\\results.json",
+      "archived": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\archive-0818\\flow-run2-results.json",
+      "sha256": "9dddd28eaaffd6e465506ce105ff5ebf6de9babe9255d6ea26fec7ef3373224e",
+      "bytes": 23311
+    },
+    {
+      "origin": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\recovery-run1\\results.json",
+      "archived": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\archive-0818\\recovery-run1-results.json",
+      "sha256": "feaa9691175fd758fda15edfc4d9d090919f4eecf6034b719086cc82bef5e362",
+      "bytes": 2461
+    },
+    {
+      "origin": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\recovery-run2\\results.json",
+      "archived": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\archive-0818\\recovery-run2-results.json",
+      "sha256": "e8701b917f3ce6c17f8210d4d5f004fc070f110cbab160a192ece2cff806c348",
+      "bytes": 7404
+    },
+    {
+      "origin": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\recovery-before-refresh\\results.json",
+      "archived": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\archive-0818\\recovery-before-refresh-results.json",
+      "sha256": "b2b47b30e2a01421ac18a92b688633ec7086851ef60ea3ef3dece9675bdd0f7c",
+      "bytes": 2839
+    },
+    {
+      "origin": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\recovery-run3\\results.json",
+      "archived": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\archive-0818\\recovery-run3-results.json",
+      "sha256": "999f7216aebebaa2ebd5cbde9712f5bddfd9b955d4d89cbf20afb769d39ef7cd",
+      "bytes": 5958
+    },
+    {
+      "origin": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\recovery-run4\\results.json",
+      "archived": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\archive-0818\\recovery-run4-results.json",
+      "sha256": "cd4afef0a4f06bc6786939e1d52693267fe1476e74864448ebfa1df89cf27052",
+      "bytes": 14934
+    },
+    {
+      "origin": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\recovery-run5\\results.json",
+      "archived": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\archive-0818\\recovery-run5-results.json",
+      "sha256": "16b1c91addad2ecdb0e72e4858556d4381491c5231bab1f7cb1685d508ec1dd6",
+      "bytes": 15760
+    },
+    {
+      "origin": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\race-run1\\results.json",
+      "archived": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\archive-0818\\race-run1-results.json",
+      "sha256": "2449573013ab1f17ce75a3a0b7ec8314741cb497c03727cf688a19ede9e296d3",
+      "bytes": 3321
+    },
+    {
+      "origin": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\race-run3\\results.json",
+      "archived": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\archive-0818\\race-run3-results.json",
+      "sha256": "b2547a7badcffdf72429c18d036706bbb04aca27d76d54bf22d50bbd8160d40b",
+      "bytes": 4897
+    },
+    {
+      "origin": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\race-run4\\results.json",
+      "archived": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\archive-0818\\race-run4-results.json",
+      "sha256": "21875cf614df77d29095d77fb07f9e3030269ce5ce51eac5ae895ff02a9ac37c",
+      "bytes": 5133
+    },
+    {
+      "origin": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\race-run5\\results.json",
+      "archived": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\archive-0818\\race-run5-results.json",
+      "sha256": "b1614e0849705fb4ba4db39cb2dda24369781456cf4b34d3102b79785c179239",
+      "bytes": 4033
+    },
+    {
+      "origin": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\race-run6\\results.json",
+      "archived": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\archive-0818\\race-run6-results.json",
+      "sha256": "c5f50ae5e5a83388096cba148b5878dc86e66d88783d78da14d8b8ca0e37b0be",
+      "bytes": 5591
+    },
+    {
+      "origin": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\results.json",
+      "archived": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\archive-0818\\matrix-run1-results.json",
+      "sha256": "85daf24a1a9893bb78b4a26fbcc6d12f9fb46efcacdff27df326b09e7fe8d0df",
+      "bytes": 217403
+    },
+    {
+      "origin": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\recovery-before-refresh\\failure.png",
+      "archived": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\archive-0818\\old-claims-recovery-fail.png",
+      "sha256": "cc23e70e3af9710c37825f5443ccbb36dff6048c020c65634a0682c1d0bc0ccf",
+      "bytes": 44398
+    },
+    {
+      "origin": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\recovery-run3\\failure.png",
+      "archived": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\archive-0818\\persistent403-continue-button-fail.png",
+      "sha256": "d085d21bc5de4c93c57e02079862455d71bf984d538815f3382005048bac26e4",
+      "bytes": 44514
+    },
+    {
+      "origin": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\controls-run2\\failure.png",
+      "archived": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\archive-0818\\first-error-focus-fail.png",
+      "sha256": "a9c6e0b00cd411f184caf90a26dafd3e91ff0bb8cca10a2f691978bcfd5efb42",
+      "bytes": 30268
+    },
+    {
+      "origin": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\controls-run4\\failure.png",
+      "archived": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\archive-0818\\busy-aria-disabled-fail.png",
+      "sha256": "90bf5acd97cd4dbdd40bf67c123f5d00a67e8517f4946c16a3e5587d783cfee0",
+      "bytes": 25379
+    },
+    {
+      "origin": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\gate-1280-en-US-dark.png",
+      "archived": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\archive-0818\\dark-gate-boundary-before.png",
+      "sha256": "53489811ca253a8e304fe4039e183f14b5cea745b40b08a3d866461624ca565c",
+      "bytes": 32054
+    },
+    {
+      "origin": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\goal-1280-en-US-dark.png",
+      "archived": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\archive-0818\\dark-goal-boundary-before.png",
+      "sha256": "b2c93004b1a5bddc8d7373c1e71f8a42584f2cc414f146acc992debb9ea84d71",
+      "bytes": 53590
+    },
+    {
+      "origin": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\apps\\mobile\\tests\\ui-onboarding.e2e.cjs",
+      "archived": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\archive-0818\\ui-onboarding-final-execution.cjs",
+      "sha256": "8cdc9714ab8786733750770c0097f447ca9e021fdef1c46f674dc04f6e4c7a92",
+      "bytes": 38417
+    }
+  ]
+}

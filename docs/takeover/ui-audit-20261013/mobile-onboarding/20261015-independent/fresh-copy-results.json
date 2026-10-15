@@ -1,0 +1,39 @@
+{
+  "at": "2026-10-14T23:37:13.648Z",
+  "scope": "CANDIDATE_FRESH_ZH_EN_COPY_AND_OVERLAY_ONLY",
+  "sourceHashesBefore": {
+    "apps/mobile/src/pages/onboarding/onboarding.vue": "aa20a389d915a4d289db11c0a44a698f7f4f02abe94df5907760555c9a866b0b",
+    "packages/i18n/src/mobile-experience.ts": "5de636433b73ba72a2549c3e6331da9f8ccec48226c71e56d071396cc0a69eeb"
+  },
+  "cases": [
+    {
+      "locale": "zh-CN",
+      "actual": {
+        "route": "#/pages/onboarding/onboarding",
+        "title": "确认成人身份",
+        "description": "出生年份用于成人学习资格确认，不收集完整生日。",
+        "body": "语学星18 岁以上成人学习1确认身份当前2必要同意待完成3学习目标待完成确认成人身份出生年份用于成人学习资格确认，不收集完整生日。出生年份例如 1995我确认自己已满 18 周岁确认并继续账号设置退出登录",
+        "overlay": false
+      },
+      "result": "FRESH_COPY_PASS"
+    },
+    {
+      "locale": "en-US",
+      "actual": {
+        "route": "#/pages/onboarding/onboarding",
+        "title": "Confirm adult eligibility",
+        "description": "Your birth year is used to confirm adult learning eligibility. We do not collect your full date of birth.",
+        "body": "语学星For learners aged 18 and over1Confirm identityCurrent2Required consentNext3Learning goalNextConfirm adult eligibilityYour birth year is used to confirm adult learning eligibility. We do not collect your full date of birth.Birth yearFor example, 1995I confirm that I am at least 18 years oldConfirm and continueAccount settingsSign out",
+        "overlay": false
+      },
+      "result": "FRESH_COPY_PASS"
+    }
+  ],
+  "pageErrors": [],
+  "requests": [],
+  "sourceHashesAfter": {
+    "apps/mobile/src/pages/onboarding/onboarding.vue": "aa20a389d915a4d289db11c0a44a698f7f4f02abe94df5907760555c9a866b0b",
+    "packages/i18n/src/mobile-experience.ts": "5de636433b73ba72a2549c3e6331da9f8ccec48226c71e56d071396cc0a69eeb"
+  },
+  "result": "FRESH_COPY_PASS"
+}

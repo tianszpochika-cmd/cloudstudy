@@ -1,0 +1,55 @@
+{
+  "at": "2026-10-15T00:10:10.4651139Z",
+  "scope": "EXISTING_GATEWAY_AND_RESUME_MODULE_FILES_ONLY",
+  "sourceHashes": [
+    {
+      "Path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\apps\\mobile\\src\\api\\learner-content.ts",
+      "Hash": "43CE2AD5D6519B5FAB7E38867D1349B569D08B6153B74C87E5C96F11E24E1AE6"
+    },
+    {
+      "Path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\apps\\mobile\\src\\domain\\onboarding-resume.ts",
+      "Hash": "EA6E26682E69A9F1C3D8FD47D284AA55D96E39D646E27E5D41D0F556BA902E26"
+    },
+    {
+      "Path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\apps\\mobile\\src\\stores\\learner-content.ts",
+      "Hash": "95CC92496DB996242D91BAED3301D76F985E4E3B9134E1E50C2B9AB8D41E4C61"
+    },
+    {
+      "Path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\apps\\mobile\\src\\auth\\gateway-auth.ts",
+      "Hash": "746BB9D83D241162BCE9D9CD701D2F6662D11A132977533E3BA2A11E428C3277"
+    },
+    {
+      "Path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\apps\\mobile\\src\\stores\\session.ts",
+      "Hash": "BA479DFEBF777599ED40B05218549AFC23712F1077720B748F973EC3D3FADC99"
+    },
+    {
+      "Path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\apps\\mobile\\tests\\mobile-gateway-auth-bootstrap.test.mjs",
+      "Hash": "159D529D09DAC2E002361D2394BDDA38FA24DB43593BC492F5F1599CAA6DFAE2"
+    },
+    {
+      "Path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\apps\\mobile\\tests\\onboarding-resume-step.test.mjs",
+      "Hash": "515EE65C390DBC63F5D68D11313C6130F368379D045E7F024F057C401E676320"
+    }
+  ],
+  "applicationSourceChangedDuringReview": [],
+  "firstRun": {
+    "fail": 0,
+    "pass": 24,
+    "exitCode": 0,
+    "tests": 24,
+    "skipped": 0
+  },
+  "finalRun": {
+    "fail": 0,
+    "pass": 25,
+    "exitCode": 0,
+    "tests": 25,
+    "skipped": 0
+  },
+  "quota": {
+    "resetCreditsUsed": 0,
+    "weeklyUsedPercent": 94,
+    "ordinaryUsageAllowed": true,
+    "primaryUsedPercent": 87
+  }
+}

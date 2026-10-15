@@ -1,0 +1,508 @@
+TAP version 13
+# Subtest: mobile published consent version matches the web reader
+ok 1 - mobile published consent version matches the web reader
+  ---
+  duration_ms: 2.2872
+  ...
+# Subtest: mobile wizard shows the same three consent items and keeps the rejection exits
+not ok 2 - mobile wizard shows the same three consent items and keeps the rejection exits
+  ---
+  duration_ms: 1.4969
+  location: 'C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\apps\\mobile\\tests\\adult-consent-copy.test.mjs:62:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    The input did not match the regular expression /只收集出生年份，用来判断是否已满 18 岁。现有成人门不需要月和日，所以不收集完整生日。/. Input:
+    
+    '<script setup lang="ts">\n' +
+      "import AppIcon from '../../components/AppIcon.vue'\n" +
+      "import { mobileT, useMobileExperience } from '../../platform/experience'\n" +
+      "import { computed, nextTick, onMounted, ref, watch } from 'vue'\n" +
+      "import { onHide, onShow } from '@dcloudio/uni-app'\n" +
+      "import type { B8Consent } from '@englishflow/contracts'\n" +
+      "import { interpolate } from '@englishflow/i18n'\n" +
+      "import { mobileI18n } from '../../platform/v2-foundation'\n" +
+      "import { mobileApiClient } from '../../api/client'\n" +
+      "import { getUniRuntime } from '../../platform/uni-runtime'\n" +
+      "import { usePointerFeedback } from '../../platform/pointer-feedback'\n" +
+      "import { currentBirthYearMax, isSubmittableBirthYear } from '../../domain/adult-birth-year'\n" +
+      "import { canonicalGoalOptions, mapUiGoal, prefillSavedTarget, requiredConsentsComplete, selectOnboardingResumeStep, type OnboardingResumeStep } from '../../domain/onboarding-resume'\n" +
+      "import { useLearnerContentStore } from '../../stores/learner-content'\n" +
+      "import { useSessionStore } from '../../stores/session'\n" +
+      '\n' +
+      'const { experienceStyle, experienceMotion } = useMobileExperience()\n' +
+      'const store = useLearnerContentStore()\n' +
+      'const session = useSessionStore()\n' +
+      "const step = ref<OnboardingResumeStep>('gate')\n" +
+      'const goal = ref<string | null>(null)\n' +
+      'const quota = ref(15)\n' +
+      'const savedGoal = ref<string | null>(null)\n' +
+      'const savedQuota = ref<number | null>(null)\n' +
+      "const birthYear = ref('')\n" +
+      'const ageConfirmed = ref(false)\n' +
+      'const yearFocused = ref(false)\n' +
+      'const yearField = ref<{ $el?: HTMLElement } | null>(null)\n' +
+      'const pageRoot = ref<{ $el?: HTMLElement } | null>(null)\n' +
+      'const saving = ref(false)\n' +
+      'const reading = ref(false)\n' +
+      'const restoring = ref(false)\n' +
+      'const attempted = ref(false)\n' +
+      'const actionError = ref<string | null>(null)\n' +
+      "const lastYearError = ref('')\n" +
+      "const lastAgeError = ref('')\n" +
+      'const recordsOpen = ref(false)\n' +
+      'const recordsError = ref(false)\n' +
+      "type ConsentRecord = Pick<B8Consent, 'type' | 'purpose' | 'required' | 'document' | 'state' | 'provenance' | 'policyRef' | 'policyVersion' | 'decisionRef'>\n" +
+      'const consentRecords = ref<ConsentRecord[]>([])\n' +
+      'let active = false\n' +
+      'let generation = 0\n' +
+      'let showRequest = 0\n' +
+      'const birthYearMax = currentBirthYearMax()\n' +
+      "const busy = computed(() => saving.value || reading.value || restoring.value || store.onboardingStatus === 'loading')\n" +
+      'const yearValid = computed(() => isSubmittableBirthYear(birthYear.value.trim() ? Number(birthYear.value) : null, birthYearMax))\n' +
+      "const yearError = computed(() => attempted.value && !yearValid.value ? interpolate(mobileT('onboarding.yearError'), { max: birthYearMax }) : null)\n" +
+      "const ageError = computed(() => attempted.value && !ageConfirmed.value ? mobileT('onboarding.ageError') : null)\n" +
+      'const goalOptions = canonicalGoalOptions([])\n' +
+      'const quotas = [5, 15, 30, 45]\n' +
+      "const rank = computed(() => step.value === 'gate' ? 0 : step.value === 'consent' ? 1 : step.value === 'goal' ? 2 : 3)\n" +
+      "const consentCurrent = computed(() => Boolean(store.onboardingResume && requiredConsentsComplete(store.onboardingResume.consent) && session.adultGate === 'PASSED' && session.isLearningReady))\n" +
+      'const targetUnreadable = computed(() => store.onboardingResume?.target.readable === false)\n' +
+      "const primaryLabel = computed(() => mobileT(`onboarding.${saving.value ? step.value === 'goal' ? 'saving' : 'confirming' : step.value === 'gate' ? 'confirm' : step.value === 'goal' ? 'saveStart' : step.value === 'assessment' ? 'start' : 'continue'}`))\n" +
+      "function minuteLabel(value: number | null): string { return interpolate(mobileT('onboarding.minutes'), { count: value === null ? '' : mobileI18n.formatNumber(value) }) }\n" +
+      'function reportErrors(): void {\n' +
+      '  if (yearError.value) lastYearError.value = yearError.value\n' +
+      '  if (ageError.value) lastAgeError.value = ageError.value\n' +
+      '}\n' +
+      'watch([yearError, ageError], () => { if (!yearFocused.value) reportErrors() })\n' +
+      'function currentFeedback() {\n' +
+      '  return { year: yearError.value ? lastYearError.value || null : null, lastYear: lastYearError.value, age: ageError.value ? lastAgeError.value || null : null, lastAge: lastAgeError.value, action: actionError.value }\n' +
+      '}\n' +
+      "const pointerFeedback = usePointerFeedback({ root: () => pageRoot.value?.$el ?? null, actions: '.onboarding-primary,.onboarding-text,.onboarding-record-toggle', capture: currentFeedback, disabled: () => busy.value, afterRelease: () => { syncNativeYear() } })\n" +
+      'const feedback = computed(() => pointerFeedback.value ?? currentFeedback())\n' +
+      'function syncNativeYear(): void {\n' +
+      '  // #ifdef H5\n' +
+      "  const input = yearField.value?.$el?.querySelector<HTMLInputElement>('.uni-input-input')\n" +
+      '  if (!input) return\n' +
+      "  const attrs: Record<string, string | null> = { id: 'mobile-onboarding-year', name: 'birthYear', autocomplete: 'bday-year', inputmode: 'numeric', required: '', 'aria-label': mobileT('onboarding.year'), 'aria-labelledby': 'mobile-onboarding-year-label', 'aria-invalid': feedback.value.year ? 'true' : null, 'aria-describedby': feedback.value.year ? 'mobile-onboarding-year-error' : null }\n" +
+      '  for (const [key, value] of Object.entries(attrs)) { if (value === null) input.removeAttribute(key); else input.setAttribute(key, value) }\n' +
+      '  // #endif\n' +
+      '}\n' +
+      "watch([birthYear, yearFocused, feedback, busy, () => mobileT('onboarding.year')], async () => { await nextTick(); syncNativeYear() }, { flush: 'post' })\n" +
+      'onMounted(syncNativeYear)\n' +
+      'watch(step, async () => {\n' +
+      '  await nextTick()\n' +
+      '  if (!active) return\n' +
+      '  // #ifdef H5\n' +
+      "  const title = pageRoot.value?.$el?.querySelector<HTMLElement>('#mobile-onboarding-title')\n" +
+      '  title?.focus({ preventScroll: true })\n' +
+      "  title?.scrollIntoView({ block: 'start' })\n" +
+      '  // #endif\n' +
+      '  uni.setNavigationBarTitle({ title: mobileT(`onboarding.${step.value}Title`) })\n' +
+      '})\n' +
+      'function current(request: number, revision: number): boolean { return active && request === generation && revision === session.identityRevision && session.isAuthenticated }\n' +
+      'function clearDrafts(): void {\n' +
+      "  birthYear.value = ''; ageConfirmed.value = false; attempted.value = false; yearFocused.value = false\n" +
+      "  lastYearError.value = ''; lastAgeError.value = ''; consentRecords.value = []; recordsOpen.value = false; recordsError.value = false\n" +
+      '  goal.value = savedGoal.value; quota.value = savedQuota.value ?? 15\n' +
+      '}\n' +
+      'function invalidate(): void { generation++; saving.value = false; reading.value = false; clearDrafts() }\n' +
+      'watch(() => session.identityRevision, () => {\n' +
+      "  invalidate(); savedGoal.value = null; savedQuota.value = null; goal.value = null; quota.value = 15; step.value = 'gate'; actionError.value = null\n" +
+      '  if (active && !restoring.value && session.isAuthenticated) void loadResume()\n' +
+      '  else if (active && !restoring.value) {\n' +
+      '    const request = generation\n' +
+      '    void nextTick().then(async () => {\n' +
+      '      if (!active || request !== generation || session.isAuthenticated) return\n' +
+      "      try { await navigate('/pages/login/login?returnTo=%2Fpages%2Fonboarding%2Fonboarding', true) }\n" +
+      "      catch { if (active && request === generation) actionError.value = mobileT('onboarding.navigationFailed') }\n" +
+      '    })\n' +
+      '  }\n' +
+      "}, { flush: 'sync' })\n" +
+      "function object(value: unknown): Record<string, unknown> | null { return value !== null && typeof value === 'object' && !Array.isArray(value) ? value as Record<string, unknown> : null }\n" +
+      'function parseRecords(raw: unknown): ConsentRecord[] {\n' +
+      '  const envelope = object(raw), data = object(envelope?.data) ?? envelope\n' +
+      "  if (!data || !Array.isArray(data.items) || data.hasMore === true || data.nextCursor || (typeof data.total === 'number' && data.total > data.items.length)) throw new Error('Incomplete consent records')\n" +
+      "  const types = ['TERMS', 'PRIVACY', 'ADULT_LEARNING', 'PRODUCT_ANALYTICS', 'VOICE_RECORDING'] as const\n" +
+      "  const purposes = ['ACCOUNT_TERMS', 'PRIVACY_NOTICE', 'ADULT_LEARNING_ELIGIBILITY', 'PRODUCT_ANALYTICS', 'ADULT_VOICE_RECORDING_REMOTE_STORAGE_AND_REPLAY'] as const\n" +
+      '  return data.items.map((rawItem: unknown) => {\n' +
+      '    const item = object(rawItem), doc = object(item?.document), provenance = object(item?.provenance)\n' +
+      '    const index = types.findIndex(type => type === item?.type)\n' +
+      "    if (!item || index < 0 || item.purpose !== purposes[index] || typeof item.required !== 'boolean' || !doc || !provenance || !['GRANTED', 'WITHDRAWN'].includes(String(item.state)) || provenance.authority !== 'IAM_SERVER_RECORDED_CONSENT' || provenance.documentSource !== 'PUBLISHED_DOCUMENT_VERSION_AND_DIGEST' || provenance.policySource !== 'IAM_ACTIVE_POLICY_CONTROL_PLANE') throw new Error('Unreadable consent record')\n" +
+      "    for (const value of [doc.version, doc.digest, doc.publishedAt, provenance.recordedAt, item.policyRef, item.policyVersion, item.decisionRef]) if (typeof value !== 'string' || !value.trim()) throw new Error('Incomplete consent record')\n" +
+      "    return { type: types[index], purpose: purposes[index], required: item.required, state: item.state as ConsentRecord['state'], document: { version: doc.version as string, digest: doc.digest as string, publishedAt: doc.publishedAt as string }, provenance: { authority: 'IAM_SERVER_RECORDED_CONSENT', documentSource: 'PUBLISHED_DOCUMENT_VERSION_AND_DIGEST', policySource: 'IAM_ACTIVE_POLICY_CONTROL_PLANE', recordedAt: provenance.recordedAt as string }, policyRef: item.policyRef as string, policyVersion: item.policyVersion as string, decisionRef: item.decisionRef as string }\n" +
+      '  })\n' +
+      '}\n' +
+      'async function readRecords(request: number, revision: number): Promise<void> {\n' +
+      '  consentRecords.value = []; recordsError.value = false\n' +
+      '  try {\n' +
+      "    const raw = await mobileApiClient.request<unknown>('/iam/consents')\n" +
+      "    if (current(request, revision) && step.value === 'consent') consentRecords.value = parseRecords(raw)\n" +
+      "  } catch { if (current(request, revision) && step.value === 'consent') recordsError.value = true }\n" +
+      '}\n' +
+      'function applySavedTarget(facts: NonNullable<typeof store.onboardingResume>): void {\n' +
+      '  const filled = prefillSavedTarget(facts.target)\n' +
+      '  savedGoal.value = filled.goal; savedQuota.value = filled.quota\n' +
+      '  goal.value = filled.goal; quota.value = filled.quota ?? 15\n' +
+      '}\n' +
+      'async function navigate(url: string, login = false): Promise<void> {\n' +
+      '  const runtime = getUniRuntime()\n' +
+      '  if (login && runtime.reLaunch) await runtime.reLaunch('... 22794 more characters
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  actual: |-
+    <script setup lang="ts">
+    import AppIcon from '../../components/AppIcon.vue'
+    import { mobileT, useMobileExperience } from '../../platform/experience'
+    import { computed, nextTick, onMounted, ref, watch } from 'vue'
+    import { onHide, onShow } from '@dcloudio/uni-app'
+    import type { B8Consent } from '@englishflow/contracts'
+    import { interpolate } from '@englishflow/i18n'
+    import { mobileI18n } from '../../platform/v2-foundation'
+    import { mobileApiClient } from '../../api/client'
+    import { getUniRuntime } from '../../platform/uni-runtime'
+    import { usePointerFeedback } from '../../platform/pointer-feedback'
+    import { currentBirthYearMax, isSubmittableBirthYear } from '../../domain/adult-birth-year'
+    import { canonicalGoalOptions, mapUiGoal, prefillSavedTarget, requiredConsentsComplete, selectOnboardingResumeStep, type OnboardingResumeStep } from '../../domain/onboarding-resume'
+    import { useLearnerContentStore } from '../../stores/learner-content'
+    import { useSessionStore } from '../../stores/session'
+    
+    const { experienceStyle, experienceMotion } = useMobileExperience()
+    const store = useLearnerContentStore()
+    const session = useSessionStore()
+    const step = ref<OnboardingResumeStep>('gate')
+    const goal = ref<string | null>(null)
+    const quota = ref(15)
+    const savedGoal = ref<string | null>(null)
+    const savedQuota = ref<number | null>(null)
+    const birthYear = ref('')
+    const ageConfirmed = ref(false)
+    const yearFocused = ref(false)
+    const yearField = ref<{ $el?: HTMLElement } | null>(null)
+    const pageRoot = ref<{ $el?: HTMLElement } | null>(null)
+    const saving = ref(false)
+    const reading = ref(false)
+    const restoring = ref(false)
+    const attempted = ref(false)
+    const actionError = ref<string | null>(null)
+    const lastYearError = ref('')
+    const lastAgeError = ref('')
+    const recordsOpen = ref(false)
+    const recordsError = ref(false)
+    type ConsentRecord = Pick<B8Consent, 'type' | 'purpose' | 'required' | 'document' | 'state' | 'provenance' | 'policyRef' | 'policyVersion' | 'decisionRef'>
+    const consentRecords = ref<ConsentRecord[]>([])
+    let active = false
+    let generation = 0
+    let showRequest = 0
+    const birthYearMax = currentBirthYearMax()
+    const busy = computed(() => saving.value || reading.value || restoring.value || store.onboardingStatus === 'loading')
+    const yearValid = computed(() => isSubmittableBirthYear(birthYear.value.trim() ? Number(birthYear.value) : null, birthYearMax))
+    const yearError = computed(() => attempted.value && !yearValid.value ? interpolate(mobileT('onboarding.yearError'), { max: birthYearMax }) : null)
+    const ageError = computed(() => attempted.value && !ageConfirmed.value ? mobileT('onboarding.ageError') : null)
+    const goalOptions = canonicalGoalOptions([])
+    const quotas = [5, 15, 30, 45]
+    const rank = computed(() => step.value === 'gate' ? 0 : step.value === 'consent' ? 1 : step.value === 'goal' ? 2 : 3)
+    const consentCurrent = computed(() => Boolean(store.onboardingResume && requiredConsentsComplete(store.onboardingResume.consent) && session.adultGate === 'PASSED' && session.isLearningReady))
+    const targetUnreadable = computed(() => store.onboardingResume?.target.readable === false)
+    const primaryLabel = computed(() => mobileT(`onboarding.${saving.value ? step.value === 'goal' ? 'saving' : 'confirming' : step.value === 'gate' ? 'confirm' : step.value === 'goal' ? 'saveStart' : step.value === 'assessment' ? 'start' : 'continue'}`))
+    function minuteLabel(value: number | null): string { return interpolate(mobileT('onboarding.minutes'), { count: value === null ? '' : mobileI18n.formatNumber(value) }) }
+    function reportErrors(): void {
+      if (yearError.value) lastYearError.value = yearError.value
+      if (ageError.value) lastAgeError.value = ageError.value
+    }
+    watch([yearError, ageError], () => { if (!yearFocused.value) reportErrors() })
+    function currentFeedback() {
+      return { year: yearError.value ? lastYearError.value || null : null, lastYear: lastYearError.value, age: ageError.value ? lastAgeError.value || null : null, lastAge: lastAgeError.value, action: actionError.value }
+    }
+    const pointerFeedback = usePointerFeedback({ root: () => pageRoot.value?.$el ?? null, actions: '.onboarding-primary,.onboarding-text,.onboarding-record-toggle', capture: currentFeedback, disabled: () => busy.value, afterRelease: () => { syncNativeYear() } })
+    const feedback = computed(() => pointerFeedback.value ?? currentFeedback())
+    function syncNativeYear(): void {
+      // #ifdef H5
+      const input = yearField.value?.$el?.querySelector<HTMLInputElement>('.uni-input-input')
+      if (!input) return
+      const attrs: Record<string, string | null> = { id: 'mobile-onboarding-year', name: 'birthYear', autocomplete: 'bday-year', inputmode: 'numeric', required: '', 'aria-label': mobileT('onboarding.year'), 'aria-labelledby': 'mobile-onboarding-year-label', 'aria-invalid': feedback.value.year ? 'true' : null, 'aria-describedby': feedback.value.year ? 'mobile-onboarding-year-error' : null }
+      for (const [key, value] of Object.entries(attrs)) { if (value === null) input.removeAttribute(key); else input.setAttribute(key, value) }
+      // #endif
+    }
+    watch([birthYear, yearFocused, feedback, busy, () => mobileT('onboarding.year')], async () => { await nextTick(); syncNativeYear() }, { flush: 'post' })
+    onMounted(syncNativeYear)
+    watch(step, async () => {
+      await nextTick()
+      if (!active) return
+      // #ifdef H5
+      const title = pageRoot.value?.$el?.querySelector<HTMLElement>('#mobile-onboarding-title')
+      title?.focus({ preventScroll: true })
+      title?.scrollIntoView({ block: 'start' })
+      // #endif
+      uni.setNavigationBarTitle({ title: mobileT(`onboarding.${step.value}Title`) })
+    })
+    function current(request: number, revision: number): boolean { return active && request === generation && revision === session.identityRevision && session.isAuthenticated }
+    function clearDrafts(): void {
+      birthYear.value = ''; ageConfirmed.value = false; attempted.value = false; yearFocused.value = false
+      lastYearError.value = ''; lastAgeError.value = ''; consentRecords.value = []; recordsOpen.value = false; recordsError.value = false
+      goal.value = savedGoal.value; quota.value = savedQuota.value ?? 15
+    }
+    function invalidate(): void { generation++; saving.value = false; reading.value = false; clearDrafts() }
+    watch(() => session.identityRevision, () => {
+      invalidate(); savedGoal.value = null; savedQuota.value = null; goal.value = null; quota.value = 15; step.value = 'gate'; actionError.value = null
+      if (active && !restoring.value && session.isAuthenticated) void loadResume()
+      else if (active && !restoring.value) {
+        const request = generation
+        void nextTick().then(async () => {
+          if (!active || request !== generation || session.isAuthenticated) return
+          try { await navigate('/pages/login/login?returnTo=%2Fpages%2Fonboarding%2Fonboarding', true) }
+          catch { if (active && request === generation) actionError.value = mobileT('onboarding.navigationFailed') }
+        })
+      }
+    }, { flush: 'sync' })
+    function object(value: unknown): Record<string, unknown> | null { return value !== null && typeof value === 'object' && !Array.isArray(value) ? value as Record<string, unknown> : null }
+    function parseRecords(raw: unknown): ConsentRecord[] {
+      const envelope = object(raw), data = object(envelope?.data) ?? envelope
+      if (!data || !Array.isArray(data.items) || data.hasMore === true || data.nextCursor || (typeof data.total === 'number' && data.total > data.items.length)) throw new Error('Incomplete consent records')
+      const types = ['TERMS', 'PRIVACY', 'ADULT_LEARNING', 'PRODUCT_ANALYTICS', 'VOICE_RECORDING'] as const
+      const purposes = ['ACCOUNT_TERMS', 'PRIVACY_NOTICE', 'ADULT_LEARNING_ELIGIBILITY', 'PRODUCT_ANALYTICS', 'ADULT_VOICE_RECORDING_REMOTE_STORAGE_AND_REPLAY'] as const
+      return data.items.map((rawItem: unknown) => {
+        const item = object(rawItem), doc = object(item?.document), provenance = object(item?.provenance)
+        const index = types.findIndex(type => type === item?.type)
+        if (!item || index < 0 || item.purpose !== purposes[index] || typeof item.required !== 'boolean' || !doc || !provenance || !['GRANTED', 'WITHDRAWN'].includes(String(item.state)) || provenance.authority !== 'IAM_SERVER_RECORDED_CONSENT' || provenance.documentSource !== 'PUBLISHED_DOCUMENT_VERSION_AND_DIGEST' || provenance.policySource !== 'IAM_ACTIVE_POLICY_CONTROL_PLANE') throw new Error('Unreadable consent record')
+        for (const value of [doc.version, doc.digest, doc.publishedAt, provenance.recordedAt, item.policyRef, item.policyVersion, item.decisionRef]) if (typeof value !== 'string' || !value.trim()) throw new Error('Incomplete consent record')
+        return { type: types[index], purpose: purposes[index], required: item.required, state: item.state as ConsentRecord['state'], document: { version: doc.version as string, digest: doc.digest as string, publishedAt: doc.publishedAt as string }, provenance: { authority: 'IAM_SERVER_RECORDED_CONSENT', documentSource: 'PUBLISHED_DOCUMENT_VERSION_AND_DIGEST', policySource: 'IAM_ACTIVE_POLICY_CONTROL_PLANE', recordedAt: provenance.recordedAt as string }, policyRef: item.policyRef as string, policyVersion: item.policyVersion as string, decisionRef: item.decisionRef as string }
+      })
+    }
+    async function readRecords(request: number, revision: number): Promise<void> {
+      consentRecords.value = []; recordsError.value = false
+      try {
+        const raw = await mobileApiClient.request<unknown>('/iam/consents')
+        if (current(request, revision) && step.value === 'consent') consentRecords.value = parseRecords(raw)
+      } catch { if (current(request, revision) && step.value === 'consent') recordsError.value = true }
+    }
+    function applySavedTarget(facts: NonNullable<typeof store.onboardingResume>): void {
+      const filled = prefillSavedTarget(facts.target)
+      savedGoal.value = filled.goal; savedQuota.value = filled.quota
+      goal.value = filled.goal; quota.value = filled.quota ?? 15
+    }
+    async function navigate(url: string, login = false): Promise<void> {
+      const runtime = getUniRuntime()
+      if (login && runtime.reLaunch) await runtime.reLaunch({ url })
+      else await runtime.navigateTo({ url })
+    }
+    async function loadResume(): Promise<void> {
+      if (!active || saving.value || reading.value) return
+      if (!session.isAuthenticated) {
+        try { await navigate('/pages/login/login?returnTo=%2Fpages%2Fonboarding%2Fonboarding', true) }
+        catch { if (active) actionError.value = mobileT('onboarding.navigationFailed') }
+        return
+      }
+      const request = ++generation, revision = session.identityRevision
+      reading.value = true; actionError.value = null; clearDrafts()
+      try {
+        const facts = await store.loadOnboardingResume(true)
+        if (!current(request, revision)) return
+        if (session.adultGate === 'REJECTED' || selectOnboardingResumeStep(facts) === 'rejected') { await navigate('/pages/forbidden/forbidden'); return }
+        step.value = selectOnboardingResumeStep(facts); applySavedTarget(facts)
+        if (step.value === 'consent') await readRecords(request, revision)
+      } catch { if (current(request, revision)) { actionError.value = mobileT('onboarding.readFailed'); step.value = session.adultGate === 'PASSED' ? 'consent' : 'gate' } }
+      finally { if (active && request === generation) reading.value = false }
+    }
+    onHide(() => { active = false; showRequest++; invalidate() })
+    onShow(async () => {
+      active = true; const request = ++showRequest; restoring.value = true
+      try {
+        await session.restore()
+        if (!active || request !== showRequest) return
+        if (!session.isAuthenticated) { await navigate('/pages/login/login?returnTo=%2Fpages%2Fonboarding%2Fonboarding', true); return }
+        await loadResume()
+      } catch { if (active && request === showRequest) actionError.value = mobileT('onboarding.readFailed') }
+      finally { if (active && request === showRequest) restoring.value = false }
+    })
+    function syncYear(value: unknown): void { if (!busy.value && typeof value === 'string') birthYear.value = value }
+    function blurYear(event: { detail?: { value?: unknown } }): void { syncYear(event.detail?.value); yearFocused.value = false; reportErrors() }
+    function changeAge(event: { detail?: { value?: unknown } }): void {
+      if (busy.value) return
+      const values = event.detail?.value
+      if (Array.isArray(values)) ageConfirmed.value = values.includes('adult-confirmed')
+    }
+    function activateAge(event: KeyboardEvent): void {
+      if (busy.value || event.repeat) return
+      // Keep the actual uni checkbox/change path; keyboard activation clicks it once.
+      // #ifdef H5
+      if (event.currentTarget instanceof HTMLElement) event.currentTarget.click()
+      // #endif
+    }
+    async function focusRequiredField(kind: 'year' | 'age'): Promise<void> {
+      const revision = session.identityRevision
+      yearFocused.value = false
+      await nextTick()
+      if (!active || busy.value || revision !== session.identityRevision) return
+      if (kind === 'year') yearFocused.value = true
+      else {
+        // #ifdef H5
+        pageRoot.value?.$el?.querySelector<HTMLElement>('#mobile-onboarding-age')?.focus()
+        // #endif
+      }
+    }
+    function chooseGoal(value: string): void { if (!busy.value && step.value === 'goal') goal.value = value }
+    function chooseQuota(value: number): void { if (!busy.value && step.value === 'goal' && quotas.includes(value)) quota.value = value }
+    function adjustGoal(): void { if (!busy.value) { goal.value = savedGoal.value; quota.value = savedQuota.value ?? 15; actionError.value = null; step.value = 'goal' } }
+    async function next(event?: { detail?: { value?: { birthYear?: unknown } } }): Promise<void> {
+      if (busy.value) return
+      syncYear(event?.detail?.value?.birthYear)
+      attempted.value = true; reportErrors(); actionError.value = null
+      if (step.value === 'gate' && (!yearValid.value || !ageConfirmed.value)) {
+        await focusRequiredField(!yearValid.value ? 'year' : 'age')
+        return
+      }
+      if (step.value === 'goal' && targetUnreadable.value) { actionError.value = mobileT('onboarding.targetUnreadable'); return }
+      if (step.value === 'goal' && (!mapUiGoal(goal.value) || !quotas.includes(quota.value))) { actionError.value = mobileT('onboarding.chooseGoal'); return }
+      const request = ++generation, revision = session.identityRevision, action = step.value
+      saving.value = true
+      try {
+        if (action === 'gate') {
+          const passed = await session.confirmAdultGate(Number(birthYear.value))
+          if (!current(request, revision)) return
+          if (session.adultGate === 'REJECTED') { await navigate('/pages/forbidden/forbidden'); return }
+          if (!passed || session.adultGate !== 'PASSED') { actionError.value = mobileT('onboarding.confirmFailed'); return }
+          birthYear.value = ''; ageConfirmed.value = false; attempted.value = false; lastYearError.value = ''; lastAgeError.value = ''
+        } else if (action === 'goal') {
+          const saved = await store.saveTarget(mapUiGoal(goal.value)!, quota.value)
+          if (!current(request, revision)) return
+          if (!saved) { actionError.value = mobileT('onboarding.saveFailed'); return }
+        }
+        // The current server summary permits continuing existing consent; it is
+        // never used as a catalog/version for signing unrecorded documents.
+        const facts = await store.loadOnboardingResume(true)
+        if (!current(request, revision)) return
+        const resolved = selectOnboardingResumeStep(facts)
+        if (resolved === 'rejected') { await navigate('/pages/forbidden/forbidden'); return }
+        if ((action === 'goal' || action === 'assessment') && resolved === 'assessment' && session.isLearningReady) {
+          applySavedTarget(facts); await navigate('/pages/assessment/assessment'); return
+        }
+        applySavedTarget(facts); step.value = resolved
+        if (step.value === 'consent') await readRecords(request, revision)
+        if (action === 'goal' && resolved === 'goal') actionError.value = mobileT('onboarding.savedReadFailed')
+      } catch { if (current(request, revision)) actionError.value = mobileT(action === 'goal' ? 'onboarding.saveFailed' : 'onboarding.confirmFailed') }
+      finally { if (active && request === generation) saving.value = false }
+    }
+    async function accountSettings(): Promise<void> { if (!busy.value) { try { await navigate('/pages/settings/settings') } catch { actionError.value = mobileT('onboarding.navigationFailed') } } }
+    async function cancel(): Promise<void> {
+      if (busy.value) return
+      const request = ++generation; saving.value = true
+      try { await session.logout(); if (active && request === generation) await navigate('/pages/login/login', true) }
+      catch { if (active && request === generation) actionError.value = mobileT('onboarding.exitFailed') }
+      finally { if (active && request === generation) saving.value = false }
+    }
+    </script>
+    
+    <template>
+      <view ref="pageRoot" class="yx-page yx-onboarding" :aria-busy="busy" :style="experienceStyle" :data-motion="experienceMotion">
+        <view class="onboarding-topline"><view class="onboarding-brand"><AppIcon name="brand" :size="25" /><text>{{ mobileT('brand') }}</text></view><text class="onboarding-note">{{ mobileT('onboarding.adultNote') }}</text></view>
+        <view class="onboarding-content" :class="{ 'is-wide': step === 'goal' || step === 'consent' }">
+          <view class="onboarding-progress" :aria-label="mobileT('onboarding.progress')">
+            <view v-for="(name, index) in ['identity', 'consents', 'target']" :key="name" class="onboarding-progress-item" :class="{ 'is-current': rank === index, 'is-done': rank > index }" :aria-current="rank === index ? 'step' : undefined"><text class="onboarding-step-number">{{ index + 1 }}</text><text>{{ mobileT(`onboarding.${name}`) }}</text><text class="onboarding-step-state">{{ mobileT(rank > index ? 'onboarding.done' : rank === index ? 'onboarding.current' : 'onboarding.pending') }}</text></view>
+          </view>
+          <text id="mobile-onboarding-title" class="onboarding-title" role="heading" aria-level="1" tabindex="-1">{{ mobileT(`onboarding.${step}Title`) }}</text>
+          <text class="onboarding-description">{{ mobileT(`onboarding.${step}Description`) }}</text>
+          <text v-if="reading || restoring" class="onboarding-status" role="status">{{ mobileT('onboarding.reading') }}</text>
+          <form v-if="step === 'gate'" class="onboarding-body" @submit="next">
+            <view class="onboarding-field"><label id="mobile-onboarding-year-label" for="mobile-onboarding-year-host" class="onboarding-label" @click="!busy && (yearFocused = true)">{{ mobileT('onboarding.year') }}</label><input id="mobile-onboarding-year-host" ref="yearField" v-model="birthYear" name="birthYear" :maxlength="-1" class="onboarding-input" :class="{ 'is-invalid': feedback.year }" type="number" inputmode="numeric" :focus="yearFocused" :disabled="busy" confirm-type="go" :placeholder="mobileT('onboarding.yearPlaceholder')" @focus="yearFocused = true" @input="syncYear($event.detail?.value)" @blur="blurYear" @confirm="syncYear($event.detail?.value); next()" /><text v-if="feedback.lastYear" :id="feedback.year ? 'mobile-onboarding-year-error' : undefined" class="onboarding-error" :class="{ 'is-clear': !feedback.year }" :role="feedback.year ? 'alert' : undefined" :aria-hidden="!feedback.year">{{ feedback.year || feedback.lastYear }}</text></view>
+            <checkbox-group @change="changeAge"><label class="onboarding-check-row" for="mobile-onboarding-age"><checkbox id="mobile-onboarding-age" value="adult-confirmed" role="checkbox" tabindex="0" aria-required="true" aria-labelledby="mobile-onboarding-age-label" :aria-checked="ageConfirmed" :aria-disabled="busy" :aria-invalid="feedback.age ? true : undefined" :aria-describedby="feedback.age ? 'mobile-onboarding-age-error' : undefined" :checked="ageConfirmed" :disabled="busy" :color="'var(--v2-brand)'" @keydown.enter.stop.prevent="activateAge" @keydown.space.stop.prevent="activateAge" /><text id="mobile-onboarding-age-label">{{ mobileT('onboarding.ageConfirm') }}</text></label></checkbox-group>
+            <text v-if="feedback.lastAge" :id="feedback.age ? 'mobile-onboarding-age-error' : undefined" class="onboarding-error" :class="{ 'is-clear': !feedback.age }" :role="feedback.age ? 'alert' : undefined" :aria-hidden="!feedback.age">{{ feedback.age || feedback.lastAge }}</text>
+            <text v-if="feedback.action" class="onboarding-error" role="alert">{{ feedback.action }}</text>
+            <button class="onboarding-primary" form-type="submit" role="button" tabindex="0" :disabled="busy || !yearValid || !ageConfirmed" :aria-disabled="busy || !yearValid || !ageConfirmed" @keydown.enter.stop.prevent @keyup.enter.stop.prevent="next()" @keydown.space.stop.prevent @keyup.space.stop.prevent="next()">{{ primaryLabel }}</button>
+          </form>
+          <view v-else-if="step === 'consent'" class="onboarding-body">
+            <view v-for="record in consentRecords" :key="record.type" class="onboarding-record"><view class="onboarding-record-title"><text>{{ mobileT(`onboarding.purposes.${record.type}`) }}</text><text class="onboarding-help">{{ mobileT(record.required ? 'onboarding.required' : 'onboarding.optional') }}</text></view><text class="onboarding-help">{{ mobileT(record.state === 'GRANTED' ? 'onboarding.recorded' : 'onboarding.withdrawn') }}</text><text class="onboarding-help">{{ mobileT('onboarding.recordVersion') }} {{ record.document.version }}</text><view v-if="recordsOpen" class="onboarding-provenance"><text>{{ mobileT('onboarding.source') }}</text><text>{{ mobileT('onboarding.documentTime') }} {{ record.document.publishedAt }}</text><text>{{ mobileT('onboarding.recordTime') }} {{ record.provenance.recordedAt }}</text><text>{{ mobileT('onboarding.digest') }} {{ record.document.digest }}</text><text>{{ mobileT('onboarding.policy') }} {{ record.policyRef }} / {{ record.policyVersion }}</text><text>{{ mobileT('onboarding.decision') }} {{ record.decisionRef }}</text></view></view>
+            <button v-if="consentRecords.length" class="onboarding-record-toggle onboarding-text" role="button" tabindex="0" :disabled="busy" :aria-disabled="busy" :aria-expanded="recordsOpen" @click="!busy && (recordsOpen = !recordsOpen)">{{ mobileT(recordsOpen ? 'onboarding.hideSource' : 'onboarding.showSource') }}</button>
+            <text v-if="recordsError" class="onboarding-error" role="alert">{{ mobileT('onboarding.recordsFailed') }}</text>
+            <text v-if="!consentCurrent" class="onboarding-blocked" role="status">{{ mobileT('onboarding.consentBlocked') }}</text><text v-else class="onboarding-help">{{ mobileT('onboarding.currentConsent') }}</text>
+            <text v-if="feedback.action" class="onboarding-error" role="alert">{{ feedback.action }}</text>
+            <button v-if="consentCurrent" class="onboarding-primary" role="button" tabindex="0" :disabled="busy" :aria-disabled="busy" @click="next" @keydown.enter.stop.prevent @keyup.enter.stop.prevent="next()" @keydown.space.stop.prevent @keyup.space.stop.prevent="next()">{{ primaryLabel }}</button>
+            <button class="onboarding-text" role="button" tabindex="0" :disabled="busy" :aria-disabled="busy" @click="loadResume">{{ mobileT('onboarding.reload') }}</button>
+          </view>
+          <view v-else-if="step === 'goal'" class="onboarding-body">
+            <text v-if="targetUnreadable" class="onboarding-error" role="alert">{{ mobileT('onboarding.targetUnreadable') }}</text>
+            <view class="onboarding-field"><text class="onboarding-label">{{ mobileT('onboarding.target') }}</text><view class="onboarding-choices"><button v-for="item in goalOptions" :key="item.value" class="onboarding-choice" :class="{ 'is-selected': goal === item.value }" role="button" tabindex="0" :disabled="busy" :aria-disabled="busy" :aria-pressed="goal === item.value" :data-goal-code="item.value" @click="chooseGoal(item.value)"><view class="onboarding-choice-title"><text>{{ mobileT(`onboarding.goals.${item.value}.label`) }}</text><text v-if="goal === item.value" class="onboarding-help">{{ mobileT('onboarding.selected') }}</text></view><text class="onboarding-help">{{ mobileT(`onboarding.goals.${item.value}.description`) }}</text></button></view></view>
+            <view class="onboarding-field"><text class="onboarding-label">{{ mobileT('onboarding.dailyTime') }}</text><view class="onboarding-quotas"><button v-for="minutes in quotas" :key="minutes" class="onboarding-quota" :class="{ 'is-selected': quota === minutes }" role="button" tabindex="0" :disabled="busy" :aria-disabled="busy" :aria-pressed="quota === minutes" @click="chooseQuota(minutes)">{{ minuteLabel(minutes) }}<text v-if="quota === minutes" class="onboarding-help">{{ mobileT('onboarding.selected') }}</text></button></view></view>
+            <text v-if="feedback.action" class="onboarding-error" role="alert">{{ feedback.action }}</text><button class="onboarding-primary" role="button" tabindex="0" :disabled="busy || !goal || targetUnreadable" :aria-disabled="busy || !goal || targetUnreadable" @click="next" @keydown.enter.stop.prevent @keyup.enter.stop.prevent="next()" @keydown.space.stop.prevent @keyup.space.stop.prevent="next()">{{ primaryLabel }}</button><button class="onboarding-text" role="button" tabindex="0" :disabled="busy" :aria-disabled="busy" @click="loadResume">{{ mobileT('onboarding.reload') }}</button>
+          </view>
+          <view v-else-if="step === 'assessment'" class="onboarding-body"><view class="onboarding-summary"><view><text class="onboarding-help">{{ mobileT('onboarding.savedTarget') }}</text><text class="onboarding-label">{{ mobileT(`onboarding.goals.${savedGoal}.label`) }}</text></view><view><text class="onboarding-help">{{ mobileT('onboarding.dailyTime') }}</text><text class="onboarding-label">{{ minuteLabel(savedQuota) }}</text></view></view><text v-if="feedback.action" class="onboarding-error" role="alert">{{ feedback.action }}</text><button class="onboarding-primary" role="button" tabindex="0" :disabled="busy" :aria-disabled="busy" @click="next" @keydown.enter.stop.prevent @keyup.enter.stop.prevent="next()" @keydown.space.stop.prevent @keyup.space.stop.prevent="next()">{{ primaryLabel }}</button><button class="onboarding-text" role="button" tabindex="0" :disabled="busy" :aria-disabled="busy" @click="adjustGoal">{{ mobileT('onboarding.adjustGoal') }}</button></view>
+          <view class="onboarding-exits"><button class="onboarding-text" role="button" tabindex="0" :disabled="busy" :aria-disabled="busy" @click="accountSettings">{{ mobileT('onboarding.accountSettings') }}</button><button class="onboarding-text" role="button" tabindex="0" :disabled="busy" :aria-disabled="busy" @click="cancel">{{ mobileT('onboarding.logout') }}</button></view>
+        </view>
+      </view>
+    </template>
+    
+    <style scoped lang="scss">
+    .yx-page.yx-onboarding { max-width: none; min-height: 100vh; min-height: 100dvh; padding: calc(20px + env(safe-area-inset-top)) 24px calc(40px + env(safe-area-inset-bottom)); background: var(--v2-bg); color: var(--v2-ink); font-family: var(--v2-font); line-height: 1.6; }
+    .onboarding-topline { display: flex; flex-direction: column; align-items: flex-start; max-width: 1080px; margin: 0 auto 40px; }
+    .onboarding-brand { display: inline-flex; min-height: 44px; align-items: center; gap: 10px; color: var(--v2-ink); font-size: 20px; font-weight: 650; }
+    .onboarding-brand :deep(.app-icon) { color: var(--v2-brand); }
+    .onboarding-note, .onboarding-help { color: var(--v2-mut); font-size: 13px; line-height: 1.6; overflow-wrap: anywhere; }
+    .onboarding-content { max-width: 420px; width: 100%; margin: 0 auto; }
+    .onboarding-content.is-wide { max-width: 560px; }
+    .onboarding-progress { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-bottom: 40px; }
+    .onboarding-progress-item { display: flex; min-width: 0; flex-direction: column; align-items: center; gap: 6px; color: var(--v2-mut); text-align: center; font-size: 13px; }
+    .onboarding-step-number { display: flex; width: 28px; height: 28px; align-items: center; justify-content: center; border: 1px solid var(--v2-line); border-radius: 50%; font-size: 14px; background: var(--v2-card); }
+    .onboarding-progress-item.is-current, .onboarding-progress-item.is-done { color: var(--v2-brand); }
+    .onboarding-progress-item.is-current .onboarding-step-number, .onboarding-progress-item.is-done .onboarding-step-number { background: var(--v2-brand); color: var(--v2-inverse); border-color: var(--v2-brand); }
+    .onboarding-step-state { font-size: 13px; }
+    .onboarding-title { display: block; margin-bottom: 8px; font-size: 28px; font-weight: 650; line-height: 1.4; letter-spacing: 0; }
+    .onboarding-description { display: block; color: var(--v2-mut); font-size: 14px; line-height: 1.75; }
+    .onboarding-body { display: grid; gap: 24px; margin-top: 32px; }
+    .onboarding-field { display: grid; gap: 8px; min-width: 0; }
+    .onboarding-label { display: block; font-size: 14px; font-weight: 500; line-height: 1.6; }
+    .yx-onboarding .onboarding-input { width: 100%; min-height: 48px; height: calc(1.5em + 24px); padding: 0 14px; border: 1px solid var(--v2-line); border-radius: 10px; background: var(--v2-card); color: var(--v2-ink); font-size: 16px; line-height: 1.5; }
+    .onboarding-input :deep(.uni-input-input), .onboarding-input :deep(.uni-input-placeholder) { font: inherit; color: inherit; }
+    .onboarding-input :deep(.uni-input-placeholder) { color: var(--v2-mut); }
+    .onboarding-input.is-invalid { border-color: var(--v2-bad); }
+    .onboarding-input:focus-within { outline: 2px solid var(--v2-brand); outline-offset: 2px; }
+    .onboarding-check-row { display: flex; min-height: 44px; align-items: center; gap: 12px; padding: 8px 0; font-size: 14px; cursor: pointer; }
+    .onboarding-check-row checkbox { display: flex; flex: none; width: 44px; min-width: 44px; height: 44px; align-items: center; justify-content: center; }
+    .onboarding-check-row checkbox:focus-visible { outline: 2px solid var(--v2-brand); outline-offset: 2px; border-radius: 4px; }
+    .yx-onboarding .onboarding-primary { display: flex; width: 100%; min-height: 48px; padding: 12px 20px; margin: 0; align-items: center; justify-content: center; border: 1px solid transparent; border-radius: 10px; background: var(--v2-brand); color: var(--v2-inverse); font-size: 16px; font-weight: 600; line-height: 1.5; box-shadow: none; }
+    .yx-onboarding .onboarding-primary:active:not([disabled]) { background: var(--v2-brand2); transform: none; }
+    .yx-onboarding .onboarding-text { display: inline-flex; min-height: 44px; min-width: 44px; padding: 8px 0; margin: 0; align-items: center; justify-content: center; background: transparent; border: 0; border-radius: 0; color: var(--v2-brand); font-size: 14px; font-weight: 500; line-height: 1.6; }
+    .onboarding-choices { display: grid; gap: 12px; }
+    .yx-onboarding .onboarding-choice { display: grid; gap: 6px; width: 100%; margin: 0; padding: 14px 16px; min-height: 44px; border: 1px solid var(--v2-line); border-radius: 10px; background: var(--v2-card); color: var(--v2-ink); text-align: left; font-size: 16px; line-height: 1.5; }
+    .onboarding-choice-title, .onboarding-record-title { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+    .onboarding-quotas { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    .yx-onboarding .onboarding-quota { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 48px; margin: 0; padding: 10px; border: 1px solid var(--v2-line); border-radius: 10px; background: var(--v2-card); color: var(--v2-ink); font-size: 16px; line-height: 1.5; }
+    .yx-onboarding .is-selected { border-color: var(--v2-brand); background: var(--v2-soft); }
+    .onboarding-record { display: grid; gap: 6px; padding-bottom: 16px; border-bottom: 1px solid var(--v2-line); font-size: 14px; }
+    .onboarding-provenance { display: grid; gap: 8px; font-size: 13px; color: var(--v2-mut); overflow-wrap: anywhere; }
+    .onboarding-blocked, .onboarding-status { display: block; color: var(--v2-mut); font-size: 14px; line-height: 1.75; overflow-wrap: anywhere; }
+    .onboarding-status { margin-top: 16px; }
+    .onboarding-error { display: block; font-size: 14px; line-height: 1.6; color: var(--v2-bad); overflow-wrap: anywhere; }
+    .onboarding-error.is-clear { visibility: hidden; }
+    .onboarding-summary { display: grid; gap: 20px; }
+    .onboarding-summary > view { display: grid; gap: 4px; }
+    .onboarding-exits { display: grid; gap: 4px; margin-top: 28px; padding-top: 16px; border-top: 1px solid var(--v2-line); }
+    .yx-onboarding button[disabled] { opacity: .6; cursor: default; }
+    .yx-onboarding button:focus-visible { outline: 2px solid var(--v2-brand); outline-offset: 3px; }
+    @media (min-width: 521px) { .yx-page.yx-onboarding { padding: calc(32px + env(safe-area-inset-top)) 32px calc(64px + env(safe-area-inset-bottom)); } .onboarding-topline { flex-direction: row; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 64px; } .onboarding-quotas { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+    @media (prefers-reduced-motion: reduce) { .yx-onboarding * { transition: none; animation: none; } }
+    </style>
+    
+  operator: 'match'
+  stack: |-
+    TestContext.<anonymous> (file:///C:/Users/Administrator/Desktop/my/cloudstudy/apps/mobile/tests/adult-consent-copy.test.mjs:63:44)
+    Test.runInAsyncScope (node:async_hooks:206:9)
+    Test.run (node:internal/test_runner/test:796:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:526:18)
+    Test.postRun (node:internal/test_runner/test:889:19)
+    Test.run (node:internal/test_runner/test:835:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:526:7)
+  ...
+# Subtest: mobile resume step order stays gate, consent, goal, then assessment
+ok 3 - mobile resume step order stays gate, consent, goal, then assessment
+  ---
+  duration_ms: 0.1642
+  ...
+1..3
+# tests 3
+# suites 0
+# pass 2
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 456.9417

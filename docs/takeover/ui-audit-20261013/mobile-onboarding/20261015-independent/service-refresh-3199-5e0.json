@@ -1,0 +1,39 @@
+{
+  "at": "2026-10-15T00:08:32.4051936Z",
+  "scope": "SERVICE_REFRESH_AND_FRESH_CONSENT_COPY_ONLY",
+  "authorConfirmedNoInflight": true,
+  "oldSession": 7489,
+  "oldPid": 27892,
+  "oldServiceExited": true,
+  "unknownOrSharedStopped": false,
+  "newSession": 87595,
+  "newPid": 24472,
+  "newCreationDate": "2026-10-15 08:04:45",
+  "host": "127.0.0.1",
+  "port": 18183,
+  "strictPort": true,
+  "force": true,
+  "pageAndCopyBefore": {
+    "apps/mobile/src/pages/onboarding/onboarding.vue": "3199fa1deb22814b9a941db2334865a703b443a2c6d4bd35430929dacaf84fff",
+    "packages/i18n/src/mobile-experience.ts": "5e0e045c0118226ef8e2f80b1fa1db072bdfdbd2d171c13a904075fe3c4f8743"
+  },
+  "pageAndCopyAfter": {
+    "apps/mobile/src/pages/onboarding/onboarding.vue": "3199fa1deb22814b9a941db2334865a703b443a2c6d4bd35430929dacaf84fff",
+    "packages/i18n/src/mobile-experience.ts": "5e0e045c0118226ef8e2f80b1fa1db072bdfdbd2d171c13a904075fe3c4f8743"
+  },
+  "freshResult": "FRESH_COPY_PASS",
+  "freshLanguages": [
+    "zh-CN",
+    "en-US"
+  ],
+  "pageErrors": 0,
+  "finalUiSignoff": "NOT_RUN_PENDING_FINAL_FREEZE",
+  "controlBoundaryContrastMinimum": "3:1; pending independent verification after freeze",
+  "originalDarkContrastFailurePreserved": "1.67 author FAIL remains original",
+  "usageAtStart": {
+    "secondaryUsedPercent": 92,
+    "primaryUsedPercent": 73,
+    "ordinaryUsageAllowed": true,
+    "resetCreditUsed": false
+  }
+}

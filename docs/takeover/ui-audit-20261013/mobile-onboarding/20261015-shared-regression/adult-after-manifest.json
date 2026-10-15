@@ -1,0 +1,49 @@
+{
+  "at": "2026-10-15T00:01:41.7401389Z",
+  "scope": "ADULT_BIRTH_YEAR_EXISTING_TEST_ONLY",
+  "sourceHashes": [
+    {
+      "Path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\apps\\mobile\\src\\pages\\onboarding\\onboarding.vue",
+      "Hash": "3199FA1DEB22814B9A941DB2334865A703B443A2C6D4BD35430929DACAF84FFF"
+    },
+    {
+      "Path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\apps\\mobile\\src\\domain\\adult-birth-year.ts",
+      "Hash": "474009D225B79A92B1522F54D7632E563DDDE814C5F1B95E0CFC1D790EFCF237"
+    },
+    {
+      "Path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\apps\\mobile\\src\\domain\\onboarding-resume.ts",
+      "Hash": "DA6DA761492B91DA0E5FC8058E25CE89D1624DF8BA65379645C9D3427D5F5743"
+    },
+    {
+      "Path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\apps\\mobile\\src\\platform\\pointer-feedback.ts",
+      "Hash": "6464F4C1712B5A0F2FD4AB01D451D5BB6FFAA13BDE486826A424511059EF6425"
+    },
+    {
+      "Path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\apps\\mobile\\tests\\adult-birth-year-submit.test.mjs",
+      "Hash": "FB78CA464BB43A0AA08B9ED772B361762726AB39FB8BF7D69CF12A0C74400609"
+    }
+  ],
+  "applicationSourceChangedDuringReview": [
+    "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\apps\\mobile\\src\\pages\\onboarding\\onboarding.vue"
+  ],
+  "firstRun": {
+    "exitCode": 1,
+    "skipped": 0,
+    "pass": 0,
+    "tests": 1,
+    "fail": 1
+  },
+  "finalRun": {
+    "exitCode": 0,
+    "skipped": 0,
+    "pass": 2,
+    "tests": 2,
+    "fail": 0
+  },
+  "quota": {
+    "primaryUsedPercent": 68,
+    "resetCreditsUsed": 0,
+    "ordinaryUsageAllowed": true,
+    "weeklyUsedPercent": 91
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "savedAt": "2026-10-15T08:11:13.3448901+08:00",
+  "status": "IN_PROGRESS_QUOTA_STOP_NO_NEW_WORK",
+  "quota": {
+    "secondary": 94,
+    "resetsAt": 1792038754,
+    "primary": 90
+  },
+  "sourceHashes": {
+    "apps/mobile/src/pages/onboarding/onboarding.vue": "f56f77954e12a9ea2fabb1717b4ad2e53cbf382f26481824c95bcdbdea4ebf97",
+    "packages/i18n/src/mobile-experience.ts": "5e0e045c0118226ef8e2f80b1fa1db072bdfdbd2d171c13a904075fe3c4f8743",
+    "apps/mobile/tests/ui-onboarding.e2e.cjs": "8cdc9714ab8786733750770c0097f447ca9e021fdef1c46f674dc04f6e4c7a92",
+    "apps/mobile/src/auth/gateway-auth.ts": "746bb9d83d241162bce9d9cd701d2f6662d11a132977533e3ba2a11e428c3277",
+    "apps/mobile/src/stores/session.ts": "ba479dfebf777599ed40b05218549afc23712f1077720b748f973ec3d3fadc99",
+    "apps/mobile/src/api/learner-content.ts": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6",
+    "apps/mobile/src/domain/onboarding-resume.ts": "ea6e26682e69a9f1c3d8fd47d284aa55d96e39d646e27e5d41d0f556ba902e26",
+    "apps/mobile/src/stores/learner-content.ts": "95cc92496db996242d91baed3301d76f985e4e3b9134e1e50c2b9ab8d41e4c61",
+    "apps/mobile/src/platform/pointer-feedback.ts": "6464f4c1712b5a0f2fd4ab01d451d5bb6ffaa13bde486826a424511059ef6425"
+  },
+  "latestFixturePass": [
+    "archive-0818/recovery-run5-results.json",
+    "archive-0818/race-run6-results.json"
+  ],
+  "unverified": [
+    "final typecheck and H5 build after consentCurrent guard",
+    "final normal four-state locale/theme/width matrix",
+    "dark input and unselected choice boundary contrast after v2-mut",
+    "200 percent short-screen group",
+    "old-center pointer 0/160ms drag/nativecancel group",
+    "onShow restoration-phase refresh401 late callback",
+    "independent frozen-source review",
+    "native and real backend acceptance"
+  ],
+  "evidenceArchive": "archive-0818/README.md",
+  "copyManifest": "archive-0818/copy-manifest.json"
+}

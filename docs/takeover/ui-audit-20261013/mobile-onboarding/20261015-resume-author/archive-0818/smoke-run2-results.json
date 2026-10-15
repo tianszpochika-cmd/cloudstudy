@@ -1,0 +1,307 @@
+{
+  "at": "2026-10-14T23:37:25.285Z",
+  "scope": "MB004_FORMAL_H5_SYNTHETIC_UI_ONLY",
+  "group": "smoke",
+  "browserPlugin": "Browser plugin not available; Playwright Chromium",
+  "sourceHashes": {
+    "apps/mobile/src/pages/onboarding/onboarding.vue": "3804fc9a10d682c98ea08f25b4b1dc06f002d6bc15fb9a621158cda9bd92d849",
+    "packages/i18n/src/mobile-experience.ts": "5de636433b73ba72a2549c3e6331da9f8ccec48226c71e56d071396cc0a69eeb",
+    "apps/mobile/src/api/learner-content.ts": "551bef665ecc7564ce5a0e88a63e34442a07dc5b90bfc00b07eef41353914ca0",
+    "apps/mobile/src/stores/session.ts": "22efb5caa219918b0d7a5a1d62af2c3072e7701d92dd56935a9b14f974b8641d",
+    "apps/mobile/src/auth/gateway-auth.ts": "b17373e792c34287ac8e3e78db97e6fb71b7f4599df88a9a8a2bac1e8005d711",
+    "apps/mobile/src/platform/pointer-feedback.ts": "6464f4c1712b5a0f2fd4ab01d451d5bb6ffaa13bde486826a424511059ef6425",
+    "apps/mobile/tests/ui-onboarding.e2e.cjs": "838052b08a59dd65774b45a4ecff265129772793377d450865dfb7ae3d58c57e"
+  },
+  "checks": [
+    {
+      "name": "smoke-gate",
+      "facts": {
+        "url": "#/pages/onboarding/onboarding",
+        "title": "确认成人身份",
+        "titleFont": "28px",
+        "titleWeight": "650",
+        "descriptionFont": "14px",
+        "brandIcon": 25,
+        "overflow": false,
+        "bodyWidth": 342,
+        "inputFont": "16px",
+        "idleErrors": 0,
+        "overlay": 0,
+        "rawKeys": false,
+        "targets": [
+          {
+            "width": 342,
+            "height": 60
+          },
+          {
+            "width": 342,
+            "height": 50
+          },
+          {
+            "width": 342,
+            "height": 44
+          },
+          {
+            "width": 342,
+            "height": 44
+          }
+        ]
+      },
+      "result": "PASS"
+    },
+    {
+      "name": "smoke-consent",
+      "facts": {
+        "url": "#/pages/onboarding/onboarding",
+        "title": "阅读并确认",
+        "titleFont": "28px",
+        "titleWeight": "650",
+        "descriptionFont": "14px",
+        "brandIcon": 25,
+        "overflow": false,
+        "bodyWidth": 342,
+        "inputFont": null,
+        "idleErrors": 0,
+        "overlay": 0,
+        "rawKeys": false,
+        "targets": [
+          {
+            "width": 342,
+            "height": 44
+          },
+          {
+            "width": 342,
+            "height": 44
+          },
+          {
+            "width": 342,
+            "height": 44
+          },
+          {
+            "width": 342,
+            "height": 44
+          }
+        ]
+      },
+      "result": "PASS"
+    },
+    {
+      "name": "smoke-goal",
+      "facts": {
+        "url": "#/pages/onboarding/onboarding",
+        "title": "选择学习目标",
+        "titleFont": "28px",
+        "titleWeight": "650",
+        "descriptionFont": "14px",
+        "brandIcon": 25,
+        "overflow": false,
+        "bodyWidth": 342,
+        "inputFont": null,
+        "idleErrors": 0,
+        "overlay": 0,
+        "rawKeys": false,
+        "targets": [
+          {
+            "width": 342,
+            "height": 80.796875
+          },
+          {
+            "width": 342,
+            "height": 80.796875
+          },
+          {
+            "width": 342,
+            "height": 80.796875
+          },
+          {
+            "width": 342,
+            "height": 80.796875
+          },
+          {
+            "width": 165,
+            "height": 66.796875
+          },
+          {
+            "width": 165,
+            "height": 66.796875
+          },
+          {
+            "width": 165,
+            "height": 48
+          },
+          {
+            "width": 165,
+            "height": 48
+          },
+          {
+            "width": 342,
+            "height": 50
+          },
+          {
+            "width": 342,
+            "height": 44
+          },
+          {
+            "width": 342,
+            "height": 44
+          },
+          {
+            "width": 342,
+            "height": 44
+          }
+        ]
+      },
+      "result": "PASS"
+    },
+    {
+      "name": "smoke-assessment",
+      "facts": {
+        "url": "#/pages/onboarding/onboarding",
+        "title": "设置已完成",
+        "titleFont": "28px",
+        "titleWeight": "650",
+        "descriptionFont": "14px",
+        "brandIcon": 25,
+        "overflow": false,
+        "bodyWidth": 342,
+        "inputFont": null,
+        "idleErrors": 0,
+        "overlay": 0,
+        "rawKeys": false,
+        "targets": [
+          {
+            "width": 342,
+            "height": 50
+          },
+          {
+            "width": 342,
+            "height": 44
+          },
+          {
+            "width": 342,
+            "height": 44
+          },
+          {
+            "width": 342,
+            "height": 44
+          }
+        ]
+      },
+      "result": "PASS"
+    }
+  ],
+  "matrix": [],
+  "pageErrors": [],
+  "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "fixtureRequests": [
+    {
+      "mode": "gate",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "mode": "gate",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/permissions"
+    },
+    {
+      "mode": "gate",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "consent",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "mode": "consent",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/permissions"
+    },
+    {
+      "mode": "consent",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "consent",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/learner/targets"
+    },
+    {
+      "mode": "consent",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/consents"
+    },
+    {
+      "mode": "goal",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "mode": "goal",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/permissions"
+    },
+    {
+      "mode": "goal",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "goal",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/learner/targets"
+    },
+    {
+      "mode": "assessment",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "mode": "assessment",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/permissions"
+    },
+    {
+      "mode": "assessment",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "assessment",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/learner/targets"
+    }
+  ],
+  "status": "PASS_GROUP_UI_SYNTHETIC_NOT_BUSINESS_ACCEPTANCE",
+  "sourceHashesAfter": {
+    "apps/mobile/src/pages/onboarding/onboarding.vue": "3804fc9a10d682c98ea08f25b4b1dc06f002d6bc15fb9a621158cda9bd92d849",
+    "packages/i18n/src/mobile-experience.ts": "5de636433b73ba72a2549c3e6331da9f8ccec48226c71e56d071396cc0a69eeb",
+    "apps/mobile/src/api/learner-content.ts": "551bef665ecc7564ce5a0e88a63e34442a07dc5b90bfc00b07eef41353914ca0",
+    "apps/mobile/src/stores/session.ts": "22efb5caa219918b0d7a5a1d62af2c3072e7701d92dd56935a9b14f974b8641d",
+    "apps/mobile/src/auth/gateway-auth.ts": "b17373e792c34287ac8e3e78db97e6fb71b7f4599df88a9a8a2bac1e8005d711",
+    "apps/mobile/src/platform/pointer-feedback.ts": "6464f4c1712b5a0f2fd4ab01d451d5bb6ffaa13bde486826a424511059ef6425",
+    "apps/mobile/tests/ui-onboarding.e2e.cjs": "838052b08a59dd65774b45a4ecff265129772793377d450865dfb7ae3d58c57e"
+  }
+}

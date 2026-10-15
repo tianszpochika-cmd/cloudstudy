@@ -1,0 +1,74 @@
+{
+  "at": "2026-10-15T00:07:16.813Z",
+  "scope": "MB004_FORMAL_H5_SYNTHETIC_UI_ONLY",
+  "group": "recovery",
+  "browserPlugin": "Browser plugin not available; Playwright Chromium",
+  "sourceHashes": {
+    "apps/mobile/src/pages/onboarding/onboarding.vue": "3199fa1deb22814b9a941db2334865a703b443a2c6d4bd35430929dacaf84fff",
+    "packages/i18n/src/mobile-experience.ts": "5e0e045c0118226ef8e2f80b1fa1db072bdfdbd2d171c13a904075fe3c4f8743",
+    "apps/mobile/src/api/learner-content.ts": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6",
+    "apps/mobile/src/stores/session.ts": "ba479dfebf777599ed40b05218549afc23712f1077720b748f973ec3d3fadc99",
+    "apps/mobile/src/auth/gateway-auth.ts": "746bb9d83d241162bce9d9cd701d2f6662d11a132977533e3ba2a11e428c3277",
+    "apps/mobile/src/platform/pointer-feedback.ts": "6464f4c1712b5a0f2fd4ab01d451d5bb6ffaa13bde486826a424511059ef6425",
+    "apps/mobile/tests/ui-onboarding.e2e.cjs": "065a03b70c1c22093fcc11699f8dc082bfe4ed9ffeba8a482455f4d682ec044f"
+  },
+  "checks": [],
+  "matrix": [],
+  "pageErrors": [],
+  "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "fixtureRequests": [
+    {
+      "mode": "consent",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "mode": "consent",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "consent",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "consent",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/learner/targets"
+    },
+    {
+      "mode": "consent",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/consents"
+    },
+    {
+      "mode": "consent",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "consent",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/learner/targets"
+    }
+  ],
+  "status": "FAIL",
+  "failure": "AssertionError [ERR_ASSERTION]: Existing valid current consent renews stale claims before learner actions\n\nfalse !== true\n\n    at recovery (C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\apps\\mobile\\tests\\ui-onboarding.e2e.cjs:192:10)\n    at async C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\apps\\mobile\\tests\\ui-onboarding.e2e.cjs:277:44",
+  "failureState": {
+    "route": "#/pages/onboarding/onboarding",
+    "focusId": "mobile-onboarding-title",
+    "busy": "false",
+    "errorPresent": 0
+  }
+}

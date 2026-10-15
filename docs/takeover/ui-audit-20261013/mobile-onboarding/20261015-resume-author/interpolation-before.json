@@ -1,0 +1,14 @@
+{
+  "result": "VISUAL_FAIL_UNRESOLVED_INTERPOLATION",
+  "sourceHashes": {
+    "apps/mobile/src/pages/onboarding/onboarding.vue": "3804fc9a10d682c98ea08f25b4b1dc06f002d6bc15fb9a621158cda9bd92d849",
+    "packages/i18n/src/mobile-experience.ts": "5de636433b73ba72a2549c3e6331da9f8ccec48226c71e56d071396cc0a69eeb",
+    "apps/mobile/src/api/learner-content.ts": "551bef665ecc7564ce5a0e88a63e34442a07dc5b90bfc00b07eef41353914ca0",
+    "apps/mobile/src/stores/session.ts": "22efb5caa219918b0d7a5a1d62af2c3072e7701d92dd56935a9b14f974b8641d",
+    "apps/mobile/src/auth/gateway-auth.ts": "b17373e792c34287ac8e3e78db97e6fb71b7f4599df88a9a8a2bac1e8005d711",
+    "apps/mobile/src/platform/pointer-feedback.ts": "6464f4c1712b5a0f2fd4ab01d451d5bb6ffaa13bde486826a424511059ef6425",
+    "apps/mobile/tests/ui-onboarding.e2e.cjs": "838052b08a59dd65774b45a4ecff265129772793377d450865dfb7ae3d58c57e"
+  },
+  "observed": "Goal duration cards render literal {count} minutes; mobileT accepts only a key",
+  "evidence": "smoke-run2/goal-390-smoke.png"
+}

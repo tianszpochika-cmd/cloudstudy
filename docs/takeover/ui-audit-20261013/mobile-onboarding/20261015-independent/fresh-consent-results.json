@@ -1,0 +1,52 @@
+{
+  "at": "2026-10-15T00:05:49.320Z",
+  "scope": "CANDIDATE_FRESH_CONSENT_COPY_AFTER_FORCE_REFRESH",
+  "sourceHashesBefore": {
+    "apps/mobile/src/pages/onboarding/onboarding.vue": "3199fa1deb22814b9a941db2334865a703b443a2c6d4bd35430929dacaf84fff",
+    "packages/i18n/src/mobile-experience.ts": "5e0e045c0118226ef8e2f80b1fa1db072bdfdbd2d171c13a904075fe3c4f8743"
+  },
+  "cases": [
+    {
+      "locale": "zh-CN",
+      "actual": {
+        "route": "#/pages/onboarding/onboarding",
+        "title": "查看同意事项",
+        "description": "查看当前要求与已记录的同意。",
+        "blocked": "同意内容暂时无法读取，请稍后重新读取。",
+        "body": "语学星18 岁以上成人学习1确认身份已完成2必要同意当前3学习目标待完成查看同意事项查看当前要求与已记录的同意。同意记录暂时无法读取，请重新读取。同意内容暂时无法读取，请稍后重新读取。重新读取账号设置退出登录",
+        "overlay": false
+      },
+      "result": "FRESH_COPY_PASS"
+    },
+    {
+      "locale": "en-US",
+      "actual": {
+        "route": "#/pages/onboarding/onboarding",
+        "title": "Review consent status",
+        "description": "Review current requirements and your recorded choices.",
+        "blocked": "Consent details are unavailable. Try reloading shortly.",
+        "body": "语学星For learners aged 18 and over1Confirm identityCompleted2Required consentCurrent3Learning goalNextReview consent statusReview current requirements and your recorded choices.Your consent records could not be read. Try reading again.Consent details are unavailable. Try reloading shortly.Read againAccount settingsSign out",
+        "overlay": false
+      },
+      "result": "FRESH_COPY_PASS"
+    }
+  ],
+  "pageErrors": [],
+  "requests": [
+    {
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/consents"
+    },
+    {
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/consents"
+    }
+  ],
+  "sourceHashesAfter": {
+    "apps/mobile/src/pages/onboarding/onboarding.vue": "3199fa1deb22814b9a941db2334865a703b443a2c6d4bd35430929dacaf84fff",
+    "packages/i18n/src/mobile-experience.ts": "5e0e045c0118226ef8e2f80b1fa1db072bdfdbd2d171c13a904075fe3c4f8743"
+  },
+  "result": "FRESH_COPY_PASS"
+}

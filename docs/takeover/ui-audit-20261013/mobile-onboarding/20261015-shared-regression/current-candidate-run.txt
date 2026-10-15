@@ -1,0 +1,130 @@
+TAP version 13
+# Subtest: device management remains reachable with an authenticated IAM session before learning consent
+ok 1 - device management remains reachable with an authenticated IAM session before learning consent
+  ---
+  duration_ms: 86.7642
+  ...
+# Subtest: real login adapter bootstraps permissions with its new token, then binds the verified owner
+ok 2 - real login adapter bootstraps permissions with its new token, then binds the verified owner
+  ---
+  duration_ms: 78.1404
+  ...
+# Subtest: real restore adapter reads principal and permissions through the unverified-owner bootstrap
+ok 3 - real restore adapter reads principal and permissions through the unverified-owner bootstrap
+  ---
+  duration_ms: 42.0261
+  ...
+# Subtest: real refresh adapter verifies permissions after replacing the token
+ok 4 - real refresh adapter verifies permissions after replacing the token
+  ---
+  duration_ms: 42.0024
+  ...
+# Subtest: real refresh fails closed when verified A receives B permissions, before applying snapshot tokens
+ok 5 - real refresh fails closed when verified A receives B permissions, before applying snapshot tokens
+  ---
+  duration_ms: 24.9875
+  ...
+# Subtest: explicit login from verified A to B succeeds as an intentional account switch
+ok 6 - explicit login from verified A to B succeeds as an intentional account switch
+  ---
+  duration_ms: 26.3613
+  ...
+# Subtest: real logout adapter can revoke the old token only on its exact route after owner invalidation
+ok 7 - real logout adapter can revoke the old token only on its exact route after owner invalidation
+  ---
+  duration_ms: 23.6182
+  ...
+# Subtest: real revoke adapter can revoke a session only on the session-specific route
+ok 8 - real revoke adapter can revoke a session only on the session-specific route
+  ---
+  duration_ms: 23.1832
+  ...
+# Subtest: a delayed A bootstrap response is rejected after B starts logging in
+ok 9 - a delayed A bootstrap response is rejected after B starts logging in
+  ---
+  duration_ms: 26.381
+  ...
+# Subtest: bootstrap markers do not authorize arbitrary or method-mismatched routes
+ok 10 - bootstrap markers do not authorize arbitrary or method-mismatched routes
+  ---
+  duration_ms: 21.5111
+  ...
+# Subtest: real identity bootstrap does not refresh or replay after 401
+ok 11 - real identity bootstrap does not refresh or replay after 401
+  ---
+  duration_ms: 20.4175
+  ...
+# Subtest: H5 cookie restore keeps the subject-scoped placement checkpoint
+ok 12 - H5 cookie restore keeps the subject-scoped placement checkpoint
+  ---
+  duration_ms: 20.4031
+  ...
+# Subtest: clear still deletes the subject-scoped learning cache
+ok 13 - clear still deletes the subject-scoped learning cache
+  ---
+  duration_ms: 22.8061
+  ...
+# Subtest: mobile resume step matches the web facts: gate, consent, target, then placement entry
+ok 14 - mobile resume step matches the web facts: gate, consent, target, then placement entry
+  ---
+  duration_ms: 1.3209
+  ...
+# Subtest: a saved target cannot advance resume without explicit eligible adult access
+ok 15 - a saved target cannot advance resume without explicit eligible adult access
+  ---
+  duration_ms: 0.1056
+  ...
+# Subtest: mobile does not request targets for missing access, despite accepted consent
+ok 16 - mobile does not request targets for missing access, despite accepted consent
+  ---
+  duration_ms: 67.7452
+  ...
+# Subtest: mobile does not request targets for restricted access, despite accepted consent
+ok 17 - mobile does not request targets for restricted access, despite accepted consent
+  ---
+  duration_ms: 45.3934
+  ...
+# Subtest: mobile does not request targets for legacy PASSED string, despite accepted consent
+ok 18 - mobile does not request targets for legacy PASSED string, despite accepted consent
+  ---
+  duration_ms: 30.5945
+  ...
+# Subtest: an unavailable IAM principal read fails before any learner target request
+ok 19 - an unavailable IAM principal read fails before any learner target request
+  ---
+  duration_ms: 25.3762
+  ...
+# Subtest: mobile GET target maps FOUNDATION and keeps a 404 distinct from a failed read
+ok 20 - mobile GET target maps FOUNDATION and keeps a 404 distinct from a failed read
+  ---
+  duration_ms: 73.7672
+  ...
+# Subtest: mobile does not read a target before the gate passes, and optional analytics do not block
+ok 21 - mobile does not read a target before the gate passes, and optional analytics do not block
+  ---
+  duration_ms: 73.7359
+  ...
+# Subtest: mobile onboarding, home and guard stay aligned with the server resume
+ok 22 - mobile onboarding, home and guard stay aligned with the server resume
+  ---
+  duration_ms: 1.3419
+  ...
+# Subtest: mobile prefill uses the canonical target code and does not invent a goal
+ok 23 - mobile prefill uses the canonical target code and does not invent a goal
+  ---
+  duration_ms: 0.3782
+  ...
+# Subtest: mobile form prefill follows GET canonical goalCode and does not keep a stored alias
+ok 24 - mobile form prefill follows GET canonical goalCode and does not keep a stored alias
+  ---
+  duration_ms: 56.2301
+  ...
+1..24
+# tests 24
+# suites 0
+# pass 24
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 918.4332

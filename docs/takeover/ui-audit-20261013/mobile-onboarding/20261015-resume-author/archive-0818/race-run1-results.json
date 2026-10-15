@@ -1,0 +1,102 @@
+{
+  "at": "2026-10-14T23:56:06.837Z",
+  "scope": "MB004_FORMAL_H5_SYNTHETIC_UI_ONLY",
+  "group": "race",
+  "browserPlugin": "Browser plugin not available; Playwright Chromium",
+  "sourceHashes": {
+    "apps/mobile/src/pages/onboarding/onboarding.vue": "d8dfbb3948499a15534923e5b88e5a76e2efd0294097edd8897c26db46344833",
+    "packages/i18n/src/mobile-experience.ts": "5de636433b73ba72a2549c3e6331da9f8ccec48226c71e56d071396cc0a69eeb",
+    "apps/mobile/src/api/learner-content.ts": "22e6725e487728cf07bde970ac184aac75ff73435891bdae87619dbbb92659a7",
+    "apps/mobile/src/stores/session.ts": "ba479dfebf777599ed40b05218549afc23712f1077720b748f973ec3d3fadc99",
+    "apps/mobile/src/auth/gateway-auth.ts": "746bb9d83d241162bce9d9cd701d2f6662d11a132977533e3ba2a11e428c3277",
+    "apps/mobile/src/platform/pointer-feedback.ts": "6464f4c1712b5a0f2fd4ab01d451d5bb6ffaa13bde486826a424511059ef6425",
+    "apps/mobile/tests/ui-onboarding.e2e.cjs": "20e6ff087133188c825bc6c0355dcc6f56a4f4bc87e5412d2a35270c12d02871"
+  },
+  "checks": [],
+  "matrix": [],
+  "pageErrors": [],
+  "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "fixtureRequests": [
+    {
+      "mode": "gate",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "mode": "gate",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "gate",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "gate",
+      "method": "POST",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/adult-gate"
+    },
+    {
+      "mode": "gate",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/token/refresh"
+    },
+    {
+      "mode": "gate",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "gate",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "gate",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/notifications/preferences"
+    },
+    {
+      "mode": "gate",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/support/tickets"
+    },
+    {
+      "mode": "gate",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/learner/profile"
+    },
+    {
+      "mode": "gate",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/learner/targets"
+    },
+    {
+      "mode": "gate",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/learner/preferences"
+    }
+  ],
+  "status": "FAIL",
+  "failure": "page.waitForFunction: Timeout 30000ms exceeded.\n    at race (C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\apps\\mobile\\tests\\ui-onboarding.e2e.cjs:212:11)\n    at async C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\apps\\mobile\\tests\\ui-onboarding.e2e.cjs:236:40",
+  "failureState": {
+    "route": "#/pages/settings/settings",
+    "focusId": "",
+    "errorPresent": 0
+  }
+}

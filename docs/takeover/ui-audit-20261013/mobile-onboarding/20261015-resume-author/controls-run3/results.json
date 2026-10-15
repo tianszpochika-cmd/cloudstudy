@@ -1,0 +1,78 @@
+{
+  "at": "2026-10-14T23:47:35.997Z",
+  "scope": "MB004_FORMAL_H5_SYNTHETIC_UI_ONLY",
+  "group": "controls",
+  "browserPlugin": "Browser plugin not available; Playwright Chromium",
+  "sourceHashes": {
+    "apps/mobile/src/pages/onboarding/onboarding.vue": "201f21bd9709591e8c2de132200c0bf862f40a642f720add5fe2fb4c7b73f19e",
+    "packages/i18n/src/mobile-experience.ts": "5de636433b73ba72a2549c3e6331da9f8ccec48226c71e56d071396cc0a69eeb",
+    "apps/mobile/src/api/learner-content.ts": "22e6725e487728cf07bde970ac184aac75ff73435891bdae87619dbbb92659a7",
+    "apps/mobile/src/stores/session.ts": "ba479dfebf777599ed40b05218549afc23712f1077720b748f973ec3d3fadc99",
+    "apps/mobile/src/auth/gateway-auth.ts": "746bb9d83d241162bce9d9cd701d2f6662d11a132977533e3ba2a11e428c3277",
+    "apps/mobile/src/platform/pointer-feedback.ts": "6464f4c1712b5a0f2fd4ab01d451d5bb6ffaa13bde486826a424511059ef6425",
+    "apps/mobile/tests/ui-onboarding.e2e.cjs": "f17e7cee910d3a37c1eae8ffbe58923597d2382ab9c250edac22d5e878eba66a"
+  },
+  "checks": [
+    {
+      "name": "year-confirm-first-error-and-age-focus-immediate-detail",
+      "latestComponentYearMatched": true,
+      "clearDisables": true,
+      "result": "PASS"
+    }
+  ],
+  "matrix": [],
+  "pageErrors": [],
+  "consoleErrors": [],
+  "fixtureRequests": [
+    {
+      "mode": "gate",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "mode": "gate",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "gate",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "gate",
+      "method": "POST",
+      "origin": "https://127.0.0.1:18087",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "mode": "gate",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "gate",
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "mode": "gate",
+      "method": "POST",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/adult-gate"
+    }
+  ],
+  "status": "FAIL",
+  "failure": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\nfalse !== true\n\n    at controls (C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\apps\\mobile\\tests\\ui-onboarding.e2e.cjs:134:88)\n    at async C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\apps\\mobile\\tests\\ui-onboarding.e2e.cjs:191:44",
+  "failureState": {
+    "route": "#/pages/onboarding/onboarding",
+    "focusId": "",
+    "busy": "true",
+    "errorPresent": 0
+  }
+}

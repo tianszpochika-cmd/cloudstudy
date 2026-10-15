@@ -1,0 +1,56 @@
+{
+  "at": "2026-10-14T23:50:59.1008794Z",
+  "sourceHashes": [
+    {
+      "Path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\apps\\mobile\\src\\auth\\gateway-auth.ts",
+      "Hash": "746BB9D83D241162BCE9D9CD701D2F6662D11A132977533E3BA2A11E428C3277"
+    },
+    {
+      "Path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\apps\\mobile\\src\\stores\\session.ts",
+      "Hash": "BA479DFEBF777599ED40B05218549AFC23712F1077720B748F973EC3D3FADC99"
+    },
+    {
+      "Path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\apps\\mobile\\src\\api\\learner-content.ts",
+      "Hash": "22E6725E487728CF07BDE970AC184AAC75FF73435891BDAE87619DBBB92659A7"
+    },
+    {
+      "Path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\apps\\mobile\\src\\pages\\onboarding\\onboarding.vue",
+      "Hash": "25484F4FCB6462AAA1B34BF439CDD91E8128B311BEA1F15B152C3CAB317EB428"
+    },
+    {
+      "Path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\apps\\mobile\\src\\domain\\onboarding-resume.ts",
+      "Hash": "DA6DA761492B91DA0E5FC8058E25CE89D1624DF8BA65379645C9D3427D5F5743"
+    },
+    {
+      "Path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\apps\\mobile\\tests\\mobile-gateway-auth-bootstrap.test.mjs",
+      "Hash": "159D529D09DAC2E002361D2394BDDA38FA24DB43593BC492F5F1599CAA6DFAE2"
+    },
+    {
+      "Path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\apps\\mobile\\tests\\onboarding-resume-step.test.mjs",
+      "Hash": "4602D89931D43ABDDAE0748F5CA8CC536856C2825BACBCE10988FA8ABBE7FE6A"
+    }
+  ],
+  "sourceChangedDuringReview": [
+    "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\apps\\mobile\\src\\pages\\onboarding\\onboarding.vue"
+  ],
+  "firstRun": {
+    "skipped": 0,
+    "tests": 19,
+    "exitCode": 1,
+    "fail": 16,
+    "pass": 3
+  },
+  "finalRun": {
+    "skipped": 0,
+    "tests": 24,
+    "exitCode": 0,
+    "fail": 0,
+    "pass": 24
+  },
+  "quota": {
+    "resetCreditsUsed": 0,
+    "primaryUsedPercent": 47,
+    "weeklyUsedPercent": 88,
+    "ordinaryUsageAllowed": true
+  }
+}

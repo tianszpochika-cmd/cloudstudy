@@ -1,0 +1,651 @@
+{
+  "status": "OLD_HASH_NOT_CURRENT_ACCEPTANCE",
+  "originalDirectory": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1",
+  "files": [
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\assessment-1280-en-US-dark.png",
+      "bytes": 29707,
+      "sha256": "ec19de56bd580730b0d68365335458553ae506afd9e79459c097e4d93805599d"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\assessment-1280-en-US-high-contrast.png",
+      "bytes": 27816,
+      "sha256": "bfcad02a0ad8f0723183a2763d3623eede151a02afd5e60bdb73b9932bf8f20f"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\assessment-1280-en-US-light.png",
+      "bytes": 30205,
+      "sha256": "471c3cbf3e1a1c5d5f0d8fdf4f3dd1d15a4f9bb66708da77430068d5426d3360"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\assessment-1280-en-US-system.png",
+      "bytes": 30205,
+      "sha256": "471c3cbf3e1a1c5d5f0d8fdf4f3dd1d15a4f9bb66708da77430068d5426d3360"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\assessment-1280-zh-CN-dark.png",
+      "bytes": 28608,
+      "sha256": "b53b717ad7254a4a5d040e8a0ba6f4c458332278d6120d409c9bf9760fdcf14f"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\assessment-1280-zh-CN-high-contrast.png",
+      "bytes": 27871,
+      "sha256": "52bd34b023b981e997c6a661da9991c76e592ff759789dea5b0ab91ab7306753"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\assessment-1280-zh-CN-light.png",
+      "bytes": 28683,
+      "sha256": "02106d96165e5f1488ffc2c87dee82ff27b8cbae3c17f146c08ce5705af8f83e"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\assessment-1280-zh-CN-system.png",
+      "bytes": 28683,
+      "sha256": "02106d96165e5f1488ffc2c87dee82ff27b8cbae3c17f146c08ce5705af8f83e"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\assessment-320-en-US-dark.png",
+      "bytes": 25740,
+      "sha256": "ff0b125259ba0a24d5da70fbb91454f2d8a9848fdf5b418cac9c160261594935"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\assessment-320-en-US-high-contrast.png",
+      "bytes": 24087,
+      "sha256": "4c2f59c72a5a219e8c13b065f9dec16b9f569c5925ac4b0aae6a3e3df0bbd147"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\assessment-320-en-US-light.png",
+      "bytes": 26264,
+      "sha256": "d1d9b848de29ebcf26d11309799ef458cc32970764fd238d60a507fe5b4e2900"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\assessment-320-en-US-system.png",
+      "bytes": 26264,
+      "sha256": "d1d9b848de29ebcf26d11309799ef458cc32970764fd238d60a507fe5b4e2900"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\assessment-320-zh-CN-dark.png",
+      "bytes": 25011,
+      "sha256": "6082a70948448f46b5eaf4f7e66c94bc6a1bc8a1c87e7178998d7bc6bf0eb94a"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\assessment-320-zh-CN-high-contrast.png",
+      "bytes": 24225,
+      "sha256": "81231d9bb01e7604626ed83a9ed811ddad3b0d3442a3272d2304682348718a9f"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\assessment-320-zh-CN-light.png",
+      "bytes": 25097,
+      "sha256": "b208c3c8fa78a8cbc7a5622c57ea866174211c969bedbca1587a3ab724e575a8"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\assessment-320-zh-CN-system.png",
+      "bytes": 25097,
+      "sha256": "b208c3c8fa78a8cbc7a5622c57ea866174211c969bedbca1587a3ab724e575a8"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\assessment-390-en-US-dark.png",
+      "bytes": 25564,
+      "sha256": "b9803f07ab96ede16e365e3f006612717f6040f25167fa075848551d73198383"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\assessment-390-en-US-high-contrast.png",
+      "bytes": 23965,
+      "sha256": "9f8a30d8ed48bb8d0f218cce381629f30e2be7c4319ecc979fed08658837c860"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\assessment-390-en-US-light.png",
+      "bytes": 26019,
+      "sha256": "871bef0508f556d85bdad42bbe40ecda1adce865ce472983ff615cfb55a9f78d"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\assessment-390-en-US-system.png",
+      "bytes": 26019,
+      "sha256": "871bef0508f556d85bdad42bbe40ecda1adce865ce472983ff615cfb55a9f78d"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\assessment-390-zh-CN-dark.png",
+      "bytes": 24865,
+      "sha256": "7d27488604f2bbed962384f776bb865204a1be6badff5d92e62cb0798185cfe9"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\assessment-390-zh-CN-high-contrast.png",
+      "bytes": 24147,
+      "sha256": "f0c62c6fc562ffc12b29d84e11971b1b845b0d56640ad2895bdd17574ac20a79"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\assessment-390-zh-CN-light.png",
+      "bytes": 24972,
+      "sha256": "5595315c62a046ef0c247df403c9bd328b5866f475e8af5c0dcdfa100221a817"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\assessment-390-zh-CN-system.png",
+      "bytes": 24972,
+      "sha256": "5595315c62a046ef0c247df403c9bd328b5866f475e8af5c0dcdfa100221a817"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\assessment-768-en-US-dark.png",
+      "bytes": 27678,
+      "sha256": "973ec3132ab6fe78b00ceb6c1fc0053caeb4f19cdd478fcb8872b58ae0137385"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\assessment-768-en-US-high-contrast.png",
+      "bytes": 25936,
+      "sha256": "a5e85aedff5982273cdede243f19310c1a900bf3506900237854009c059e0083"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\assessment-768-en-US-light.png",
+      "bytes": 28150,
+      "sha256": "79b109610ad7dd4322d13b7119e7d2a324ef3d1bf74db9ccbe72963d7a096284"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\assessment-768-en-US-system.png",
+      "bytes": 28150,
+      "sha256": "79b109610ad7dd4322d13b7119e7d2a324ef3d1bf74db9ccbe72963d7a096284"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\assessment-768-zh-CN-dark.png",
+      "bytes": 26599,
+      "sha256": "db2f3b01031be1fb29dace9d5e2857b80c8cd88c2370900e25d216dfbcd410ed"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\assessment-768-zh-CN-high-contrast.png",
+      "bytes": 25914,
+      "sha256": "54971cf91b910a9034efffdf886f7aebb2c9cc073095dc366c6fa655a145ad3e"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\assessment-768-zh-CN-light.png",
+      "bytes": 26698,
+      "sha256": "4ea9da1a2d89c0447051e71bf96d3293de95c1171d6a5a8397e183400253c85a"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\assessment-768-zh-CN-system.png",
+      "bytes": 26698,
+      "sha256": "4ea9da1a2d89c0447051e71bf96d3293de95c1171d6a5a8397e183400253c85a"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\consent-1280-en-US-dark.png",
+      "bytes": 53193,
+      "sha256": "9b8d26420a367b6eec4e2848a923d9551b91067f6d90c673033327629da9fa93"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\consent-1280-en-US-high-contrast.png",
+      "bytes": 49318,
+      "sha256": "303d775f4bb79067350e655ded4ed73862b086e586b4afd8fcbf04529a93afa2"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\consent-1280-en-US-light.png",
+      "bytes": 53755,
+      "sha256": "86864f26f8c3da27564fc981128bf5ab18f0e3895c64f766af0b5fcb6d8e58cd"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\consent-1280-en-US-system.png",
+      "bytes": 53755,
+      "sha256": "86864f26f8c3da27564fc981128bf5ab18f0e3895c64f766af0b5fcb6d8e58cd"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\consent-1280-zh-CN-dark.png",
+      "bytes": 47945,
+      "sha256": "317a954c77c9448904f5729a279dc06c9146cf7198ac20673c26bc28edf46df3"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\consent-1280-zh-CN-high-contrast.png",
+      "bytes": 46766,
+      "sha256": "869fecf75a1c840c7da014656c24baca39121f5783affd47bee1e087b416f6d0"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\consent-1280-zh-CN-light.png",
+      "bytes": 47844,
+      "sha256": "d09c559c30aad30c5e8aae7749244dc4e1fab1ab9f0120a314d12562cef3dc09"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\consent-1280-zh-CN-system.png",
+      "bytes": 47844,
+      "sha256": "d09c559c30aad30c5e8aae7749244dc4e1fab1ab9f0120a314d12562cef3dc09"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\consent-320-en-US-dark.png",
+      "bytes": 43120,
+      "sha256": "5182dc4f7615d443481ba5baafa2923a0c1f741622d727c9ec1f71d1052387ea"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\consent-320-en-US-high-contrast.png",
+      "bytes": 40117,
+      "sha256": "75b8cd0ec916a93f3a049549fd9d4e7e02e11c6757c1943dd3d920666a46add4"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\consent-320-en-US-light.png",
+      "bytes": 44125,
+      "sha256": "25fbc28f27039ad45f41a718ce24aa6954440e4dee21f7af854a33f9d19e8133"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\consent-320-en-US-system.png",
+      "bytes": 44125,
+      "sha256": "25fbc28f27039ad45f41a718ce24aa6954440e4dee21f7af854a33f9d19e8133"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\consent-320-zh-CN-dark.png",
+      "bytes": 40446,
+      "sha256": "08f9d29b679dc555992626c58c6bca0a2f0c3dfc0225aa7fc1358add845f8e6f"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\consent-320-zh-CN-high-contrast.png",
+      "bytes": 39337,
+      "sha256": "d678f53858a0dee804621363b96b4fb3601070ebf2d2b922296fb363fbcb1ee3"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\consent-320-zh-CN-light.png",
+      "bytes": 40377,
+      "sha256": "8984ee6a84fe95f2af6d71d2ca3567d2ec8aba85df4f5a784630198fdfc942bf"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\consent-320-zh-CN-system.png",
+      "bytes": 40377,
+      "sha256": "8984ee6a84fe95f2af6d71d2ca3567d2ec8aba85df4f5a784630198fdfc942bf"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\consent-390-en-US-dark.png",
+      "bytes": 43565,
+      "sha256": "185a023d44cf9efbdc90cad8be96d49064d983aa3746488f98cafdb3a93b51d3"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\consent-390-en-US-high-contrast.png",
+      "bytes": 40727,
+      "sha256": "0ff8e284b7d535ce17756fa4f57f83aec90e720f2636cea5b5b323cc158cdae6"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\consent-390-en-US-light.png",
+      "bytes": 44622,
+      "sha256": "255ae28ac53e5b6efa4f09cfed80536a108a6a5478cd9fb8a65889179ae1cb8d"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\consent-390-en-US-system.png",
+      "bytes": 44622,
+      "sha256": "255ae28ac53e5b6efa4f09cfed80536a108a6a5478cd9fb8a65889179ae1cb8d"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\consent-390-zh-CN-dark.png",
+      "bytes": 40994,
+      "sha256": "4084348714165a3044ee0003962e63e6dd8c7fe0d055ed8ea2e06ed3b7be071f"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\consent-390-zh-CN-high-contrast.png",
+      "bytes": 40140,
+      "sha256": "0e6820b5f5b46ca15cdd35ddccecd799003cdd08ae36de1d4e215eeba7e848eb"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\consent-390-zh-CN-light.png",
+      "bytes": 41052,
+      "sha256": "85e5de45b3d130e459f6380237235a2a1df47c98f0e52e5ecfd962d46add7b7a"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\consent-390-zh-CN-system.png",
+      "bytes": 41052,
+      "sha256": "85e5de45b3d130e459f6380237235a2a1df47c98f0e52e5ecfd962d46add7b7a"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\consent-768-en-US-dark.png",
+      "bytes": 50250,
+      "sha256": "eb9a91bfc357b081230a6a80ce46bca87a422d1bee16d4ed228ec8f65dd2615a"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\consent-768-en-US-high-contrast.png",
+      "bytes": 46561,
+      "sha256": "26754df27a7d8ba1a45ddea044b8910d251efbdb78bde24aa2d99e5163f72f01"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\consent-768-en-US-light.png",
+      "bytes": 50783,
+      "sha256": "52d14f93bade21df5293fb26063f55d7f1f92fab187c8a12c62c0831b1275d78"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\consent-768-en-US-system.png",
+      "bytes": 50783,
+      "sha256": "52d14f93bade21df5293fb26063f55d7f1f92fab187c8a12c62c0831b1275d78"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\consent-768-zh-CN-dark.png",
+      "bytes": 45047,
+      "sha256": "2379aaa7d414fc3b95c56629fe2c53d4f5bd64f3fbbea6ece333d57443bb127c"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\consent-768-zh-CN-high-contrast.png",
+      "bytes": 43801,
+      "sha256": "5807e74b7367bae809178762e1767e7696f40b36fca4aee6db88ddd0178ec452"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\consent-768-zh-CN-light.png",
+      "bytes": 44973,
+      "sha256": "65e459bcc81004b4f1c66164fed5427ece9512e96ccefdff0b6760b78a3faffc"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\consent-768-zh-CN-system.png",
+      "bytes": 44973,
+      "sha256": "65e459bcc81004b4f1c66164fed5427ece9512e96ccefdff0b6760b78a3faffc"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\gate-1280-en-US-dark.png",
+      "bytes": 32054,
+      "sha256": "53489811ca253a8e304fe4039e183f14b5cea745b40b08a3d866461624ca565c"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\gate-1280-en-US-high-contrast.png",
+      "bytes": 29796,
+      "sha256": "c504fbae295571a1a5655d01e235b07f08cbd31a490642ddb257b188ba7e828b"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\gate-1280-en-US-light.png",
+      "bytes": 32367,
+      "sha256": "6f48dac72d0e0375f644aa38f8b96d7587b403ebc0020e513ba0eb5ea0d0ef44"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\gate-1280-en-US-system.png",
+      "bytes": 32367,
+      "sha256": "6f48dac72d0e0375f644aa38f8b96d7587b403ebc0020e513ba0eb5ea0d0ef44"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\gate-1280-zh-CN-dark.png",
+      "bytes": 30197,
+      "sha256": "99b20521b11269db5877706f3aa015261262685f7aca25bd8af1aa2139fcb24b"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\gate-1280-zh-CN-high-contrast.png",
+      "bytes": 29272,
+      "sha256": "a4c30da5ab31f641faf82b57c7e896a890f855eb8e6b597ad36373136d7033b0"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\gate-1280-zh-CN-light.png",
+      "bytes": 30080,
+      "sha256": "3cf49c137212528df35b81fb88266f1bff6b6874254397974533dca9321da7b8"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\gate-1280-zh-CN-system.png",
+      "bytes": 30080,
+      "sha256": "3cf49c137212528df35b81fb88266f1bff6b6874254397974533dca9321da7b8"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\gate-320-en-US-dark.png",
+      "bytes": 27770,
+      "sha256": "27011a98d306de7168152890f4229e6de8e329ddda9a80393bf10b18f6004041"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\gate-320-en-US-high-contrast.png",
+      "bytes": 25816,
+      "sha256": "cee1c2b253a71bfb67f0064ceca732f676dd25f91926f3ac7b79989fb2eb85f7"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\gate-320-en-US-light.png",
+      "bytes": 28034,
+      "sha256": "2ae49264a46437f851c7e96ecbf655dfa0e93f374669b04794a7270c1b81a1b2"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\gate-320-en-US-system.png",
+      "bytes": 28034,
+      "sha256": "2ae49264a46437f851c7e96ecbf655dfa0e93f374669b04794a7270c1b81a1b2"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\gate-320-zh-CN-dark.png",
+      "bytes": 26267,
+      "sha256": "bf1c4a40ccca05404f4905d98c65d57ec031a4fb85e4bd8049dc035fea63829c"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\gate-320-zh-CN-high-contrast.png",
+      "bytes": 25488,
+      "sha256": "2307959fc02b2aa2087f145126c58a0f6e80f2771d065c25186644f2b316844c"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\gate-320-zh-CN-light.png",
+      "bytes": 26160,
+      "sha256": "dba72017ab06511475227db76710f73ad191471a2cfe9de24c2de0d2aa5e75a5"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\gate-320-zh-CN-system.png",
+      "bytes": 26160,
+      "sha256": "dba72017ab06511475227db76710f73ad191471a2cfe9de24c2de0d2aa5e75a5"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\gate-390-en-US-dark.png",
+      "bytes": 27587,
+      "sha256": "c3fd90254df020c5342cfb346befbda51e7d58cc2dd48c58c32c17be12c811c5"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\gate-390-en-US-high-contrast.png",
+      "bytes": 25609,
+      "sha256": "4284963ed5343a9b9957c36d1db91c7e410df1f07ce77331057349fdd13c198d"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\gate-390-en-US-light.png",
+      "bytes": 27850,
+      "sha256": "16cee7e07d763803d0621a721bf81a992325052b9fef755d7093a54bdea9a2ee"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\gate-390-en-US-system.png",
+      "bytes": 27850,
+      "sha256": "16cee7e07d763803d0621a721bf81a992325052b9fef755d7093a54bdea9a2ee"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\gate-390-zh-CN-dark.png",
+      "bytes": 26359,
+      "sha256": "e0ab7d8167ccaac1d5810d9edf270921da5d0047461242ddb3d77fee4a3c06f8"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\gate-390-zh-CN-high-contrast.png",
+      "bytes": 25508,
+      "sha256": "a0c38ce76664fc6e4a371f836b3bb94a40340be6b0e6739e4d565da3685e90e5"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\gate-390-zh-CN-light.png",
+      "bytes": 26280,
+      "sha256": "70cb235938ca6589131a3960e76e7dbd96990467fbafd7de9a80bcd21594f54c"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\gate-390-zh-CN-system.png",
+      "bytes": 26280,
+      "sha256": "70cb235938ca6589131a3960e76e7dbd96990467fbafd7de9a80bcd21594f54c"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\gate-768-en-US-dark.png",
+      "bytes": 30072,
+      "sha256": "9bdfedde18cb1cfedab272ce8dac9a8f8a95dbc685b7ee0159ed3128b86ef458"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\gate-768-en-US-high-contrast.png",
+      "bytes": 27939,
+      "sha256": "888fb3af773ad9c63843eeb3e08442daee52296e6c6653c511d2ea7caaf67abd"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\gate-768-en-US-light.png",
+      "bytes": 30347,
+      "sha256": "7f974b3ef56e7e5998945bdc0517a1d1865e5d42cdba39eed0e038372c39038b"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\gate-768-en-US-system.png",
+      "bytes": 30347,
+      "sha256": "7f974b3ef56e7e5998945bdc0517a1d1865e5d42cdba39eed0e038372c39038b"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\gate-768-zh-CN-dark.png",
+      "bytes": 28228,
+      "sha256": "63f296aa3964b67a584837fbd82b3acc2e11fc8c8725226335bb28e5dc73ef8b"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\gate-768-zh-CN-high-contrast.png",
+      "bytes": 27339,
+      "sha256": "c11f9e77b3a8593006cfac54a0664cd950c30c4777cc780afca8a65d4e09c930"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\gate-768-zh-CN-light.png",
+      "bytes": 28105,
+      "sha256": "315b7b6dd5efb9b669b7d38c4d9f5f666bb22a886902582e5ae3750ef6a30b73"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\gate-768-zh-CN-system.png",
+      "bytes": 28105,
+      "sha256": "315b7b6dd5efb9b669b7d38c4d9f5f666bb22a886902582e5ae3750ef6a30b73"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\goal-1280-en-US-dark.png",
+      "bytes": 53590,
+      "sha256": "b2c93004b1a5bddc8d7373c1e71f8a42584f2cc414f146acc992debb9ea84d71"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\goal-1280-en-US-high-contrast.png",
+      "bytes": 50863,
+      "sha256": "24ee4003ebb7e4956b4632c77d6dd2948f83ef2f018bcf34d17c70a899ab5807"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\goal-1280-en-US-light.png",
+      "bytes": 53677,
+      "sha256": "37534c1bec200cfe73ff2fa79d61007d08519e77f3d545293ec03ded3e1d729b"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\goal-1280-en-US-system.png",
+      "bytes": 53677,
+      "sha256": "37534c1bec200cfe73ff2fa79d61007d08519e77f3d545293ec03ded3e1d729b"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\goal-1280-zh-CN-dark.png",
+      "bytes": 50532,
+      "sha256": "51e2e63ff2daeb6b75caa276ad00a467121e5c378a2b4855037826869eb7c9c7"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\goal-1280-zh-CN-high-contrast.png",
+      "bytes": 49494,
+      "sha256": "3c71660a5ab589bb2f6b60aaad90f1fb12003b59803ebe892784e56ea4ad402e"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\goal-1280-zh-CN-light.png",
+      "bytes": 50016,
+      "sha256": "f25bacfc25fd5f4a600e38e75e6765d4118ca4865180bdb4fc1939133b62fa90"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\goal-1280-zh-CN-system.png",
+      "bytes": 50016,
+      "sha256": "f25bacfc25fd5f4a600e38e75e6765d4118ca4865180bdb4fc1939133b62fa90"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\goal-320-en-US-dark.png",
+      "bytes": 48518,
+      "sha256": "e087bedb48c579fc3787f1038de15d913539ae41885d2bb836752d55a8fbf937"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\goal-320-en-US-high-contrast.png",
+      "bytes": 46371,
+      "sha256": "447b43a22b33e4f46afb0ceb76a6eb2dec86878f065ede3c1d70101d8efe0a18"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\goal-320-en-US-light.png",
+      "bytes": 48639,
+      "sha256": "c3c01396e9730a67714790b9361ce826b367799162b3fb0260afc63a42252a61"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\goal-320-en-US-system.png",
+      "bytes": 48639,
+      "sha256": "c3c01396e9730a67714790b9361ce826b367799162b3fb0260afc63a42252a61"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\goal-320-zh-CN-dark.png",
+      "bytes": 44150,
+      "sha256": "ac1506e95c2eb31bc24506758102b710787fbc6a072bbed06d77f027f8961af3"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\goal-320-zh-CN-high-contrast.png",
+      "bytes": 43362,
+      "sha256": "a5a756162350dc2cc7bae554a4bc337960be250bda1cf83c59af20fe776b0e28"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\goal-320-zh-CN-light.png",
+      "bytes": 43572,
+      "sha256": "700601467c2e8504fe93695b56454464918fee63141857d7d5ac9ac411a7251a"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\goal-320-zh-CN-system.png",
+      "bytes": 43572,
+      "sha256": "700601467c2e8504fe93695b56454464918fee63141857d7d5ac9ac411a7251a"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\goal-390-en-US-dark.png",
+      "bytes": 49247,
+      "sha256": "c4addaeafd1f79e3528fbdce72403e965fef48bfb336317904798b0a213756b9"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\goal-390-en-US-high-contrast.png",
+      "bytes": 47264,
+      "sha256": "fd3689971ec2c60098bed410141536e9b173d479cd40fe2b21513fc563e782cf"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\goal-390-en-US-light.png",
+      "bytes": 49233,
+      "sha256": "a88e38179ebfa7fd9d582e62b066ce9b2d38cd7e45da4c95d7709d4b6bdc36bc"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\goal-390-en-US-system.png",
+      "bytes": 49233,
+      "sha256": "a88e38179ebfa7fd9d582e62b066ce9b2d38cd7e45da4c95d7709d4b6bdc36bc"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\goal-390-zh-CN-dark.png",
+      "bytes": 44593,
+      "sha256": "24916ac59431c1f4aca77eccd7dba767870ca20bcc655afec94f0d26fe4a2447"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\goal-390-zh-CN-high-contrast.png",
+      "bytes": 43874,
+      "sha256": "094ede1919b352d98ec6a67e4f63539a2dbdb131c5ad1f705ecc31bb3aad12ef"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\goal-390-zh-CN-light.png",
+      "bytes": 44099,
+      "sha256": "252d007e156760b5c630602bc004b9ea38c94d1b3b34c37e139e0b83d24a924b"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\goal-390-zh-CN-system.png",
+      "bytes": 44099,
+      "sha256": "252d007e156760b5c630602bc004b9ea38c94d1b3b34c37e139e0b83d24a924b"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\goal-768-en-US-dark.png",
+      "bytes": 50451,
+      "sha256": "e7ce350e5eeb3252291e54af1c567b7278cd157f41ccf1c11d5b2c116e7a4f84"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\goal-768-en-US-high-contrast.png",
+      "bytes": 47878,
+      "sha256": "550464746ebc5c4dd366f126403d98257638acb20fc8e3f10c6985e616b23347"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\goal-768-en-US-light.png",
+      "bytes": 50541,
+      "sha256": "38172e63d6c4c61f841fba7d4ff4aca8abae3f221ff9799b6450ee204d337101"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\goal-768-en-US-system.png",
+      "bytes": 50541,
+      "sha256": "38172e63d6c4c61f841fba7d4ff4aca8abae3f221ff9799b6450ee204d337101"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\goal-768-zh-CN-dark.png",
+      "bytes": 47278,
+      "sha256": "1fa3a0d477a3745be67e602c428050f29d3b03af0a0df6ed381746f784c1d8b1"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\goal-768-zh-CN-high-contrast.png",
+      "bytes": 46375,
+      "sha256": "0c86afc6ec954e4ae5db2ea0c5ef9266464ef1145564463899783c872ef479ba"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\goal-768-zh-CN-light.png",
+      "bytes": 46772,
+      "sha256": "39165cef885b2500dcc4d7494e41a57af8720297ee3da11659adc708859736e3"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\goal-768-zh-CN-system.png",
+      "bytes": 46772,
+      "sha256": "39165cef885b2500dcc4d7494e41a57af8720297ee3da11659adc708859736e3"
+    },
+    {
+      "path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-onboarding\\20261015-resume-author\\matrix-run1\\results.json",
+      "bytes": 217403,
+      "sha256": "85daf24a1a9893bb78b4a26fbcc6d12f9fb46efcacdff27df326b09e7fe8d0df"
+    }
+  ]
+}

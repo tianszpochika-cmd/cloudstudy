@@ -1,0 +1,41 @@
+{
+  "at": "2026-10-15T00:10:01.3104389Z",
+  "scope": "READ_ONLY_CURRENT_SOURCE_GAP_ARCHIVE_NOT_SIGNED",
+  "sourceHashes": {
+    "apps/mobile/src/pages/onboarding/onboarding.vue": "f56f77954e12a9ea2fabb1717b4ad2e53cbf382f26481824c95bcdbdea4ebf97",
+    "packages/i18n/src/mobile-experience.ts": "5e0e045c0118226ef8e2f80b1fa1db072bdfdbd2d171c13a904075fe3c4f8743",
+    "apps/mobile/src/auth/gateway-auth.ts": "746bb9d83d241162bce9d9cd701d2f6662d11a132977533e3ba2a11e428c3277",
+    "apps/mobile/src/stores/session.ts": "ba479dfebf777599ed40b05218549afc23712f1077720b748f973ec3d3fadc99",
+    "apps/mobile/src/api/learner-content.ts": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6",
+    "apps/mobile/src/domain/onboarding-resume.ts": "ea6e26682e69a9f1c3d8fd47d284aa55d96e39d646e27e5d41d0f556ba902e26",
+    "apps/mobile/src/stores/learner-content.ts": "95cc92496db996242d91baed3301d76f985e4e3b9134e1e50c2b9ab8d41e4c61",
+    "apps/mobile/src/platform/pointer-feedback.ts": "6464f4c1712b5a0f2fd4ab01d451d5bb6ffaa13bde486826a424511059ef6425"
+  },
+  "finalIndependentUi": "NOT_RUN",
+  "rootReportedPrimaryUsedPercent": 83,
+  "rootReportedSecondaryUsedPercent": 93,
+  "nextWindowRootReported": "2026-10-15 12:34 Beijing",
+  "service": {
+    "host": "127.0.0.1",
+    "port": 18183,
+    "pid": 24472,
+    "session": 87595
+  },
+  "existingEvidence": [
+    "fresh-copy-results.json",
+    "fresh-gate-zh-CN.png",
+    "fresh-gate-en-US.png",
+    "fresh-consent-results.json",
+    "fresh-consent-zh-CN.png",
+    "fresh-consent-en-US.png",
+    "service-refresh-3199-5e0.json",
+    "read-only-boundary-review.md"
+  ],
+  "gaps": [
+    "final frozen page/API/session/i18n independent actual browser review",
+    "control boundaries >=3:1 including dark; prior1.67 FAIL remains",
+    "one owner-scoped claims refresh and reread on current valid IAM + target403 projection",
+    "race/pointer/cancel/200% final candidate and concept visual comparison",
+    "real IAM/learner business facts/audit/native device evidence"
+  ]
+}

@@ -1,0 +1,45 @@
+TAP version 13
+# Subtest: current principal preserves ELIGIBLE eligibility independently of permissions
+ok 1 - current principal preserves ELIGIBLE eligibility independently of permissions
+  ---
+  duration_ms: 2.5219
+  ...
+# Subtest: current principal preserves RESTRICTED eligibility independently of permissions
+ok 2 - current principal preserves RESTRICTED eligibility independently of permissions
+  ---
+  duration_ms: 0.4524
+  ...
+# Subtest: current principal preserves missing eligibility independently of permissions
+ok 3 - current principal preserves missing eligibility independently of permissions
+  ---
+  duration_ms: 0.1651
+  ...
+# Subtest: adult POST PASSED/ELIGIBLE does not invent qualification or rejection
+ok 4 - adult POST PASSED/ELIGIBLE does not invent qualification or rejection
+  ---
+  duration_ms: 0.5237
+  ...
+# Subtest: adult POST PASSED/missing does not invent qualification or rejection
+ok 5 - adult POST PASSED/missing does not invent qualification or rejection
+  ---
+  duration_ms: 0.1555
+  ...
+# Subtest: adult POST REJECTED/RESTRICTED does not invent qualification or rejection
+ok 6 - adult POST REJECTED/RESTRICTED does not invent qualification or rejection
+  ---
+  duration_ms: 0.1119
+  ...
+# Subtest: adult POST NOT_EVALUATED/RESTRICTED does not invent qualification or rejection
+ok 7 - adult POST NOT_EVALUATED/RESTRICTED does not invent qualification or rejection
+  ---
+  duration_ms: 0.1579
+  ...
+1..7
+# tests 7
+# suites 0
+# pass 7
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 466.76

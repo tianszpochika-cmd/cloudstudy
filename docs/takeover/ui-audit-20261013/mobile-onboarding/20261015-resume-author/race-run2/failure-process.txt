@@ -1,0 +1,1 @@
+Race run2 terminated during navigation while capturing the underlying failure; Playwright execution context was destroyed. Original process output retained in conversation. No application fix is inferred from this harness capture failure.

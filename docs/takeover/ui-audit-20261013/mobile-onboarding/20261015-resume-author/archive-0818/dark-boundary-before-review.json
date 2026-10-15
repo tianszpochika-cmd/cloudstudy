@@ -1,0 +1,36 @@
+{
+  "status": "FAIL_RECORDED_OLD_VISUAL_REVIEW_NOT_NEW_EXECUTION",
+  "provenance": "Existing onboarding_visual_read agent screenshot/token review; recorded here at quota stop without rerunning measurement",
+  "sourceHashes": {
+    "apps/mobile/src/pages/onboarding/onboarding.vue": "95f2a5f0b51868e044b6488c7b5a1fe1ddc0757588ffc46fdd5dcf76493e88ee",
+    "packages/i18n/src/mobile-experience.ts": "5de636433b73ba72a2549c3e6331da9f8ccec48226c71e56d071396cc0a69eeb",
+    "apps/mobile/src/api/learner-content.ts": "22e6725e487728cf07bde970ac184aac75ff73435891bdae87619dbbb92659a7",
+    "apps/mobile/src/stores/session.ts": "f4c8327700df4ce575b7b2aa76dffc9be6b0fb2ed3b133260e4fb307fedd1404",
+    "apps/mobile/src/auth/gateway-auth.ts": "25d82b769ef16a9876b863ecfdaa14d22c119fd26bdb9673cddbedc9153d4424",
+    "apps/mobile/src/platform/pointer-feedback.ts": "6464f4c1712b5a0f2fd4ab01d451d5bb6ffaa13bde486826a424511059ef6425",
+    "apps/mobile/tests/ui-onboarding.e2e.cjs": "ca86d634851715f96f2608e4dccc6b537cebe54893aa839a7769bbd94a4de79e"
+  },
+  "affected": [
+    "gate-1280-en-US-dark",
+    "goal-1280-en-US-dark"
+  ],
+  "colors": {
+    "page": "#15151F",
+    "border": "#444355",
+    "fill": "#20202D"
+  },
+  "priorReportedContrast": {
+    "borderAgainstPage": 1.881,
+    "fillAgainstPage": 1.127,
+    "borderAgainstFill": 1.669
+  },
+  "minimum": 3,
+  "archivedScreenshots": [
+    "dark-gate-boundary-before.png",
+    "dark-goal-boundary-before.png"
+  ],
+  "repairedSource": "f56f77954e12a9ea2fabb1717b4ad2e53cbf382f26481824c95bcdbdea4ebf97",
+  "repair": "Page-only base borders consume existing v2-mut",
+  "afterMeasurement": "NOT_RUN",
+  "limitation": "Old matrix measured text contrast but omitted boundary contrast; this recorded independent review is supplemental and does not relabel the old matrix or assert repaired contrast PASS."
+}

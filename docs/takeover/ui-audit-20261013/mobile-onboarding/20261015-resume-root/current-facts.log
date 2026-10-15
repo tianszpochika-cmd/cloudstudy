@@ -1,0 +1,120 @@
+TAP version 13
+# Subtest: the UI preserves the explicit REQUIRED verdict
+ok 1 - the UI preserves the explicit REQUIRED verdict
+  ---
+  duration_ms: 44.7739
+  ...
+# Subtest: the UI preserves the explicit UNKNOWN verdict
+ok 2 - the UI preserves the explicit UNKNOWN verdict
+  ---
+  duration_ms: 29.4022
+  ...
+# Subtest: the UI preserves the explicit REJECTED verdict
+ok 3 - the UI preserves the explicit REJECTED verdict
+  ---
+  duration_ms: 19.4362
+  ...
+# Subtest: the UI preserves the explicit PASSED verdict
+ok 4 - the UI preserves the explicit PASSED verdict
+  ---
+  duration_ms: 16.414
+  ...
+# Subtest: a missing verdict remains unknown and cannot enable learning
+ok 5 - a missing verdict remains unknown and cannot enable learning
+  ---
+  duration_ms: 16.1524
+  ...
+# Subtest: a transport failure is not a rejected adult eligibility decision
+ok 6 - a transport failure is not a rejected adult eligibility decision
+  ---
+  duration_ms: 14.4123
+  ...
+# Subtest: a response after logout cannot restore adult or learning access
+ok 7 - a response after logout cannot restore adult or learning access
+  ---
+  duration_ms: 15.8797
+  ...
+# Subtest: passed status with UNKNOWN access cannot enable learning
+ok 8 - passed status with UNKNOWN access cannot enable learning
+  ---
+  duration_ms: 17.7381
+  ...
+# Subtest: passed status with RESTRICTED access cannot enable learning
+ok 9 - passed status with RESTRICTED access cannot enable learning
+  ---
+  duration_ms: 13.0826
+  ...
+# Subtest: passed status with missing access cannot enable learning
+ok 10 - passed status with missing access cannot enable learning
+  ---
+  duration_ms: 11.7461
+  ...
+# Subtest: an unreadable current gate invalidates readiness while preserving authentication
+ok 11 - an unreadable current gate invalidates readiness while preserving authentication
+  ---
+  duration_ms: 15.5151
+  ...
+# Subtest: an unreadable current gate invalidates readiness while preserving authentication
+ok 12 - an unreadable current gate invalidates readiness while preserving authentication
+  ---
+  duration_ms: 13.1652
+  ...
+# Subtest: an already confirmed target edit reads current IAM facts and writes only learner owner
+ok 13 - an already confirmed target edit reads current IAM facts and writes only learner owner
+  ---
+  duration_ms: 4.1429
+  ...
+# Subtest: missing consent projection does not sign documents or write a target
+ok 14 - missing consent projection does not sign documents or write a target
+  ---
+  duration_ms: 1.2991
+  ...
+# Subtest: current version no longer accepted does not sign documents or write a target
+ok 15 - current version no longer accepted does not sign documents or write a target
+  ---
+  duration_ms: 0.5294
+  ...
+# Subtest: inconsistent required purposes does not sign documents or write a target
+ok 16 - inconsistent required purposes does not sign documents or write a target
+  ---
+  duration_ms: 0.3328
+  ...
+# Subtest: adult gate not evaluated does not sign documents or write a target
+ok 17 - adult gate not evaluated does not sign documents or write a target
+  ---
+  duration_ms: 0.2647
+  ...
+# Subtest: passed status without eligibility does not sign documents or write a target
+ok 18 - passed status without eligibility does not sign documents or write a target
+  ---
+  duration_ms: 0.2504
+  ...
+# Subtest: passed but explicitly restricted does not sign documents or write a target
+ok 19 - passed but explicitly restricted does not sign documents or write a target
+  ---
+  duration_ms: 0.2945
+  ...
+# Subtest: transport failure does not sign documents or write a target
+ok 20 - transport failure does not sign documents or write a target
+  ---
+  duration_ms: 0.2531
+  ...
+# Subtest: identity changed during the IAM read cannot write the previous owner target
+ok 21 - identity changed during the IAM read cannot write the previous owner target
+  ---
+  duration_ms: 0.3437
+  ...
+# Subtest: changing a goal preserves existing interface and content language, theme, accessibility and motion preferences
+ok 22 - changing a goal preserves existing interface and content language, theme, accessibility and motion preferences
+  ---
+  duration_ms: 0.8136
+  ...
+1..22
+# tests 22
+# suites 0
+# pass 22
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 776.0074

@@ -1,0 +1,26 @@
+{
+  "at": "2026-10-15T00:00:15.3620515Z",
+  "scope": "ADULT_BIRTH_YEAR_EXISTING_TEST_ONLY",
+  "sourceHashes": [
+    {
+      "Path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\apps\\mobile\\src\\pages\\onboarding\\onboarding.vue",
+      "Hash": "D8DFBB3948499A15534923E5B88E5A76E2EFD0294097EDD8897C26DB46344833"
+    },
+    {
+      "Path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\apps\\mobile\\src\\domain\\adult-birth-year.ts",
+      "Hash": "474009D225B79A92B1522F54D7632E563DDDE814C5F1B95E0CFC1D790EFCF237"
+    },
+    {
+      "Path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\apps\\mobile\\src\\domain\\onboarding-resume.ts",
+      "Hash": "DA6DA761492B91DA0E5FC8058E25CE89D1624DF8BA65379645C9D3427D5F5743"
+    },
+    {
+      "Path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\apps\\mobile\\src\\platform\\pointer-feedback.ts",
+      "Hash": "6464F4C1712B5A0F2FD4AB01D451D5BB6FFAA13BDE486826A424511059EF6425"
+    },
+    {
+      "Path": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\apps\\mobile\\tests\\adult-birth-year-submit.test.mjs",
+      "Hash": "4412A248E5557E846FF4FD71CEC3B88BC4D127A0968FE28FC5C441CB936FC01F"
+    }
+  ]
+}

@@ -1,0 +1,66 @@
+TAP version 13
+# Subtest: an already confirmed target edit reads current IAM facts and writes only learner owner
+ok 1 - an already confirmed target edit reads current IAM facts and writes only learner owner
+  ---
+  duration_ms: 3.6558
+  ...
+# Subtest: missing consent projection does not sign documents or write a target
+ok 2 - missing consent projection does not sign documents or write a target
+  ---
+  duration_ms: 1.1446
+  ...
+# Subtest: current version no longer accepted does not sign documents or write a target
+ok 3 - current version no longer accepted does not sign documents or write a target
+  ---
+  duration_ms: 0.3909
+  ...
+# Subtest: inconsistent required purposes does not sign documents or write a target
+ok 4 - inconsistent required purposes does not sign documents or write a target
+  ---
+  duration_ms: 0.3187
+  ...
+# Subtest: adult gate not evaluated does not sign documents or write a target
+ok 5 - adult gate not evaluated does not sign documents or write a target
+  ---
+  duration_ms: 0.3342
+  ...
+# Subtest: transport failure does not sign documents or write a target
+ok 6 - transport failure does not sign documents or write a target
+  ---
+  duration_ms: 0.2591
+  ...
+# Subtest: identity changed during the IAM read cannot write the previous owner target
+ok 7 - identity changed during the IAM read cannot write the previous owner target
+  ---
+  duration_ms: 0.277
+  ...
+# Subtest: changing a goal preserves existing interface and content language, theme, accessibility and motion preferences
+not ok 8 - changing a goal preserves existing interface and content language, theme, accessibility and motion preferences
+  ---
+  duration_ms: 1.5627
+  location: 'C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\apps\\mobile\\tests\\onboarding-target-consent-guard.test.mjs:55:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    
+    1 !== 0
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 0
+  actual: 1
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///C:/Users/Administrator/Desktop/my/cloudstudy/apps/mobile/tests/onboarding-target-consent-guard.test.mjs:59:10)
+    async Test.run (node:internal/test_runner/test:797:9)
+    async Test.processPendingSubtests (node:internal/test_runner/test:526:7)
+  ...
+1..8
+# tests 8
+# suites 0
+# pass 7
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 511.946
