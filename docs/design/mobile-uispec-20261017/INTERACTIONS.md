@@ -178,15 +178,17 @@
 
 对应页面：`pages/forbidden.html`；真实实现参照 `apps/mobile/src/pages/forbidden/forbidden.vue` 与 `packages/i18n/src/mobile-experience.ts` 的 `forbidden.*` 文案。真实页按 IAM 成人 Gate、学习同意状态与身份读取结果选择受限原因，并在「已登录可管理账号 / 未登录返回登录」两套出口间切换；原型用 `?reason` 与 `?auth` 参数演示。
 
-- 主题与直达参数 → 工具条「浅色 / 深色」切换整页 token 并写入 `localStorage['uispec-theme']`；`?theme=light|dark` 固定主题；`?reason=adult|paused|generic|unknown` 切换受限原因，`?auth=guest` 演示未登录身份，`?mock=nav-failed|nav-unconfirmed|logout-failed|logout-unconfirmed` 演示动作失败。
-- 页面状态 → 工具条「正常 / 加载 / 错误 / 离线」 → 正常为访问受限说明与可用出口；加载为正在确认账号状态的骨架屏（`aria-busy`）；错误为访问状态读取失败；离线为网络不可用。切换离开正常态会取消未完成的模拟请求与跳转。
-- 受限原因 → 默认 `generic`「暂时无法访问这项内容 / 当前账号无法打开这项内容。你仍可管理账号或查看帮助。」；`adult`「暂时无法开始学习 / 当前版本仅向年满 18 周岁的用户开放学习。你仍可管理账号或查看帮助。」；`paused`「学习访问已暂停 / 当前无法继续打开学习内容。你仍可管理账号或查看帮助。」；`unknown`「暂时无法确认访问状态 / 暂时无法确认账号的访问状态。」。标题与说明同步替换，其他内容不变（对应 `forbidden.<reason>Title/Description`）。
+- 主题与直达参数 → 工具条「浅色 / 深色」切换整页 token 并写入 `localStorage['uispec-theme']`；`?theme=light|dark` 固定主题；`?reason=adult|paused|generic|unknown` 切换受限原因，`?auth=guest` 演示未登录身份，`?state=loading|error|offline` 直达页面状态，`?view=logout-unconfirmed` 直达退出未确认视图，`?mock=nav-failed|nav-unconfirmed|logout-failed|logout-unconfirmed` 演示动作失败。
+- 页面标题 → 文档标题跟随当前标题（对应真实页 `setNavigationBarTitle`）：显示为 `<标题> · 语学星移动端 UI 稿`，受限原因或读取失败状态切换时同步更新。
+- 页面状态 → 工具条「正常 / 加载 / 错误 / 离线」→ 正常为访问受限说明与可用出口；加载为正在确认账号状态的骨架屏（`aria-busy`），并显示可见的 `role="status"`「正在确认账号状态…」；错误与离线共用真实页的读取失败视图。切换离开正常态会取消未完成的模拟请求与跳转。
+- 受限原因 → 默认 `generic`「暂时无法访问这项内容 / 当前账号无法打开这项内容。你仍可管理账号或查看帮助。」；`adult`「暂时无法开始学习 / 当前版本仅向年满18周岁的用户开放学习。你仍可管理账号或查看帮助。」；`paused`「学习访问已暂停 / 当前无法继续打开学习内容。你仍可管理账号或查看帮助。」；`unknown`「暂时无法确认访问状态 / 暂时无法确认账号的访问状态。」。标题与说明同步替换，其他内容不变（对应 `forbidden.<reason>Title/Description`）。
 - 身份出口 → 已登录（默认）显示主按钮「管理账号」、次按钮「帮助与反馈」与底部「退出登录」；`?auth=guest` 只显示主按钮「返回登录」。文案对齐真实页 `forbidden.account / help / logout / login`。
-- 管理账号 / 帮助与反馈 / 返回登录 → 点击 → 按钮保持宽度并显示 16px 转圈「正在打开…」，其他按钮不可操作 → 0.9s 后分别跳转 `settings.html` / `support.html` / `login.html`。
+- 品牌行 → 只显示品牌图标与「语学星」；真实页没有成人学习说明，页面不再显示「18 岁以上成人学习」。
+- 管理账号 / 帮助与反馈 / 返回登录 → 点击 → 按钮保持宽度并显示 16px 转圈「正在打开…」，动作区下方同时显示 `role="status"`「正在打开…」，其他按钮不可操作 → 0.9s 后分别跳转 `settings.html` / `support.html` / `login.html?returnTo=%2Fpages%2Fsettings%2Fsettings`。所有「返回登录」出口（未登录主按钮、退出成功、退出未确认视图、读取失败视图）统一使用该地址，对应真实页 `loginPath`。
 - 跳转失败（Mock）→ `?mock=nav-failed` → 转圈结束后停留在本页，动作区下方显示 bad 色 `role="alert"`「页面未能打开，请重试。」；`?mock=nav-unconfirmed` → 「暂未确认页面已打开。你可以重试或使用其他入口。」。可再次点击按钮重试，错误在下一次操作开始时清除。
-- 退出登录 → 点击 → 按钮转圈「正在退出…」，其他按钮不可操作 → 1s 后 Toast「已退出登录，正在返回登录」，1.2s 后跳转 `login.html`。
-- 退出失败（Mock）→ `?mock=logout-failed` → 停留在已登录视图并显示「退出尚未完成，请重试。」；`?mock=logout-unconfirmed` → 切换到未登录视图（只保留「返回登录」）并显示「此设备已退出登录，但退出请求暂未确认。你可以返回登录。」，对应真实页会话已清除但退出请求未确认的分支。
-- 加载态 → 品牌行与正文显示骨架屏 → 不出现「等待确认」类静态框；骨架使用 surface/line token，深色下无白底。
-- 错误态「重新读取状态」→ 按钮转圈「正在读取…」→ 1.1s 后回到正常态并 Toast「访问状态已更新」；「返回登录」跳转 `login.html`。
-- 离线态「重新连接」→ 按钮转圈「正在重新连接…」→ 1.1s 后回到正常态并 Toast「网络连接已恢复」。
+- 退出登录 → 点击 → 按钮转圈「正在退出…」，动作区下方同时显示 `role="status"`「正在退出…」，其他按钮不可操作 → 1s 后直接跳转 `login.html?returnTo=%2Fpages%2Fsettings%2Fsettings`（真实页 reLaunch 到登录，无 Toast、无额外延时）。
+- 退出失败（Mock）→ `?mock=logout-failed` → 停留在已登录视图并显示「退出尚未完成，请重试。」；`?mock=logout-unconfirmed` → 切换到未登录视图（只保留「返回登录」）并显示「此设备已退出登录，但退出请求暂未确认。你可以返回登录。」，对应真实页会话已清除但退出请求未确认的分支；`?view=logout-unconfirmed` 可直接打开该视图用于截图。
+- 读取失败（错误 / 离线）→ 标题与说明改为「暂时无法确认访问状态 / 暂时无法确认账号的访问状态。」，动作区下方显示 bad 色 `role="alert"`「账号状态暂时无法读取，请重新读取。」，并出现文字按钮「重新读取状态」；身份出口保持不变（已登录：管理账号 / 帮助与反馈 / 退出登录；`?auth=guest`：返回登录）。对应真实页 `readFailed` 分支，不另造错误状态块。离线额外显示 mut 提示「当前网络不可用，请连接网络后重新读取。」。
+- 「重新读取状态」→ 按钮转圈「正在确认账号状态…」，动作区下方显示同名 `role="status"`，所有按钮不可操作 → 1.1s 后回到正常视图并恢复当前受限原因标题与说明，不弹成功 Toast。
+- 加载态 → 品牌行与正文显示骨架屏，并显示可见的 `role="status"`「正在确认账号状态…」；不出现「等待确认」类静态框；骨架使用 surface/line token，深色下无白底。
 - 文案边界 → 不显示内部错误码、原始版本号或账号是否存在；受限原因只描述当前状态与下一步。

@@ -891,7 +891,7 @@
     later(function () {
       endBusy();
       if (year > CURRENT_YEAR - 18) {
-        location.href = 'forbidden.html';
+        location.href = 'forbidden.html?reason=adult';
         return;
       }
       if (MOCK === 'confirm-failed') {
