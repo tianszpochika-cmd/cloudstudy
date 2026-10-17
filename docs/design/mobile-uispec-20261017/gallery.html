@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>组件总览 · 语学星移动端 UI 稿</title>
+<link rel="stylesheet" href="shared.css">
+<script src="shared.js"></script>
+</head>
+<body class="gallery-body">
+
+<header class="gallery-header">
+  <div class="gallery-header__inner">
+    <h1 class="gallery-header__title">组件总览</h1>
+    <p class="gallery-header__sub">语学星移动端 UI 稿 · 390×844 · 所有组件可点击试用</p>
+    <div class="gallery-header__toolbar" data-ui="toolbar"></div>
+  </div>
+</header>
+
+<main class="gallery-stage">
+  <div class="gallery-shell">
+
+    <!-- 2. 外框 -->
+    <section class="gallery-section" id="shell">
+      <h2>手机外框与导航</h2>
+      <p>390×844 原型框、44px 状态栏、自定义导航栏与 5 项 TabBar。TabBar 可点击跳转对应原型页。</p>
+      <div class="phone phone--inline" style="min-height: 0">
+        <div data-ui="statusbar"></div>
+        <div data-ui="navbar" data-title="课程" data-back="learn.html" data-action="<button type='button' class='hit-44' aria-label='更多' data-toast='已打开更多操作'><span data-icon='more' data-icon-size='22'></span></button>"></div>
+        <div class="page-body" style="padding-top: 8px; padding-bottom: 12px">
+          <h2 class="page-title">导航示例</h2>
+          <p class="page-sub" style="margin-bottom: 12px">标题居中，返回命中区 44×44；右侧为可选操作。</p>
+          <div class="inline-state inline-state--info">
+            <span data-icon="info" data-icon-size="18"></span>
+            <span>页面内容在导航栏下方滚动，TabBar 固定在底部。</span>
+          </div>
+        </div>
+        <div data-ui="tabbar" data-active="learn" data-prefix="" data-toast=""></div>
+      </div>
+      <div class="gallery-note">注：框内 TabBar 链接到本目录下的 <code>home.html</code>、<code>learn.html</code> 等原型页。</div>
+    </section>
+
+    <!-- 3. 按钮 -->
+    <section class="gallery-section" id="buttons">
+      <h2>按钮</h2>
+      <p>主按钮高 48、16px/600；禁用态使用 surface 底 + mut 字，不靠透明度；提交中保持宽度并阻止重复点击。</p>
+      <div class="demo-stack">
+        <button type="button" class="btn btn--primary btn--block" data-busy-demo data-busy-label="正在登录…" data-busy-ms="1500" data-done-toast="演示完成：登录成功"><span class="btn__label">主按钮（点击演示提交中）</span></button>
+        <button type="button" class="btn btn--secondary btn--block" data-toast="已保存到学习计划" data-toast-kind="ok">次按钮（点击 Toast）</button>
+        <div class="demo-row">
+          <button type="button" class="btn btn--ghost" data-toast="文字按钮">文字按钮</button>
+          <button type="button" class="btn btn--text" data-toast="文字链接">文字链接</button>
+          <button type="button" class="btn btn--danger btn--sm" data-open-overlay="demo-danger-dialog">危险操作</button>
+        </div>
+        <div class="demo-row">
+          <button type="button" class="btn btn--primary btn--sm">小号主按钮</button>
+          <button type="button" class="btn btn--secondary btn--sm" disabled>已禁用</button>
+          <button type="button" class="btn btn--secondary btn--sm is-disabled">不可用</button>
+        </div>
+        <div class="demo-row">
+          <button type="button" class="btn btn--primary btn--block" disabled>下一步（禁用）</button>
+        </div>
+        <button type="button" class="btn btn--primary btn--block is-busy" aria-busy="true" aria-disabled="true"><span class="btn__spinner"></span><span class="btn__label">正在登录…</span></button>
+        <div class="gallery-note">最后一项为提交中的静态展示：16px 转圈 + 文案，宽度与主按钮一致。</div>
+      </div>
+    </section>
+
+    <!-- 4. 输入框与表单 -->
+    <section class="gallery-section" id="forms">
+      <h2>输入框与表单</h2>
+      <p>48px 高、12 圆角；聚焦显示 brand 边框；错误态使用 bad 边框并在字段下方逐条说明。点击「提交」可看到逐字段校验与首个错误聚焦。</p>
+      <form class="demo-stack" data-demo-form data-success-toast="演示完成：信息已保存" novalidate>
+        <div class="field">
+          <label class="field__label" for="g-name">昵称</label>
+          <div class="field__control">
+            <span class="field__icon" data-icon="user" data-icon-size="20"></span>
+            <input id="g-name" name="name" type="text" placeholder="请输入昵称" data-required-message="请输入昵称" autocomplete="nickname">
+          </div>
+          <span class="field__hint">2–20 个字符，学习报告中会展示昵称。</span>
+          <span class="field__error" role="alert"></span>
+        </div>
+        <div class="field">
+          <label class="field__label" for="g-email">邮箱</label>
+          <div class="field__control">
+            <span class="field__icon" data-icon="mail" data-icon-size="20"></span>
+            <input id="g-email" name="email" type="email" placeholder="name@example.com" data-required-message="请输入邮箱" autocomplete="email">
+          </div>
+          <span class="field__error" role="alert"></span>
+        </div>
+        <div class="field">
+          <label class="field__label" for="g-password">密码</label>
+          <div class="field__control">
+            <span class="field__icon" data-icon="lock" data-icon-size="20"></span>
+            <input id="g-password" name="password" type="password" placeholder="请输入密码" data-required-message="请输入密码" autocomplete="current-password">
+            <button type="button" class="field__eye" data-toggle-password aria-label="显示密码" aria-pressed="false" data-icon="eye" data-icon-size="19"></button>
+          </div>
+          <span class="field__hint">至少 8 位，建议包含字母与数字。</span>
+          <span class="field__error" role="alert"></span>
+        </div>
+        <div class="field is-invalid">
+          <label class="field__label" for="g-error">错误态示例</label>
+          <div class="field__control">
+            <input id="g-error" type="text" value="abc" aria-invalid="true">
+          </div>
+          <span class="field__error" role="alert">链接格式不正确，请检查后重试</span>
+        </div>
+        <div class="field">
+          <label class="field__label" for="g-disabled">禁用输入</label>
+          <div class="field__control" style="background: var(--v2-surface)">
+            <input id="g-disabled" type="text" value="138****6721" disabled>
+          </div>
+          <span class="field__hint">手机号由账号绑定信息提供，暂不可修改。</span>
+        </div>
+        <button type="submit" class="btn btn--primary btn--block" data-busy-label="正在保存…">提交</button>
+      </form>
+    </section>
+
+    <!-- 5. 列表、卡片、徽标 -->
+    <section class="gallery-section" id="lists">
+      <h2>列表、卡片与徽标</h2>
+      <p>列表行最小 56px，可点击；卡片用于承载主任务，不嵌套卡片。</p>
+      <div class="list">
+        <a class="list__item" href="today.html">
+          <span class="list__icon" data-icon="calendar" data-icon-size="24"></span>
+          <span class="list__body"><span class="list__title">今日任务</span><span class="list__desc">3 个待完成 · 约 15 分钟</span></span>
+          <span class="badge">进行中</span>
+          <span class="list__chevron" data-icon="chevron-right" data-icon-size="20"></span>
+        </a>
+        <a class="list__item" href="b2-vocabulary.html">
+          <span class="list__icon" data-icon="book" data-icon-size="24"></span>
+          <span class="list__body"><span class="list__title">词汇复习</span><span class="list__desc">24 个到期词</span></span>
+          <span class="list__chevron" data-icon="chevron-right" data-icon-size="20"></span>
+        </a>
+        <button type="button" class="list__item" data-toast="已切换为离线可用" data-toast-kind="ok">
+          <span class="list__icon" data-icon="download" data-icon-size="24"></span>
+          <span class="list__body"><span class="list__title">离线包</span><span class="list__desc">上次更新：今天 09:20</span></span>
+          <span class="list__value">128 MB</span>
+          <span class="list__chevron" data-icon="chevron-right" data-icon-size="20"></span>
+        </button>
+        <div class="list__item list__item--static">
+          <span class="list__icon" data-icon="shield" data-icon-size="24"></span>
+          <span class="list__body"><span class="list__title">账号安全</span><span class="list__desc">已开启登录保护</span></span>
+          <span class="badge badge--ok">正常</span>
+        </div>
+      </div>
+
+      <h3 class="section-title">徽标</h3>
+      <div class="chip-row">
+        <span class="badge">新</span>
+        <span class="badge badge--ok">已完成</span>
+        <span class="badge badge--warn">待复习</span>
+        <span class="badge badge--bad">已过期</span>
+        <span class="badge badge--mut">未开始</span>
+      </div>
+
+      <h3 class="section-title">头像</h3>
+      <div class="demo-row">
+        <span class="avatar avatar--sm">语</span>
+        <span class="avatar">星</span>
+        <span class="avatar avatar--lg">学</span>
+        <span class="gallery-note">默认头像使用姓名首字与 soft 底，不出现空白图片块。</span>
+      </div>
+
+      <h3 class="section-title">卡片</h3>
+      <div class="card">
+        <div class="row-between">
+          <div class="grow">
+            <h3 class="card__title">连续学习 7 天</h3>
+            <p class="card__sub">今天再完成 1 个练习，保持连续记录。</p>
+          </div>
+          <span class="badge badge--warn">6 / 7</span>
+        </div>
+        <div class="progress" style="margin-top: 16px"><div class="progress__fill" style="width: 86%"></div></div>
+      </div>
+      <div class="card card--flat card--pad-sm" style="margin-top: 12px">
+        <div class="row-between">
+          <span class="text-sm">无阴影卡片（用于次级信息）</span>
+          <a class="btn btn--text btn--sm" href="b10-report.html">查看报告</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. chip / 分段 / 开关 -->
+    <section class="gallery-section" id="controls">
+      <h2>Chip、分段控件与开关</h2>
+      <p>Chip 单选/多选均可点击；分段控件同组互斥；开关支持键盘操作。</p>
+
+      <h3 class="section-title">单选 chip</h3>
+      <div class="chip-row" data-select="single">
+        <button type="button" class="chip is-selected" data-toggle aria-pressed="true" data-value="15">每天 15 分钟</button>
+        <button type="button" class="chip" data-toggle aria-pressed="false" data-value="30">每天 30 分钟</button>
+        <button type="button" class="chip" data-toggle aria-pressed="false" data-value="45">每天 45 分钟</button>
+        <button type="button" class="chip" data-toggle aria-pressed="false" data-value="60">每天 1 小时</button>
+      </div>
+
+      <h3 class="section-title">多选 chip</h3>
+      <div class="chip-row">
+        <button type="button" class="chip is-selected" data-toggle aria-pressed="true">日常交流</button>
+        <button type="button" class="chip" data-toggle aria-pressed="false">商务写作</button>
+        <button type="button" class="chip is-selected" data-toggle aria-pressed="true">考试备考</button>
+        <button type="button" class="chip" disabled>暂未开放</button>
+      </div>
+
+      <h3 class="section-title">分段控件</h3>
+      <div class="segmented" data-select="single" role="tablist" aria-label="学习周期">
+        <button type="button" class="segmented__item is-selected" role="tab" aria-selected="true" data-toggle>本周</button>
+        <button type="button" class="segmented__item" role="tab" aria-selected="false" data-toggle>本月</button>
+        <button type="button" class="segmented__item" role="tab" aria-selected="false" data-toggle>全部</button>
+      </div>
+
+      <h3 class="section-title">开关</h3>
+      <div class="stack-8">
+        <div class="row-between">
+          <span>学习提醒</span>
+          <button type="button" class="switch" role="switch" aria-checked="true" aria-label="学习提醒"></button>
+        </div>
+        <div class="row-between">
+          <span>深色模式跟随系统</span>
+          <button type="button" class="switch" role="switch" aria-checked="false" aria-label="深色模式跟随系统"></button>
+        </div>
+        <div class="row-between">
+          <span class="text-mut">离线包自动更新（需会员）</span>
+          <button type="button" class="switch" role="switch" aria-checked="false" aria-label="离线包自动更新" disabled></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. 进度 -->
+    <section class="gallery-section" id="progress">
+      <h2>进度条</h2>
+      <p>进度条只表达已完成比例，颜色不作为唯一信号，旁侧始终有数字说明。</p>
+      <div class="demo-stack">
+        <div>
+          <div class="row-between text-sm" style="margin-bottom: 6px"><span>今日任务</span><span class="text-mut mono-num">2 / 3</span></div>
+          <div class="progress"><div class="progress__fill" style="width: 66%"></div></div>
+        </div>
+        <div>
+          <div class="row-between text-sm" style="margin-bottom: 6px"><span>课程进度</span><span class="text-mut mono-num">18 / 20 单元</span></div>
+          <div class="progress progress--ok"><div class="progress__fill" style="width: 90%"></div></div>
+        </div>
+        <div>
+          <div class="row-between text-sm" style="margin-bottom: 6px"><span>词汇到期</span><span class="text-mut mono-num">已复习 5 / 24</span></div>
+          <div class="progress progress--warn progress--thin"><div class="progress__fill" style="width: 21%"></div></div>
+        </div>
+        <div class="row" style="gap: 16px">
+          <span class="progress-ring" role="img" aria-label="今日完成 75%">
+            <svg width="56" height="56" viewBox="0 0 56 56">
+              <circle cx="28" cy="28" r="24" fill="none" stroke="var(--v2-surface)" stroke-width="6"></circle>
+              <circle cx="28" cy="28" r="24" fill="none" stroke="var(--v2-brand)" stroke-width="6" stroke-linecap="round" stroke-dasharray="150.8" stroke-dashoffset="37.7" transform="rotate(-90 28 28)"></circle>
+            </svg>
+          </span>
+          <span class="text-sm">环形进度用于首页目标卡，中心显示「75%」。</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 8. 弹层、对话框、Toast -->
+    <section class="gallery-section" id="feedback">
+      <h2>弹层、对话框与 Toast</h2>
+      <p>弹层与对话框在手机框内演示；遮罩可点击关闭，Esc 也可关闭。Toast 顶部居中，2 秒消失。</p>
+      <div class="phone phone--inline" style="min-height: 320px">
+        <div class="page-body" style="padding: 16px">
+          <div class="demo-stack">
+            <button type="button" class="btn btn--secondary btn--block" data-open-overlay="demo-sheet">打开底部弹层</button>
+            <button type="button" class="btn btn--secondary btn--block" data-open-overlay="demo-dialog">打开对话框</button>
+            <div class="demo-row">
+              <button type="button" class="btn btn--ghost" data-toast="已保存" data-toast-kind="ok">成功 Toast</button>
+              <button type="button" class="btn btn--ghost" data-toast="网络连接不可用，请稍后重试" data-toast-kind="bad">错误 Toast</button>
+              <button type="button" class="btn btn--ghost" data-toast="已复制链接" data-toast-kind="info">普通 Toast</button>
+            </div>
+            <p class="gallery-note">弹层、对话框与 Toast 均按 390px 宽度适配。</p>
+          </div>
+        </div>
+
+        <div class="overlay-layer" id="demo-sheet" aria-hidden="true">
+          <div class="overlay__scrim" data-close></div>
+          <div class="sheet" role="dialog" aria-modal="true" aria-label="选择练习方式">
+            <div class="sheet__handle"></div>
+            <h3 class="sheet__title">选择练习方式</h3>
+            <p class="sheet__sub">今天的练习会根据你的目标自动安排顺序。</p>
+            <div class="sheet__list">
+              <button type="button" class="sheet__item" data-toast="已开始今日练习" data-toast-kind="ok"><span data-icon="play" data-icon-size="20"></span>今日推荐</button>
+              <button type="button" class="sheet__item" data-toast="已选择错题重练" data-toast-kind="ok"><span data-icon="refresh" data-icon-size="20"></span>错题重练</button>
+              <button type="button" class="sheet__item" data-toast="已选择自由练习" data-toast-kind="ok"><span data-icon="target" data-icon-size="20"></span>自由练习</button>
+            </div>
+            <button type="button" class="sheet__cancel" data-close>取消</button>
+          </div>
+        </div>
+
+        <div class="overlay-layer" id="demo-dialog" aria-hidden="true">
+          <div class="overlay__scrim" data-close></div>
+          <div class="dialog" role="alertdialog" aria-modal="true" aria-labelledby="demo-dialog-title" aria-describedby="demo-dialog-text">
+            <h3 class="dialog__title" id="demo-dialog-title">退出学习？</h3>
+            <p class="dialog__text" id="demo-dialog-text">当前练习还未提交，退出后本次作答不会保存。</p>
+            <div class="dialog__actions">
+              <button type="button" class="btn btn--secondary" data-close>继续练习</button>
+              <button type="button" class="btn btn--danger" data-dialog-confirm="已退出本次练习" data-confirm-kind="bad">退出</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="overlay-layer" id="demo-danger-dialog" aria-hidden="true" style="position: fixed">
+        <div class="overlay__scrim" data-close></div>
+        <div class="dialog" role="alertdialog" aria-modal="true" aria-labelledby="danger-title">
+          <h3 class="dialog__title" id="danger-title">清除离线内容？</h3>
+          <p class="dialog__text">将删除已下载的 3 个离线包，共 128 MB。清除后需要重新下载才能离线学习。</p>
+          <div class="dialog__actions">
+            <button type="button" class="btn btn--secondary" data-close>保留</button>
+            <button type="button" class="btn btn--danger" data-dialog-confirm="已清除离线内容" data-confirm-kind="ok">清除</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 9. 骨架屏与状态块 -->
+    <section class="gallery-section" id="states">
+      <h2>骨架屏与页面状态</h2>
+      <p>加载首屏用骨架屏，操作内用转圈；空、错误、无权限都必须给出下一步动作。</p>
+
+      <h3 class="section-title">骨架屏</h3>
+      <div class="card card--pad-sm" aria-hidden="true">
+        <div class="row" style="align-items: flex-start">
+          <div class="skeleton skeleton-circle" style="width: 44px; height: 44px; flex: none"></div>
+          <div class="grow stack-8">
+            <div class="skeleton skeleton-line" style="width: 46%"></div>
+            <div class="skeleton skeleton-line skeleton-line--sm" style="width: 78%"></div>
+            <div class="skeleton skeleton-line skeleton-line--sm" style="width: 62%"></div>
+          </div>
+        </div>
+        <div class="skeleton skeleton-block" style="height: 72px; margin-top: 16px"></div>
+      </div>
+
+      <h3 class="section-title">空状态</h3>
+      <div class="state-block">
+        <span class="state-block__icon" data-icon="bookmark" data-icon-size="24"></span>
+        <span class="state-block__title">还没有错题</span>
+        <span class="state-block__text">完成一次练习后，答错的题目会自动收进这里。</span>
+        <span class="state-block__actions"><a class="btn btn--primary btn--sm" href="b2-practice.html">去练习</a></span>
+      </div>
+
+      <h3 class="section-title">错误状态</h3>
+      <div class="state-block">
+        <span class="state-block__icon state-block__icon--bad" data-icon="alert-circle" data-icon-size="24"></span>
+        <span class="state-block__title">内容暂时加载失败</span>
+        <span class="state-block__text">网络连接不稳定，请检查网络后重试。</span>
+        <span class="state-block__actions">
+          <button type="button" class="btn btn--primary btn--sm" data-busy-demo data-busy-label="正在重试…" data-busy-ms="1100" data-done-toast="已重新加载">重试</button>
+        </span>
+      </div>
+
+      <h3 class="section-title">无权限 / 功能未开放</h3>
+      <div class="state-block">
+        <span class="state-block__icon state-block__icon--warn" data-icon="lock" data-icon-size="24"></span>
+        <span class="state-block__title">该功能需开通学习权益</span>
+        <span class="state-block__text">当前账号可以继续学习免费课程，离线包与专项报告需开通后使用。</span>
+        <span class="state-block__actions">
+          <a class="btn btn--secondary btn--sm" href="b5-commerce.html">查看权益</a>
+          <button type="button" class="btn btn--primary btn--sm" data-toast="已返回继续学习" data-toast-kind="ok">继续学习</button>
+        </span>
+      </div>
+
+      <h3 class="section-title">行内提示</h3>
+      <div class="demo-stack">
+        <div class="inline-state inline-state--info"><span data-icon="info" data-icon-size="18"></span><span>每日 0 点更新任务，未完成的练习会保留进度。</span></div>
+        <div class="inline-state inline-state--ok"><span data-icon="check-circle" data-icon-size="18"></span><span>已保存到学习计划。</span></div>
+        <div class="inline-state inline-state--warn"><span data-icon="alert-triangle" data-icon-size="18"></span><span>离线包将在 Wi-Fi 环境下自动更新。</span></div>
+        <div class="inline-state inline-state--bad"><span data-icon="alert-circle" data-icon-size="18"></span><span>账号或密码不正确，请重新输入。</span></div>
+      </div>
+    </section>
+
+    <!-- 10. Tokens（放在页尾，避免首屏全是色卡） -->
+    <section class="gallery-section" id="tokens">
+      <h2>设计 Token</h2>
+      <p>与 <code>v2-tokens.scss</code> 同值；切换主题后色值与对比度同步变化。</p>
+      <div class="gallery-swatches" data-token-list>
+        <div class="gallery-swatch" data-token="--v2-bg"><span class="gallery-swatch__chip" style="background: var(--v2-bg)"></span><span>bg<br><span class="gallery-swatch__code text-mut">#F5F5FA</span></span></div>
+        <div class="gallery-swatch" data-token="--v2-card"><span class="gallery-swatch__chip" style="background: var(--v2-card)"></span><span>card<br><span class="gallery-swatch__code text-mut">#FFFFFF</span></span></div>
+        <div class="gallery-swatch" data-token="--v2-surface"><span class="gallery-swatch__chip" style="background: var(--v2-surface)"></span><span>surface<br><span class="gallery-swatch__code text-mut">#F0F1F7</span></span></div>
+        <div class="gallery-swatch" data-token="--v2-ink"><span class="gallery-swatch__chip" style="background: var(--v2-ink)"></span><span>ink<br><span class="gallery-swatch__code text-mut">#222337</span></span></div>
+        <div class="gallery-swatch" data-token="--v2-mut"><span class="gallery-swatch__chip" style="background: var(--v2-mut)"></span><span>mut<br><span class="gallery-swatch__code text-mut">#606277</span></span></div>
+        <div class="gallery-swatch" data-token="--v2-brand"><span class="gallery-swatch__chip" style="background: var(--v2-brand)"></span><span>brand<br><span class="gallery-swatch__code text-mut">#5935B8</span></span></div>
+        <div class="gallery-swatch" data-token="--v2-soft"><span class="gallery-swatch__chip" style="background: var(--v2-soft)"></span><span>soft<br><span class="gallery-swatch__code text-mut">#EEE9FB</span></span></div>
+        <div class="gallery-swatch" data-token="--v2-line"><span class="gallery-swatch__chip" style="background: var(--v2-line)"></span><span>line<br><span class="gallery-swatch__code text-mut">#DCDEEA</span></span></div>
+        <div class="gallery-swatch" data-token="--v2-ok"><span class="gallery-swatch__chip" style="background: var(--v2-ok)"></span><span>ok<br><span class="gallery-swatch__code text-mut">#19714D</span></span></div>
+        <div class="gallery-swatch" data-token="--v2-bad"><span class="gallery-swatch__chip" style="background: var(--v2-bad)"></span><span>bad<br><span class="gallery-swatch__code text-mut">#AC303D</span></span></div>
+        <div class="gallery-swatch" data-token="--v2-warn"><span class="gallery-swatch__chip" style="background: var(--v2-warn)"></span><span>warn<br><span class="gallery-swatch__code text-mut">#80520C</span></span></div>
+        <div class="gallery-swatch" data-token="--v2-info"><span class="gallery-swatch__chip" style="background: var(--v2-info)"></span><span>info<br><span class="gallery-swatch__code text-mut">#215D9C</span></span></div>
+      </div>
+
+      <h3 class="section-title">文字层级</h3>
+      <div class="stack-8">
+        <div style="font-size: 28px; line-height: 1.4; font-weight: 650">入口标题 28 / 650</div>
+        <div style="font-size: 20px; line-height: 1.4; font-weight: 650">页面标题 20 / 650</div>
+        <div style="font-size: 16px; line-height: 1.6">正文 16 / 1.6，用于任务描述与内容主体。</div>
+        <div style="font-size: 14px; line-height: 1.75; color: var(--v2-mut)">说明 14 / 1.75，用于次要解释与辅助信息。</div>
+        <div style="font-size: 13px; color: var(--v2-mut)">辅助规则 13 / 1.6。</div>
+        <div style="font-size: 12px; color: var(--v2-mut)">角标 12。</div>
+      </div>
+    </section>
+
+    <!-- 11. 图标集 -->
+    <section class="gallery-section" id="icons">
+      <h2>图标集</h2>
+      <p>线性 24px、描边 1.75；全部为 shared.js 内联 SVG，不依赖图标字体或外部资源。</p>
+      <div class="icon-grid" data-icon-gallery></div>
+    </section>
+
+  </div>
+</main>
+
+<div class="interaction-notes">
+  <h2>交互说明（gallery）</h2>
+  <ul>
+    <li><strong>主题切换</strong> → 顶部工具条「浅色 / 深色」 → <code>html[data-theme]</code> 切换，写入 <code>localStorage['uispec-theme']</code>，并响应 <code>?theme=dark</code>。</li>
+    <li><strong>按钮提交中</strong> → 点击「主按钮」 → 按钮保持宽度、显示 16px 转圈与「正在登录…」、禁用重复点击，1.5s 后恢复并弹出成功 Toast。</li>
+    <li><strong>表单校验</strong> → 点击「提交」 → 逐字段标红并显示中文错误，焦点落到首个错误；输入后该字段错误自动清除。</li>
+    <li><strong>密码可见</strong> → 点击眼睛图标 → 切换 <code>type=password/text</code>，图标与 <code>aria-label</code> 同步。</li>
+    <li><strong>chip / 分段</strong> → 点击 → 同组单选互斥或多选切换，反馈为选中态变化（<code>uispec:toggle</code>）。</li>
+    <li><strong>开关</strong> → 点击或空格/回车 → <code>aria-checked</code> 切换；禁用开关不可操作。</li>
+    <li><strong>底部弹层</strong> → 点击「打开底部弹层」 → 遮罩淡入、面板上滑；点击遮罩/取消/Esc 关闭；选择项关闭并 Toast。</li>
+    <li><strong>对话框</strong> → 点击「打开对话框」或「危险操作」 → 居中弹入，两个按钮；危险按钮使用 bad 色，确认后关闭并 Toast。</li>
+    <li><strong>Toast</strong> → 点击任意 Toast 按钮 → 顶部居中显示 2s，成功/错误/普通三种图标与颜色。</li>
+    <li><strong>重试</strong> → 点击「重试」 → 状态块内切换加载占位，1.2s 后恢复并 Toast。</li>
+  </ul>
+</div>
+
+</body>
+</html>
