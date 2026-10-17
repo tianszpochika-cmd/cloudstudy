@@ -245,8 +245,23 @@ body {
 .btn--secondary:disabled,
 .btn--secondary.is-disabled { border-color: var(--v2-line); }
 
-/* 提交中 */
-.btn.is-busy { cursor: progress; pointer-events: none; }
+/* 提交中
+ * setBusy() 会给按钮加 native disabled（阻止重复点击与聚焦）；
+ * 这里让 .is-busy 覆盖上面的禁用态，按原按钮变体保留外观：
+ * 主按钮仍是 brand 底 + inverse 字，转圈用 currentColor。 */
+.btn:disabled.is-busy,
+.btn.is-disabled.is-busy,
+.btn.is-busy { cursor: progress; pointer-events: none; opacity: 1; box-shadow: none; }
+.btn--primary:disabled.is-busy,
+.btn--primary.is-disabled.is-busy { background: var(--v2-brand); color: var(--v2-inverse); border-color: transparent; }
+.btn--secondary:disabled.is-busy,
+.btn--secondary.is-disabled.is-busy { background: var(--v2-surface); color: var(--v2-ink); border-color: var(--v2-line); }
+.btn--danger:disabled.is-busy,
+.btn--danger.is-disabled.is-busy { background: var(--v2-bad-soft); color: var(--v2-bad); border-color: transparent; }
+.btn--ghost:disabled.is-busy,
+.btn--text:disabled.is-busy,
+.btn--ghost.is-disabled.is-busy,
+.btn--text.is-disabled.is-busy { background: transparent; color: var(--v2-brand); border-color: transparent; }
 .btn__spinner {
   width: 16px; height: 16px;
   border-radius: 50%;
