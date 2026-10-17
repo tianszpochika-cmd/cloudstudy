@@ -197,15 +197,17 @@
 
 对应页面：`pages/home.html`；真实实现参照 `apps/mobile/src/pages/home/home.vue`、`apps/mobile/src/domain/plan-today.ts`、`apps/mobile/src/domain/onboarding-resume.ts` 与 `packages/i18n/src/mobile-experience.ts` 的 `pages.home` 文案。真实页由 `store.loadHome()` 读取学习投影（今日任务、目标分钟、已用分钟、课程书架），并按 `onboardingResume` 决定是否展示学习引导。
 
-- 主题与直达参数 → 工具条「浅色 / 深色」切换整页 token 并写入 `localStorage['uispec-theme']`；`?theme=light|dark` 固定主题；`?mock=guide|explain|all-done|no-tasks|course-empty|course-error` 演示学习引导、计划说明、今日完成、暂无任务与课程书架状态，`?auth=guest` 演示未登录。
-- 页面状态 → 工具条「正常 / 加载 / 空 / 错误 / 无权限 / 离线」→ 正常为今日学习；加载为读取今日任务的骨架屏（`aria-busy`）；空为「还没有学习计划」+「开始设置」；错误为「今日任务暂不可用」+「重试」；无权限为当前账号无法查看学习任务；离线为网络不可用。切换离开正常态会取消未完成的重试 / 课程重新加载。
-- 状态恢复 → 错误「重试」转圈「正在重试…」→ 1.1s 后回到正常态并 Toast「今日任务已更新」；无权限「重新读取」→ 1.1s 后回到正常态，不弹成功 Toast；离线「重新连接」→ 1.1s 后回到正常态并 Toast「网络连接已恢复」。
+- 主题与直达参数 → 工具条「浅色 / 深色」切换整页 token 并写入 `localStorage['uispec-theme']`；`?theme=light|dark` 固定主题；`?mock=guide|guide-goal|first-learning|explain|all-done|no-tasks|plan-completed|plan-no-content|plan-no-due|plan-failed|course-empty|course-error|course-unavailable` 演示学习引导、首次学习、计划说明、今日完成、计划空态与课程书架状态，`?auth=guest` 演示未登录。
+- 页面状态 → 工具条「正常 / 加载 / 空 / 错误 / 无权限 / 离线」→ 正常为今日学习；加载为读取今日任务的骨架屏（`aria-busy`）；空为整页 NO_PLAN「还没有学习计划」+「开始设置」；错误 / 无权限 / 离线共用真实页同一分支「今日任务暂不可用」+ 说明 + 单个「重试」。切换离开正常态会取消未完成的重试 / 课程重新加载。
+- 状态恢复 → 错误 / 无权限 / 离线「重试」转圈「正在重试…」→ 1.1s 后回到正常态，不弹成功 Toast；离线在卡片下方保留 mut 说明「当前网络不可用，连接网络后再试。」。
 - 今日学习 → 展示目标 15 分钟、今日进度百分比与进度条（`role=progressbar`）、已完成分钟与任务数；有可继续任务时主按钮「继续课程」跳转 `learn.html?contentCode=…&taskId=…`，全部完成或暂无任务时按钮为真实禁用（surface 底、mut 字、not-allowed）。
-- 今日任务 → 每行标题、说明与时长；进行中 / 可学习显示「继续课程 / 查看课程」跳转课程页；已完成、未解锁、暂不可用为禁用按钮，禁用原因写在行内（如「完成上一节后解锁。」）。
-- 错题本 → 点击「进入错题本」→ 跳转 `b10-report.html`。
-- 课程搜索 → 输入即筛选课程标题与简介 → 有结果时显示「找到 n 门课程。」；无结果时显示「没有匹配的课程。」与「清空搜索」；输入框右侧出现清空按钮（44×44 命中区），点击清空并聚焦输入框。
-- 课程书架 → 每门课程显示标题与简介，点击跳转 `learn.html?contentCode=…`；`?mock=course-empty` 显示「书架里还没有可学习的内容。」，`?mock=course-error` 显示「课程暂时没能加载。」并提供「重新加载」，1s 后恢复列表并 Toast「课程已更新」。
-- 学习引导 / 计划说明 → `?mock=guide` 显示 soft 底引导「目标已保存，下一步进入定级 / 剩余步骤：定级」与「继续设置，开始学习」跳转 `assessment.html`；`?mock=explain` 显示 `role=status` 计划说明行。
+- 今日任务 → 每行标题、说明与时长；进行中 / 可学习显示「继续课程 / 查看课程」跳转课程页；已完成、未解锁、暂不可用为禁用按钮，禁用原因写在行内（如「完成上一节后解锁。」）；UNAVAILABLE 行以 warn 色显示「内容暂不可用」。
+- 计划空态（卡片内） → 对应 `emptyStateView`，保留问候、今日学习与课程书架：`?mock=plan-completed`「今天的学习已经完成 / 已保存的练习还在。」+「结束学习」；`?mock=plan-no-content`「暂时没有可学习的内容 / 可以先看现在能打开的内容。」+「看可用内容」跳转 `learn.html`；`?mock=plan-no-due`「今天没有到期的复习 / 可以新学一节，或先结束今天。」+「新学或结束」跳转 `learn.html`；`?mock=plan-failed`「今日任务没有加载成功 / 已提交的进度会保留。」+「重试」，重试转圈「正在重试…」后恢复任务列表。工具条「空」仍是整页 NO_PLAN 简化变体。
+- 首次学习引导 → `?mock=first-learning` 在问候下方显示 `role=status` 行「继续完成第一次学习」（对应 `firstLearningGuideCopy` 的 INCOMPLETE），与计划说明行相互独立。
+- 学习引导 / 计划说明 → `?mock=guide`（定级步骤）显示 soft 底「目标已保存，下一步进入定级 / 剩余步骤：定级」+「继续设置，开始学习」跳转 `assessment.html`；`?mock=guide-goal`（更早的学习目标步骤）显示「还需要保存学习目标 / 剩余步骤：学习目标」，同一 CTA 跳转 `onboarding.html`；`?mock=explain` 显示 `role=status` 计划说明行。
+- 错题本 → 点击「进错题本」→ 跳转 `b10-report.html`。
+- 课程搜索 → 输入即筛选课程标题与简介（真实页不显示结果计数）；无结果时显示「没有匹配的课程。」与「清空搜索」；输入框右侧出现清空按钮（44×44 命中区），点击清空并聚焦输入框。
+- 课程书架 → 每门课程显示标题与简介，点击跳转 `learn.html?contentCode=…`；`?mock=course-empty` 显示「书架里还没有可学习的内容。」，`?mock=course-error` 显示「课程暂时没能加载。」并提供「重新加载」，1s 后恢复列表且不弹 Toast；`?mock=course-unavailable` 在列表下方显示 `role=alert`「课程列表暂不可用。」。
 - 今日完成 → `?mock=all-done`：进度 100%，今天任务全部为「已完成」，「继续课程」禁用；`?mock=no-tasks`：进度 0，任务卡显示「今天还没有安排任务。」。
 - 未登录 → `?auth=guest`：标题改为「登录后，继续今天的学习」，隐藏今日学习、任务、错题本与课程书架，只保留登录卡「登录后继续」跳转 `login.html` 与「修改目标 / 进入测评」入口。
 - TabBar → 底部 5 项，当前「学习」选中并带 `aria-current="page"`；其余跳转 `b2-practice.html` / `world.html` / `learn.html` / `profile.html`。右上角设置入口跳转 `settings.html`。
