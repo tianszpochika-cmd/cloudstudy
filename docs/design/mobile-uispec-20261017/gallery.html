@@ -115,6 +115,48 @@
       </form>
     </section>
 
+    <!-- 4b. 账号入口 -->
+    <section class="gallery-section" id="auth">
+      <h2>账号入口</h2>
+      <p>登录 / 注册 / 找回密码共用：品牌行、入口标题、字段组、表单级错误与页脚切换。页脚链接命中区 44。</p>
+      <div class="phone phone--inline">
+        <div class="auth-page">
+          <div class="auth-top">
+            <span class="auth-brand"><span data-icon="brand" data-icon-size="22"></span>语学星</span>
+            <p class="auth-note">18 岁以上成人学习</p>
+          </div>
+          <div class="auth-main">
+            <h2 class="auth-title">欢迎回来</h2>
+            <p class="auth-desc">登录语学星，继续今天的学习。</p>
+            <form class="auth-form" data-demo-form data-success-toast="演示完成：已登录" novalidate>
+              <div class="auth-fields">
+                <div class="field">
+                  <label class="field__label" for="g-auth-name">账号</label>
+                  <div class="field__control">
+                    <input id="g-auth-name" name="identifier" type="text" placeholder="邮箱或账号" data-required-message="请输入账号" autocomplete="username">
+                  </div>
+                  <span class="field__error" role="alert"></span>
+                </div>
+                <div class="field">
+                  <label class="field__label" for="g-auth-pass">密码</label>
+                  <div class="field__control">
+                    <input id="g-auth-pass" name="password" type="password" placeholder="输入密码" data-required-message="请输入密码" autocomplete="current-password">
+                    <button type="button" class="field__eye" data-toggle-password aria-label="显示密码" aria-pressed="false" data-icon="eye" data-icon-size="19"></button>
+                  </div>
+                  <span class="field__error" role="alert"></span>
+                  <div class="auth-recovery"><a class="auth-link" href="pages/reset-password.html">忘记密码？</a></div>
+                </div>
+                <div class="auth-error" role="alert"><span data-icon="alert-circle" data-icon-size="18"></span><span>账号或密码不正确，请重试。</span></div>
+              </div>
+              <button type="submit" class="btn btn--primary btn--block" data-busy-label="正在登录…">登录</button>
+            </form>
+            <div class="auth-foot"><span>还没有账号？</span><a class="auth-link" href="pages/register.html">注册</a></div>
+          </div>
+        </div>
+      </div>
+      <div class="gallery-note">表单级错误使用 bad 色文字 + 图标，保留输入内容；逐字段错误仍由字段下方文案承担。</div>
+    </section>
+
     <!-- 5. 列表、卡片、徽标 -->
     <section class="gallery-section" id="lists">
       <h2>列表、卡片与徽标</h2>

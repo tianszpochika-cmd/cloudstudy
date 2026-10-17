@@ -307,6 +307,40 @@ body {
 .field.is-invalid .field__error { display: block; }
 .field.is-invalid .field__hint { display: none; }
 .field__trailing { font-size: 13px; color: var(--v2-brand); font-weight: 600; flex: none; }
+.field__control input:disabled { color: var(--v2-mut); -webkit-text-fill-color: var(--v2-mut); cursor: not-allowed; }
+
+/* ---------- 账号入口页（登录 / 注册 / 找回密码） ---------- */
+.auth-page { display: flex; flex-direction: column; min-height: 100%; padding: 20px 20px 32px; }
+.auth-top { flex: none; display: flex; flex-direction: column; align-items: flex-start; gap: 2px; }
+.auth-brand { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; color: var(--v2-ink); font-size: 20px; line-height: 1.4; font-weight: 650; }
+.auth-brand .icon { color: var(--v2-brand); }
+.auth-note { margin: 0; color: var(--v2-mut); font-size: 13px; line-height: 1.6; }
+.auth-main { margin-top: 40px; }
+.auth-title { margin: 0 0 8px; text-align: center; color: var(--v2-ink); font-size: 28px; line-height: 1.4; font-weight: 650; }
+.auth-desc { margin: 0; text-align: center; color: var(--v2-mut); font-size: 14px; line-height: 1.75; }
+.auth-form { display: flex; flex-direction: column; gap: 24px; margin-top: 32px; }
+.auth-fields { display: flex; flex-direction: column; gap: 24px; }
+.auth-recovery { display: flex; justify-content: flex-end; margin-top: -4px; }
+.auth-error { display: flex; align-items: flex-start; gap: 8px; color: var(--v2-bad); font-size: 14px; line-height: 1.6; }
+.auth-error[hidden] { display: none; }
+.auth-error .icon { flex: none; margin-top: 2px; }
+.auth-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 0 4px; margin-top: 28px; padding-top: 12px; border-top: 1px solid var(--v2-line); color: var(--v2-mut); font-size: 14px; line-height: 1.6; }
+.auth-link { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 4px; border: 0; border-radius: var(--v2-radius-sm); background: transparent; color: var(--v2-brand); font-family: inherit; font-size: 14px; line-height: 1.6; font-weight: 500; text-decoration: none; cursor: pointer; }
+.auth-link:hover { color: var(--v2-brand2); }
+.auth-link:focus-visible { outline: none; box-shadow: var(--v2-focus); }
+.auth-link:disabled,
+.auth-link.is-disabled,
+.auth-link[aria-disabled="true"] { color: var(--v2-mut); cursor: not-allowed; text-decoration: none; }
+.auth-form.is-submitting .field__control { background: var(--v2-surface); }
+.auth-form.is-submitting .field__control input { color: var(--v2-mut); -webkit-text-fill-color: var(--v2-mut); }
+.auth-form.is-submitting .field__eye { color: var(--v2-mut); cursor: not-allowed; }
+
+/* 仅屏幕阅读器可见 */
+.sr-only {
+  position: absolute; width: 1px; height: 1px;
+  padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
 
 /* ---------- 卡片 / 列表 ---------- */
 
