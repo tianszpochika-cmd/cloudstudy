@@ -212,3 +212,20 @@
 - 未登录 → `?auth=guest`：标题改为「登录后，继续今天的学习」，隐藏今日学习、任务、错题本与课程书架，只保留登录卡「登录后继续」跳转 `login.html` 与「修改目标 / 进入测评」入口。
 - TabBar → 底部 5 项，当前「学习」选中并带 `aria-current="page"`；其余跳转 `b2-practice.html` / `world.html` / `learn.html` / `profile.html`。右上角设置入口跳转 `settings.html`。
 - 文案边界 → 不显示内部错误码、原始版本号或「等待加载」类静态占位；加载使用骨架屏，进度与任务状态同时用文字表达，不只依赖颜色。
+
+### today（今日任务）
+
+对应页面：`pages/today.html`；真实实现参照 `apps/mobile/src/pages/today/today.vue`、`apps/mobile/src/domain/plan-today.ts`、`apps/mobile/src/stores/learner-content.ts` 与 `packages/i18n/src/mobile-experience.ts` 的 `pages.today` 文案。真实页由 `store.loadHome()` 读取学习投影与计划队列，并按 `emptyStateView`、`firstLearningGuideCopy` 渲染计划空态与首次学习提示；原型用 mock 数据在同一路由内演示。
+
+- 主题与直达参数 → 工具条「浅色 / 深色」切换整页 token 并写入 `localStorage['uispec-theme']`；`?theme=light|dark` 固定主题；`?mock=explain|first-learning|notice|deferred|unavailable|all-done|no-tasks|plan-no-plan|plan-completed|plan-no-content|plan-no-due|plan-failed` 演示计划说明、首次学习、计划提示、顺延、课程目录不可用、今日完成、无任务与计划空态。
+- 页面状态 → 工具条「正常 / 加载 / 空 / 错误 / 无权限 / 离线」：正常为进度与任务；加载为读取今日任务的骨架屏（`aria-busy`）；空为 NO_PLAN「还没有学习计划」+「开始设置」；错误 / 无权限 / 离线共用真实页同一分支「今日任务暂时无法读取」+ 原因 + 单个「重试」。切换离开正常态会取消未完成的重试与重新加载。
+- 状态恢复 → 错误 / 无权限 / 离线「重试」转圈「正在重试… / 正在重新读取…」→ 1.1s 后回到正常态，不弹成功 Toast。
+- 今日进度 → 展示今日进度百分比与进度条（`role=progressbar`）、已完成分钟与任务数；默认目标 15 分钟、已完成 10 分钟、6 个任务（67%）。`?mock=all-done` 为 100% 且说明「今天的任务都完成了。」，`?mock=no-tasks` 为 0% 且不显示分钟说明。
+- 任务行 → 标题、说明与时长；进行中 / 可学习显示「查看课程」跳转 `learn.html?contentCode=…&taskId=…`；已完成、未解锁、暂不可用为真实禁用按钮（surface 底、mut 字、not-allowed），原因写在行内（「完成上一节后解锁。」）；UNAVAILABLE 行以 warn 色显示「内容暂不可用」，不只依赖颜色。
+- 计划说明 / 首次学习 / 计划提示 → `?mock=explain` 显示 `role=status`「今天先安排到期复习，再按目标补新内容。」；`?mock=first-learning` 显示「继续完成第一次学习」（对应 `firstLearningGuideCopy` 的 INCOMPLETE）；`?mock=notice` 显示 warn 色「计划版本已变化，请重新读取。」。
+- 顺延说明 → `?mock=deferred` 显示「今天排不下，已顺延，这不是欠账。」（对应 `DEFERRED_COPY`），与到期复习安排并列展示，不写成欠账。
+- 课程目录不可用 → `?mock=unavailable` 在进度卡上方显示 warn 色 `role=status`「课程列表暂不可用 / 今日任务状态仍可查看。」+「重新加载」；点击后按钮转圈「正在加载…」，0.9s 后横幅消失，任务与进度保持可读，不弹 Toast。
+- 计划空态 → 对应 `emptyStateView`，替换任务列表并隐藏任务计数：`?mock=plan-no-plan`「还没有学习计划 / 先完成设置，再开始今天的练习。」+「开始设置」跳转 `onboarding.html`；`?mock=plan-completed`「今天的学习已经完成 / 已保存的练习还在。」+「结束学习」跳转 `home.html`，进度 100%；`?mock=plan-no-content`「暂时没有可学习的内容 / 可以先看现在能打开的内容。」+「看可用内容」；`?mock=plan-no-due`「今天没有到期的复习 / 可以新学一节，或先结束今天。」+「新学或结束」；后两者的出口对应真实页 `openPlanEmpty`，切回学习首页 `home.html`；`?mock=plan-failed`「今日任务没有加载成功 / 已提交的进度会保留。」+「重试」，重试转圈「正在重试…」后恢复任务列表与进度。
+- 无任务 → `?mock=no-tasks` 在卡片内显示「今天还没有安排任务。」，不显示空插画。
+- 返回 → 导航栏返回与底部「返回学习首页」均跳转 `home.html`（真实页 `switchTab`）。
+- 文案边界 → 不显示内部算法版本、错误码或「等待加载」类静态占位；加载使用骨架屏，进度与任务状态同时用文字表达，不只依赖颜色。
