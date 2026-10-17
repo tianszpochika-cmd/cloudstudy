@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>新手引导 · 语学星移动端 UI 稿</title>
+<link rel="stylesheet" href="../shared.css">
+<script src="../shared.js"></script>
+<style>
+  /* 仅本页布局；组件与 token 全部来自 shared.css */
+  .onboard-page { padding: 16px 20px 28px; }
+  .onboard-main { width: 100%; }
+  .onboard-page .auth-main { margin-top: 24px; }
+  .onboard-page .auth-desc { margin-bottom: 0; }
+  .onboard-title { margin-bottom: 6px; }
+  .onboard-step[hidden] { display: none; }
+  .onboard-state .state-block { padding-top: 48px; }
+
+  /* 步骤指示：数字 / 对勾 + 文字状态，不只靠颜色 */
+  .stepper {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0;
+    margin: 0 0 28px;
+    padding: 0;
+    list-style: none;
+  }
+  .stepper__item {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    color: var(--v2-mut);
+    font-size: 13px;
+    line-height: 1.4;
+    text-align: center;
+  }
+  .stepper__item:not(:first-child)::before {
+    content: "";
+    position: absolute;
+    top: 13px;
+    right: calc(50% + 18px);
+    left: calc(-50% + 18px);
+    height: 2px;
+    background: var(--v2-line);
+  }
+  .stepper__item.is-done::before,
+  .stepper__item.is-current::before { background: var(--v2-brand); }
+  .stepper__dot {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border: 1.5px solid var(--v2-line);
+    border-radius: 50%;
+    background: var(--v2-card);
+    color: var(--v2-mut);
+    font-size: 13px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+  .stepper__dot .icon { display: block; }
+  .stepper__item.is-current { color: var(--v2-brand); font-weight: 600; }
+  .stepper__item.is-current .stepper__dot {
+    background: var(--v2-brand);
+    border-color: var(--v2-brand);
+    color: var(--v2-inverse);
+  }
+  .stepper__item.is-done { color: var(--v2-ink); }
+  .stepper__item.is-done .stepper__dot {
+    background: var(--v2-soft);
+    border-color: var(--v2-brand);
+    color: var(--v2-brand);
+  }
+  .stepper__label { overflow-wrap: anywhere; }
+
+  /* 步骤一：出生年份 + 成人确认 */
+  .onboard-form { display: flex; flex-direction: column; gap: 20px; margin-top: 28px; }
+  .onboard-form .field__error { margin-top: 0; }
+  .onboard-page .field.has-error-slot .field__error { display: block; visibility: hidden; }
+  .onboard-page .field.has-error-slot.is-invalid .field__error { display: block; visibility: visible; }
+  .field--check { gap: 2px; }
+  .check-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    min-height: 44px;
+    padding: 9px 0;
+    cursor: pointer;
+    color: var(--v2-ink);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  .check-row__input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+  }
+  .check-row__box {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    margin-top: 1px;
+    border: 1.5px solid var(--v2-mut);
+    border-radius: 6px;
+    background: var(--v2-card);
+    color: transparent;
+    transition: background var(--v2-motion-fast) ease, border-color var(--v2-motion-fast) ease;
+  }
+  .check-row__box .icon { display: block; }
+  .check-row__input:checked + .check-row__box {
+    background: var(--v2-brand);
+    border-color: var(--v2-brand);
+    color: var(--v2-inverse);
+  }
+  .check-row__input:focus-visible + .check-row__box { box-shadow: var(--v2-focus); }
+  .check-row__input:disabled + .check-row__box { background: var(--v2-surface); border-color: var(--v2-line); color: transparent; }
+  .check-row__input:disabled ~ .check-row__text { color: var(--v2-mut); }
+  .check-row__text { flex: 1 1 auto; min-width: 0; }
+
+  /* 步骤二：同意记录 */
+  .consent-list {
+    margin-top: 24px;
+    border: 1px solid var(--v2-line);
+    border-radius: var(--v2-radius-md);
+    background: var(--v2-card);
+    overflow: hidden;
+  }
+  .consent-row { display: flex; flex-direction: column; gap: 3px; padding: 11px 14px; border-bottom: 1px solid var(--v2-line); }
+  .consent-row:last-child { border-bottom: 0; }
+  .consent-row__head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .consent-row__title { font-size: 14px; line-height: 1.6; font-weight: 500; }
+  .consent-row__meta { margin: 0; font-size: 13px; line-height: 1.6; color: var(--v2-mut); }
+  .link-row { display: flex; justify-content: center; margin-top: 4px; }
+  .consent-source {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-top: 4px;
+    padding: 10px 12px;
+    border-radius: var(--v2-radius-sm);
+    background: var(--v2-surface);
+    color: var(--v2-mut);
+    font-size: 13px;
+    line-height: 1.7;
+    overflow-wrap: anywhere;
+  }
+  .consent-source[hidden] { display: none; }
+  .consent-source p { margin: 0; }
+  .consent-source__k { margin-right: 6px; color: var(--v2-ink); font-weight: 500; }
+  .onboard-note { margin: 16px 0 0; font-size: 13px; line-height: 1.7; color: var(--v2-mut); }
+
+  /* 步骤三：学习目标 / 每日时长 */
+  .onboard-group { display: flex; flex-direction: column; gap: 8px; margin-top: 24px; }
+  .choice-list { display: flex; flex-direction: column; gap: 8px; }
+  .choice {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    min-height: 64px;
+    padding: 12px 14px;
+    border: 1px solid var(--v2-line);
+    border-radius: var(--v2-radius-md);
+    background: var(--v2-card);
+    color: var(--v2-ink);
+    font-family: inherit;
+    text-align: left;
+    cursor: pointer;
+    transition: border-color var(--v2-motion-fast) ease, background var(--v2-motion-fast) ease;
+  }
+  .choice:hover { border-color: var(--v2-brand); }
+  .choice:focus-visible { outline: none; box-shadow: var(--v2-focus); }
+  .choice.is-selected { border-color: var(--v2-brand); background: var(--v2-soft); }
+  .choice:disabled { cursor: not-allowed; pointer-events: none; }
+  .choice__copy { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+  .choice__title { font-size: 16px; line-height: 1.5; font-weight: 500; }
+  .choice.is-selected .choice__title { color: var(--v2-brand); font-weight: 600; }
+  .choice__desc { font-size: 13px; line-height: 1.6; color: var(--v2-mut); }
+  .choice__mark {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border: 1.5px solid var(--v2-mut);
+    border-radius: 50%;
+    background: var(--v2-card);
+    color: transparent;
+  }
+  .choice__mark .icon { display: block; }
+  .choice.is-selected .choice__mark {
+    background: var(--v2-brand);
+    border-color: var(--v2-brand);
+    color: var(--v2-inverse);
+  }
+  .quota-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .quota {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-height: 52px;
+    border: 1px solid var(--v2-line);
+    border-radius: var(--v2-radius-md);
+    background: var(--v2-card);
+    color: var(--v2-ink);
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    cursor: pointer;
+    transition: border-color var(--v2-motion-fast) ease, background var(--v2-motion-fast) ease;
+  }
+  .quota:hover { border-color: var(--v2-brand); }
+  .quota:focus-visible { outline: none; box-shadow: var(--v2-focus); }
+  .quota.is-selected { border-color: var(--v2-brand); background: var(--v2-soft); color: var(--v2-brand); font-weight: 600; }
+  .quota:disabled { cursor: not-allowed; pointer-events: none; }
+  .quota__check { display: none; }
+  .quota.is-selected .quota__check { display: inline-flex; }
+  .quota__check .icon { display: block; }
+
+  /* 步骤四：已保存摘要 */
+  .summary {
+    margin-top: 28px;
+    padding: 4px 16px;
+    border: 1px solid var(--v2-line);
+    border-radius: var(--v2-radius-md);
+    background: var(--v2-card);
+  }
+  .summary__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    min-height: 56px;
+    border-bottom: 1px solid var(--v2-line);
+  }
+  .summary__row:last-child { border-bottom: 0; }
+  .summary__label { font-size: 14px; color: var(--v2-mut); }
+  .summary__value { font-size: 16px; font-weight: 600; color: var(--v2-ink); text-align: right; }
+
+  /* 主动作与文字出口 */
+  .onboard-actions { display: flex; flex-direction: column; gap: 4px; margin-top: 28px; }
+  .onboard-link { align-self: center; }
+  .onboard-error { margin: 16px 0 0; font-size: 13px; line-height: 1.6; color: var(--v2-bad); }
+  .onboard-error[hidden] { display: none; }
+  /* 原型可点：禁用态仍可点击以展示校验，不执行动作 */
+  .onboard-page .btn.onboard-primary.is-disabled { pointer-events: auto; cursor: not-allowed; }
+  .onboard-page .btn--text[aria-disabled="true"] { color: var(--v2-mut); pointer-events: none; cursor: not-allowed; }
+
+  .onboard-exits {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 24px;
+    padding-top: 8px;
+    border-top: 1px solid var(--v2-line);
+  }
+  .onboard-exits__div { width: 1px; height: 16px; background: var(--v2-line); flex: none; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .onboard-page * { transition: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="phone-stage">
+  <div data-ui="toolbar" data-states="normal,loading,error,offline"></div>
+
+  <div class="phone phone--scroll">
+    <div data-ui="statusbar"></div>
+
+    <div class="phone__scroll">
+      <div class="auth-page onboard-page">
+
+        <!-- 正常态：确认成人身份 / 查看同意事项 / 选择学习目标 / 设置已完成 -->
+        <div data-state-block="normal" class="onboard-state">
+          <header class="auth-top">
+            <span class="auth-brand"><span data-icon="brand" data-icon-size="22"></span>语学星</span>
+            <p class="auth-note">18 岁以上成人学习</p>
+          </header>
+
+          <main class="auth-main onboard-main">
+            <ol class="stepper" id="stepper" aria-label="账号设置进度">
+              <li class="stepper__item" data-rank="0">
+                <span class="stepper__dot" aria-hidden="true">1</span>
+                <span class="stepper__label">确认身份</span>
+                <span class="sr-only" data-step-state>当前步骤</span>
+              </li>
+              <li class="stepper__item" data-rank="1">
+                <span class="stepper__dot" aria-hidden="true">2</span>
+                <span class="stepper__label">必要同意</span>
+                <span class="sr-only" data-step-state>待完成</span>
+              </li>
+              <li class="stepper__item" data-rank="2">
+                <span class="stepper__dot" aria-hidden="true">3</span>
+                <span class="stepper__label">学习目标</span>
+                <span class="sr-only" data-step-state>待完成</span>
+              </li>
+            </ol>
+
+            <!-- 步骤一 -->
+            <section class="onboard-step" data-step="gate">
+              <h1 class="auth-title onboard-title" id="title-gate" tabindex="-1">确认成人身份</h1>
+              <p class="auth-desc">出生年份用于成人学习资格确认，不收集完整生日。</p>
+
+              <form class="onboard-form" id="gate-form" novalidate>
+                <div class="field" id="field-year">
+                  <label class="field__label" for="birth-year">出生年份</label>
+                  <div class="field__control">
+                    <input id="birth-year" name="birthYear" type="text" inputmode="numeric"
+                           maxlength="4" placeholder="例如 1995" autocomplete="bday-year">
+                  </div>
+                  <span class="field__error" id="year-error" role="alert"></span>
+                </div>
+
+                <div class="field field--check" id="field-age">
+                  <label class="check-row" for="adult-confirm">
+                    <input type="checkbox" id="adult-confirm" class="check-row__input" value="adult-confirmed">
+                    <span class="check-row__box" aria-hidden="true"><span data-icon="check" data-icon-size="15"></span></span>
+                    <span class="check-row__text">我确认自己已满 18 周岁</span>
+                  </label>
+                  <span class="field__error" id="age-error" role="alert"></span>
+                </div>
+
+                <button type="submit" class="btn btn--primary btn--block onboard-primary" id="gate-next" aria-disabled="true">
+                  <span class="btn__label">确认并继续</span>
+                </button>
+              </form>
+            </section>
+
+            <!-- 步骤二 -->
+            <section class="onboard-step" data-step="consent" hidden>
+              <h1 class="auth-title onboard-title" id="title-consent" tabindex="-1">查看同意事项</h1>
+              <p class="auth-desc">查看当前要求与已记录的同意。</p>
+
+              <div class="consent-list" aria-label="同意记录">
+                <div class="consent-row">
+                  <div class="consent-row__head"><span class="consent-row__title">账号条款</span><span class="badge badge--ok">已记录</span></div>
+                  <p class="consent-row__meta">必要事项 · 版本 2026-09</p>
+                </div>
+                <div class="consent-row">
+                  <div class="consent-row__head"><span class="consent-row__title">隐私说明</span><span class="badge badge--ok">已记录</span></div>
+                  <p class="consent-row__meta">必要事项 · 版本 2026-09</p>
+                </div>
+                <div class="consent-row">
+                  <div class="consent-row__head"><span class="consent-row__title">成人学习资格</span><span class="badge badge--ok">已记录</span></div>
+                  <p class="consent-row__meta">必要事项 · 版本 2026-08</p>
+                </div>
+                <div class="consent-row">
+                  <div class="consent-row__head"><span class="consent-row__title">产品分析</span><span class="badge badge--ok">已记录</span></div>
+                  <p class="consent-row__meta">可选事项 · 版本 2026-09</p>
+                </div>
+                <div class="consent-row">
+                  <div class="consent-row__head"><span class="consent-row__title">语音录制</span><span class="badge badge--mut">已撤回</span></div>
+                  <p class="consent-row__meta">可选事项 · 版本 2026-08</p>
+                </div>
+              </div>
+
+              <div class="link-row">
+                <button type="button" class="btn btn--text onboard-text" id="consent-toggle" aria-expanded="false" aria-controls="consent-source">展开来源记录</button>
+              </div>
+
+              <div class="consent-source" id="consent-source" hidden>
+                <p><span class="consent-source__k">来源</span>IAM 服务端同意记录</p>
+                <p><span class="consent-source__k">记录时间</span>2026-10-18 09:41</p>
+                <p><span class="consent-source__k">文档版本</span>账号条款 2026-09 · 隐私说明 2026-09 · 成人学习资格 2026-08</p>
+              </div>
+
+              <p class="onboard-note">当前服务端摘要确认必要同意仍有效，可以继续，无需再次签署。</p>
+
+              <div class="onboard-actions">
+                <button type="button" class="btn btn--primary btn--block onboard-primary" id="consent-next">
+                  <span class="btn__label">按已有同意继续</span>
+                </button>
+                <button type="button" class="btn btn--text onboard-text onboard-link" id="consent-reload">重新读取</button>
+              </div>
+            </section>
+
+            <!-- 步骤三 -->
+            <section class="onboard-step" data-step="goal" hidden>
+              <h1 class="auth-title onboard-title" id="title-goal" tabindex="-1">选择学习目标</h1>
+              <p class="auth-desc">选择一个目标和每日时长，保存后开始定级。</p>
+
+              <div class="onboard-group">
+                <span class="field__label" id="goal-label">学习目标</span>
+                <div class="choice-list" role="radiogroup" aria-labelledby="goal-label">
+                  <button type="button" class="choice" role="radio" aria-checked="false" data-goal="FOUNDATION">
+                    <span class="choice__copy">
+                      <span class="choice__title">成人零基础</span>
+                      <span class="choice__desc">从发音、核心词和短句开始建立基础。</span>
+                    </span>
+                    <span class="choice__mark" aria-hidden="true"><span data-icon="check" data-icon-size="14"></span></span>
+                  </button>
+                  <button type="button" class="choice" role="radio" aria-checked="false" data-goal="COLLEGE_CET">
+                    <span class="choice__copy">
+                      <span class="choice__title">四六级备考</span>
+                      <span class="choice__desc">围绕词汇、听力与真题节奏推进。</span>
+                    </span>
+                    <span class="choice__mark" aria-hidden="true"><span data-icon="check" data-icon-size="14"></span></span>
+                  </button>
+                  <button type="button" class="choice" role="radio" aria-checked="false" data-goal="POSTGRADUATE_ENGLISH">
+                    <span class="choice__copy">
+                      <span class="choice__title">考研英语</span>
+                      <span class="choice__desc">强化长难句、阅读和高频表达。</span>
+                    </span>
+                    <span class="choice__mark" aria-hidden="true"><span data-icon="check" data-icon-size="14"></span></span>
+                  </button>
+                  <button type="button" class="choice" role="radio" aria-checked="false" data-goal="WORKPLACE_DAILY">
+                    <span class="choice__copy">
+                      <span class="choice__title">职场与日常</span>
+                      <span class="choice__desc">优先处理会话、场景和邮件表达。</span>
+                    </span>
+                    <span class="choice__mark" aria-hidden="true"><span data-icon="check" data-icon-size="14"></span></span>
+                  </button>
+                </div>
+              </div>
+
+              <div class="onboard-group">
+                <span class="field__label" id="quota-label">每天愿意投入多久？</span>
+                <div class="quota-grid" role="radiogroup" aria-labelledby="quota-label">
+                  <button type="button" class="quota" role="radio" aria-checked="false" data-quota="5">5 分钟<span class="quota__check" aria-hidden="true"><span data-icon="check" data-icon-size="15"></span></span></button>
+                  <button type="button" class="quota" role="radio" aria-checked="true" data-quota="15">15 分钟<span class="quota__check" aria-hidden="true"><span data-icon="check" data-icon-size="15"></span></span></button>
+                  <button type="button" class="quota" role="radio" aria-checked="false" data-quota="30">30 分钟<span class="quota__check" aria-hidden="true"><span data-icon="check" data-icon-size="15"></span></span></button>
+                  <button type="button" class="quota" role="radio" aria-checked="false" data-quota="45">45 分钟<span class="quota__check" aria-hidden="true"><span data-icon="check" data-icon-size="15"></span></span></button>
+                </div>
+              </div>
+
+              <p class="onboard-error" id="goal-error" role="alert" hidden></p>
+
+              <div class="onboard-actions">
+                <button type="button" class="btn btn--primary btn--block onboard-primary" id="goal-next" aria-disabled="true">
+                  <span class="btn__label">保存并开始定级</span>
+                </button>
+                <button type="button" class="btn btn--text onboard-text onboard-link" id="goal-reload">重新读取</button>
+              </div>
+            </section>
+
+            <!-- 步骤四 -->
+            <section class="onboard-step" data-step="assessment" hidden>
+              <h1 class="auth-title onboard-title" id="title-assessment" tabindex="-1">设置已完成</h1>
+              <p class="auth-desc">定级帮助你找到合适的起点，也可以先调整已保存的目标。</p>
+
+              <div class="summary" aria-label="已保存的学习设置">
+                <div class="summary__row">
+                  <span class="summary__label">已保存学习目标</span>
+                  <span class="summary__value" id="summary-goal">未选择</span>
+                </div>
+                <div class="summary__row">
+                  <span class="summary__label">每日学习时长</span>
+                  <span class="summary__value" id="summary-quota">15 分钟</span>
+                </div>
+              </div>
+
+              <div class="onboard-actions">
+                <button type="button" class="btn btn--primary btn--block onboard-primary" id="assessment-next">
+                  <span class="btn__label">开始定级</span>
+                </button>
+                <button type="button" class="btn btn--text onboard-text onboard-link" id="adjust-goal">调整目标</button>
+              </div>
+            </section>
+
+            <div class="onboard-exits">
+              <button type="button" class="btn btn--text onboard-text" id="account-settings">账号设置</button>
+              <span class="onboard-exits__div" aria-hidden="true"></span>
+              <button type="button" class="btn btn--text onboard-text" id="logout">退出登录</button>
+            </div>
+          </main>
+        </div>
+
+        <!-- 加载态：读取已保存的设置 -->
+        <div data-state-block="loading" class="onboard-state onboard-loading" aria-busy="true">
+          <span class="sr-only">正在读取已保存的设置</span>
+          <div class="auth-top" aria-hidden="true">
+            <span class="skeleton skeleton-line" style="width: 96px; height: 26px"></span>
+            <span class="skeleton skeleton-line skeleton-line--sm" style="width: 152px; margin-top: 10px"></span>
+          </div>
+          <div class="onboard-main" aria-hidden="true">
+            <div class="skeleton skeleton-block" style="height: 44px; margin-top: 32px"></div>
+            <div class="skeleton skeleton-line" style="width: 46%; height: 32px; margin: 32px auto 0"></div>
+            <div class="skeleton skeleton-line skeleton-line--sm" style="width: 76%; margin: 12px auto 0"></div>
+            <div class="skeleton skeleton-block" style="height: 48px; margin-top: 36px"></div>
+            <div class="skeleton skeleton-block" style="height: 48px; margin-top: 20px"></div>
+            <div class="skeleton skeleton-block" style="height: 48px; margin-top: 28px"></div>
+          </div>
+        </div>
+
+        <!-- 错误态：设置读取失败 -->
+        <div data-state-block="error" class="onboard-state">
+          <header class="auth-top">
+            <span class="auth-brand"><span data-icon="brand" data-icon-size="22"></span>语学星</span>
+            <p class="auth-note">18 岁以上成人学习</p>
+          </header>
+          <div class="state-block">
+            <span class="state-block__icon state-block__icon--bad" data-icon="alert-triangle" data-icon-size="24"></span>
+            <span class="state-block__title">设置读取未完成</span>
+            <span class="state-block__text">已保存设置暂时无法读取，请重新读取。已填内容不会被提交。</span>
+            <span class="state-block__actions">
+              <button type="button" class="btn btn--primary btn--sm" data-retry-state="normal" data-retry-label="正在读取…" data-retry-toast="已读取已保存的设置">重新读取</button>
+              <button type="button" class="btn btn--secondary btn--sm" data-open-overlay="logout-layer">退出登录</button>
+            </span>
+          </div>
+        </div>
+
+        <!-- 离线态 -->
+        <div data-state-block="offline" class="onboard-state">
+          <header class="auth-top">
+            <span class="auth-brand"><span data-icon="brand" data-icon-size="22"></span>语学星</span>
+            <p class="auth-note">18 岁以上成人学习</p>
+          </header>
+          <div class="state-block">
+            <span class="state-block__icon state-block__icon--warn" data-icon="globe" data-icon-size="24"></span>
+            <span class="state-block__title">网络连接不可用</span>
+            <span class="state-block__text">新手引导需要连接网络。请检查 Wi-Fi 或移动网络后重试。</span>
+            <span class="state-block__actions">
+              <button type="button" class="btn btn--primary btn--sm" data-retry-state="normal" data-retry-label="正在重新连接…" data-retry-toast="网络连接已恢复">重新连接</button>
+            </span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="toast-host" role="status" aria-live="polite"></div>
+
+    <div class="overlay-layer" id="logout-layer" aria-hidden="true">
+      <div class="overlay__scrim" data-close></div>
+      <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="logout-title" aria-describedby="logout-text">
+        <h2 class="dialog__title" id="logout-title">退出登录？</h2>
+        <p class="dialog__text" id="logout-text">退出后，本次设置需要重新登录才能继续。</p>
+        <div class="dialog__actions">
+          <button type="button" class="btn btn--secondary" data-close>取消</button>
+          <button type="button" class="btn btn--danger" id="logout-confirm">退出登录</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="interaction-notes">
+  <h2>交互说明（onboarding）</h2>
+  <ul>
+    <li><strong>主题与页面状态</strong> → 工具条「浅色 / 深色」「正常 / 加载 / 错误 / 离线」 → 整页 token 切换；状态块分别为引导流程、读取设置骨架屏、读取失败、网络不可用。切换离开正常态会取消未完成的模拟请求并关闭对话框。</li>
+    <li><strong>步骤指示</strong> → 确认身份 / 必要同意 / 学习目标 → 已完成显示对勾，当前步骤为 brand 实心数字并带 <code>aria-current="step"</code>，待完成为描边数字，同时保留屏幕阅读器状态文字。原型按「确认身份 → 必要同意 → 学习目标 → 设置已完成」线性演示；真实页在必要同意已完整时会跳过该步直接进入学习目标。</li>
+    <li><strong>步骤一 · 出生年份</strong> → 输入仅保留 4 位数字 → 失焦或提交时校验：为空或不在 1900–2026 时字段下方标红「请输入 1900 至 2026 的整数年份。」并聚焦；修正后错误文字隐藏并保留行高。</li>
+    <li><strong>步骤一 · 成人确认</strong> → 勾选「我确认自己已满 18 周岁」 → 方框变为 brand 实心对勾；未勾选时提交显示「请确认自己已满 18 周岁。」。</li>
+    <li><strong>步骤一 · 主动作</strong> → 年份合法且已勾选前，按钮为禁用外观（surface 底、mut 字、not-allowed）；点击禁用按钮只显示两条校验错误，不进入下一步。通过后点击「确认并继续」→ 转圈「正在确认…」→ 1s 后进入「查看同意事项」并聚焦新标题。</li>
+    <li><strong>步骤一 · 未满 18（Mock）</strong> → 出生年份晚于 2008（当前年份减 18）→「正在确认…」1.1s 后 Toast「暂不能向你开放学习」并跳转 <code>forbidden.html</code>。</li>
+    <li><strong>步骤二 · 同意记录</strong> → 展示 5 条记录（3 条必要 + 2 条可选），已记录为 ok 徽标、已撤回为 mut 徽标；「展开来源记录」展开 IAM 来源、记录时间与文档版本，按钮文案变「收起来源记录」并同步 <code>aria-expanded</code>。</li>
+    <li><strong>步骤二 · 继续 / 重新读取</strong> → 「按已有同意继续」→「正在继续…」0.9s 后进入学习目标；「重新读取」→「正在读取…」1s 后 Toast「同意记录已更新」。</li>
+    <li><strong>步骤三 · 学习目标</strong> → 四张单选卡（成人零基础 / 四六级备考 / 考研英语 / 职场与日常）→ 单选互斥，选中为 brand 边框 + soft 底 + 实心对勾，<code>aria-checked</code> 同步。</li>
+    <li><strong>步骤三 · 每日时长</strong> → 5 / 15 / 30 / 45 分钟四选一，默认 15 分钟；选中项带对勾与 brand 文字。</li>
+    <li><strong>步骤三 · 保存</strong> → 未选目标时点击主按钮 → 行内 bad 色「请选择学习目标和每日时长。」并聚焦首张卡片；已选目标 → 转圈「正在保存…」1.2s 后进入「设置已完成」、更新摘要并 Toast「学习目标已保存」。保存后「重新读取」会恢复最近一次保存的目标与时长。</li>
+    <li><strong>步骤四 · 开始定级</strong> → 点击「开始定级」→ 转圈「正在打开…」0.7s 后跳转 <code>assessment.html</code>。</li>
+    <li><strong>步骤四 · 调整目标</strong> → 点击「调整目标」→ 回到学习目标步骤，保留已选目标与时长。</li>
+    <li><strong>账号设置</strong> → 点击 → 跳转 <code>settings.html</code>。</li>
+    <li><strong>退出登录</strong> → 点击 → 对话框「退出登录？」（说明「退出后，本次设置需要重新登录才能继续。」）→「退出登录」为 bad 色；确认后 Toast「已退出登录」，0.8s 后跳转 <code>login.html</code>；取消 / 遮罩 / Esc 关闭。</li>
+    <li><strong>提交中</strong> → 主按钮保持宽度并显示 16px 转圈；输入、勾选、选项卡、重新读取、账号设置与退出登录全部不可操作，防止重复提交。</li>
+    <li><strong>加载 / 错误 / 离线</strong> → 加载为品牌行与步骤区骨架屏；错误为「设置读取未完成」+「重新读取」+「退出登录」；离线为「网络连接不可用」+「重新连接」。重试按钮转圈 1.1s 后回到正常态并 Toast。</li>
+  </ul>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var CURRENT_YEAR = new Date().getFullYear();
+  var MIN_YEAR = 1900;
+
+  var scroller = document.querySelector('.phone__scroll');
+  var pageRoot = document.querySelector('.onboard-page');
+  var steps = Array.prototype.slice.call(document.querySelectorAll('.onboard-step'));
+  var stepperItems = Array.prototype.slice.call(document.querySelectorAll('.stepper__item'));
+
+  var yearInput = document.getElementById('birth-year');
+  var ageInput = document.getElementById('adult-confirm');
+  var fieldYear = document.getElementById('field-year');
+  var fieldAge = document.getElementById('field-age');
+  var gateForm = document.getElementById('gate-form');
+  var gateNext = document.getElementById('gate-next');
+
+  var consentSource = document.getElementById('consent-source');
+  var consentToggle = document.getElementById('consent-toggle');
+  var consentNext = document.getElementById('consent-next');
+  var consentReload = document.getElementById('consent-reload');
+
+  var goalButtons = Array.prototype.slice.call(document.querySelectorAll('.choice[data-goal]'));
+  var quotaButtons = Array.prototype.slice.call(document.querySelectorAll('.quota[data-quota]'));
+  var goalError = document.getElementById('goal-error');
+  var goalNext = document.getElementById('goal-next');
+  var goalReload = document.getElementById('goal-reload');
+
+  var summaryGoal = document.getElementById('summary-goal');
+  var summaryQuota = document.getElementById('summary-quota');
+  var assessmentNext = document.getElementById('assessment-next');
+  var adjustGoal = document.getElementById('adjust-goal');
+
+  var accountSettings = document.getElementById('account-settings');
+  var logoutBtn = document.getElementById('logout');
+  var logoutLayer = document.getElementById('logout-layer');
+  var logoutConfirm = document.getElementById('logout-confirm');
+
+  var state = { step: 'gate', goal: null, quota: 15, busy: false, attempted: false };
+  var savedGoal = null;
+  var savedQuota = 15;
+  var busyButton = null;
+  var timer = null;
+
+  var PRIMARY = {
+    gate: gateNext,
+    consent: consentNext,
+    goal: goalNext,
+    assessment: assessmentNext
+  };
+
+  function later(fn, ms) {
+    cancelTimer();
+    timer = setTimeout(function () { timer = null; fn(); }, ms);
+  }
+
+  function cancelTimer() {
+    if (timer) { clearTimeout(timer); timer = null; }
+  }
+
+  function textButtons() {
+    return Array.prototype.slice.call(document.querySelectorAll('.onboard-page .onboard-text'));
+  }
+
+  function setTextDisabled(disabled) {
+    textButtons().forEach(function (btn) {
+      if (btn === busyButton) return;
+      btn.setAttribute('aria-disabled', String(disabled));
+    });
+  }
+
+  function beginBusy(button, label) {
+    state.busy = true;
+    busyButton = button || null;
+    if (button) UISpec.setBusy(button, true, label);
+    yearInput.disabled = true;
+    ageInput.disabled = true;
+    goalButtons.concat(quotaButtons).forEach(function (btn) { btn.disabled = true; });
+    setTextDisabled(true);
+    if (pageRoot) pageRoot.setAttribute('aria-busy', 'true');
+    updatePrimary();
+  }
+
+  function endBusy() {
+    state.busy = false;
+    if (busyButton) {
+      UISpec.setBusy(busyButton, false);
+      busyButton = null;
+    }
+    yearInput.disabled = false;
+    ageInput.disabled = false;
+    goalButtons.concat(quotaButtons).forEach(function (btn) { btn.disabled = false; });
+    setTextDisabled(false);
+    if (pageRoot) pageRoot.removeAttribute('aria-busy');
+    updatePrimary();
+  }
+
+  function updatePrimary() {
+    var disabled = state.busy;
+    if (state.step === 'gate') disabled = disabled || !yearValid() || !ageInput.checked;
+    if (state.step === 'goal') disabled = disabled || !state.goal;
+    var btn = PRIMARY[state.step];
+    if (!btn) return;
+    btn.classList.toggle('is-disabled', disabled);
+    btn.setAttribute('aria-disabled', String(disabled));
+  }
+
+  /* ---------- 步骤切换 ---------- */
+
+  function setStep(next, options) {
+    var opts = options || {};
+    state.step = next;
+    steps.forEach(function (el) { el.hidden = el.getAttribute('data-step') !== next; });
+
+    var rank = { gate: 0, consent: 1, goal: 2, assessment: 3 }[next];
+    stepperItems.forEach(function (item, index) {
+      var done = index < rank;
+      var current = index === rank;
+      item.classList.toggle('is-done', done);
+      item.classList.toggle('is-current', current);
+      if (current) item.setAttribute('aria-current', 'step');
+      else item.removeAttribute('aria-current');
+      var dot = item.querySelector('.stepper__dot');
+      if (dot) dot.innerHTML = done ? UISpec.icon('check', 16) : String(index + 1);
+      var sr = item.querySelector('[data-step-state]');
+      if (sr) sr.textContent = done ? '已完成' : current ? '当前步骤' : '待完成';
+    });
+
+    updatePrimary();
+    if (scroller) scroller.scrollTop = 0;
+
+    if (opts.focus !== false) {
+      var title = document.querySelector('.onboard-step[data-step="' + next + '"] .onboard-title');
+      if (title) { try { title.focus({ preventScroll: true }); } catch (e) { /* 忽略 */ } }
+    }
+  }
+
+  /* ---------- 步骤一：出生年份 / 成人确认 ---------- */
+
+  function yearNumber() {
+    var value = yearInput.value.trim();
+    return /^\d{4}$/.test(value) ? Number(value) : null;
+  }
+
+  function yearValid() {
+    var n = yearNumber();
+    return n !== null && n >= MIN_YEAR && n <= CURRENT_YEAR;
+  }
+
+  function yearMessage() {
+    return yearValid() ? '' : '请输入 ' + MIN_YEAR + ' 至 ' + CURRENT_YEAR + ' 的整数年份。';
+  }
+
+  function report(field, input, message, errorId) {
+    var errorEl = field.querySelector('.field__error');
+    if (!message) {
+      if (field.classList.contains('has-error-slot')) {
+        errorEl.setAttribute('aria-hidden', 'true');
+        errorEl.removeAttribute('role');
+        UISpec.clearFieldError(field);
+        if (input) input.removeAttribute('aria-describedby');
+      }
+      return;
+    }
+    field.classList.add('has-error-slot');
+    errorEl.removeAttribute('aria-hidden');
+    errorEl.setAttribute('role', 'alert');
+    UISpec.setFieldError(field, message);
+    if (input && errorId) input.setAttribute('aria-describedby', errorId);
+  }
+
+  yearInput.addEventListener('input', function () {
+    var digits = yearInput.value.replace(/\D/g, '').slice(0, 4);
+    if (digits !== yearInput.value) yearInput.value = digits;
+    if (!yearMessage()) report(fieldYear, yearInput, '', 'year-error');
+    updatePrimary();
+  });
+
+  yearInput.addEventListener('blur', function () {
+    if (!yearInput.value.trim() && !state.attempted) return;
+    report(fieldYear, yearInput, yearMessage(), 'year-error');
+  });
+
+  ageInput.addEventListener('change', function () {
+    if (ageInput.checked) report(fieldAge, ageInput, '', 'age-error');
+    else if (state.attempted) report(fieldAge, ageInput, '请确认自己已满 18 周岁。', 'age-error');
+    updatePrimary();
+  });
+
+  gateForm.addEventListener('submit', function (event) {
+    event.preventDefault();
+    if (state.busy) return;
+    state.attempted = true;
+
+    var yearMsg = yearMessage();
+    var ageMsg = ageInput.checked ? '' : '请确认自己已满 18 周岁。';
+    report(fieldYear, yearInput, yearMsg, 'year-error');
+    report(fieldAge, ageInput, ageMsg, 'age-error');
+
+    if (yearMsg || ageMsg) {
+      if (yearMsg) yearInput.focus();
+      else ageInput.focus();
+      return;
+    }
+
+    var year = yearNumber();
+    if (year > CURRENT_YEAR - 18) {
+      beginBusy(gateNext, '正在确认…');
+      later(function () {
+        endBusy();
+        UISpec.toast('暂不能向你开放学习', 'bad');
+        later(function () { location.href = 'forbidden.html'; }, 900);
+      }, 1100);
+      return;
+    }
+
+    beginBusy(gateNext, '正在确认…');
+    later(function () {
+      endBusy();
+      setStep('consent');
+    }, 1000);
+  });
+
+  /* ---------- 步骤二：同意记录 ---------- */
+
+  consentToggle.addEventListener('click', function () {
+    if (state.busy) return;
+    var open = consentSource.hidden;
+    consentSource.hidden = !open;
+    consentToggle.setAttribute('aria-expanded', String(open));
+    consentToggle.textContent = open ? '收起来源记录' : '展开来源记录';
+  });
+
+  consentNext.addEventListener('click', function () {
+    if (state.busy) return;
+    beginBusy(consentNext, '正在继续…');
+    later(function () {
+      endBusy();
+      setStep('goal');
+    }, 900);
+  });
+
+  consentReload.addEventListener('click', function () {
+    if (state.busy) return;
+    beginBusy(consentReload, '正在读取…');
+    later(function () {
+      endBusy();
+      UISpec.toast('同意记录已更新', 'ok');
+    }, 1000);
+  });
+
+  /* ---------- 步骤三：学习目标 / 每日时长 ---------- */
+
+  function goalLabel() {
+    var selected = goalButtons.filter(function (btn) { return btn.getAttribute('data-goal') === state.goal; })[0];
+    return selected ? selected.querySelector('.choice__title').textContent : '未选择';
+  }
+
+  function updateSummary() {
+    summaryGoal.textContent = goalLabel();
+    summaryQuota.textContent = state.quota + ' 分钟';
+  }
+
+  function renderChoices() {
+    goalButtons.forEach(function (btn) {
+      var selected = btn.getAttribute('data-goal') === state.goal;
+      btn.classList.toggle('is-selected', selected);
+      btn.setAttribute('aria-checked', String(selected));
+    });
+    quotaButtons.forEach(function (btn) {
+      var selected = Number(btn.getAttribute('data-quota')) === state.quota;
+      btn.classList.toggle('is-selected', selected);
+      btn.setAttribute('aria-checked', String(selected));
+    });
+    updateSummary();
+    updatePrimary();
+  }
+
+  function hideGoalError() {
+    goalError.hidden = true;
+    goalError.textContent = '';
+  }
+
+  optionListeners(goalButtons, 'data-goal', function (value) {
+    state.goal = value;
+    hideGoalError();
+    renderChoices();
+  });
+
+  optionListeners(quotaButtons, 'data-quota', function (value) {
+    state.quota = Number(value);
+    renderChoices();
+  });
+
+  function optionListeners(buttons, attribute, onPick) {
+    buttons.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        if (state.busy) return;
+        onPick(btn.getAttribute(attribute));
+      });
+    });
+  }
+
+  goalNext.addEventListener('click', function () {
+    if (state.busy) return;
+    if (!state.goal) {
+      goalError.textContent = '请选择学习目标和每日时长。';
+      goalError.hidden = false;
+      goalButtons[0].focus();
+      return;
+    }
+    hideGoalError();
+    beginBusy(goalNext, '正在保存…');
+    later(function () {
+      endBusy();
+      savedGoal = state.goal;
+      savedQuota = state.quota;
+      updateSummary();
+      setStep('assessment');
+      UISpec.toast('学习目标已保存', 'ok');
+    }, 1200);
+  });
+
+  goalReload.addEventListener('click', function () {
+    if (state.busy) return;
+    beginBusy(goalReload, '正在读取…');
+    later(function () {
+      endBusy();
+      state.goal = savedGoal;
+      state.quota = savedQuota;
+      hideGoalError();
+      renderChoices();
+      UISpec.toast(savedGoal ? '已读取已保存的学习目标' : '还没有已保存的学习目标', 'info');
+    }, 1000);
+  });
+
+  /* ---------- 步骤四：已完成 ---------- */
+
+  assessmentNext.addEventListener('click', function () {
+    if (state.busy) return;
+    beginBusy(assessmentNext, '正在打开…');
+    later(function () {
+      endBusy();
+      location.href = 'assessment.html';
+    }, 700);
+  });
+
+  adjustGoal.addEventListener('click', function () {
+    if (state.busy) return;
+    setStep('goal');
+  });
+
+  /* ---------- 账号出口 ---------- */
+
+  accountSettings.addEventListener('click', function () {
+    if (state.busy) return;
+    location.href = 'settings.html';
+  });
+
+  logoutBtn.addEventListener('click', function () {
+    if (state.busy) return;
+    UISpec.openOverlay('logout-layer');
+  });
+
+  logoutConfirm.addEventListener('click', function () {
+    UISpec.closeOverlay(logoutLayer);
+    UISpec.toast('已退出登录', 'ok');
+    later(function () { location.href = 'login.html'; }, 800);
+  });
+
+  /* ---------- 错误 / 离线重试 ---------- */
+
+  document.addEventListener('click', function (event) {
+    var retry = event.target.closest('[data-retry-state]');
+    if (!retry) return;
+    event.preventDefault();
+    if (retry.classList.contains('is-busy')) return;
+    UISpec.setBusy(retry, true, retry.getAttribute('data-retry-label') || '正在读取…');
+    setTimeout(function () {
+      UISpec.setBusy(retry, false);
+      UISpec.setScreenState(retry.getAttribute('data-retry-state'));
+      UISpec.toast(retry.getAttribute('data-retry-toast') || '已恢复', 'ok');
+    }, 1100);
+  });
+
+  /* ---------- 页面状态切换：取消未完成请求 ---------- */
+
+  document.addEventListener('uispec:state', function (event) {
+    var next = event.detail.state;
+    if (next !== 'normal') {
+      cancelTimer();
+      if (state.busy) endBusy();
+      UISpec.closeAllOverlays();
+      return;
+    }
+    updatePrimary();
+    renderChoices();
+  });
+
+  /* ---------- 初始化 ---------- */
+
+  renderChoices();
+  setStep('gate', { focus: false });
+})();
+</script>
+
+</body>
+</html>
