@@ -251,3 +251,24 @@
 - 复习不可用操作 → `?mock=review-illegal` 显示纯说明行「这个操作现在不能用」（`reviewFailureCopy`），不出现 `role=alert` 与「重试」；点击「开始复习」同样不弹 Toast。
 - TabBar → 底部 5 项，「课程」选中并带 `aria-current="page"`；其余跳转 `home.html` / `b2-practice.html` / `world.html` / `profile.html`。右上角设置入口跳转 `settings.html`。
 - 文案边界 → 不显示内部投影版本、错误码或「等待加载」类静态占位；加载使用骨架屏，复习计数与状态同时用文字表达，不只依赖颜色。
+
+### b2-practice（练习）
+
+对应页面：`pages/b2-practice.html`；真实实现参照 `apps/mobile/src/pages/b2-practice/b2-practice.vue`、`apps/mobile/src/components/b10/B10ExerciseCard.vue`、`apps/mobile/src/components/b10/B10StatusPanel.vue`、`apps/mobile/src/domain/practice-loop.ts` 与 `packages/i18n/src/mobile-experience.ts` 的 `pages.b2-practice` 文案。原型用 mock 题目演示作答、判分反馈、断点、完成与内容下线分支。
+
+- 主题与直达参数 → 工具条「浅色 / 深色」切换整页 token 并写入 `localStorage['uispec-theme']`；`?theme=light|dark` 固定主题；`?state=normal|loading|empty|error|forbidden|offline` 直达页面状态；`?mock=done|stopped|legacy|stale` 演示已完成、内容已下线、旧题组下线与版本失效。
+- 页面状态 → 工具条「正常 / 加载 / 空 / 错误 / 无权限 / 离线」：正常为当前题目与判分反馈；加载为 `role=status`「正在创建练习会话…」+ 骨架屏（`aria-busy`）；空为「当前没有可用内容」+「重新读取 / 返回学习首页」并保留下方练习灵感入口；错误为「服务暂时不可用 / 练习会话暂时无法创建。」；无权限为「当前会话没有访问权限 / 登录后可以继续练习。」+「去登录」；离线为「网络暂时不可用 / 待同步不等于已结算。」。切换离开正常态会取消提交中状态并解锁选项。
+- 状态恢复 → 空 / 错误 / 无权限 / 离线「重试」转圈「正在读取… / 正在重试…」→ 1.1s 后回到正常态，不弹成功 Toast。
+- 作答（单选题）→ 点击任一选项即提交：该项保持 brand 选中态，其余选项变 mut 且全部不可操作，卡片内显示转圈 `role=status`「正在提交答案…」→ 0.7s 后出现判分反馈；进度「已答 n / 5」前进一位。不显示正确答案，也不在前端计算分数。
+- 作答（填空题）→ 第 5 题切换为输入框「填写空格」，输入后「提交答案」由禁用变可用；回车或点击提交后输入框与按钮锁定为 surface 底 mut 字，反馈同样出现在卡片内。
+- 判分反馈 → 答对为 ok 色「规则命中」，答错为 bad 色「需要修复」；随后三行依次为已保存凭证「已保存」、规则文案「正确 / 需要再练」与「下一题：第 n 题」（最后一题为「本次练习已完成」）；反馈标题获得焦点，屏幕阅读器通过 `role=alert` 播报。版本失效时追加 warn 色「当前版本已下线或发生变化，请重新读取。」。
+- 下一题 → 仅在出现反馈后显示的主按钮；点击后清空反馈、加载下一道题并把焦点移回题干；最后一题完成后卡片切换为「本次练习已完成。/ 查看错题与报告」。
+- 保存断点 → 点击后按钮转圈「正在保存…」，0.8s 后在按钮下方显示 `role=status`「断点已保存。」，2.4s 后自动消失；不改变题目、进度或判分，不弹 Toast。
+- 已完成 → 全部题目答完或 `?mock=done`：隐藏作答卡，显示「练习完成 / 本次练习已完成。」与主按钮「查看错题与报告」→ `b10-report.html`；不显示奖励或分数。
+- 内容已下线 → `?mock=stopped`：隐藏作答卡，显示「练习状态 / 练习已停止加载。」与真实文案「内容已下线，已停止加载。可以回到可用学习。」+「返回学习首页」。
+- 旧题组下线 → `?mock=legacy`：空态说明为「这个旧版练习入口的题组已下线，请从底部「练习」进入今天的练习。」，与真实页 410 分支一致。
+- 版本失效 → `?mock=stale`：页头下方显示 warn 色「内容版本已失效 / 当前版本已下线或发生变化，请重新读取。」+「重新读取」；点击转圈「正在读取…」1s 后提示消失，题目与进度保留。
+- 画质 → 顶部「画质 · 舒适」打开底部弹层，四档「精致 / 舒适 / 轻量 / 省资源」；当前档带 brand 色对勾与 `aria-pressed`，选择后立即更新顶部文案并关闭弹层，焦点回到画质按钮；遮罩、取消与 Esc 均可关闭。
+- 练习灵感 → 三张入口卡：单词复习 → `b2-vocabulary.html`、分级阅读 → `b11-reading.html`、语法结构 → `b3-grammar.html`；44px 以上命中区与键盘焦点环。
+- 导航 → 一级 Tab 页：底部 5 项，「练习」选中并带 `aria-current="page"`，其余跳转 `home.html` / `world.html` / `learn.html` / `profile.html`；右上角设置跳转 `settings.html`。
+- 文案边界 → 不显示内部错误码、原始题型枚举或算法版本；题型以「单选题 / 填空题」呈现，进度同时用文字与进度条表达。
