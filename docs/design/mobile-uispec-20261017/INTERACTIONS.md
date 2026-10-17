@@ -229,3 +229,25 @@
 - 计划空态 → 对应 `emptyStateView`，替换任务列表：`?mock=plan-no-plan`「还没有学习计划 / 先完成设置，再开始今天的练习。」+「开始设置」跳转 `onboarding.html`；`?mock=plan-completed`「今天的学习已经完成 / 已保存的练习还在。」+「结束学习」跳转 `home.html`，进度 100%；`?mock=plan-no-content`「暂时没有可学习的内容 / 可以先看现在能打开的内容。」+「看可用内容」；`?mock=plan-no-due`「今天没有到期的复习 / 可以新学一节，或先结束今天。」+「新学或结束」；后两者的出口对应真实页 `openPlanEmpty`，切回学习首页 `home.html`；`?mock=plan-failed`「今日任务没有加载成功 / 已提交的进度会保留。」+「重试」，重试转圈「正在重试…」后恢复任务列表与进度。
 - 无任务 → `?mock=no-tasks` 在卡片内显示「今天还没有安排任务。」，不显示空插画。
 - 文案边界 → 不显示内部算法版本、错误码或「等待加载」类静态占位；加载使用骨架屏，进度与任务状态同时用文字表达，不只依赖颜色。
+
+### learn（课程与练习）
+
+对应页面：`pages/learn.html`；真实实现参照 `apps/mobile/src/pages/learn/learn.vue`、`apps/mobile/src/components/MobileFeatureGrid.vue`、`apps/mobile/src/domain/review-history.ts`、`apps/mobile/src/domain/mistake-book.ts` 的 `weaknessView` 与 `packages/i18n/src/mobile-experience.ts` 的 `pages.learn` 文案。真实页由 `readContent(contentCode)` 读取课程详情，由 `useB18LearningStore().load()` 读取复习队列与历史；原型用 mock 课程与复习队列在同一路由内演示。
+
+- 主题与直达参数 → 工具条「浅色 / 深色」切换整页 token 并写入 `localStorage['uispec-theme']`；`?theme=light|dark` 固定主题；`?state=normal|loading|empty|error|forbidden|offline` 直达页面状态；`?contentCode=…`（兼容 `?content=`）直达课程内容，未知 code 仍回到课程列表。
+- 课程直达 → `?contentCode=b2-grammar-present|b1-daily-greetings|b1-listening-campus|b1-reading-city` 打开对应课程；附 `&taskId=…` 时与真实页一致，在单元列表下方显示 `role=status`「可浏览课程，完成记录暂不可用。」。
+- Mock 参数 → `?mock=content-loading|content-error|content-empty` 演示课程卡读取中、读取失败与「暂无可展示的学习单元。」；`?mock=review-loading|review-empty|review-error|review-offline|review-permission|review-illegal` 演示复习卡的各分支；`?mock=no-courses` 等同工具条「空」。
+- 页面状态 → 工具条「正常 / 加载 / 空 / 错误 / 无权限 / 离线」：正常为练习灵感、课程、练习入口与复习；加载为读取课程的骨架屏并显示可见的 `role=status`「正在读取课程…」（`aria-busy`）；空复用正常态框架，课程卡换成「书架里还没有可学习的课程 / 可以先从练习入口开始，或回到首页看看。」+「去首页看课程」，复习卡为「待复习 0 项」空态；错误为「课程暂时无法读取 / 请检查网络后重试。」+「重试」；无权限为「当前账号无法查看课程 / 请确认学习权益后再试。」+「查看学习权益」（跳转 `b5-commerce.html`）与「重试」；离线为「网络连接不可用 / 请连接网络后重试。」+「重新连接」。切换离开正常态会取消未完成的课程读取、复习完成与重试计时。
+- 状态恢复 → 错误 / 无权限 / 离线「重试」转圈「正在重试…」、离线为「正在重新连接…」→ 1.1s 后回到正常态，不弹成功 Toast。
+- 练习灵感 → 三张入口卡：单词复习 → `b2-vocabulary.html`、分级阅读 → `b11-reading.html`、语法结构 → `b3-grammar.html`；卡片本身可点击（≥44px 命中区），键盘焦点使用 `--v2-focus` 双环。
+- 选择课程 → 课程卡以「课程 / 选择课程 / 从首页选择一门课程。」开头，列出 4 门课程（标题 + 语言 · 类型 · 单元数）；点击任一行 → 卡片改为「课程内容」+「正在读取「课程名」…」骨架屏 → 0.9s 后显示课程内容，并把焦点移到课程标题。
+- 课程内容 → 显示课程标题、语言与类型、简介、学习单元（题干 + 四个选项，选项以 surface 底呈现），底部「换一门课程」返回课程列表并聚焦第一门课程；无学习单元时显示「暂无可展示的学习单元。」。
+- 内容读取失败 → 课程卡内 bad 色 `role=alert`「课程暂时无法读取，请检查网络后重试。」+「重试」与「换一门课程」；「重试」转圈「正在读取…」1s 后恢复当前课程，不弹 Toast。
+- 练习入口 → 基础练习 → `assessment.html`（真实页把 b2-practice 入口替换为测评页），分级阅读 → `b11-reading.html`，语法练习 → `b3-grammar.html`；「更多练习与学习报告」→ `b10-report.html`。
+- 复习列表 → 有队列时标题「待复习 n 项」并显示「按最近的练习记录整理。」；每行显示来源与阶段（「复习」/「错题 · 待复习」/「新内容 · 初学」/「重练 · 巩固中」）；可完成项点「开始复习」→ 转圈「正在复习…」→ 0.9s 后该行移除、计数递减、历史 +1，并 Toast「复习已记录」；不可完成项显示「去学习」（NEW）或「去练习」，行下以 13px mut 说明原因「新内容需先学一遍，学完后会自动进入复习。」/「复习需要一次可核验的作答：完成练习后自动计入。」。
+- 复习空态 → 队列为空时标题为「待复习 0 项」、显示「暂无到期复习。」（`reviewEmpty → NO_DUE_COPY`）与「薄弱点尚不能判断。」（`weaknessView(0)`），历史存在时追加「最近已完成 n 项复习。」；全部复习完成后自动回到该空态。
+- 复习读取失败 / 无权限 / 离线 → 标题回落为「复习安排」，bad 色 `role=alert`：失败「复习安排暂时无法读取。」+「重试」；`?mock=review-offline` 追加「请检查网络后重试。」；`?mock=review-permission` 为「当前账号无法查看复习安排。」且不提供重试（对应真实页 `state === 'permission'` 分支）。「重试」转圈 0.9s 后恢复 4 项队列，不弹 Toast。
+- 复习不可用操作 → `?mock=review-illegal` 在列表上方显示 warn 行「这个操作现在不能用」（`reviewFailureCopy`），此时点击「开始复习」只弹错误 Toast，不改变列表。
+- 工具条「空」 → 复用正常态框架：课程卡为「书架里还没有可学习的课程」+「去首页看课程」，复习卡为 0 项空态；练习灵感与练习入口保持可用；切回「正常」恢复进入空态前的课程与复习状态。
+- TabBar → 底部 5 项，「课程」选中并带 `aria-current="page"`；其余跳转 `home.html` / `b2-practice.html` / `world.html` / `profile.html`；右上角设置入口跳转 `settings.html`。本页是一级 Tab 页，不显示返回按钮。
+- 文案边界 → 不显示内部投影版本、错误码或「等待加载」类静态占位；加载使用骨架屏，复习计数与状态同时用文字表达，不只依赖颜色。
