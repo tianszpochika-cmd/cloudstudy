@@ -157,6 +157,11 @@
     { id: 'profile', label: '我的', icon: 'user', href: 'profile.html' }
   ];
 
+  // 与 TabBar 的 data-prefix 约定一致：从 gallery.html（根目录）出发为 pages/，从 pages/<id>.html 出发为空。
+  function pagePrefix() {
+    return /\/pages\/[^/]*$/.test(location.pathname) ? '' : 'pages/';
+  }
+
   function tabbarHTML(el) {
     var active = el.getAttribute('data-active') || 'home';
     var prefix = el.getAttribute('data-prefix') || '';
@@ -413,7 +418,7 @@
     var backBtn = target.closest('[data-back-action]');
     if (backBtn) {
       if (document.referrer && history.length > 1) history.back();
-      else location.href = 'home.html';
+      else location.href = pagePrefix() + 'home.html';
       return;
     }
 
