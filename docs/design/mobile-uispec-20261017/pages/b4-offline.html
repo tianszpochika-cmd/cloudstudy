@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>离线包 · 语学星移动端 UI 稿</title>
+<link rel="stylesheet" href="../shared.css">
+<script src="../shared.js"></script>
+<style>
+  /* 仅本页布局；组件与 token 全部来自 shared.css */
+  .of-page { padding: 4px 20px 28px; }
+  .of-page [hidden] { display: none !important; }
+
+  /* 页头 */
+  .of-head { margin: 4px 0 20px; }
+  .of-kicker {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0 0 4px;
+    color: var(--v2-brand);
+    font-size: 13px;
+    line-height: 1.6;
+    font-weight: 600;
+    letter-spacing: .04em;
+  }
+  .of-kicker .icon { flex: none; }
+  .of-title {
+    margin: 0;
+    color: var(--v2-ink);
+    font-size: 28px;
+    line-height: 1.4;
+    font-weight: 650;
+    letter-spacing: -.01em;
+  }
+  .of-intro { margin: 6px 0 0; color: var(--v2-mut); font-size: 14px; line-height: 1.75; }
+
+  /* B4StatusPanel 等价状态条 */
+  .of-status {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 8px 12px;
+    margin: 0 0 16px;
+    padding: 12px 14px;
+    border: 1px solid var(--v2-line);
+    border-radius: var(--v2-radius-md);
+    background: var(--v2-card);
+  }
+  .of-status:focus { outline: none; }
+  .of-status.is-error { border-color: var(--v2-bad); }
+  .of-status__copy { display: grid; gap: 2px; flex: 1 1 200px; min-width: 0; }
+  .of-status__title { color: var(--v2-ink); font-size: 14px; line-height: 1.6; font-weight: 600; }
+  .of-status__message { color: var(--v2-mut); font-size: 13px; line-height: 1.6; overflow-wrap: anywhere; }
+  .of-status__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
+    flex: 0 1 auto;
+    max-width: 100%;
+  }
+  .of-status .btn { flex: none; white-space: nowrap; }
+  .of-queue {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    border-radius: var(--v2-radius-pill);
+    background: var(--v2-warn-soft);
+    color: var(--v2-warn);
+    font-size: 12px;
+    line-height: 1.6;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .of-quality {
+    gap: 4px;
+    min-height: 36px;
+    padding: 0 10px;
+    font-size: 13px;
+    white-space: nowrap;
+  }
+  .of-quality .icon { flex: none; color: var(--v2-mut); }
+  .of-quality__label { overflow: hidden; text-overflow: ellipsis; }
+
+  /* 卡片通用 */
+  .of-card { display: grid; gap: 10px; }
+  .of-card + .of-card { margin-top: 16px; }
+  .of-cardhead {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .of-titles { display: grid; gap: 2px; min-width: 0; }
+  .of-eyebrow {
+    color: var(--v2-mut);
+    font-size: 12px;
+    line-height: 1.6;
+    font-weight: 600;
+    letter-spacing: .04em;
+  }
+  .of-cardtitle { margin: 0; color: var(--v2-ink); font-size: 16px; line-height: 1.5; font-weight: 600; }
+  .of-side {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    flex: none;
+    color: var(--v2-mut);
+    font-size: 13px;
+    line-height: 1.6;
+    font-variant-numeric: tabular-nums;
+  }
+  .of-side .icon { flex: none; }
+
+  /* 内容包列表 */
+  .of-list { display: grid; }
+  .of-row {
+    display: grid;
+    gap: 10px;
+    padding: 14px 0;
+    border-top: 1px solid var(--v2-line);
+  }
+  .of-list > .of-row:first-child { border-top: 0; padding-top: 2px; }
+  .of-list > .of-row:last-child { padding-bottom: 2px; }
+  .of-row__head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+  .of-row__body { display: grid; gap: 2px; flex: 1 1 auto; min-width: 0; }
+  .of-name { color: var(--v2-ink); font-size: 16px; line-height: 1.5; font-weight: 600; overflow-wrap: anywhere; }
+  .of-meta { color: var(--v2-mut); font-size: 13px; line-height: 1.6; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+  .of-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+  .of-actions .btn { flex: 0 1 auto; min-width: 104px; }
+
+  /* 即将开放说明（对齐 b4-offline.vue 的 .empty-copy + 徽标） */
+  .of-soon {
+    display: grid;
+    gap: 6px;
+    margin: 0;
+    padding: 14px;
+    border: 1px dashed var(--v2-line);
+    border-radius: var(--v2-radius-md);
+    background: transparent;
+  }
+  .of-soon__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    color: var(--v2-ink);
+    font-size: 15px;
+    line-height: 1.5;
+    font-weight: 600;
+  }
+  .of-soon__text { color: var(--v2-mut); font-size: 13px; line-height: 1.6; overflow-wrap: anywhere; }
+
+  /* 待同步列表 */
+  .of-queue-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 10px;
+    padding: 12px 0;
+    border-top: 1px solid var(--v2-line);
+  }
+  .of-list > .of-queue-row:first-child { border-top: 0; padding-top: 2px; }
+  .of-list > .of-queue-row:last-child { padding-bottom: 2px; }
+  .of-queue-row__name { flex: 1 1 auto; min-width: 0; color: var(--v2-ink); font-size: 15px; line-height: 1.5; font-weight: 500; overflow-wrap: anywhere; }
+  .of-queue-row__error { flex: 1 1 100%; color: var(--v2-mut); font-size: 13px; line-height: 1.6; overflow-wrap: anywhere; }
+  .of-empty-line { margin: 2px 0 0; color: var(--v2-mut); font-size: 14px; line-height: 1.6; }
+  .of-sync { margin-top: 4px; }
+  .of-sync .icon { flex: none; }
+
+  /* 加载 */
+  .of-skeleton { display: grid; gap: 12px; }
+</style>
+</head>
+<body>
+
+<div class="phone-stage">
+  <div data-ui="toolbar" data-states="normal,loading,empty,error,forbidden,offline"></div>
+
+  <div class="phone phone--scroll" id="phone">
+    <div data-ui="statusbar"></div>
+    <div data-ui="navbar" data-title="离线包" data-back="world.html" data-action="<a class='hit-44' href='settings.html' aria-label='设置'><span data-icon='settings' data-icon-size='22'></span></a>"></div>
+
+    <div class="phone__scroll">
+      <div class="of-page">
+
+        <header class="of-head">
+          <p class="of-kicker"><span data-icon="download" data-icon-size="16"></span>随身学</p>
+          <h1 class="of-title">把学习，带在身边。</h1>
+          <p class="of-intro">管理离线内容与待同步记录，联网后继续前进。</p>
+        </header>
+
+        <div data-state-block="normal">
+
+          <!-- B4StatusPanel 等价状态条 -->
+          <div class="of-status" id="status-strip" role="status" aria-live="polite" tabindex="-1">
+            <span class="of-status__copy">
+              <span class="of-status__title" id="status-title">网络可用 · 学习同步状态</span>
+              <span class="of-status__message" id="status-message">成长记录会随学习进度更新。</span>
+            </span>
+            <span class="of-status__actions">
+              <span class="of-queue" id="queue-badge" hidden>待同步 2</span>
+              <button type="button" class="btn btn--secondary btn--sm" id="status-retry" hidden>
+                <span class="btn__spinner" aria-hidden="true"></span><span class="btn__label">重试</span>
+              </button>
+              <button type="button" class="btn btn--secondary btn--sm" id="status-sync" hidden>
+                <span class="btn__spinner" aria-hidden="true"></span><span class="btn__label">同步</span>
+              </button>
+              <button type="button" class="chip of-quality" data-open-overlay="quality-sheet" aria-haspopup="dialog" aria-label="画质：舒适">
+                <span class="of-quality__label" id="quality-label">舒适</span>
+                <span data-icon="chevron-down" data-icon-size="14"></span>
+              </button>
+            </span>
+          </div>
+
+          <!-- 内容包 -->
+          <section class="card of-card" aria-labelledby="packages-title">
+            <div class="of-cardhead">
+              <span class="of-titles">
+                <span class="of-eyebrow">离线学习</span>
+                <h2 class="of-cardtitle" id="packages-title">内容包</h2>
+              </span>
+              <span class="of-side">
+                <span data-icon="download" data-icon-size="18"></span>
+                <span id="online-label">在线</span>
+              </span>
+            </div>
+            <div class="of-list" id="package-list" tabindex="-1"></div>
+            <p class="of-soon" id="packages-empty" hidden>
+              <span class="of-soon__head">离线内容包 <span class="badge badge--warn">即将开放</span></span>
+              <span class="of-soon__text">离线下载服务尚未上线，目前学习内容需联网读取。</span>
+            </p>
+          </section>
+
+          <!-- 待同步 -->
+          <section class="card of-card" aria-labelledby="queue-title">
+            <div class="of-cardhead">
+              <span class="of-titles">
+                <span class="of-eyebrow">离线操作</span>
+                <h2 class="of-cardtitle" id="queue-title">待同步</h2>
+              </span>
+              <span class="of-side">
+                <span data-icon="refresh" data-icon-size="18"></span>
+                <span id="queue-count">0 条</span>
+              </span>
+            </div>
+            <div class="of-list" id="record-list" tabindex="-1"></div>
+            <p class="of-empty-line" id="records-empty" hidden>没有待同步操作。</p>
+            <button type="button" class="btn btn--primary btn--block of-sync" id="queue-sync" hidden>
+              <span data-icon="refresh" data-icon-size="18"></span>
+              <span class="btn__spinner" aria-hidden="true"></span><span class="btn__label">立即同步</span>
+            </button>
+          </section>
+
+        </div>
+
+        <!-- 加载：读取离线内容与待同步记录 -->
+        <div data-state-block="loading" aria-busy="true">
+          <div class="of-status">
+            <span class="of-status__copy">
+              <span class="of-status__title">网络可用 · 正在加载成长记录</span>
+              <span class="of-status__message">成长记录会随学习进度更新。</span>
+            </span>
+          </div>
+          <div class="card of-skeleton" aria-hidden="true">
+            <div class="skeleton skeleton-line skeleton-line--sm" style="width: 34%"></div>
+            <div class="skeleton skeleton-block" style="height: 68px"></div>
+            <div class="skeleton skeleton-block" style="height: 68px"></div>
+            <div class="skeleton skeleton-block" style="height: 68px"></div>
+          </div>
+          <div class="card of-skeleton" aria-hidden="true" style="margin-top: 16px">
+            <div class="skeleton skeleton-line skeleton-line--sm" style="width: 28%"></div>
+            <div class="skeleton skeleton-block" style="height: 56px"></div>
+            <div class="skeleton skeleton-block" style="height: 56px"></div>
+          </div>
+        </div>
+
+        <!-- 空：暂无离线内容（设计新增整页空态；真实页只在内容包卡内显示即将开放说明） -->
+        <div data-state-block="empty">
+          <div class="state-block" role="status">
+            <span class="state-block__icon" data-icon="download" data-icon-size="24"></span>
+            <span class="state-block__title">暂无可用的离线内容。</span>
+            <span class="state-block__text">离线下载服务尚未上线，目前学习内容需联网读取。</span>
+            <span class="state-block__actions">
+              <a class="btn btn--secondary btn--sm" href="today.html">回到可用学习</a>
+            </span>
+          </div>
+        </div>
+
+        <!-- 错误：离线内容读取失败 -->
+        <div data-state-block="error">
+          <div class="state-block" role="alert">
+            <span class="state-block__icon state-block__icon--bad" data-icon="alert-triangle" data-icon-size="24"></span>
+            <span class="state-block__title">网络可用 · 学习同步状态</span>
+            <span class="state-block__text">学习世界暂时无法读取。</span>
+            <span class="state-block__actions">
+              <button type="button" class="btn btn--primary btn--sm" data-retry-state="normal" data-retry-label="正在重试…">
+                <span class="btn__spinner" aria-hidden="true"></span><span class="btn__label">重试</span>
+              </button>
+            </span>
+          </div>
+        </div>
+
+        <!-- 无权限：status=permission -->
+        <div data-state-block="forbidden">
+          <div class="state-block" role="alert">
+            <span class="state-block__icon state-block__icon--warn" data-icon="lock" data-icon-size="24"></span>
+            <span class="state-block__title">网络可用 · 学习同步状态</span>
+            <span class="state-block__text">当前没有读取学习世界的权限。</span>
+            <span class="state-block__actions">
+              <a class="btn btn--primary btn--sm" href="login.html?returnTo=%2Fpages%2Fb4-offline%2Fb4-offline">去登录</a>
+            </span>
+          </div>
+        </div>
+
+        <!-- 离线：离线内容读取失败，待同步队列保留 -->
+        <div data-state-block="offline">
+          <div class="state-block" role="alert">
+            <span class="state-block__icon state-block__icon--warn" data-icon="globe" data-icon-size="24"></span>
+            <span class="state-block__title">网络不可用 · 学习同步状态</span>
+            <span class="state-block__text" id="offline-message">学习世界暂时无法读取。</span>
+            <span class="state-block__actions">
+              <span class="of-queue" id="offline-queue" hidden>待同步 2</span>
+              <button type="button" class="btn btn--secondary btn--sm" id="offline-sync" hidden>
+                <span class="btn__spinner" aria-hidden="true"></span><span class="btn__label">同步</span>
+              </button>
+              <button type="button" class="btn btn--primary btn--sm" data-retry-state="normal" data-retry-label="正在重试…">
+                <span class="btn__spinner" aria-hidden="true"></span><span class="btn__label">重试</span>
+              </button>
+            </span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="toast-host" role="status" aria-live="polite"></div>
+
+    <!-- 画质弹层（对齐 B4StatusPanel：精致 / 舒适 / 轻量 / 省资源） -->
+    <div class="overlay-layer" id="quality-sheet" aria-hidden="true">
+      <div class="overlay__scrim" data-close></div>
+      <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="quality-title">
+        <div class="sheet__handle"></div>
+        <p class="sheet__title" id="quality-title">画质</p>
+        <p class="sheet__sub">选择适合当前设备的画质。</p>
+        <div class="sheet__list" id="quality-list"></div>
+        <button type="button" class="sheet__cancel" data-close>取消</button>
+      </div>
+    </div>
+
+    <!-- 清理分片确认 -->
+    <div class="overlay-layer" id="cleanup-dialog" aria-hidden="true">
+      <div class="overlay__scrim" data-close></div>
+      <div class="dialog" role="alertdialog" aria-modal="true" aria-labelledby="cleanup-title" aria-describedby="cleanup-text">
+        <h2 class="dialog__title" id="cleanup-title">清理本机分片？</h2>
+        <p class="dialog__text" id="cleanup-text">只清理本机临时分片；之后需要重新获取，才能离线使用这个内容包。</p>
+        <div class="dialog__actions">
+          <button type="button" class="btn btn--secondary" data-close>取消</button>
+          <button type="button" class="btn btn--danger" id="cleanup-confirm">
+            <span class="btn__spinner" aria-hidden="true"></span><span class="btn__label">清理</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="interaction-notes">
+  <h2>交互说明（b4-offline）</h2>
+  <ul>
+    <li>主题与直达参数 → 工具条「浅色 / 深色」切换整页 token 并写入 <code>localStorage['uispec-theme']</code>；<code>?theme=light|dark</code> 固定主题；<code>?state=normal|loading|empty|error|forbidden|offline</code> 直达页面状态；<code>?mock=packages|no-queue|sync-rejected|sync-error|partial|authorize-error|download-error|cleanup-error</code> 演示内容包管理、同步与失败分支。截图（每项 <code>?theme=light|dark</code> 各一张）：<code>b4-offline-{light,dark}.png</code>；<code>b4-offline-{loading,empty,error,forbidden,offline}-{light,dark}.png</code>；<code>b4-offline-{packages,no-queue,sync-rejected,sync-error,partial,authorize-error,download-error,cleanup-error}-{light,dark}.png</code>。</li>
+    <li>页面状态 → 工具条「正常 / 加载 / 空 / 错误 / 无权限 / 离线」，文案对齐 <code>B4StatusPanel</code> 与 <code>stores/b4.ts</code> 的 <code>loadWorld</code> / <code>fail</code>：加载为「网络可用 · 正在加载成长记录」+ 两张卡骨架屏（<code>aria-busy</code>）；空为「暂无可用的离线内容。」+「回到可用学习」→ <code>today.html</code>（<strong>设计新增，需同步实现</strong>：真实页没有整页空态，只在内容包卡内显示「即将开放」说明）；错误为「网络可用 · 学习同步状态 / 学习世界暂时无法读取。」+「重试」；无权限为「网络可用 · 学习同步状态 / 当前没有读取学习世界的权限。」+ 单个「去登录」→ <code>login.html?returnTo=%2Fpages%2Fb4-offline%2Fb4-offline</code>；离线为「网络不可用 · 学习同步状态 / 学习世界暂时无法读取。」+「重试」，有队列时同时显示「待同步 N」与「同步」。</li>
+    <li>状态恢复 → 错误与离线「重试」转圈「正在重试…」→ 1.1s 后回到正常态，不弹成功 Toast；空态只保留「回到可用学习」；无权限只保留「去登录」。切换离开正常态会关闭画质与清理确认、取消未完成的授权 / 下载 / 清理 / 同步计时并恢复按钮；切回正常态保留已选画质、内容包与待同步记录。</li>
+    <li>页头与导航 → 导航栏「离线包」（<code>pages.json</code> 标题）+ 返回 <code>world.html</code>（<code>backMobile</code>：返回上一页，无历史时回 <code>home.html</code>），右上角设置 → <code>settings.html</code>；页内 kicker「随身学」（<code>ZH_KICKERS</code>）、标题「把学习，带在身边。」、说明「管理离线内容与待同步记录，联网后继续前进。」（<code>pages.b4-offline</code>）；不显示底部 TabBar。</li>
+    <li>状态条 → 等价 <code>B4StatusPanel</code>：标题「网络可用 · 学习同步状态」；无自定义说明时，队列为空显示「成长记录会随学习进度更新。」，有队列显示「本机有 N 条待同步记录，联网后可继续同步。」；状态为 error / offline 时边框转 bad 色并出现「重试」；有队列时显示 warn 徽标「待同步 N」与「同步」；右侧画质 chip 恒显示当前档位。</li>
+    <li>同步 → 状态条「同步」或卡内「立即同步」转圈「正在同步…」，记录先标记为「同步中」→ 0.9s 后队列清空，说明「服务端已接受 N 条事件。」，不弹 Toast；<code>?mock=sync-rejected</code> 以 2 条队列打开，说明「服务端未接受事件，队列已保留。」，点击同步仍被拒绝且记录转为「同步失败」；<code>?mock=sync-error</code> 打开即显示「待同步事件提交失败，队列仍保留。」，状态条为错误变体。</li>
+    <li>内容包（默认）→ 对齐真实页：离线包接口尚未上线时列表为空，卡内显示虚线说明「离线内容包 即将开放」+「离线下载服务尚未上线，目前学习内容需联网读取。」，右侧显示「在线 / 离线」，不虚构已下载内容。</li>
+    <li>内容包（<code>?mock=packages</code>）→ 显示四行状态：可获取（请求授权）、下载中（暂停 / 清理）、已暂停（继续 / 清理）、可离线使用（无操作）；每行显示名称、「大小 · 已完成 / 总部分 部分」与中文状态徽标，状态徽标同时带文字，不只靠颜色区分。</li>
+    <li>请求授权 → 「请求授权」转圈「正在授权…」→ 0.8s 后状态变「已授权」、出现「暂停 / 清理」，说明「离线包授权已由服务端确认；资源下载仍需真实清单和校验。」（<code>stores/b4.ts</code> 原文），不显示为已下载；<code>?mock=authorize-error</code> 说明「离线包授权失败，未显示为已下载。」且状态条转错误变体，不虚构授权结果。</li>
+    <li>暂停 / 继续 → 转圈「正在暂停…」/「正在继续…」→ 0.8s 后状态徽标与按钮切换为「已暂停」/「下载中」，说明「离线包下载状态已由服务端确认。」；<code>?mock=download-error</code> 说明「离线包下载状态更新失败，未在本地标记为成功。」并保留原状态。</li>
+    <li>清理 → 「清理」打开危险确认框「清理本机分片？」，说明「只清理本机临时分片；之后需要重新获取，才能离线使用这个内容包。」；取消关闭；「清理」转圈「正在清理…」→ 0.8s 后状态变「已清理」、进度归零，说明「离线包临时分片已由服务端确认清理。」；已清理行显示「重新获取」（<strong>设计新增，需同步实现</strong>：真实页清理后仍显示「清理」，会留下无效按钮）；<code>?mock=cleanup-error</code> 说明「离线包清理失败，未在本地删除未确认资源。」，内容包保持原状。</li>
+    <li>待同步列表 → 卡内每行显示「自习室互动」与中文状态徽标（待同步 / 同步中 / 同步失败），失败行追加服务端返回的中文原因，如「服务端未接受该事件。」；无记录时显示「没有待同步操作。」，右侧仍显示「N 条」且「立即同步」隐藏；有记录时底部显示主按钮「立即同步」。不显示事件编号、账号标识或原始事件类型。</li>
+    <li>画质 → 状态条右侧 chip（<code>aria-label="画质：舒适"</code>）打开底部弹层「画质」，四档「精致 / 舒适 / 轻量 / 省资源」（<code>B4_PERFORMANCE_LEVELS</code>），当前档带 brand 对勾与 <code>aria-pressed</code>；选择后更新 chip 文案并关闭弹层，焦点回到画质按钮；遮罩、取消与 Esc 均可关闭。画质只影响本机显示。</li>
+    <li>登录门禁 → 对齐真实页 <code>onShow</code>：先 <code>session.restore()</code>，未登录直接跳转登录页，不渲染离线页；原型以无权限态承载该分支，登录页回跳地址为 <code>/pages/b4-offline/b4-offline</code>。</li>
+    <li>文案边界 → 不显示 packageId、downloadId、sha256、签名、内部错误码或原始状态枚举；离线能力未上线时明确写「即将开放」，不把授权或部分下载说成可离线使用；同步失败只描述中文原因，不在本地伪造已同步。</li>
+  </ul>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var params = new URLSearchParams(location.search);
+  function q(name) {
+    var value = params.get(name) || '';
+    var cut = value.indexOf('?');
+    return cut >= 0 ? value.slice(0, cut) : value;
+  }
+  function themedParam() {
+    var match = /[?&]theme=(light|dark)/g;
+    var found = null;
+    var item;
+    while ((item = match.exec(location.search))) found = item[1];
+    return found;
+  }
+  var THEME_PARAM = themedParam();
+  if (THEME_PARAM) UISpec.setTheme(THEME_PARAM);
+
+  var MOCK = q('mock');
+  var STATE_PARAM = q('state');
+  var VALID_STATES = ['normal', 'loading', 'empty', 'error', 'forbidden', 'offline'];
+  var INITIAL_STATE = VALID_STATES.indexOf(STATE_PARAM) >= 0 ? STATE_PARAM : 'normal';
+
+  /* 对齐 apps/mobile/src/pages/b4-offline/b4-offline.vue、
+   * components/b4/B4StatusPanel.vue 与 stores/b4.ts：loadWorld() 读取离线包并保留本地队列；
+   * authorizeOfflinePackage / updateOfflineDownload / cleanupOfflineDownload / syncOffline
+   * 全部以服务端确认为准。数据全部为 mock，不访问服务端。 */
+
+  var DEFAULT_MESSAGE = '成长记录会随学习进度更新。';
+
+  var QUALITY = [
+    { id: 'ultra', label: '精致' },
+    { id: 'high', label: '舒适' },
+    { id: 'medium', label: '轻量' },
+    { id: 'performance', label: '省资源' }
+  ];
+
+  var PACKAGE_STATUS = {
+    PUBLISHED: '可获取',
+    AUTHORIZED: '已授权',
+    DOWNLOADING: '下载中',
+    PAUSED: '已暂停',
+    ACTIVE_LOCAL: '可离线使用',
+    CLEANED: '已清理',
+    DELETED: '已下线'
+  };
+  var PACKAGE_BADGE = {
+    PUBLISHED: 'badge',
+    AUTHORIZED: 'badge',
+    DOWNLOADING: 'badge',
+    PAUSED: 'badge badge--warn',
+    ACTIVE_LOCAL: 'badge badge--ok',
+    CLEANED: 'badge badge--mut',
+    DELETED: 'badge badge--mut'
+  };
+  var QUEUE_STATUS = { PENDING: '待同步', SYNCING: '同步中', FAILED: '同步失败' };
+  var QUEUE_BADGE = { PENDING: 'badge badge--warn', SYNCING: 'badge', FAILED: 'badge badge--bad' };
+  var EVENT_LABEL = { 'social.interaction.sent.v1': '自习室互动' };
+
+  /* 内容包演示数据（?mock=packages）：只在本机展示，不表示服务端已下发清单 */
+  var PACKAGES = [
+    { packageId: 'pkg-daily', name: '英语入门 · 日常会话', sizeBytes: 25792000, partCount: 40, completedPartCount: 0, state: 'PUBLISHED', downloadId: null, downloadState: null },
+    { packageId: 'pkg-reading', name: '分级阅读 · 第 3 级', sizeBytes: 19083000, partCount: 36, completedPartCount: 18, state: 'AUTHORIZED', downloadId: 'dl-reading', downloadState: 'DOWNLOADING' },
+    { packageId: 'pkg-listening', name: '听力精练 · 校园场景', sizeBytes: 33554000, partCount: 48, completedPartCount: 26, state: 'AUTHORIZED', downloadId: 'dl-listening', downloadState: 'PAUSED' },
+    { packageId: 'pkg-grammar', name: '语法精讲 · 基础句型', sizeBytes: 12582000, partCount: 24, completedPartCount: 24, state: 'ACTIVE_LOCAL', downloadId: 'dl-grammar', downloadState: 'ACTIVE_LOCAL' }
+  ];
+
+  /* 本地队列来自离线互动（stores/b4.ts sendInteraction 入队 social.interaction.sent.v1） */
+  var RECORDS = [
+    { id: 'evt-1', eventType: 'social.interaction.sent.v1', status: 'PENDING', lastError: null },
+    { id: 'evt-2', eventType: 'social.interaction.sent.v1', status: 'FAILED', lastError: '服务端未接受该事件。' }
+  ];
+
+  var PACKAGE_MOCKS = ['packages', 'authorize-error', 'download-error', 'cleanup-error'];
+
+  var state = {
+    packages: [],
+    records: copy(RECORDS),
+    quality: 'high',
+    online: true,
+    status: 'ready',
+    message: null,
+    busy: '',
+    failAction: '',
+    syncRejects: MOCK === 'sync-rejected',
+    syncFails: MOCK === 'sync-error',
+    cleanupId: ''
+  };
+
+  if (PACKAGE_MOCKS.indexOf(MOCK) >= 0) state.packages = copy(PACKAGES);
+  if (MOCK === 'no-queue') state.records = [];
+  if (MOCK === 'sync-rejected') state.message = '服务端未接受事件，队列已保留。';
+  if (MOCK === 'sync-error') {
+    state.status = 'error';
+    state.message = '待同步事件提交失败，队列仍保留。';
+    state.records = state.records.map(function (item) {
+      return { id: item.id, eventType: item.eventType, status: 'FAILED', lastError: '同步请求失败。' };
+    });
+  }
+  if (MOCK === 'partial') state.message = '部分功能暂不可用，已显示可读取的内容。';
+  if (MOCK === 'authorize-error') {
+    state.status = 'error';
+    state.message = '离线包授权失败，未显示为已下载。';
+    state.failAction = 'authorize';
+  }
+  if (MOCK === 'download-error') {
+    state.status = 'error';
+    state.message = '离线包下载状态更新失败，未在本地标记为成功。';
+    state.failAction = 'download';
+  }
+  if (MOCK === 'cleanup-error') {
+    state.status = 'error';
+    state.message = '离线包清理失败，未在本地删除未确认资源。';
+    state.failAction = 'cleanup';
+  }
+
+  function copy(value) {
+    return JSON.parse(JSON.stringify(value));
+  }
+
+  function findPackage(packageId) {
+    for (var i = 0; i < state.packages.length; i++) {
+      if (state.packages[i].packageId === packageId) return state.packages[i];
+    }
+    return null;
+  }
+
+  function fileSize(bytes) {
+    return bytes >= 1048576 ? (bytes / 1048576).toFixed(1) + ' MB' : Math.ceil(bytes / 1024) + ' KB';
+  }
+
+  var gen = 0;
+  function later(fn, ms) {
+    var g = gen;
+    setTimeout(function () { if (g === gen) fn(); }, ms);
+  }
+  function focusSoon(el) {
+    if (!el) return;
+    try { el.focus({ preventScroll: true }); } catch (e) { /* ignore */ }
+  }
+
+  /* ---------- 元素 ---------- */
+  var statusStrip = document.getElementById('status-strip');
+  var statusTitle = document.getElementById('status-title');
+  var statusMessage = document.getElementById('status-message');
+  var queueBadge = document.getElementById('queue-badge');
+  var statusSync = document.getElementById('status-sync');
+  var statusRetry = document.getElementById('status-retry');
+  var qualityLabel = document.getElementById('quality-label');
+  var qualityButton = document.querySelector('.of-quality');
+  var qualityList = document.getElementById('quality-list');
+  var onlineLabel = document.getElementById('online-label');
+  var packageList = document.getElementById('package-list');
+  var packagesEmpty = document.getElementById('packages-empty');
+  var recordList = document.getElementById('record-list');
+  var recordsEmpty = document.getElementById('records-empty');
+  var queueCountEl = document.getElementById('queue-count');
+  var queueSync = document.getElementById('queue-sync');
+  var offlineMessage = document.getElementById('offline-message');
+  var offlineQueue = document.getElementById('offline-queue');
+  var offlineSync = document.getElementById('offline-sync');
+  var cleanupDialog = document.getElementById('cleanup-dialog');
+  var cleanupConfirm = document.getElementById('cleanup-confirm');
+
+  /* ---------- 状态条 ---------- */
+  function defaultMessage() {
+    return state.records.length
+      ? '本机有 ' + state.records.length + ' 条待同步记录，联网后可继续同步。'
+      : DEFAULT_MESSAGE;
+  }
+
+  function renderStatus() {
+    statusTitle.textContent = (state.online ? '网络可用' : '网络不可用') + ' · ' +
+      (state.status === 'loading' ? '正在加载成长记录' : '学习同步状态');
+    statusMessage.textContent = state.message || defaultMessage();
+    statusStrip.classList.toggle('is-error', state.status === 'error' || state.status === 'offline');
+    queueBadge.hidden = !state.records.length;
+    queueBadge.textContent = '待同步 ' + state.records.length;
+    statusSync.hidden = !state.records.length;
+    statusRetry.hidden = !(state.status === 'error' || state.status === 'offline');
+    offlineQueue.hidden = !state.records.length;
+    offlineQueue.textContent = '待同步 ' + state.records.length;
+    offlineSync.hidden = !state.records.length;
+    onlineLabel.textContent = state.online ? '在线' : '离线';
+  }
+
+  function runSync(button) {
+    if (state.busy || !state.records.length) return;
+    if (!state.online || UISpec.getScreenState() === 'offline') {
+      state.status = 'offline';
+      state.message = '网络不可用，队列仍保留。';
+      offlineMessage.textContent = '网络不可用，队列仍保留。';
+      renderStatus();
+      return;
+    }
+    state.busy = 'sync';
+    UISpec.setBusy(button, true, '正在同步…');
+    state.records = state.records.map(function (item) {
+      return { id: item.id, eventType: item.eventType, status: 'SYNCING', lastError: item.lastError };
+    });
+    renderQueue();
+    later(function () {
+      UISpec.setBusy(button, false);
+      state.busy = '';
+      if (state.syncFails) {
+        state.records = state.records.map(function (item) {
+          return { id: item.id, eventType: item.eventType, status: 'FAILED', lastError: '同步请求失败。' };
+        });
+        state.status = 'error';
+        state.message = '待同步事件提交失败，队列仍保留。';
+      } else if (state.syncRejects) {
+        state.records = state.records.map(function (item) {
+          return { id: item.id, eventType: item.eventType, status: 'FAILED', lastError: '服务端未接受该事件。' };
+        });
+        state.status = 'error';
+        state.message = '服务端未接受事件，队列已保留。';
+      } else {
+        var accepted = state.records.length;
+        state.records = [];
+        state.online = true;
+        state.status = 'ready';
+        state.message = '服务端已接受 ' + accepted + ' 条事件。';
+      }
+      renderAll();
+      focusSoon(statusStrip);
+    }, 900);
+  }
+  statusSync.addEventListener('click', function () { runSync(statusSync); });
+  queueSync.addEventListener('click', function () { runSync(queueSync); });
+  offlineSync.addEventListener('click', function () { runSync(offlineSync); });
+
+  /* 重试对齐 B4StatusPanel @retry="b4.loadWorld" */
+  statusRetry.addEventListener('click', function () {
+    if (state.busy) return;
+    state.busy = 'retry';
+    UISpec.setBusy(statusRetry, true, '正在重试…');
+    later(function () {
+      UISpec.setBusy(statusRetry, false);
+      state.busy = '';
+      state.status = 'ready';
+      state.online = true;
+      state.message = null;
+      renderAll();
+      focusSoon(statusStrip);
+    }, 1100);
+  });
+
+  /* ---------- 画质 ---------- */
+  function qualityLabelOf(id) {
+    for (var i = 0; i < QUALITY.length; i++) {
+      if (QUALITY[i].id === id) return QUALITY[i].label;
+    }
+    return '舒适';
+  }
+  function renderQuality() {
+    var label = qualityLabelOf(state.quality);
+    qualityLabel.textContent = label;
+    qualityButton.setAttribute('aria-label', '画质：' + label);
+    qualityList.innerHTML = QUALITY.map(function (item) {
+      return '<button type="button" class="sheet__item" data-quality="' + item.id + '" aria-pressed="' +
+        String(item.id === state.quality) + '"><span>' + item.label + '</span>' +
+        '<span class="spacer"></span>' + (item.id === state.quality ? UISpec.icon('check', 18) : '') + '</button>';
+    }).join('');
+  }
+  qualityList.addEventListener('click', function (event) {
+    var item = event.target.closest('[data-quality]');
+    if (!item) return;
+    state.quality = item.getAttribute('data-quality');
+    renderQuality();
+    UISpec.closeOverlay(document.getElementById('quality-sheet'));
+    qualityButton.focus({ preventScroll: true });
+  });
+
+  /* ---------- 内容包 ---------- */
+  function packageActions(pkg) {
+    var actions = [];
+    if (pkg.state === 'PUBLISHED' && !pkg.downloadId) {
+      actions.push('<button type="button" class="btn btn--secondary btn--sm" data-pkg-action="authorize" data-pkg-id="' + pkg.packageId + '">' +
+        '<span class="btn__spinner" aria-hidden="true"></span><span class="btn__label">请求授权</span></button>');
+    }
+    if (pkg.downloadId && (pkg.downloadState === 'AUTHORIZED' || pkg.downloadState === 'DOWNLOADING')) {
+      actions.push('<button type="button" class="btn btn--secondary btn--sm" data-pkg-action="pause" data-pkg-id="' + pkg.packageId + '">' +
+        '<span class="btn__spinner" aria-hidden="true"></span><span class="btn__label">暂停</span></button>');
+    }
+    if (pkg.downloadId && pkg.downloadState === 'PAUSED') {
+      actions.push('<button type="button" class="btn btn--secondary btn--sm" data-pkg-action="resume" data-pkg-id="' + pkg.packageId + '">' +
+        '<span class="btn__spinner" aria-hidden="true"></span><span class="btn__label">继续</span></button>');
+    }
+    if (pkg.state === 'CLEANED') {
+      /* 设计新增：真实页清理后仍显示「清理」，本稿改为可重新获取 */
+      actions.push('<button type="button" class="btn btn--secondary btn--sm" data-pkg-action="authorize" data-pkg-id="' + pkg.packageId + '">' +
+        '<span class="btn__spinner" aria-hidden="true"></span><span class="btn__label">重新获取</span></button>');
+    } else if (pkg.downloadId && pkg.downloadState !== 'ACTIVE_LOCAL') {
+      actions.push('<button type="button" class="btn btn--secondary btn--sm" data-pkg-action="cleanup" data-pkg-id="' + pkg.packageId + '">' +
+        '<span class="btn__spinner" aria-hidden="true"></span><span class="btn__label">清理</span></button>');
+    }
+    return actions.length ? '<div class="of-actions">' + actions.join('') + '</div>' : '';
+  }
+
+  function renderPackages() {
+    packagesEmpty.hidden = state.packages.length > 0;
+    packageList.hidden = state.packages.length === 0;
+    packageList.innerHTML = state.packages.map(function (pkg) {
+      var stateKey = pkg.downloadState || pkg.state;
+      return '<div class="of-row" data-package="' + pkg.packageId + '">' +
+        '<div class="of-row__head">' +
+          '<span class="of-row__body">' +
+            '<span class="of-name">' + pkg.name + '</span>' +
+            '<span class="of-meta">' + fileSize(pkg.sizeBytes) + ' · ' +
+              pkg.completedPartCount + ' / ' + pkg.partCount + ' 部分</span>' +
+          '</span>' +
+          '<span class="' + (PACKAGE_BADGE[stateKey] || 'badge badge--mut') + '">' +
+            (PACKAGE_STATUS[stateKey] || '状态待确认') + '</span>' +
+        '</div>' + packageActions(pkg) + '</div>';
+    }).join('');
+  }
+
+  packageList.addEventListener('click', function (event) {
+    var btn = event.target.closest('[data-pkg-action]');
+    if (!btn || btn.disabled) return;
+    var action = btn.getAttribute('data-pkg-action');
+    var pkg = findPackage(btn.getAttribute('data-pkg-id'));
+    if (!pkg) return;
+    if (action === 'authorize') authorizePackage(pkg, btn);
+    else if (action === 'pause' || action === 'resume') updateDownload(pkg, action, btn);
+    else if (action === 'cleanup') openCleanup(pkg);
+  });
+
+  function authorizePackage(pkg, button) {
+    if (state.busy) return;
+    state.busy = 'authorize';
+    var renewing = pkg.state === 'CLEANED';
+    UISpec.setBusy(button, true, renewing ? '正在获取…' : '正在授权…');
+    later(function () {
+      UISpec.setBusy(button, false);
+      state.busy = '';
+      if (state.failAction === 'authorize') {
+        state.status = 'error';
+        state.message = '离线包授权失败，未显示为已下载。';
+      } else {
+        pkg.state = 'AUTHORIZED';
+        pkg.downloadState = 'AUTHORIZED';
+        pkg.downloadId = pkg.downloadId || 'dl-' + pkg.packageId;
+        pkg.completedPartCount = 0;
+        state.status = 'ready';
+        state.message = '离线包授权已由服务端确认；资源下载仍需真实清单和校验。';
+      }
+      renderAll();
+      focusSoon(packageList.querySelector('[data-package="' + pkg.packageId + '"] [data-pkg-action]'));
+    }, 800);
+  }
+
+  function updateDownload(pkg, action, button) {
+    if (state.busy) return;
+    state.busy = action;
+    UISpec.setBusy(button, true, action === 'pause' ? '正在暂停…' : '正在继续…');
+    later(function () {
+      UISpec.setBusy(button, false);
+      state.busy = '';
+      if (state.failAction === 'download') {
+        state.status = 'error';
+        state.message = '离线包下载状态更新失败，未在本地标记为成功。';
+      } else {
+        pkg.downloadState = action === 'pause' ? 'PAUSED' : 'DOWNLOADING';
+        pkg.state = 'AUTHORIZED';
+        state.status = 'ready';
+        state.message = '离线包下载状态已由服务端确认。';
+      }
+      renderAll();
+      focusSoon(packageList.querySelector('[data-package="' + pkg.packageId + '"] [data-pkg-action]'));
+    }, 800);
+  }
+
+  function openCleanup(pkg) {
+    state.cleanupId = pkg.packageId;
+    cleanupConfirm.disabled = false;
+    UISpec.openOverlay('cleanup-dialog');
+    focusSoon(cleanupConfirm);
+  }
+
+  cleanupConfirm.addEventListener('click', function () {
+    if (state.busy) return;
+    var pkg = findPackage(state.cleanupId);
+    if (!pkg) return;
+    state.busy = 'cleanup';
+    UISpec.setBusy(cleanupConfirm, true, '正在清理…');
+    later(function () {
+      UISpec.setBusy(cleanupConfirm, false);
+      state.busy = '';
+      UISpec.closeOverlay(cleanupDialog);
+      if (state.failAction === 'cleanup') {
+        state.status = 'error';
+        state.message = '离线包清理失败，未在本地删除未确认资源。';
+      } else {
+        pkg.state = 'CLEANED';
+        pkg.downloadState = 'CLEANED';
+        pkg.completedPartCount = 0;
+        state.status = 'ready';
+        state.message = '离线包临时分片已由服务端确认清理。';
+      }
+      renderAll();
+      focusSoon(packageList.querySelector('[data-package="' + pkg.packageId + '"]'));
+    }, 800);
+  });
+
+  /* ---------- 待同步 ---------- */
+  function renderQueue() {
+    var count = state.records.length;
+    queueCountEl.textContent = count + ' 条';
+    queueSync.hidden = count === 0;
+    recordsEmpty.hidden = count > 0;
+    recordList.hidden = count === 0;
+    recordList.innerHTML = state.records.map(function (item) {
+      return '<div class="of-queue-row">' +
+        '<span class="of-queue-row__name">' + (EVENT_LABEL[item.eventType] || '离线操作') + '</span>' +
+        '<span class="' + (QUEUE_BADGE[item.status] || 'badge badge--mut') + '">' +
+          (QUEUE_STATUS[item.status] || '待确认') + '</span>' +
+        (item.lastError ? '<span class="of-queue-row__error">' + item.lastError + '</span>' : '') +
+      '</div>';
+    }).join('');
+  }
+
+  /* ---------- 页面级状态重试 ---------- */
+  document.addEventListener('click', function (event) {
+    var btn = event.target.closest('[data-retry-state]');
+    if (!btn) return;
+    event.preventDefault();
+    if (btn.classList.contains('is-busy')) return;
+    UISpec.setBusy(btn, true, btn.getAttribute('data-retry-label') || '正在重试…');
+    later(function () {
+      UISpec.setBusy(btn, false);
+      UISpec.setScreenState(btn.getAttribute('data-retry-state'));
+    }, 1100);
+  });
+
+  /* ---------- 渲染 ---------- */
+  function renderAll() {
+    renderStatus();
+    renderPackages();
+    renderQueue();
+  }
+
+  document.addEventListener('uispec:state', function (event) {
+    if (event.detail.state === 'normal') {
+      offlineMessage.textContent = '学习世界暂时无法读取。';
+      renderQuality();
+      renderAll();
+      return;
+    }
+    gen += 1;
+    UISpec.closeAllOverlays();
+    state.busy = '';
+    document.querySelectorAll('.is-busy').forEach(function (btn) {
+      UISpec.setBusy(btn, false);
+    });
+    var titles = {
+      loading: '正在加载离线内容…',
+      empty: '暂无可用的离线内容。',
+      error: '学习世界暂时无法读取',
+      forbidden: '当前没有读取学习世界的权限。',
+      offline: '网络暂时不可用'
+    };
+    document.title = (titles[event.detail.state] || '离线包') + ' · 语学星移动端 UI 稿';
+  });
+
+  /* ---------- 初始渲染 ---------- */
+  renderQuality();
+  renderAll();
+
+  if (INITIAL_STATE !== 'normal') {
+    document.addEventListener('DOMContentLoaded', function () {
+      UISpec.setScreenState(INITIAL_STATE);
+    });
+  }
+})();
+</script>
+</body>
+</html>
