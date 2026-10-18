@@ -685,3 +685,28 @@
 - 方案为空 → `?mock=empty-catalog` 是正常页面：权益卡与订单卡照常渲染 mock 数据，只有方案卡显示单行「当前没有可购买的方案。」；不切换整页空态。整页空态仅由 `?state=empty` 触发（设计新增）。
 - 登录门禁 → 对齐真实页 `onShow`：先 `session.restore()`，未登录直接跳转登录页，不渲染权益页；原型以无权限态承载该分支。
 - 文案边界 → 不显示 orderId、skuId、支付渠道号、内部错误码或原始状态枚举；价格与权益范围以服务端返回为准；支付恢复只表示「请求已提交」，不写成「已支付」。
+
+## settings（设置）
+
+对应页面：`pages/settings.html`；真实实现参照 `apps/mobile/src/pages/settings/settings.vue`、`apps/mobile/src/platform/v2-foundation`（`mobileThemeController`）、`apps/mobile/src/platform/experience`（`setMobileMotion` / `setMobileQuality`）、`apps/mobile/src/domain/notification-preferences.ts` 的 `NOTIFICATION_CATEGORIES` / `DEFAULT_NOTIFICATION_DND_WINDOW`、`apps/mobile/src/domain/learning-consent-withdrawal.ts` 的 `WITHDRAW_*` 文案、`apps/mobile/src/domain/it7-closure.ts` 的 `privacyNotices()`、`packages/i18n/src/mobile-experience.ts` 的 `pages.settings`。原型全部使用 mock 数据，不访问服务端。
+
+- 主题与直达参数 → 工具条「浅色 / 深色」切换整页 token 并写入 `localStorage['uispec-theme']`；`?theme=light|dark` 固定主题；`?state=normal|loading|error|forbidden|offline` 直达页面状态；`?mock=account-error|notif-error|notif-save-error|save-error|withdraw-failed|dnd-conflict` 演示账户偏好读取失败、通知偏好读取 / 保存失败、保存到账户失败、撤回失败与免打扰时段不一致；`?view=withdraw-confirm` 直接打开撤回确认对话框。截图（每项 `?theme=light|dark` 各一张）：`settings-{light,dark}.png`；`settings-{loading,error,forbidden,offline}-{light,dark}.png`；`settings-{account-error,notif-error,notif-save-error,save-error,withdraw-failed,dnd-conflict,withdraw-confirm}-{light,dark}.png`。
+- 页面状态 → 工具条「正常 / 加载 / 错误 / 无权限 / 离线」：加载为「正在读取设置…」+ 两张卡骨架屏（`aria-busy`）；错误为「设置暂时无法读取。 / 网络或服务暂时不可用，请稍后重试。」+「重试」；无权限为「登录后管理设置。 / 设置与账户绑定，请先登录再继续。」+ 单个「去登录」→ `login.html?returnTo=%2Fpages%2Fsettings%2Fsettings`（真实页 `ensureMobilePageAccess` 未登录直接跳转）；离线为「网络暂时不可用。 / 本机设置仍可使用，联网后可同步到账户。」+「重试」。
+- 状态恢复 → 错误与离线「重试」转圈「正在重试…」→ 1.1s 后回到正常态，不弹成功 Toast；无权限只保留「去登录」。切换离开正常态会关闭全部弹层与对话框、取消未完成的保存 / 撤回 / 重试计时并恢复按钮与开关；切回正常态保留已预览的主题、动效与通知开关。
+- 页头与导航 → 导航栏「设置」（`pages.json` 标题）+ 返回 `profile.html`（真实页从「我的」进入）；页内 kicker「舒适设置」（`ZH_KICKERS`）、标题「舒服的节奏，才走得更远。」、说明「调整学习目标、外观与动效，让这里更适合你。」（`pages.settings`）；不显示底部 TabBar。
+- 学习目标卡 → 只读两行「当前目标 / 四六级备考」「每日目标 / 15 分钟」，底部「修改目标」→ `onboarding.html`（真实页 `/pages/onboarding/onboarding`）。
+- 主题 → 分段控件「跟随系统 / 浅色 / 深色」默认跟随系统；选择后在当前原型内立即预览对应主题（真实页 `watch(themeMode)` 调用 `mobileThemeController.setTheme`），并标记为待保存。工具条主题与页内主题是两套控制：工具条只切换设计稿预览，页内选择模拟用户的真实偏好。
+- 动效 → 分段控件「完整动效 / 减少动效 / 关闭动效」，切换后把本页过渡时长改为较短或 0（对齐 `setMobileMotion` 的预览语义），并标记为待保存；系统「减少动效」仍优先。
+- 高对比度 → 开关打开后本页卡片边框、说明文字与控件边框立即加强（模拟高对比主题预览），并标记为待保存；开关只响应 `uispec:switch` 一次，不会重复翻转。
+- 画质 → 四个 chip「超高 / 高 / 均衡 / 省资源」默认「高」，选择立即生效并把说明更新为「当前为高画质，只影响本机显示。」；画质不进入保存按钮（真实页 `setMobileQuality` 本机生效），不显示帧率或内存数值。
+- 保存偏好 → 修改主题、动效或高对比度后主按钮才可点击；未修改时为真实禁用态（surface 底、mut 字、not-allowed）并显示提示「修改上面的主题、对比度或动效后即可保存。」。点击后转圈「保存中…」→ 0.9s 后按钮恢复禁用态、显示成功条「主题、对比度与动效已同步到账户。」并把焦点移到反馈条；`?mock=save-error` 显示失败条「本机设置已立即生效，但未同步到账户，请检查网络后重试。」（真实页原文），控件保持待保存。
+- 恢复显示默认 → 一键回到「跟随系统 / 完整动效 / 高对比度关闭 / 高画质」，立即预览并标记为待保存；不自动提交，仍需点保存同步到账户。
+- 界面语言 → 只读行「简体中文」（真实页本机只读）；学习内容语言默认「英语」，点击打开底部弹层选择「英语 / 简体中文」，当前值带 brand 对勾；选择后按钮转圈「保存中…」→ 0.9s 后更新值并显示成功条「学习内容语言已同步到账户。」（真实页原文）；遮罩、取消与 Esc 均可关闭。
+- 账户偏好读取失败 → `?mock=account-error` 在偏好卡顶部显示 warn 条「账户偏好暂时无法读取；本机设置仍可使用。」+「重试读取」，其余控件保持可操作；点重试转圈「正在读取…」→ 0.9s 后隐藏并保留当前本机选择。
+- 站内通知 → 14 类通知逐行开关（学习进度 / 复习提醒 / 连续学习 / 考试安排 / 学习检查点 / 自习室互动 / 奖励动态 / 课程更新 / 会员服务 / 活动资讯 / 安全提醒 / 账户通知 / 支付与订单 / 系统消息），默认仅「学习进度 / 复习提醒 / 安全提醒」开启（真实页「未设置的类型默认关闭」）。切换时该行显示「保存中…」、所有开关暂时禁用 → 0.7s 后保存完成并显示「设置已保存。」；`?mock=notif-save-error` 时开关回退并显示 bad 条「保存失败，请检查网络后重试。」。
+- 通知读取失败 → `?mock=notif-error` 隐藏通知列表与免打扰区，只显示 bad 条「通知偏好暂时无法读取。」+「重试」；点重试转圈「正在读取…」→ 0.9s 后恢复列表与免打扰区，不弹 Toast。
+- 站内免打扰 → 开关关闭时说明「已关闭；只影响站内提醒」；打开后显示开始 / 结束时间（`DEFAULT_NOTIFICATION_DND_WINDOW`：22:00 / 07:00）。点时间按钮打开底部弹层「选择时间」，逐小时选项，当前值带 brand 对勾；修改后出现「保存时段」，点击转圈「保存中…」→ 0.7s 后说明更新为「开启中；只影响站内提醒」并显示「设置已保存。」。开始与结束相同则拒绝保存并显示「开始和结束时间不能相同。」（`saveNotificationDnd` 原文）。`?mock=dnd-conflict` 额外显示「各类型的免打扰时段不一致；保存后会统一。」（`loadNotificationSettings` 原文）。
+- 隐私与数据 → 四行说明来自 `privacyNotices()`（删除申请、音频保留、退出与登录、跨服务导出），不显示内部编号或完成百分比；「撤回学习同意」打开确认对话框「撤回学习同意？ / 确认撤回后，学习能力会收回。账号仍会保留。」，取消 / 遮罩 / Esc 关闭；确认后按钮转圈「正在撤回…」→ 1s 后按钮变真实禁用态「学习同意已撤回」并显示成功条「学习同意已撤回。学习能力已收回，账号仍保留。」（`WITHDRAW_DONE_COPY`）；`?mock=withdraw-failed` 显示「撤回没有完成。学习同意仍在。」（`WITHDRAW_FAILED_COPY`），按钮恢复可点。
+- 设备与会话 / 关于 → 「管理设备与会话」→ `devices.html`；「当前版本 2.0」只在此处以人话出现，不显示 build 号或内部版本串；「帮助与客服」→ `support.html`；「查看消息」→ `b4-social.html`；「性能帮助与设备适配说明」→ `b6-platform.html`。
+- 登录门禁 → 对齐真实页 `onShow`：先 `ensureMobilePageAccess`，未登录直接跳转登录页，不渲染设置页；原型以无权限态承载该分支。
+- 文案边界 → 不显示账户 ID、策略版本、内部错误码、原始枚举或设备指纹；所有保存结果以服务端确认为准，失败时明确说明「本机已生效但未同步」，不把本机预览说成已保存到账户。
