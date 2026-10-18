@@ -323,3 +323,25 @@
 - 页脚说明 → 「完成题目后查看反馈，让每道题成为下一步的线索。」，取自 `b10.practice.description`；不新增夸大的奖励或分数文案。
 - 导航 → 二级页：本页不在 TabBar 中（TabBar「练习」指向 `b2-practice.html`），因此不显示底部导航；返回为上一页，无历史时回 `home.html`，设置指向 `settings.html`。
 - 文案边界 → 不显示内部错误码、路由名或原始状态枚举；入口说明全部复用移动端 `pages.*` 文案，不出现英文混排，也不显示算法版本或题量承诺。
+
+### b2-vocabulary（单词复习）
+
+对应页面：`pages/b2-vocabulary.html`；真实实现参照 `apps/mobile/src/pages/b2-vocabulary/b2-vocabulary.vue`、`apps/mobile/src/components/b10/B10StatusPanel.vue`、`apps/mobile/src/stores/b10-learning.ts`、`apps/mobile/src/platform/b10-foundation.ts` 的 `b10.vocab` / `b10.status` 文案与 `packages/i18n/src/mobile-experience.ts` 的 `pages.b2-vocabulary` 文案。真实页由 `store.loadSrs()` 读取学习服务下发的复习批次，按 `currentCard` / `completed` / `status` 渲染正面、背面、今日完成与各失败分支；原型用 mock 词卡在同一路由内演示。
+
+- 主题与直达参数 → 工具条「浅色 / 深色」切换整页 token 并写入 `localStorage['uispec-theme']`；`?theme=light|dark` 固定主题；`?state=normal|loading|empty|error|forbidden|offline` 直达页面状态；`?mock=done|stale|queued|no-audio|back-error` 演示今日完成、版本失效、待同步、没有发音与背面读取失败。截图：`b2-vocabulary-{light,dark}.png`。
+- 页面状态 → 工具条「正常 / 加载 / 空 / 错误 / 无权限 / 离线」：正常为复习词卡或今日完成；加载为 `role=status`「正在加载学习内容…」+ 骨架屏（`aria-busy`）；空对齐 `b10.vocab.empty`「今天没有到期词卡」+「完成今天的练习后，新的词卡会在到期时出现。」+「重新读取 / 去练习」；错误为「词汇批次暂时不可用 / 未确认的复习不会被显示为已完成。」+「重试 / 返回学习首页」；无权限为「当前会话没有访问权限 / 登录后可以继续复习。」+ 单个「去登录」→ `login.html?returnTo=%2Fpages%2Fb2-vocabulary%2Fb2-vocabulary`（不提供重试）；离线为「网络暂时不可用 / 待同步不等于已结算。」+ 待同步队列 +「重试 / 返回学习首页」。
+- 状态恢复 → 空「重新读取」、错误与离线「重试」转圈「正在读取…／正在重试…」→ 1.1s 后回到正常态，不弹成功 Toast；无权限只保留「去登录」。
+- 切换状态副作用 → 离开正常态会关闭画质弹层，取消未完成的背面读取 / 评分 / 播放 / 重试计时并恢复按钮，不出现延迟跳转或 Toast；切回正常态回到卡片正面。
+- 页头与批内进度 → 导航栏「单词复习」+ 返回 `b2-practice.html`，右上角设置 → `settings.html`；页内 kicker「单词花园」、标题「让每个单词，留下来。」、说明「先回想，再揭晓。用适合你的节奏巩固记忆。」（`pages.b2-vocabulary`）。顶部「已完成 n / 5」与细进度条同步，评完一张前进一位；今日完成后进度区隐藏。
+- 词卡正面 → 左上来源徽标「复习 / 新学」、右上掌握度「学习中 / 新词」，单词 36px、音标、提示行，以及 `b10.vocab.description` 对应的隐私说明「正面不展示释义、例句或标准答案。」；不提前显示释义或答案。
+- 播放发音 → 仅当服务端返回音频地址时显示「播放发音」；点击后文案变「正在播放…」并禁用 1.2s，随后恢复；没有音频时显示说明「没有发音，不能播放。」（对齐 `vocabPlayable` 与真实页 `v2-vocab-silent`），不提供空按钮。`?mock=no-audio` 演示该分支。
+- 显示答案 → 点击主按钮「显示答案」→ 按钮转圈「正在读取答案…」（对齐 `b10.vocab.revealing`）→ 0.8s 后在同一张卡内展开中文释义、英文释义、例句与「下次复习：日期」，记忆信心按钮出现；焦点移到释义。释义缺失时按真实页回退为「服务端未返回受保护释义。」。
+- 背面读取失败 → `?mock=back-error` 首次「显示答案」在卡内显示 bad 色 `role=alert`「词卡背面暂时无法加载，答案未被伪造。可以再试一次。」（对齐 store 的 `词卡背面暂时无法加载，答案未被伪造。`），不伪造释义；再次点击可正常展开。
+- 记忆信心 → 背面四档「忘了 / 模糊 / 记得 / 很熟」以 bad / warn / ok / ok 柔和底色区分，同时保留文字标签；选择后四档立即进入真实禁用态（surface 底、mut 字、虚线边框、not-allowed），转圈「正在记录…」→ 0.7s 后前进到下一张并在卡下显示 `role=status`「复习已记录。」（`b10.vocab.accepted`）2.4s 后自动消失。
+- 版本失效 → `?mock=stale` 显示 warn 色横幅「内容版本已失效 / 当前版本已下线或发生变化，请重新读取。」+「重新读取」（`b10.status.stale` / `b10.common.stale`），记忆信心全部禁用；点击转圈「正在读取…」1s 后横幅消失、评分恢复可用。
+- 待同步 → `?mock=queued` 显示 warn 色横幅「本次复习已排队待同步 / 服务端尚未确认掌握变化，联网后继续同步。」+「同步」（`b10.status.pending` / `b10.status.sync`）；点击转圈「正在同步…」0.9s 后横幅消失并弹成功 Toast「待同步复习已提交。」。离线态内的「同步」走同一流程并回到正常态。
+- 今日复习已完成 → 全部评完后或 `?mock=done`：隐藏进度与词卡，显示 ok 图标、「今日复习已完成」与服务端确认说明 +「刷新复习队列」；点击转圈「正在刷新…」0.9s 后弹 Toast「复习队列已更新。」并保持完成态。
+- 出口 → 卡下两个次按钮：基础练习 → `assessment.html`、错题与报告 → `b10-report.html`（对齐真实页 `b10-links`）；页脚说明「复习记录以服务端确认为准；待同步不等于已结算。」。
+- 画质 → 顶部「画质 · 舒适」打开底部弹层，四档「精致 / 舒适 / 轻量 / 省资源」；当前档带 brand 对勾与 `aria-pressed`，选择后更新顶部文案并关闭弹层，焦点回到画质按钮；遮罩、取消与 Esc 均可关闭（对齐 `B10StatusPanel` 的画质选择）。
+- 导航 → 二级页：导航栏返回 `b2-practice.html`，右上角设置 → `settings.html`，不显示底部 TabBar（TabBar「练习」指向 `b2-practice.html`）。
+- 文案边界 → 不显示内部错误码、算法版本、批次 ID 或原始状态枚举；来源与掌握度用中文徽标表达，待同步与失效状态同时用文字说明，不只依赖颜色。
