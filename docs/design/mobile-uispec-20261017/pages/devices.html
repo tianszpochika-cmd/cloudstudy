@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>设备与会话 · 语学星移动端 UI 稿</title>
+<link rel="stylesheet" href="../shared.css">
+<script src="../shared.js"></script>
+<style>
+  /* 仅本页布局；组件与 token 全部来自 shared.css */
+  .dv-page { padding: 4px 20px 28px; }
+  .dv-page [hidden] { display: none !important; }
+
+  /* 页头 */
+  .dv-head { margin: 4px 0 20px; }
+  .dv-kicker {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0 0 4px;
+    color: var(--v2-brand);
+    font-size: 13px;
+    line-height: 1.6;
+    font-weight: 600;
+    letter-spacing: .04em;
+  }
+  .dv-kicker .icon { flex: none; }
+  .dv-title {
+    margin: 0;
+    color: var(--v2-ink);
+    font-size: 28px;
+    line-height: 1.4;
+    font-weight: 650;
+    letter-spacing: -.01em;
+  }
+  .dv-intro { margin: 6px 0 0; color: var(--v2-mut); font-size: 14px; line-height: 1.75; }
+
+  /* 卡片 */
+  .dv-card { display: grid; gap: 12px; }
+  .dv-cardhead {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .dv-titles { display: grid; gap: 2px; min-width: 0; }
+  .dv-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--v2-mut);
+    font-size: 12px;
+    line-height: 1.6;
+    font-weight: 600;
+    letter-spacing: .04em;
+  }
+  .dv-eyebrow .icon { flex: none; }
+  .dv-cardtitle { margin: 0; color: var(--v2-ink); font-size: 16px; line-height: 1.5; font-weight: 600; }
+  .dv-note { margin: 2px 0 0; color: var(--v2-mut); font-size: 13px; line-height: 1.6; }
+  .dv-refresh {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 44px;
+    margin: -6px -6px 0 0;
+    padding: 0 10px;
+    border: 1px solid var(--v2-line);
+    border-radius: var(--v2-radius-sm);
+    background: var(--v2-card);
+    color: var(--v2-ink);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.6;
+    cursor: pointer;
+  }
+  .dv-refresh:hover { border-color: var(--v2-brand); color: var(--v2-brand); }
+  .dv-refresh:focus-visible { outline: none; box-shadow: var(--v2-focus); }
+  .dv-refresh:disabled { background: var(--v2-surface); color: var(--v2-mut); border-color: transparent; cursor: not-allowed; }
+  .dv-refresh svg { flex: none; }
+  .dv-refresh.is-busy { cursor: progress; }
+  .dv-refresh.is-busy svg { animation: dv-spin .8s linear infinite; }
+  @keyframes dv-spin { to { transform: rotate(360deg); } }
+
+  /* 卡内状态 */
+  .dv-inline {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 8px 12px;
+    padding: 12px 14px;
+    border-radius: var(--v2-radius-md);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .dv-inline .icon { flex: none; margin-top: 1px; }
+  .dv-inline__body { flex: 1 1 180px; min-width: 0; overflow-wrap: anywhere; }
+  .dv-inline--ok { background: var(--v2-ok-soft); color: var(--v2-ok); }
+  .dv-inline--bad { background: var(--v2-bad-soft); color: var(--v2-bad); }
+  .dv-inline--warn { background: var(--v2-warn-soft); color: var(--v2-warn); }
+  .dv-inline--info { background: var(--v2-soft); color: var(--v2-ink); }
+  .dv-inline .btn { flex: none; margin-left: auto; }
+
+  /* 设备列表 */
+  .dv-list { display: grid; }
+  .dv-row { display: grid; gap: 8px; padding: 14px 0; border-top: 1px solid var(--v2-line); }
+  .dv-list > .dv-row:first-child { border-top: 0; padding-top: 2px; }
+  .dv-list > .dv-row:last-child { padding-bottom: 0; }
+  .dv-rowhead { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+  .dv-copy { display: grid; gap: 2px; flex: 1 1 auto; min-width: 0; }
+  .dv-name { color: var(--v2-ink); font-size: 16px; line-height: 1.5; font-weight: 600; overflow-wrap: anywhere; }
+  .dv-id { color: var(--v2-mut); font-size: 13px; line-height: 1.6; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+  .dv-last { color: var(--v2-mut); font-size: 13px; line-height: 1.6; font-variant-numeric: tabular-nums; }
+  .dv-current-note { color: var(--v2-mut); font-size: 13px; line-height: 1.6; }
+  .dv-row .btn { justify-self: start; }
+  .dv-count { font-variant-numeric: tabular-nums; }
+
+  /* 状态块（整页） */
+  .dv-state-card { margin-top: 0; }
+
+  /* 高对比度下的边框加强（仅本页预览） */
+  html[data-contrast="high"] .dv-page .card { border: 1px solid var(--v2-ink); box-shadow: none; }
+
+  /* prefers-reduced-motion：转圈降级 */
+  @media (prefers-reduced-motion: reduce) {
+    .dv-refresh.is-busy svg { animation: none; opacity: .6; }
+  }
+</style>
+</head>
+<body>
+
+<div class="phone-stage">
+  <div data-ui="toolbar" data-states="normal,loading,empty,error,forbidden"></div>
+
+  <div class="phone phone--scroll" id="phone">
+    <div data-ui="statusbar"></div>
+    <div data-ui="navbar" data-title="设备与会话" data-back="settings.html"></div>
+
+    <div class="phone__scroll">
+      <div class="dv-page">
+
+        <header class="dv-head">
+          <p class="dv-kicker"><span data-icon="shield" data-icon-size="16"></span>账户安全</p>
+          <h1 class="dv-title">设备与会话</h1>
+          <p class="dv-intro">查看已登录设备，退出不再使用的会话。</p>
+        </header>
+
+        <div data-state-block="normal">
+
+          <section class="card dv-card" aria-labelledby="dv-card-title">
+            <div class="dv-cardhead">
+              <span class="dv-titles">
+                <span class="dv-eyebrow"><span data-icon="shield" data-icon-size="14"></span>账户安全</span>
+                <h2 class="dv-cardtitle" id="dv-card-title">已登录设备</h2>
+                <p class="dv-note">退出设备后，该设备需要重新登录。</p>
+              </span>
+              <button type="button" class="dv-refresh" id="dv-refresh">
+                <span data-icon="refresh" data-icon-size="14"></span>
+                <span id="dv-refresh-label">刷新</span>
+              </button>
+            </div>
+
+            <div class="dv-inline dv-inline--info" id="dv-loading" role="status" hidden>
+              <span data-icon="refresh" data-icon-size="16"></span>
+              <span class="dv-inline__body">正在读取设备列表…</span>
+            </div>
+
+            <div class="dv-inline dv-inline--bad" id="dv-read-error" role="alert" hidden>
+              <span data-icon="alert-circle" data-icon-size="16"></span>
+              <span class="dv-inline__body" id="dv-read-error-text">设备列表暂时无法读取，请重试。</span>
+              <button type="button" class="btn btn--secondary btn--sm" id="dv-retry">
+                <span class="btn__spinner" aria-hidden="true"></span><span class="btn__label">重试</span>
+              </button>
+            </div>
+
+            <div class="dv-inline dv-inline--info" id="dv-empty" role="status" hidden>
+              <span data-icon="phone" data-icon-size="16"></span>
+              <span class="dv-inline__body">当前账号还没有设备记录。</span>
+            </div>
+
+            <div id="dv-ready">
+              <div class="dv-inline dv-inline--warn" id="dv-no-current" role="alert" hidden>
+                <span data-icon="alert-triangle" data-icon-size="16"></span>
+                <span class="dv-inline__body">当前设备标识暂不可确认。为避免退出正在使用的设备，撤销操作已停用；请重新登录后再试。</span>
+              </div>
+
+              <button type="button" class="btn btn--danger btn--block" id="dv-revoke-others" style="margin: 2px 0 4px">
+                <span class="btn__spinner" aria-hidden="true"></span>
+                <span class="btn__label" id="dv-revoke-others-label">退出其他设备（0）</span>
+              </button>
+
+              <div class="dv-list" id="dv-list"></div>
+
+              <div class="dv-inline dv-inline--ok" id="dv-action-ok" role="status" tabindex="-1" style="margin-top: 12px" hidden>
+                <span data-icon="check-circle" data-icon-size="16"></span>
+                <span class="dv-inline__body" id="dv-action-ok-text"></span>
+              </div>
+              <div class="dv-inline dv-inline--bad" id="dv-action-error" role="alert" tabindex="-1" style="margin-top: 12px" hidden>
+                <span data-icon="alert-circle" data-icon-size="16"></span>
+                <span class="dv-inline__body" id="dv-action-error-text"></span>
+              </div>
+              <div class="dv-inline dv-inline--warn" id="dv-action-warn" role="alert" tabindex="-1" style="margin-top: 12px" hidden>
+                <span data-icon="alert-triangle" data-icon-size="16"></span>
+                <span class="dv-inline__body" id="dv-action-warn-text"></span>
+              </div>
+            </div>
+          </section>
+
+        </div>
+
+        <!-- 加载：首屏读取设备列表 -->
+        <div data-state-block="loading" aria-busy="true">
+          <div class="card dv-card">
+            <div class="dv-cardhead">
+              <span class="dv-titles">
+                <span class="dv-eyebrow"><span data-icon="shield" data-icon-size="14"></span>账户安全</span>
+                <h2 class="dv-cardtitle">已登录设备</h2>
+                <p class="dv-note">正在读取设备列表…</p>
+              </span>
+              <button type="button" class="dv-refresh is-busy" disabled aria-label="正在刷新">
+                <span data-icon="refresh" data-icon-size="14"></span>
+                <span>刷新中…</span>
+              </button>
+            </div>
+            <div class="skeleton skeleton-line skeleton-line--sm" style="width: 32%"></div>
+            <div class="skeleton skeleton-block" style="height: 72px"></div>
+            <div class="skeleton skeleton-block" style="height: 72px"></div>
+            <div class="skeleton skeleton-block" style="height: 72px"></div>
+          </div>
+        </div>
+
+        <!-- 空：没有设备记录 -->
+        <div data-state-block="empty">
+          <div class="state-block" role="status">
+            <span class="state-block__icon" data-icon="phone" data-icon-size="24"></span>
+            <span class="state-block__title">当前账号还没有设备记录。</span>
+            <span class="state-block__text">在其它设备登录后，会显示在这里。</span>
+            <span class="state-block__actions">
+              <button type="button" class="btn btn--primary btn--sm" data-retry-state="normal" data-retry-label="正在刷新…">
+                <span class="btn__spinner" aria-hidden="true"></span><span class="btn__label">刷新</span>
+              </button>
+            </span>
+          </div>
+        </div>
+
+        <!-- 错误：设备列表读取失败 -->
+        <div data-state-block="error">
+          <div class="state-block" role="alert">
+            <span class="state-block__icon state-block__icon--bad" data-icon="alert-triangle" data-icon-size="24"></span>
+            <span class="state-block__title">设备列表暂时无法读取</span>
+            <span class="state-block__text">请检查网络后再试。</span>
+            <span class="state-block__actions">
+              <button type="button" class="btn btn--primary btn--sm" data-retry-state="normal" data-retry-label="正在重试…">
+                <span class="btn__spinner" aria-hidden="true"></span><span class="btn__label">重试</span>
+              </button>
+            </span>
+          </div>
+        </div>
+
+        <!-- 无权限：未登录 -->
+        <div data-state-block="forbidden">
+          <div class="state-block" role="alert">
+            <span class="state-block__icon state-block__icon--warn" data-icon="lock" data-icon-size="24"></span>
+            <span class="state-block__title">登录后管理设备与会话。</span>
+            <span class="state-block__text">登录后可查看已登录设备，并退出不再使用的会话。</span>
+            <span class="state-block__actions">
+              <a class="btn btn--primary btn--sm" href="login.html?returnTo=%2Fpages%2Fdevices%2Fdevices">去登录</a>
+            </span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="toast-host" role="status" aria-live="polite"></div>
+
+    <!-- 退出确认 -->
+    <div class="overlay-layer" id="dv-confirm" aria-hidden="true">
+      <div class="overlay__scrim" data-close></div>
+      <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="dv-confirm-title" aria-describedby="dv-confirm-text">
+        <p class="dialog__title" id="dv-confirm-title">退出这台设备？</p>
+        <p class="dialog__text" id="dv-confirm-text">将结束该设备的登录会话。</p>
+        <div class="dialog__actions">
+          <button type="button" class="btn btn--secondary" id="dv-confirm-cancel">取消</button>
+          <button type="button" class="btn btn--danger" id="dv-confirm-ok">
+            <span class="btn__spinner" aria-hidden="true"></span><span class="btn__label">确认退出</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="interaction-notes">
+  <h2>交互说明（devices）</h2>
+  <ul>
+    <li>主题与直达参数 → 工具条「浅色 / 深色」切换整页 token 并写入 <code>localStorage['uispec-theme']</code>；<code>?theme=light|dark</code> 固定主题；<code>?state=normal|loading|empty|error|forbidden</code> 直达页面状态；<code>?mock=no-devices|load-error|revoke-error|others-partial|refresh-fail|no-current|no-others</code> 演示卡内空态、读取失败、退出失败、部分退出失败、退出后刷新失败、当前设备不可确认与无其他设备。截图（每项 <code>?theme=light|dark</code> 各一张）：<code>devices-{light,dark}.png</code>；<code>devices-{loading,empty,error,forbidden}-{light,dark}.png</code>；<code>devices-{no-devices,load-error,revoke-error,others-partial,refresh-fail,no-current,no-others}-{light,dark}.png</code>。</li>
+    <li>页面状态 → 首次读取为卡内「正在读取设备列表…」（刷新按钮显示转圈、禁用）；读取失败为卡内 bad 条「设备列表暂时无法读取，请重试。」+「重试」（<code>listMobileDevices</code> catch 兜底原文）；空为卡内「当前账号还没有设备记录。」（<code>deviceStatus='empty'</code>）；工具条「加载 / 空 / 错误」用于整页截图对照，内容与卡内一致。无权限为「登录后管理设备与会话。」+「去登录」→ <code>login.html?returnTo=%2Fpages%2Fdevices%2Fdevices</code>（真实页 <code>ensureMobilePageAccess</code> 未登录直接跳转，本态为设计新增）。</li>
+    <li>状态恢复 → 切换离开正常态会关闭退出确认框、取消未完成的读取 / 退出计时并恢复按钮；错误与空态「重试 / 刷新」转圈后回到正常态，不弹成功 Toast；切回正常态保留卡内 mock 结果（<code>?mock=no-devices|load-error</code> 除外，它们恢复为各自的预置结果）。</li>
+    <li>页头与导航 → 导航栏「设备与会话」（<code>pages.json</code> 标题）+ 返回 <code>settings.html</code>（真实页从「设置 › 设备与会话」进入）；页内 kicker「账户安全」、标题「设备与会话」、说明「查看已登录设备，退出不再使用的会话。」（<code>devices.vue</code> 的 <code>MobilePageHeader</code> 参数）；不显示底部 TabBar。</li>
+    <li>已登录设备卡 → eyebrow 图标 shield +「账户安全」，标题「已登录设备」，说明「退出设备后，该设备需要重新登录。」，右上「刷新」；行内显示设备类型（iOS 设备 / Android 设备 / 移动网页 / 网页浏览器）、「设备编号 …后 8 位」、中文状态（当前设备 / 使用中 / 已退出）与「最近登录：2026年10月18日 21:05」；不显示完整设备标识、账号 ID、指纹或会话编号。</li>
+    <li>刷新 → 「刷新」或空 / 错误态动作转圈并禁用其它操作 → 0.9s 后重新渲染列表，清除已有的成功 / 失败反馈，不弹 Toast。</li>
+    <li>退出此设备 → 仅「使用中」且非当前设备显示「退出此设备」；点击打开对话框「退出这台设备？」+「将结束设备 …后 8 位 的登录会话。」，按钮「取消」「确认退出」（危险色）。确认后按钮转圈「正在退出…」、其余操作禁用 → 0.9s 后该行变为「已退出」、按钮消失，底部成功条「该设备已退出，设备列表已刷新。」；当前设备只显示「当前设备不能从此处退出。」，没有退出按钮；<code>?mock=revoke-error</code> 时显示 bad 条「退出设备失败，请重试。」并保留原状态。</li>
+    <li>退出其他设备 → 主按钮文案「退出其他设备（N）」，N 为可退出的使用中设备数，N=0 时为真实禁用态；确认框「退出其他设备？」+「将结束其他 N 台设备的登录会话；当前设备会保留。」。确认后按钮转圈「正在退出…」、全部行操作禁用 → 0.9s 后成功条「其他 N 台设备已退出。」，对应行变为「已退出」；<code>?mock=others-partial</code> 时两台中一台成功、一台未完成，显示「1 台已退出，1 台未完成，请刷新后重试。」并保留未完成设备的操作按钮；<code>?mock=refresh-fail</code> 打开即显示 warn 条「退出请求已提交，但列表刷新失败；请刷新核对最新状态。」。对话框取消、遮罩与 Esc 都可关闭，关闭不改动列表。</li>
+    <li>当前设备不可确认 → <code>?mock=no-current</code> 在卡内顶部显示 warn 条「当前设备标识暂不可确认。为避免退出正在使用的设备，撤销操作已停用；请重新登录后再试。」（<code>devices.vue</code> 原文），所有行不显示退出按钮，「退出其他设备（0）」为禁用态。</li>
+    <li>无其他设备 → <code>?mock=no-others</code> 与 <code>?mock=no-devices</code> 均让「退出其他设备（0）」保持真实禁用态（surface 底、mut 字、not-allowed）；<code>?mock=no-devices</code> 卡内只显示「当前账号还没有设备记录。」。</li>
+    <li>反馈与焦点 → 成功与失败反馈都显示在卡内列表下方，带图标与文字（不只靠颜色）；操作完成后焦点移到反馈条；对话框打开时焦点进入「取消」，Esc 关闭。</li>
+    <li>登录门禁 → 对齐真实页 <code>onShow</code>：先 <code>ensureMobilePageAccess</code>，未登录直接跳转登录页，不渲染设备页；原型以无权限态承载该分支（设计新增）。</li>
+    <li>文案边界 → 不显示原始状态枚举、内部错误码、会话 token 或设备指纹；退出结果以服务端确认为准，刷新失败时明确要求用户刷新核对，不把请求提交说成列表已更新。</li>
+  </ul>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var params = new URLSearchParams(location.search);
+  function q(name) {
+    var value = params.get(name) || '';
+    var cut = value.indexOf('?');
+    return cut >= 0 ? value.slice(0, cut) : value;
+  }
+  function themedParam() {
+    var match = /[?&]theme=(light|dark)/g;
+    var found = null;
+    var item;
+    while ((item = match.exec(location.search))) found = item[1];
+    return found;
+  }
+  var THEME_PARAM = themedParam();
+  if (THEME_PARAM) UISpec.setTheme(THEME_PARAM);
+
+  var MOCK = q('mock');
+  var STATE_PARAM = q('state');
+  var VALID_STATES = ['normal', 'loading', 'empty', 'error', 'forbidden'];
+  var INITIAL_STATE = VALID_STATES.indexOf(STATE_PARAM) >= 0 ? STATE_PARAM : 'normal';
+
+  /* 对齐 apps/mobile/src/pages/devices/devices.vue、domain/devices.ts 与 api/devices.ts：
+   * listMobileDevices() 读取设备；kickoutMobileDevice() 逐个退出；
+   * 当前设备不可退出；退出后必须重新读取列表才能宣称已刷新。
+   * 数据全部为 mock，不访问服务端。 */
+
+  var CURRENT_ID = 'dev_5f1c8a20';
+  var DEVICES = [
+    { deviceId: 'dev_5f1c8a20', deviceType: 'H5', status: 'ACTIVE', lastActiveAt: '2026年10月19日 09:41', isCurrent: true },
+    { deviceId: 'dev_9a3e71b4', deviceType: 'IOS', status: 'ACTIVE', lastActiveAt: '2026年10月18日 21:05', isCurrent: false },
+    { deviceId: 'dev_c27d40e9', deviceType: 'ANDROID', status: 'ACTIVE', lastActiveAt: '2026年10月15日 08:12', isCurrent: false },
+    { deviceId: 'dev_71b0f5aa', deviceType: 'WEB', status: 'REVOKED', lastActiveAt: '2026年10月02日 19:47', isCurrent: false }
+  ];
+  var TYPE_LABEL = { IOS: 'iOS 设备', ANDROID: 'Android 设备', H5: '移动网页', WEB: '网页浏览器' };
+
+  var READ_ERROR = '设备列表暂时无法读取，请重试。';
+  var REVOKE_ERROR = '退出设备失败，请重试。';
+  var REFRESH_FAILED = '退出请求已提交，但列表刷新失败；请刷新核对最新状态。';
+
+  var state = {
+    devices: copy(DEVICES),
+    status: 'ready',
+    statusMessage: '',
+    currentId: CURRENT_ID,
+    busy: '',
+    okText: '',
+    errorText: '',
+    warnText: '',
+    pending: null,
+    revokeFails: MOCK === 'revoke-error',
+    partial: MOCK === 'others-partial',
+    refreshFails: MOCK === 'refresh-fail'
+  };
+
+  if (MOCK === 'no-devices') state.devices = [];
+  if (MOCK === 'no-others') {
+    state.devices = state.devices.filter(function (item) { return item.isCurrent; });
+  }
+  if (MOCK === 'no-current') state.currentId = null;
+  if (MOCK === 'no-devices') state.status = 'empty';
+  if (MOCK === 'load-error') {
+    state.status = 'error';
+    state.statusMessage = READ_ERROR;
+  }
+
+  function copy(value) { return JSON.parse(JSON.stringify(value)); }
+
+  var gen = 0;
+  function later(fn, ms) {
+    var g = gen;
+    setTimeout(function () { if (g === gen) fn(); }, ms);
+  }
+
+  /* ---------- 元素 ---------- */
+  var $ = function (id) { return document.getElementById(id); };
+  var refreshBtn = $('dv-refresh');
+  var refreshLabel = $('dv-refresh-label');
+  var loadingEl = $('dv-loading');
+  var readError = $('dv-read-error');
+  var readErrorText = $('dv-read-error-text');
+  var retryBtn = $('dv-retry');
+  var emptyEl = $('dv-empty');
+  var readyEl = $('dv-ready');
+  var noCurrent = $('dv-no-current');
+  var revokeOthers = $('dv-revoke-others');
+  var revokeOthersLabel = $('dv-revoke-others-label');
+  var listEl = $('dv-list');
+  var okEl = $('dv-action-ok');
+  var okText = $('dv-action-ok-text');
+  var errorEl = $('dv-action-error');
+  var errorText = $('dv-action-error-text');
+  var warnEl = $('dv-action-warn');
+  var warnText = $('dv-action-warn-text');
+  var confirmLayer = $('dv-confirm');
+  var confirmTitle = $('dv-confirm-title');
+  var confirmText = $('dv-confirm-text');
+  var confirmOk = $('dv-confirm-ok');
+  var confirmCancel = $('dv-confirm-cancel');
+
+  /* ---------- 领域规则（对齐 domain/devices.ts） ---------- */
+  function isCurrent(device) {
+    if (!state.currentId) return false;
+    return device.isCurrent === true || device.deviceId === state.currentId;
+  }
+  function canRevoke(device) {
+    /* 当前设备标识不可确认时，撤销操作全部停用（避免退出正在使用的设备） */
+    if (!state.currentId || device.status !== 'ACTIVE') return false;
+    return !isCurrent(device);
+  }
+  function revocable() {
+    return state.devices.filter(canRevoke);
+  }
+  function shortId(deviceId) {
+    return deviceId.length > 10 ? '…' + deviceId.slice(-8) : deviceId;
+  }
+  function typeLabel(type) {
+    return TYPE_LABEL[type.toUpperCase()] || '其他设备';
+  }
+
+  function clearFeedback() {
+    state.okText = '';
+    state.errorText = '';
+    state.warnText = '';
+  }
+
+  /* ---------- 渲染 ---------- */
+  function renderList() {
+    listEl.innerHTML = state.devices.map(function (device) {
+      var current = isCurrent(device);
+      var badge = current ? 'badge' : device.status === 'ACTIVE' ? 'badge badge--ok' : 'badge badge--mut';
+      var label = current ? '当前设备' : device.status === 'ACTIVE' ? '使用中' : '已退出';
+      var note = current ? '<span class="dv-current-note">当前设备不能从此处退出。</span>' : '';
+      var action = '';
+      if (!current && canRevoke(device)) {
+        action = '<button type="button" class="btn btn--secondary btn--sm" data-revoke="' + device.deviceId + '">' +
+          '<span class="btn__spinner" aria-hidden="true"></span><span class="btn__label">退出此设备</span></button>';
+      }
+      return '<div class="dv-row" data-device="' + device.deviceId + '">' +
+        '<div class="dv-rowhead">' +
+          '<span class="dv-copy">' +
+            '<span class="dv-name">' + typeLabel(device.deviceType) + '</span>' +
+            '<span class="dv-id">设备编号 ' + shortId(device.deviceId) + '</span>' +
+          '</span>' +
+          '<span class="' + badge + '">' + label + '</span>' +
+        '</div>' +
+        '<span class="dv-last">最近登录：' + device.lastActiveAt + '</span>' +
+        note + action +
+      '</div>';
+    }).join('');
+  }
+
+  function renderReady() {
+    var active = revocable();
+    revokeOthersLabel.textContent = '退出其他设备（' + active.length + '）';
+    revokeOthers.disabled = Boolean(state.busy) || !state.currentId || active.length === 0;
+    noCurrent.hidden = Boolean(state.currentId);
+    okText.textContent = state.okText;
+    okEl.hidden = !state.okText;
+    errorText.textContent = state.errorText;
+    errorEl.hidden = !state.errorText;
+    warnText.textContent = state.warnText;
+    warnEl.hidden = !state.warnText;
+    listEl.querySelectorAll('[data-revoke]').forEach(function (btn) {
+      btn.disabled = Boolean(state.busy);
+    });
+    refreshBtn.disabled = Boolean(state.busy);
+    refreshBtn.classList.toggle('is-busy', state.busy === 'refresh');
+    refreshLabel.textContent = state.busy === 'refresh' ? '刷新中…' : '刷新';
+  }
+
+  function render() {
+    var loading = state.status === 'loading';
+    loadingEl.hidden = !loading;
+    readError.hidden = state.status !== 'error';
+    emptyEl.hidden = state.status !== 'empty';
+    readyEl.hidden = state.status === 'loading' || state.status === 'error' || state.status === 'empty';
+    refreshBtn.disabled = Boolean(state.busy) || loading;
+    refreshBtn.classList.toggle('is-busy', state.busy === 'refresh');
+    refreshLabel.textContent = state.busy === 'refresh' ? '刷新中…' : '刷新';
+    readErrorText.textContent = state.statusMessage || READ_ERROR;
+    if (state.status === 'ready') renderReady();
+  }
+
+  /* ---------- 读取 ---------- */
+  function load(button, label) {
+    if (state.busy) return;
+    state.busy = button === refreshBtn ? 'refresh' : 'read';
+    clearFeedback();
+    state.status = 'loading';
+    state.statusMessage = '';
+    if (button === retryBtn) UISpec.setBusy(button, true, label || '正在读取…');
+    render();
+    later(function () {
+      if (button === retryBtn) UISpec.setBusy(button, false);
+      state.busy = '';
+      if (state.devices.length) {
+        state.status = 'ready';
+      } else {
+        state.status = 'empty';
+      }
+      renderList();
+      render();
+    }, 900);
+  }
+
+  refreshBtn.addEventListener('click', function () { load(refreshBtn); });
+  retryBtn.addEventListener('click', function () { load(retryBtn, '正在读取…'); });
+
+  /* ---------- 退出 ---------- */
+  listEl.addEventListener('click', function (event) {
+    var btn = event.target.closest('[data-revoke]');
+    if (!btn || btn.disabled || state.busy) return;
+    var deviceId = btn.getAttribute('data-revoke');
+    var device = null;
+    state.devices.forEach(function (item) { if (item.deviceId === deviceId) device = item; });
+    if (!device || !canRevoke(device)) return;
+    openConfirm({
+      kind: 'single',
+      deviceId: deviceId,
+      title: '退出这台设备？',
+      text: '将结束设备 ' + shortId(deviceId) + ' 的登录会话。'
+    });
+  });
+
+  revokeOthers.addEventListener('click', function () {
+    var targets = revocable();
+    if (state.busy || !state.currentId || !targets.length) return;
+    openConfirm({
+      kind: 'others',
+      title: '退出其他设备？',
+      text: '将结束其他 ' + targets.length + ' 台设备的登录会话；当前设备会保留。'
+    });
+  });
+
+  function openConfirm(payload) {
+    state.pending = payload;
+    confirmTitle.textContent = payload.title;
+    confirmText.textContent = payload.text;
+    UISpec.openOverlay('dv-confirm');
+    setTimeout(function () { confirmCancel.focus({ preventScroll: true }); }, 60);
+  }
+
+  confirmCancel.addEventListener('click', function () {
+    if (state.busy === 'revoke' || state.busy === 'others') return;
+    state.pending = null;
+    UISpec.closeOverlay(confirmLayer);
+  });
+
+  confirmLayer.querySelector('.overlay__scrim').addEventListener('click', function () {
+    if (state.busy === 'revoke' || state.busy === 'others') return;
+    state.pending = null;
+  });
+
+  confirmOk.addEventListener('click', function () {
+    if (!state.pending || state.busy) return;
+    var payload = state.pending;
+    UISpec.closeOverlay(confirmLayer);
+    state.pending = null;
+    if (payload.kind === 'single') revokeOne(payload.deviceId);
+    else revokeAll();
+  });
+
+  function revokeOne(deviceId) {
+    state.busy = 'revoke';
+    clearFeedback();
+    render();
+    var btn = listEl.querySelector('[data-device="' + deviceId + '"] [data-revoke]');
+    if (btn) UISpec.setBusy(btn, true, '正在退出…');
+    later(function () {
+      state.busy = '';
+      if (state.revokeFails) {
+        state.errorText = REVOKE_ERROR;
+        renderList();
+        render();
+        errorEl.focus({ preventScroll: true });
+        return;
+      }
+      state.devices.forEach(function (item) {
+        if (item.deviceId === deviceId) item.status = 'REVOKED';
+      });
+      if (state.refreshFails) state.warnText = REFRESH_FAILED;
+      else state.okText = '该设备已退出，设备列表已刷新。';
+      renderList();
+      render();
+      (state.warnText ? warnEl : okEl).focus({ preventScroll: true });
+    }, 900);
+  }
+
+  function revokeAll() {
+    var targets = revocable();
+    if (!targets.length) return;
+    state.busy = 'others';
+    clearFeedback();
+    render();
+    UISpec.setBusy(revokeOthers, true, '正在退出…');
+    later(function () {
+      UISpec.setBusy(revokeOthers, false);
+      state.busy = '';
+      var revoked = 0;
+      var failed = 0;
+      targets.forEach(function (item, index) {
+        /* ?mock=others-partial：最后一台未完成 */
+        if (state.partial && index === targets.length - 1) {
+          failed += 1;
+          return;
+        }
+        item.status = 'REVOKED';
+        revoked += 1;
+      });
+      if (failed) {
+        state.errorText = revoked + ' 台已退出，' + failed + ' 台未完成，请刷新后重试。';
+      } else if (state.refreshFails) {
+        state.warnText = REFRESH_FAILED;
+      } else {
+        state.okText = '其他 ' + revoked + ' 台设备已退出。';
+      }
+      renderList();
+      render();
+      (failed ? errorEl : state.warnText ? warnEl : okEl).focus({ preventScroll: true });
+    }, 900);
+  }
+
+  /* ---------- 页面状态 ---------- */
+  function resetInteraction() {
+    gen += 1;
+    UISpec.closeAllOverlays();
+    state.pending = null;
+    state.busy = '';
+    state.okText = '';
+    state.errorText = '';
+    state.warnText = '';
+    document.querySelectorAll('.is-busy').forEach(function (btn) { UISpec.setBusy(btn, false); });
+  }
+
+  document.addEventListener('uispec:state', function (event) {
+    resetInteraction();
+    var next = event.detail.state;
+    if (next === 'normal') {
+      state.devices = copy(DEVICES);
+      if (MOCK === 'no-devices') state.devices = [];
+      if (MOCK === 'no-others') {
+        state.devices = state.devices.filter(function (item) { return item.isCurrent; });
+      }
+      state.currentId = MOCK === 'no-current' ? null : CURRENT_ID;
+      if (MOCK === 'load-error') {
+        state.status = 'error';
+        state.statusMessage = READ_ERROR;
+      } else {
+        state.status = state.devices.length ? 'ready' : 'empty';
+        state.statusMessage = '';
+        preloadOutcome();
+      }
+      renderList();
+      render();
+    }
+    var titles = {
+      loading: '正在读取设备列表…',
+      empty: '当前账号还没有设备记录',
+      error: '设备列表暂时无法读取',
+      forbidden: '登录后管理设备与会话'
+    };
+    document.title = (titles[next] || '设备与会话') + ' · 语学星移动端 UI 稿';
+  });
+
+  /* 整页状态块的重试 / 刷新 */
+  document.addEventListener('click', function (event) {
+    var btn = event.target.closest('[data-retry-state]');
+    if (!btn) return;
+    event.preventDefault();
+    if (btn.classList.contains('is-busy')) return;
+    UISpec.setBusy(btn, true, btn.getAttribute('data-retry-label') || '正在重试…');
+    later(function () {
+      UISpec.setBusy(btn, false);
+      UISpec.setScreenState(btn.getAttribute('data-retry-state'));
+    }, 900);
+  });
+
+  /* 失败 / 部分成功结果预置（便于截图与直接查看）：与交互后得到的卡内反馈一致 */
+  function preloadOutcome() {
+    if (MOCK === 'revoke-error') {
+      state.errorText = REVOKE_ERROR;
+    } else if (MOCK === 'others-partial') {
+      state.devices.forEach(function (item) {
+        if (item.deviceId === 'dev_c27d40e9') item.status = 'REVOKED';
+      });
+      state.errorText = '1 台已退出，1 台未完成，请刷新后重试。';
+    } else if (MOCK === 'refresh-fail') {
+      state.devices.forEach(function (item) {
+        if (item.deviceId === 'dev_9a3e71b4') item.status = 'REVOKED';
+      });
+      state.warnText = REFRESH_FAILED;
+    }
+  }
+
+  /* ---------- 初始渲染 ---------- */
+  preloadOutcome();
+  renderList();
+  render();
+
+  if (INITIAL_STATE !== 'normal') {
+    document.addEventListener('DOMContentLoaded', function () {
+      UISpec.setScreenState(INITIAL_STATE);
+    });
+  }
+})();
+</script>
+</body>
+</html>

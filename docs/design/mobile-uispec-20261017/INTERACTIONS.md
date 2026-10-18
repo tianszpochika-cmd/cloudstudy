@@ -713,3 +713,21 @@
 - 出口 → 「管理设备与会话」→ `devices.html`、「性能帮助与设备适配说明」→ `b6-platform.html`、「查看消息」（带 chevron）→ `b4-social.html`，三个出口均使用相对链接。
 - 登录门禁 → 对齐真实页 `onShow`：先 `ensureMobilePageAccess`，未登录直接跳转登录页，不渲染设置页；原型以无权限态承载该分支（设计新增）。
 - 文案边界 → 不显示账户 ID、策略版本、内部错误码、原始枚举或设备指纹；所有保存结果以服务端确认为准，失败时明确说明「本机已生效但未同步」，不把本机预览说成已保存到账户。
+
+## devices（设备与会话）
+
+对应页面：`pages/devices.html`；真实实现参照 `apps/mobile/src/pages/devices/devices.vue`、`apps/mobile/src/api/devices.ts` 的 `listMobileDevices` / `kickoutMobileDevice`、`apps/mobile/src/domain/devices.ts` 的 `isCurrentMobileDevice` / `canRevokeMobileDevice`、`apps/mobile/src/pages.json` 的标题。原型全部使用 mock 数据，不访问服务端。
+
+- 主题与直达参数 → 工具条「浅色 / 深色」切换整页 token 并写入 `localStorage['uispec-theme']`；`?theme=light|dark` 固定主题；`?state=normal|loading|empty|error|forbidden` 直达页面状态；`?mock=no-devices|load-error|revoke-error|others-partial|refresh-fail|no-current|no-others` 演示卡内空态、读取失败、退出失败、部分退出失败、退出后刷新失败、当前设备不可确认与无其他设备。截图（每项 `?theme=light|dark` 各一张）：`devices-{light,dark}.png`；`devices-{loading,empty,error,forbidden}-{light,dark}.png`；`devices-{no-devices,load-error,revoke-error,others-partial,refresh-fail,no-current,no-others}-{light,dark}.png`。
+- 页面状态 → 首次读取为卡内「正在读取设备列表…」（刷新按钮显示转圈并禁用其它操作）；读取失败为卡内 bad 条「设备列表暂时无法读取，请重试。」+「重试」（`listMobileDevices` catch 兜底原文）；空为卡内「当前账号还没有设备记录。」（`deviceStatus='empty'`）；工具条「加载 / 空 / 错误」用于整页截图对照，内容与卡内一致。无权限为「登录后管理设备与会话。」+「去登录」→ `login.html?returnTo=%2Fpages%2Fdevices%2Fdevices`（真实页 `ensureMobilePageAccess` 未登录直接跳转，本态为设计新增）。
+- 状态恢复 → 切换离开正常态会关闭退出确认框、取消未完成的读取 / 退出计时并恢复按钮；错误与空态「重试 / 刷新」转圈后回到正常态，不弹成功 Toast；切回正常态时 `?mock=no-devices|load-error` 恢复为各自的预置结果，其余 mock 保留卡内结果。
+- 页头与导航 → 导航栏「设备与会话」（`pages.json` 标题）+ 返回 `settings.html`（真实页从「设置 › 设备与会话」进入）；页内 kicker「账户安全」、标题「设备与会话」、说明「查看已登录设备，退出不再使用的会话。」（`devices.vue` 的 `MobilePageHeader` 参数）；不显示底部 TabBar。
+- 已登录设备卡 → eyebrow 图标 shield +「账户安全」，标题「已登录设备」，说明「退出设备后，该设备需要重新登录。」，右上「刷新」；行内显示设备类型（iOS 设备 / Android 设备 / 移动网页 / 网页浏览器）、「设备编号 …后 8 位」、中文状态（当前设备 / 使用中 / 已退出）与「最近登录：2026年10月18日 21:05」；当前设备行注明「当前设备不能从此处退出。」；不显示完整设备标识、账号 ID、指纹或会话编号。
+- 刷新 → 「刷新」或空 / 错误态动作转圈并禁用其它操作 → 0.9s 后重新渲染列表，清除已有的成功 / 失败反馈，不弹 Toast。
+- 退出此设备 → 仅「使用中」且非当前设备显示「退出此设备」；点击打开对话框「退出这台设备？」+「将结束设备 …9a3e71b4 的登录会话。」，按钮「取消」「确认退出」（危险色）。确认后按钮转圈「正在退出…」、其余操作禁用 → 0.9s 后该行变为「已退出」、按钮消失，底部成功条「该设备已退出，设备列表已刷新。」并把焦点移到反馈条；`?mock=revoke-error` 打开即预置 bad 条「退出设备失败，请重试。」，点击退出得到同样结果并保留原状态。取消、遮罩与 Esc 都可关闭对话框，关闭不改动列表。
+- 退出其他设备 → 主按钮文案「退出其他设备（N）」，N 为可退出的使用中设备数；N=0 或当前设备不可确认时为真实禁用态（surface 底、mut 字、not-allowed）。确认框「退出其他设备？」+「将结束其他 N 台设备的登录会话；当前设备会保留。」。确认后按钮转圈「正在退出…」、全部行操作禁用 → 0.9s 后成功条「其他 N 台设备已退出。」，对应行变为「已退出」；`?mock=others-partial` 打开即显示一台已退出、一台未完成与错误条「1 台已退出，1 台未完成，请刷新后重试。」；`?mock=refresh-fail` 打开即显示 warn 条「退出请求已提交，但列表刷新失败；请刷新核对最新状态。」（两处均为 `revokeDevice` / `revokeOtherDevices` 原文）；刷新失败与部分失败都不显示成功色，避免把未确认的列表说成已更新。
+- 当前设备不可确认 → `?mock=no-current` 在卡内顶部显示 warn 条「当前设备标识暂不可确认。为避免退出正在使用的设备，撤销操作已停用；请重新登录后再试。」（`devices.vue` 原文），所有行不显示退出按钮，「退出其他设备（0）」为禁用态。
+- 无其他设备 → `?mock=no-others` 只保留当前设备一行，「退出其他设备（0）」为禁用态；`?mock=no-devices` 卡内只显示「当前账号还没有设备记录。」。
+- 反馈与焦点 → 成功与失败反馈都显示在卡内列表下方，带图标与文字（不只靠颜色）；操作完成后焦点移到反馈条；对话框打开时焦点进入「取消」，Esc 关闭。
+- 登录门禁 → 对齐真实页 `onShow`：先 `ensureMobilePageAccess`，未登录直接跳转登录页，不渲染设备页；原型以无权限态承载该分支（设计新增）。
+- 文案边界 → 不显示原始状态枚举、内部错误码、会话 token 或设备指纹；退出结果以服务端确认为准，刷新失败时明确要求用户刷新核对，不把请求提交说成列表已更新。
