@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>练习中心 · 语学星移动端 UI 稿</title>
+<link rel="stylesheet" href="../shared.css">
+<script src="../shared.js"></script>
+<style>
+  /* 仅本页布局；组件与 token 全部来自 shared.css */
+  .prac-page { padding: 4px 20px 28px; }
+  .prac-page [hidden] { display: none !important; }
+
+  /* 页头 */
+  .prac-head { margin: 4px 0 16px; }
+  .prac-kicker {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0 0 4px;
+    color: var(--v2-brand);
+    font-size: 13px;
+    line-height: 1.6;
+    font-weight: 600;
+    letter-spacing: .04em;
+  }
+  .prac-kicker .icon { flex: none; }
+  .prac-title:focus { outline: none; }
+  .prac-intro {
+    margin: 6px 0 0;
+    color: var(--v2-mut);
+    font-size: 14px;
+    line-height: 1.75;
+  }
+
+  .prac-count {
+    margin: 0 0 20px;
+    color: var(--v2-mut);
+    font-size: 13px;
+    line-height: 1.6;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* 练习灵感：与课程页同构（两列，卡片带说明） */
+  .prac-inspired { margin: 0 0 24px; }
+  .prac-inspired__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 0 0 12px;
+  }
+  .prac-inspired__title {
+    margin: 0;
+    color: var(--v2-ink);
+    font-size: 16px;
+    line-height: 1.5;
+    font-weight: 600;
+  }
+  .prac-inspired__note {
+    flex: none;
+    color: var(--v2-mut);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .inspire-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .inspire {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    min-height: 84px;
+    padding: 16px 14px;
+    border: 1px solid var(--v2-line);
+    border-radius: var(--v2-radius-lg);
+    background: var(--v2-card);
+    color: var(--v2-ink);
+    text-decoration: none;
+    cursor: pointer;
+    transition: border-color var(--v2-motion-fast) ease;
+  }
+  .inspire:hover { border-color: var(--v2-brand); }
+  .inspire:focus-visible { outline: none; box-shadow: var(--v2-focus); }
+  .inspire__icon {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: var(--v2-soft);
+    color: var(--v2-brand);
+  }
+  .inspire__label {
+    font-size: 14px;
+    line-height: 1.4;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+  }
+  .inspire__desc {
+    margin: 0;
+    color: var(--v2-mut);
+    font-size: 12px;
+    line-height: 1.7;
+    overflow-wrap: anywhere;
+  }
+
+  /* 练习入口：一张卡内用分隔线分行，避免框里套框 */
+  .prac-card {
+    background: var(--v2-card);
+    border-radius: var(--v2-radius-lg);
+    box-shadow: var(--v2-shadow);
+    overflow: hidden;
+  }
+  .prac-list { display: flex; flex-direction: column; }
+
+  .prac-entry {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    min-height: 76px;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--v2-line);
+    background: transparent;
+    color: var(--v2-ink);
+    font-family: inherit;
+    text-align: left;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background var(--v2-motion-fast) ease;
+  }
+  .prac-entry:last-child { border-bottom: 0; }
+  .prac-entry:hover { background: var(--v2-surface); }
+  .prac-entry:focus-visible { outline: none; box-shadow: inset var(--v2-focus); }
+
+  .prac-entry__icon {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: var(--v2-radius-md);
+    background: var(--v2-soft);
+    color: var(--v2-brand);
+  }
+  .prac-entry__body {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .prac-entry__title {
+    color: var(--v2-ink);
+    font-size: 16px;
+    line-height: 1.5;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+  }
+  .prac-entry__desc {
+    color: var(--v2-mut);
+    font-size: 13px;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+  }
+  .prac-entry__action {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    min-height: 44px;
+    color: var(--v2-brand);
+    font-size: 14px;
+    line-height: 1.5;
+    font-weight: 600;
+  }
+
+  .prac-foot {
+    margin: 16px 0 0;
+    color: var(--v2-mut);
+    font-size: 13px;
+    line-height: 1.7;
+  }
+
+  /* 无权限 */
+  .prac-state .state-block { padding-top: 24px; }
+  .prac-state .state-block__actions { flex-wrap: wrap; justify-content: center; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .prac-entry, .inspire { transition: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="phone-stage">
+  <div data-ui="toolbar" data-states="normal,forbidden"></div>
+
+  <div class="phone phone--scroll">
+    <div data-ui="statusbar"></div>
+    <div data-ui="navbar" data-title="练习" data-back="learn.html" data-action="<a class='hit-44' href='settings.html' aria-label='设置'><span data-icon='settings' data-icon-size='22'></span></a>"></div>
+
+    <div class="phone__scroll">
+      <div class="prac-page">
+
+        <!-- 正常态：练习入口与练习灵感（真实页入口为客户端静态清单，无读取中 / 空 / 错误分支） -->
+        <div data-state-block="normal" class="prac-state">
+
+          <header class="prac-head">
+            <p class="prac-kicker"><span data-icon="pencil" data-icon-size="16"></span>练习</p>
+            <h1 class="page-title prac-title" id="prac-title" tabindex="-1">选择练习</h1>
+            <p class="prac-intro">按技能选择下一项练习。</p>
+          </header>
+
+          <p class="prac-count" id="entry-count">共 5 个练习入口</p>
+
+          <section class="prac-inspired" aria-labelledby="inspired-title">
+            <div class="prac-inspired__head">
+              <h2 class="prac-inspired__title" id="inspired-title">找到今天的练习灵感</h2>
+              <span class="prac-inspired__note">听 · 说 · 读 · 写</span>
+            </div>
+            <div class="inspire-grid">
+              <a class="inspire" href="b2-vocabulary.html">
+                <span class="inspire__icon" data-icon="pencil" data-icon-size="20"></span>
+                <span class="inspire__label">单词复习</span>
+                <span class="inspire__desc">先回想，再揭晓。用适合你的节奏巩固记忆。</span>
+              </a>
+              <a class="inspire" href="b11-reading.html">
+                <span class="inspire__icon" data-icon="book" data-icon-size="20"></span>
+                <span class="inspire__label">分级阅读</span>
+                <span class="inspire__desc">选择适合的阅读难度，把好表达收入日常。</span>
+              </a>
+              <a class="inspire" href="b3-grammar.html">
+                <span class="inspire__icon" data-icon="grid" data-icon-size="20"></span>
+                <span class="inspire__label">语法结构</span>
+                <span class="inspire__desc">拆解结构、调整语序，把语法变成表达的底气。</span>
+              </a>
+            </div>
+          </section>
+
+          <section aria-labelledby="entries-title">
+            <h2 class="prac-inspired__title" id="entries-title">练习入口</h2>
+            <div class="prac-card" style="margin-top:12px">
+              <div class="prac-list" id="entry-list"></div>
+            </div>
+          </section>
+
+          <p class="prac-foot">完成题目后查看反馈，让每道题成为下一步的线索。</p>
+        </div>
+
+        <!-- 无权限：访问校验未通过（真实页跳转登录，原型在此给出登录出口） -->
+        <div data-state-block="forbidden" class="prac-state">
+          <div class="state-block" role="alert">
+            <span class="state-block__icon state-block__icon--warn" data-icon="lock" data-icon-size="24"></span>
+            <span class="state-block__title">登录后选择练习</span>
+            <span class="state-block__text">练习入口与你的学习进度一起保存。</span>
+            <span class="state-block__actions">
+              <a class="btn btn--primary btn--sm" href="login.html?returnTo=%2Fpages%2Fpractice%2Fpractice">去登录</a>
+            </span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="toast-host" role="status" aria-live="polite"></div>
+  </div>
+</div>
+
+<div class="interaction-notes">
+  <h2>交互说明（practice）</h2>
+  <ul>
+    <li><strong>主题与直达参数</strong> → 工具条「浅色 / 深色」切换整页 token 并写入 <code>localStorage['uispec-theme']</code>；<code>?theme=light|dark</code> 固定主题；<code>?state=normal|forbidden</code> 直达页面状态。截图：<code>practice-{light,dark}.png</code>、<code>practice-forbidden-{light,dark}.png</code>。</li>
+    <li><strong>页面状态</strong> → 本页工具条只提供「正常 / 无权限」两个真实分支：正常为练习灵感与 5 个练习入口；无权限为「登录后选择练习 / 练习入口与你的学习进度一起保存。」+ 单个「去登录」→ <code>login.html?returnTo=%2Fpages%2Fpractice%2Fpractice</code>，对齐真实页 <code>ensureMobilePageAccess('/pages/practice/practice')</code> 未登录时跳登录，不提供重试。入口为客户端静态清单，真实页没有读取中 / 空 / 错误输出，因此不为这些状态造静态占位。</li>
+    <li><strong>页头</strong> → 导航栏标题「练习」+ 返回 → <code>learn.html</code>；右上角设置 → <code>settings.html</code>；页内 kicker「练习」、标题「选择练习」、说明「按技能选择下一项练习。」，与移动端 <code>pages.practice</code> 的 kicker / title / description 一致。</li>
+    <li><strong>入口计数</strong> → 顶部「共 5 个练习入口」，对齐真实页 <code>共 {{ entries.length }} 个练习入口</code>，数字随入口数量更新，不写死任务名。</li>
+    <li><strong>练习灵感</strong> → 标题「找到今天的练习灵感」、右侧「听 · 说 · 读 · 写」；三张入口卡：单词复习 → <code>b2-vocabulary.html</code>、分级阅读 → <code>b11-reading.html</code>、语法结构 → <code>b3-grammar.html</code>；与真实页 <code>MobileFeatureGrid</code> 的 <code>features</code> 顺序及 <code>mobileT('practiceHeading')</code> / <code>practiceNote</code> 文案一致，44px 以上命中区与键盘焦点环。</li>
+    <li><strong>练习入口</strong> → 一张卡内五行，顺序与真实页 <code>entryPages</code> 一致：水平测评 → <code>assessment.html</code>、学习报告 → <code>b10-report.html</code>、阅读练习 → <code>b3-reading.html</code>、听力听写 → <code>b3-listening.html</code>、发音练习 → <code>b3-speaking.html</code>；每行含图标、标题、<code>pages.&lt;id&gt;.description</code> 说明与「进入」动作，整行可点击，命中区 ≥44px，键盘焦点环可见。</li>
+    <li><strong>页脚说明</strong> → 「完成题目后查看反馈，让每道题成为下一步的线索。」，取自 <code>b10.practice.description</code>；不新增夸大的奖励或分数文案。</li>
+    <li><strong>导航</strong> → 二级页：本页不在 TabBar 中（TabBar「练习」指向 <code>b2-practice.html</code>），因此不显示底部导航；返回与设置均指向对应原型页。</li>
+    <li><strong>文案边界</strong> → 不显示内部错误码、路由名或原始状态枚举；入口说明全部复用移动端 <code>pages.*</code> 文案，不出现英文混排，也不显示算法版本或题量承诺。</li>
+  </ul>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var params = new URLSearchParams(location.search);
+  // 截图工具会在地址后追加 ?theme=…；若前序参数已带 ?，取到分隔符为止
+  function q(name) {
+    var value = params.get(name) || '';
+    var cut = value.indexOf('?');
+    return cut >= 0 ? value.slice(0, cut) : value;
+  }
+  // 截图工具可能把 ?theme=… 追加在已有参数之后；取最后一个 theme 值
+  function themedParam() {
+    var match = /[?&]theme=(light|dark)/g;
+    var found = null;
+    var item;
+    while ((item = match.exec(location.search))) found = item[1];
+    return found;
+  }
+  var THEME_PARAM = themedParam();
+  if (THEME_PARAM) UISpec.setTheme(THEME_PARAM);
+
+  var STATE_PARAM = q('state');
+  var VALID_STATES = ['normal', 'forbidden'];
+  var INITIAL_STATE = VALID_STATES.indexOf(STATE_PARAM) >= 0 ? STATE_PARAM : 'normal';
+
+  // 与 apps/mobile/src/pages/practice/practice.vue 的 entryPages 顺序一致
+  var ENTRIES = [
+    { id: 'assessment', title: '水平测评', desc: '完成一组小测评，找到适合你的学习起点。', href: 'assessment.html', icon: 'target' },
+    { id: 'b10-report', title: '学习报告', desc: '回顾学习记录，订正错题，让薄弱处慢慢变强。', href: 'b10-report.html', icon: 'chart' },
+    { id: 'b3-reading', title: '阅读练习', desc: '读懂一段文字，收藏值得反复回味的表达。', href: 'b3-reading.html', icon: 'book' },
+    { id: 'b3-listening', title: '听力听写', desc: '分段聆听、循环回放，再写下听到的内容。', href: 'b3-listening.html', icon: 'headphones' },
+    { id: 'b3-speaking', title: '发音练习', desc: '学习发音、录下声音，在回听中找到自己的进步。', href: 'b3-speaking.html', icon: 'mic' }
+  ];
+
+  var entryList = document.getElementById('entry-list');
+
+  function renderEntries() {
+    entryList.innerHTML = ENTRIES.map(function (entry) {
+      return '<a class="prac-entry" data-entry="' + entry.id + '" href="' + entry.href + '">' +
+        '<span class="prac-entry__icon" aria-hidden="true">' + UISpec.icon(entry.icon, 20) + '</span>' +
+        '<span class="prac-entry__body">' +
+        '<span class="prac-entry__title">' + entry.title + '</span>' +
+        '<span class="prac-entry__desc">' + entry.desc + '</span>' +
+        '</span>' +
+        '<span class="prac-entry__action">进入' + UISpec.icon('chevron-right', 16) + '</span>' +
+        '</a>';
+    }).join('');
+  }
+
+  renderEntries();
+
+  if (INITIAL_STATE !== 'normal') {
+    document.addEventListener('DOMContentLoaded', function () {
+      UISpec.setScreenState(INITIAL_STATE);
+    });
+  }
+})();
+</script>
+
+</body>
+</html>

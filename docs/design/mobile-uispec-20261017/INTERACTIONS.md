@@ -309,3 +309,17 @@
 - 退出登录 → 点击底部文字按钮打开确认对话框「退出登录？ / 退出后，需要重新登录才能继续学习。本机已下载的内容不会删除。」；「取消」、遮罩与 Esc 均可关闭；「退出登录」为 bad 色危险按钮，确认后关闭对话框、按钮转圈「正在退出…」→ 1.1s 后跳转 `login.html`（真实页退出后回到登录入口，无 Toast）。对话框为设计新增，真实页直接退出，需同步实现。`?mock=logout-failed` 时停留本页，退出按钮上方显示 bad 色 `role=alert`「退出登录未完成，请重试。」（带参数打开即显示，便于核对）并把焦点移回退出按钮；`?view=logout-confirm` 直接打开确认对话框。
 - TabBar 与导航 → 一级 Tab 页：底部 5 项，「我的」选中并带 `aria-current="page"`，其余跳转 `home.html` / `b2-practice.html` / `world.html` / `learn.html`；右上角设置跳转 `settings.html`。
 - 文案边界 → 不显示内部错误码、账号 ID、原始版本号或账号是否存在；成人核验状态与语言同时用文字表达，不只依赖颜色；退出登录说明只描述影响范围，不做挽留。
+
+### practice（练习中心）
+
+对应页面：`pages/practice.html`；真实实现参照 `apps/mobile/src/pages/practice/practice.vue`、`apps/mobile/src/components/MobileFeatureGrid.vue`、`apps/mobile/src/components/MobilePageHeader.vue`、`apps/mobile/src/auth/navigation.ts` 的 `ensureMobilePageAccess` 与 `packages/i18n/src/mobile-experience.ts` 的 `pages.practice` / `pages.<entry>` / `b10.practice` 文案。真实页是客户端静态入口清单：`onShow` 只做访问校验，不读取练习队列，因此本页没有读取中 / 空 / 读取失败分支。原型在同一路由内用 mock 数据演示正常与无权限。
+
+- 主题与直达参数 → 工具条「浅色 / 深色」切换整页 token 并写入 `localStorage['uispec-theme']`；`?theme=light|dark` 固定主题；`?state=normal|forbidden` 直达页面状态。截图：`practice-{light,dark}.png`、`practice-forbidden-{light,dark}.png`。
+- 页面状态 → 本页工具条只提供「正常 / 无权限」两个真实分支：正常为练习灵感与 5 个练习入口；无权限为「登录后选择练习 / 练习入口与你的学习进度一起保存。」+ 单个「去登录」→ `login.html?returnTo=%2Fpages%2Fpractice%2Fpractice`，对齐真实页 `ensureMobilePageAccess('/pages/practice/practice')` 未登录时跳登录，不提供重试。入口为客户端静态清单，真实页没有读取中 / 空 / 错误输出，因此不为这些状态造静态占位。
+- 页头 → 导航栏标题「练习」+ 返回 → `learn.html`；右上角设置 → `settings.html`；页内 kicker「练习」、标题「选择练习」、说明「按技能选择下一项练习。」，与移动端 `pages.practice` 的 kicker / title / description 一致。
+- 入口计数 → 顶部「共 5 个练习入口」，对齐真实页 `共 {{ entries.length }} 个练习入口`，数字随入口数量更新，不写死任务名。
+- 练习灵感 → 标题「找到今天的练习灵感」、右侧「听 · 说 · 读 · 写」；三张入口卡：单词复习 → `b2-vocabulary.html`、分级阅读 → `b11-reading.html`、语法结构 → `b3-grammar.html`；与真实页 `MobileFeatureGrid` 的 `features` 顺序及 `mobileT('practiceHeading')` / `practiceNote` 文案一致，44px 以上命中区与键盘焦点环。
+- 练习入口 → 一张卡内五行，顺序与真实页 `entryPages` 一致：水平测评 → `assessment.html`、学习报告 → `b10-report.html`、阅读练习 → `b3-reading.html`、听力听写 → `b3-listening.html`、发音练习 → `b3-speaking.html`；每行含图标、标题、`pages.<id>.description` 说明与「进入」动作，整行可点击，命中区 ≥44px，键盘焦点环可见。
+- 页脚说明 → 「完成题目后查看反馈，让每道题成为下一步的线索。」，取自 `b10.practice.description`；不新增夸大的奖励或分数文案。
+- 导航 → 二级页：本页不在 TabBar 中（TabBar「练习」指向 `b2-practice.html`），因此不显示底部导航；返回与设置均指向对应原型页。
+- 文案边界 → 不显示内部错误码、路由名或原始状态枚举；入口说明全部复用移动端 `pages.*` 文案，不出现英文混排，也不显示算法版本或题量承诺。
