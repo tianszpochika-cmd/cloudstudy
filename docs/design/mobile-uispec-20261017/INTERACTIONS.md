@@ -627,3 +627,23 @@
 - 全部已读 → 「全部已读」转圈「正在标记…」→ 0.8s 后所有条目变已读、未读数量变「0 未读」、按钮隐藏，说明「全部已读状态已由服务端确认。」；`?mock=read-all-error` 说明「全部已读操作未获服务端确认。」。
 - 登录门禁 → 对齐真实页 `onShow`：先 `session.restore()`，未登录直接跳转登录页，不渲染自习室；原型以无权限态承载该分支，登录页回跳地址为 `/pages/b4-social/b4-social`。
 - 文案边界 → 不显示用户编号、房间 ID、会话 ID、内部错误码或原始状态枚举；排行榜只展示脱敏标识；互动只允许预设文案，不提供自由输入；专注时长以服务端记录为准，不用本地计时冒充结算；Phase 1 的自习室是规则化的陪伴专注，不写成 AI 陪学。
+
+## b4-avatar（Avatar 与衣柜）
+
+对应页面：`pages/b4-avatar.html`；真实实现参照 `apps/mobile/src/pages/b4-avatar/b4-avatar.vue`、`apps/mobile/src/components/b4/B4StatusPanel.vue`、`apps/mobile/src/domain/b4.ts` 的 `B4AvatarProfile` / `B4AvatarItem` / `B4Loadout` / `B4_PERFORMANCE_LEVELS`、`apps/mobile/src/stores/b4.ts` 的 `loadWorld` / `setPerformance` / `effectiveAvatarRenderMode` / `equipLoadout`。原型全部使用 mock 数据，不访问服务端。
+
+- 主题与直达参数 → 工具条「浅色 / 深色」切换整页 token 并写入 `localStorage['uispec-theme']`；`?theme=light|dark` 固定主题；`?state=normal|loading|empty|error|forbidden|offline` 直达页面状态；`?mock=queue|sync-rejected|partial|fallback|no-profile|no-loadouts|no-items|unavailable|equip-error|equip-unconfirmed` 演示状态条、渲染模式、素材空态与装备失败分支。截图（每项 `?theme=light|dark` 各一张）：`b4-avatar-{light,dark}.png`。
+- 页面状态 → 工具条「正常 / 加载 / 空 / 错误 / 无权限 / 离线」，文案对齐 `B4StatusPanel` 与 `stores/b4.ts` 的 `loadWorld` / `fail`：加载为「网络可用 · 正在加载成长记录」+ 预览与衣柜骨架屏（`aria-busy`）；空为「暂无可展示的形象素材。」+「查看奖励」→ `world.html`（**设计新增，需同步实现**：真实页没有整页空态，素材为空时只在各卡内显示单行文案）；错误为「网络可用 · 学习同步状态 / 角色信息暂时无法读取。」+「重试」；无权限为「网络可用 · 学习同步状态 / 当前没有读取学习世界的权限。」+ 单个「去登录」→ `login.html?returnTo=%2Fpages%2Fb4-avatar%2Fb4-avatar`；离线为「网络不可用 · 学习同步状态 / 角色信息暂时无法读取。」+「重试」，有队列时同时显示「待同步 N」与「同步」。
+- 状态恢复 → 错误与离线「重试」转圈「正在重试…」→ 1.1s 后回到正常态，不弹成功 Toast；空态只保留「查看奖励」；无权限只保留「去登录」。切换离开正常态会关闭画质与套装弹层、取消未完成的同步 / 重试 / 装备计时并恢复按钮；切回正常态保留已选画质、当前套装与素材列表。
+- 页头与导航 → 导航栏「Avatar 与衣柜」（`pages.json` 标题）+ 返回 `world.html`（`backMobile`：返回上一页，无历史时回 `home.html`），右上角设置 → `settings.html`；页内 kicker「形象」（`ZH_KICKERS`）、标题「形象与装扮」、说明「选择本机画质，查看外观素材。」（`pages.b4-avatar`）；不显示底部 TabBar。
+- 状态条 → 等价 `B4StatusPanel`：标题「网络可用 · 学习同步状态」，默认说明「成长记录会随学习进度更新。」；`?mock=queue` 说明为「本机有 2 条待同步记录，联网后可继续同步。」，右侧出现 warn 徽标「待同步 2」与「同步」；`?mock=partial` 说明为「部分功能暂不可用，已显示可读取的内容。」，内容继续展示；`?mock=unavailable` 以 `status=error` 打开：状态条红框 + 说明「角色信息暂不可用。」+「重试」，内容区显示真实页 `!pageReady` 文案「角色信息暂不可用。」，重试 1.1s 后恢复预览与素材。
+- 同步 → 点「同步」转圈「正在同步…」→ 0.9s 后队列清空，说明「服务端已接受 2 条事件。」，不弹 Toast；`?mock=sync-rejected` 队列保留，说明「服务端未接受事件，队列已保留。」；离线态「同步」说明「网络不可用，队列仍保留。」。
+- 画质 → 状态条右侧 chip 只显示当前档位「舒适」+ 下拉箭头（`aria-label="画质：舒适"`），打开底部弹层「画质」，四档「精致 / 舒适 / 轻量 / 省资源」（`B4_PERFORMANCE_LEVELS`），当前档带 brand 对勾与 `aria-pressed`；选择后更新 chip 文案并关闭弹层，焦点回到画质按钮；遮罩、取消与 Esc 均可关闭。画质只影响本机显示，不改服务端外观数据。
+- 渲染模式 → 对齐 `effectiveAvatarRenderMode`：选择「省资源」时预览立即降级为 2D 静态形象（虚线边框、surface 底、mut 图形），说明改为「当前画质为「省资源」，形象以 2D 静态显示。」；`?mock=fallback` 以服务端 `renderMode=2D_FALLBACK` 打开，说明「本机以 2D 静态形象显示。」；恢复到「精致 / 舒适 / 轻量」且服务端允许时回到 3D 示意。
+- 展示预览 → 卡片 eyebrow「形象」+ 标题「展示预览」+ 右侧 sparks 图标「本机画质」；说明「画质只影响本机显示；角色素材尚未就绪。」；预览区为角色轮廓示意，不加载真实 3D 资源；「当前套装」一行（**设计新增，需同步实现**：真实页预览卡不显示当前套装）随装备结果更新，套装名取 `avatarProfile.loadoutId`；`?mock=no-profile` 时按 2D 静态显示，套装名回退到服务端 `loadouts` 中标记「使用中」的那一套，不臆造本地选择。
+- 套装素材 → 卡片 eyebrow「衣柜」+ 标题「套装素材」+ 右侧「N 套」；每行显示套装名（`name === loadoutId` 时回退为「套装 N」，对齐 `loadoutTitle`）、「N 件素材」、右侧「预览 ›」；当前套装带 ok 徽标「使用中」；`?mock=no-loadouts` 卡内只显示「暂无可展示的套装素材。」，右侧数量隐藏（不显示「0 套」）。
+- 套装预览 → 点击任一套装行打开底部弹层「套装预览」，副标题「套装名 · N 件素材」，逐件列出素材（头部装扮 / 面部装扮 / 服装 / 光效装扮，对齐 `itemTitle`），说明「素材仅作展示，不代表已获得奖励。」；当前已装备套装的主按钮为真实禁用态「当前使用中」（surface 底、mut 字、not-allowed）；遮罩、Esc 关闭。
+- 设为当前装扮 → 未装备套装点「设为当前装扮」转圈「正在装备…」→ 0.9s 后关闭弹层，该行出现「使用中」、预览卡「当前套装」更新，状态条说明「衣柜装备状态已由服务端确认。」（`stores/b4.ts` 原文），不弹 Toast，焦点回到该套装行；`?mock=equip-error` 说明「衣柜装备失败。」并保留原套装；`?mock=equip-unconfirmed` 说明「服务端未返回装备确认。」且不改装备状态。
+- 外观素材 → 卡片 eyebrow「装扮」+ 标题「外观素材」+ 右侧「N 款」；说明「素材展示不代表已获得奖励。」；两列素材卡显示款式（普通款 / 稀有款 / 珍藏款 / 典藏款，对齐 `itemQuality`）与槽位（对齐 `itemTitle`）；`?mock=no-items` 卡内只显示「暂无可展示的装扮素材。」，数量隐藏；底部「查看奖励」→ `world.html`。
+- 登录门禁 → 对齐真实页 `onShow`：先 `session.restore()`，未登录直接跳转登录页，不渲染形象页；原型以无权限态承载该分支，登录页回跳地址为 `/pages/b4-avatar/b4-avatar`。
+- 文案边界 → 不显示 avatarId、resourceVersion、manifestHash、loadoutId、itemCode、内部错误码或原始状态枚举；「稀有 / 典藏」等只描述素材款式，不暗示已获得奖励；角色素材未就绪时明确写「示意」，不伪造 3D 模型或未上线资源。
