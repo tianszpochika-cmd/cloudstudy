@@ -584,21 +584,20 @@
 
 对应页面：`pages/b4-games.html`；真实实现参照 `apps/mobile/src/pages/b4-games/b4-games.vue`、`apps/mobile/src/components/b4/B4StatusPanel.vue`、`apps/mobile/src/domain/b4.ts` 的 `gameLabel` / `B4_PERFORMANCE_LEVELS` 与 `apps/mobile/src/stores/b4.ts` 的 `loadWorld` / `startGame` / `pauseGame` / `resumeGame` / `finishGame`。原型全部使用 mock 数据，不访问服务端。
 
-- 主题与直达参数 → 工具条「浅色 / 深色」切换整页 token 并写入 `localStorage['uispec-theme']`；`?theme=light|dark` 固定主题；`?state=normal|loading|empty|error|forbidden|offline` 直达页面状态；`?mock=queue|partial|empty|active|paused|ready|result|passed` 演示状态条、目录与游戏会话分支。截图：`b4-games-{light,dark}.png`。
-- 页面状态 → 工具条「正常 / 加载 / 空 / 错误 / 无权限 / 离线」：加载为「正在加载游戏目录」+ 目录骨架屏（`aria-busy`）；空为「暂无可用游戏」+「去练习」→ `b2-practice.html`；错误为「游戏目录暂时没有读出来 / 游戏服务暂时不可用，请稍后重试。」+「重试」；无权限为「当前会话没有访问权限 / 登录后可以继续查看游戏大厅。」+ 单个「去登录」→ `login.html?returnTo=%2Fpages%2Fb4-games%2Fb4-games`（不提供重试）；离线为「网络暂时不可用 / 游戏需要联网；待同步记录会保留在本机。」+「重试」。
+- 主题与直达参数 → 工具条「浅色 / 深色」切换整页 token 并写入 `localStorage['uispec-theme']`；`?theme=light|dark` 固定主题；`?state=normal|loading|empty|error|forbidden|offline` 直达页面状态；`?mock=queue|partial|empty|active|paused|ready|result|passed|sync-rejected|pause-error|resume-error|refresh-error|finish-no-result|finish-error` 演示状态条、目录与游戏会话分支（`mock=empty` 为正常态内目录为空）。截图：`b4-games-{light,dark}.png`；`b4-games-{loading,empty,error,forbidden,offline,offline-queue}-{light,dark}.png`；`b4-games-{queue,partial,catalog-empty,active,paused,ready,result,passed,sync-rejected,pause-error,resume-error,refresh-error,finish-no-result,finish-error}-{light,dark}.png`。
+- 页面状态 → 工具条「正常 / 加载 / 空 / 错误 / 无权限 / 离线」，文案对齐 `B4StatusPanel` 与 `stores/b4.ts` 的 `loadWorld` / `fail`：加载为「网络可用 · 正在加载成长记录」+ 成长记录骨架屏（`aria-busy`）；错误为「网络可用 · 学习同步状态 / 学习世界暂时无法读取。」+「重试」；无权限（`status=permission`）为「网络可用 · 学习同步状态 / 当前没有读取学习世界的权限。」+ 单个「去登录」→ `login.html?returnTo=%2Fpages%2Fb4-games%2Fb4-games`（不提供重试）；离线为「网络不可用 · 学习同步状态 / 学习世界暂时无法读取。」+「重试」，有队列时同时显示「待同步 2」与「同步」；整页空为「暂无可用游戏。」+「去练习」→ `b2-practice.html`（**设计新增，需同步实现**：真实 `b4-games.vue` 的目录空态只显示单行文案，没有这个出口）。
 - 状态恢复 → 错误与离线「重试」转圈「正在重试…」→ 1.1s 后回到正常态，不弹成功 Toast；空态只保留「去练习」；无权限只保留「去登录」。
-- 切换状态副作用 → 离开正常态会关闭游戏详情、画质与结束确认弹层，取消未完成的同步 / 暂停 / 刷新 / 结算计时并恢复按钮；切回正常态保留已选画质、游戏会话与最近一局结果。
+- 切换状态副作用 → 离开正常态会关闭画质弹层，取消未完成的同步 / 暂停 / 刷新 / 结算计时并恢复按钮；切回正常态保留已选画质、游戏会话与最近一局结果。
 - 页头与导航 → 导航栏「游戏大厅」（`pages.json` 标题）+ 返回 `world.html`（`backMobile`：返回上一页，无历史时回 `home.html`），右上角设置 → `settings.html`；页内 kicker「边玩边学」（`ZH_KICKERS`）、标题「换个方式，练出好状态。」、说明「在轻松的小挑战里，巩固单词与句子。」（`pages.b4-games`）；不显示底部 TabBar。
 - 状态条 → 等价 `B4StatusPanel`：标题「网络可用 · 学习同步状态」，默认说明「成长记录会随学习进度更新。」；`?mock=queue` 时说明为「本机有 2 条待同步记录，联网后可继续同步。」，右侧出现 warn 徽标「待同步 2」与「同步」；`?mock=partial` 说明为「部分功能暂不可用，已显示可读取的内容。」，目录继续可用。
-- 同步 → 点「同步」转圈「正在同步…」→ 0.9s 后待同步计数与「同步」按钮消失，说明更新为「待同步记录已全部同步。」，Toast「待同步记录已同步」，焦点回到状态条。
-- 画质 → 状态条「画质 · 舒适」打开底部弹层，四档「精致 / 舒适 / 轻量 / 省资源」（`B4_PERFORMANCE_LEVELS`），当前档带 brand 对勾与 `aria-pressed`；选择后更新文案并关闭弹层，焦点回到画质按钮；遮罩、取消与 Esc 均可关闭。
-- 游戏目录 → 卡片「小游戏」+ 右侧数量「6 项」；玩法对齐 `gameLabel`：拼句小火车 / 单词消消乐 / 单词保卫战 / 拼图解谜 / 语法射击 / 词义捕手，每项显示图标、名称、「即将开放」徽标、每次时长上限与关闭原因；玩法未开放时不提供开始按钮，点击整行打开详情弹层而不是假装开局。
-- 游戏详情 → 点击任一玩法打开底部弹层：名称、「每次最多 N 分钟」、「即将开放」徽标与原因（已登记玩法为「关卡还在开发中，暂时只能查看目录。」，其余为「这个玩法还没有上线，开放后会出现在这里。」）、「开放后会出现在这里。」；「知道了」/ 遮罩 / Esc 关闭，焦点回到该行。
+- 同步 → 点「同步」转圈「正在同步…」→ 0.9s 后队列清空，状态条说明更新为「服务端已接受 2 条事件。」（`acceptedEventIds` 的数量），不弹 Toast，焦点回到状态条；`?mock=sync-rejected` 同步后队列保留，说明为「服务端未接受事件，队列已保留。」。离线态内的「同步」在断网时说明改为「网络不可用，队列仍保留。」。
+- 画质 → 状态条右侧 chip 只显示当前档位「舒适」+ 下拉箭头（`aria-label="画质：舒适"`），打开底部弹层标题「画质」，四档「精致 / 舒适 / 轻量 / 省资源」（`B4_PERFORMANCE_LEVELS`），当前档带 brand 对勾与 `aria-pressed`；选择后更新 chip 文案并关闭弹层，焦点回到画质按钮；遮罩、取消与 Esc 均可关闭。
+- 游戏目录 → 卡片头 eyebrow「学习游戏」（`v2-games-eyebrow`）+ 标题「小游戏」+ 右侧数量「6 项」；玩法对齐 `gameLabel`：拼句小火车 / 单词消消乐 / 单词保卫战 / 拼图解谜 / 语法射击 / 词义捕手，每项为不可点的静态列表项，显示图标、名称、「即将开放」徽标、「每次最多 N 分钟」与关闭原因（`enabled` 为 true 时「服务端已登记此玩法，但游戏关卡还在开发，暂时只能查看目录。」，为 false 时「此玩法尚未上线，开放后会出现在这里。」）。
 - 游戏会话 → 服务端返回会话时显示「游戏进度」卡（`?mock=active|paused|ready`）：玩法名、状态徽标（准备中 / 进行中 / 已暂停）、已进行回合数、warn 提示「当前还没有可操作的题目。」与「暂停 / 恢复 / 刷新 / 结束」。
-- 暂停 / 恢复 → 「暂停」转圈「正在暂停…」→ 0.8s 后徽标变「已暂停」、按钮变「恢复」，Toast「已暂停，进度已保存」；「恢复」转圈「正在恢复…」→ 徽标回到「进行中」、按钮变「暂停」，Toast「已恢复，继续挑战」。
-- 刷新 → 「刷新」转圈「正在刷新…」→ 0.7s 后 Toast「游戏进度已刷新」，不回退回合数。
-- 结束 → 「结束」打开确认对话框「结束这局游戏？ / 结束后会返回本局结果，这一局不能继续。」，「继续游戏」为次按钮、「结束游戏」为 bad 危险按钮；确认后转圈「正在结算…」→ 0.9s 后关闭对话框、隐藏进度卡、显示最近一局结果并 Toast「本局已结束，结果已返回」；Esc / 遮罩 / 继续游戏均不结束。
-- 最近一局结果 → 对齐 `lastGameResult`：通过为「挑战通过」+「符合奖励条件」（`?mock=passed`），未通过为「再练习一次」+「暂不符合奖励条件」（`?mock=result`）；显示正确率、完成度与服务端得分，不显示会话 ID、规则版本或内部状态枚举。
-- 目录为空 → `?mock=empty` 目录卡内显示「暂无可用游戏 / 新玩法准备好后会出现在这里。」，数量显示 0 项；工具条「空」是整页空态，两者不重复叠加。
+- 暂停 / 恢复 → 「暂停」转圈「正在暂停…」→ 0.8s 后徽标变「已暂停」、按钮变「恢复」，没有成功 Toast，反馈只靠徽标与按钮变化；「恢复」转圈「正在恢复…」→ 徽标回到「进行中」、按钮变「暂停」；`?mock=pause-error|resume-error` 时失败文案写进状态条：「游戏暂停未获服务端确认。」/「游戏恢复未获服务端确认。」。
+- 刷新 → 「刷新」转圈「正在刷新…」→ 0.7s 后更新会话，没有成功 Toast，不回退回合数；`?mock=refresh-error` 时状态条显示「游戏会话刷新失败。」。
+- 结束 → 「结束」直接调用结算（真实 `finishGame` 没有确认框，本稿不设对话框），按钮转圈「正在结算…」→ 0.9s 后隐藏进度卡、显示最近一局结果，状态条说明「游戏结果已由服务端返回。」，不弹 Toast；`?mock=finish-no-result` 时说明为「服务端未返回最终结果。」且不显示结果卡；`?mock=finish-error` 时说明为「游戏结束未获服务端确认。」，进度卡保留。
+- 最近一局结果 → 对齐 `lastGameResult`：通过为「挑战通过」+「符合奖励条件」（`?mock=passed`），未通过为「再练习一次」+「暂不符合奖励条件」（`?mock=result`）；只显示标题、正确率 · 完成度 · 得分一行和奖励条件一行，不显示 eyebrow、会话 ID、规则版本或内部状态枚举。
+- 目录为空 → `?mock=empty` 目录卡内只显示一行「暂无可用游戏。」，数量显示「0 项」；工具条「空」是整页空态，两者不重复叠加。
 - 登录门禁 → 对齐真实 `onShow`：先 `session.restore()`，未登录直接跳转登录页，不渲染游戏目录；原型以无权限态承载该分支，登录页回跳地址与真实页一致（`/pages/b4-games/b4-games`）。
-- 文案边界 → 不显示 P0 / P1 / 发布阶段、服务端错误码、会话 ID 或原始状态枚举；未开放玩法明确写成「即将开放」，不提供可点击的伪开始按钮；Phase 1 的游戏只做规则化巩固，不写成 AI 功能。
+- 文案边界 → 不显示 P0 / P1 / 发布阶段、服务端错误码、会话 ID 或原始状态枚举；未开放玩法明确写成「即将开放」，不提供可点击的伪开始按钮，也不提供虚构的玩法详情弹层；Phase 1 的游戏只做规则化巩固，不写成 AI 功能。
