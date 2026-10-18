@@ -422,7 +422,7 @@
           <section class="card bl-card" id="material-card" aria-labelledby="material-title" hidden>
             <div class="bl-card__head">
               <div class="bl-titlewrap">
-                <p class="bl-eyebrow"><span data-icon="volume" data-icon-size="14"></span>情景听力</p>
+                <p class="bl-eyebrow"><span data-icon="volume" data-icon-size="14"></span>听力</p>
                 <h2 class="bl-material-title" id="material-title">At the Corner Café</h2>
               </div>
               <span class="badge badge--ok" id="rights-badge">授权有效</span>
@@ -456,8 +456,8 @@
                 <span id="rate-value">1x</span>
                 <span data-icon="chevron-down" data-icon-size="12"></span>
               </button>
-              <button type="button" class="btn btn--secondary btn--sm" id="set-a">设 A 点</button>
-              <button type="button" class="btn btn--secondary btn--sm" id="set-b">设 B 点</button>
+              <button type="button" class="btn btn--secondary btn--sm" id="set-a">设为 A 点</button>
+              <button type="button" class="btn btn--secondary btn--sm" id="set-b">设为 B 点</button>
               <button type="button" class="btn btn--secondary btn--sm" id="clear-ab" hidden>清除 A-B</button>
             </div>
 
@@ -491,11 +491,10 @@
 
           <!-- 听写 -->
           <section class="card bl-card" id="dictation-card" hidden>
-            <p class="bl-eyebrow"><span data-icon="pencil" data-icon-size="14"></span>听写</p>
+            <p class="bl-eyebrow"><span data-icon="pencil" data-icon-size="14"></span>听写答案</p>
             <div class="bl-dictation">
-              <label class="field__label" for="dictation-input">听写答案</label>
               <div class="field__control">
-                <input id="dictation-input" type="text" placeholder="输入你听到的句子" autocomplete="off" spellcheck="false">
+                <input id="dictation-input" type="text" placeholder="输入你听到的句子" aria-label="听写答案" autocomplete="off" spellcheck="false">
               </div>
             </div>
             <button type="button" class="btn btn--primary btn--block bl-submit" id="submit-btn">
@@ -511,7 +510,7 @@
             </p>
             <div class="bl-result" id="dictation-result" role="status" tabindex="-1" hidden>
               <p class="bl-result__verdict" id="result-verdict"></p>
-              <p class="bl-result__note">已保存本次听写。</p>
+              <p class="bl-result__note">已保存</p>
             </div>
           </section>
         </div>
@@ -640,15 +639,15 @@
     <li>页头与导航 → 导航栏「听力与 Language Clips」（<code>pages.json</code> 标题）+ 返回（无历史时回 <code>home.html</code>），右上角设置 → <code>settings.html</code>；页内 kicker「听力室」（<code>ZH_KICKERS</code>）、标题「听见更大的世界。」、说明「逐句精听、循环片段，让耳朵慢慢熟悉语言。」（<code>pages.b11-listening</code>）；不显示底部 TabBar。</li>
     <li>关闭说明 → 对齐真实页 <code>data-closed-practice</code>：锁图标 +「听力」+「听力练习」+「即将开放」徽标 +「音频素材尚未上传到媒体库，播放地址无法签发；素材上线后即可在这里播放并听写。」+「回到可用学习」→ <code>today.html</code>；正常态默认显示关闭说明与状态面板，带任一 <code>?mock=</code> 打开时不显示关闭说明、改为渲染材料模板。</li>
     <li>状态面板 → 等价 <code>B11StatusPanel</code>：idle「正在准备内容」、loading「正在加载内容」、ready「内容已就绪」（显示画质与动效设置行）、empty「当前没有可用内容」、offline「暂时无法连接服务」、forbidden「当前会话没有访问权限」、expired「播放授权已过期」、recovering「正在保留本地进度 / 联网后可重试。」、error「服务暂时不可用」；empty / offline / forbidden / expired / error 带「重试」，有队列时同时显示「待同步 n」+「恢复同步」。ready 下的面板消息用于承载播放授权提示与片段切换提示，不重复展示听写结果。</li>
-    <li>材料信息 → 材料卡显示 CEFR 级别、时长与段号（「B1 · 2 分 24 秒 · 第 1 段 / 共 4 段」）、英文标题与中文授权徽标（授权有效 / 已过期 / 已撤销）；不显示媒体 ID、内容版本号或原始状态枚举。</li>
+    <li>材料信息 → 材料卡 eyebrow 使用「听力」（对齐 <code>b11-foundation</code> 的 <code>listening.eyebrow</code>；真实页此处 kicker 直接复用 <code>material.title</code>），标题为英文材料名，右侧中文授权徽标（授权有效 / 已过期 / 已撤销）；不自造分区名。显示 CEFR 级别、时长与段号（「B1 · 2 分 24 秒 · 第 1 段 / 共 4 段」）；不显示媒体 ID、内容版本号或原始状态枚举。</li>
     <li>画质 → 状态面板「画质：舒适」打开底部弹层，四档「精致 / 舒适 / 轻量 / 省资源」（<code>b11.status.quality*</code>），当前档带 brand 对勾与 <code>aria-pressed</code>；选择后更新面板文案并关闭弹层，焦点回到画质按钮；选「省资源」时波形切换为静态时间轴。遮罩、取消与 Esc 均可关闭。</li>
     <li>动效 → 状态面板「关闭动效 / 开启动效」（<code>b11.status.motionOff</code> / <code>motionOn</code>）切换文案与 <code>.is-motion-off</code>；关闭后波形改为静态时间轴、进度过渡停止，播放与 A-B 循环仍可用；<code>?mock=motion-off</code> 直接以关闭状态打开；不改动全局主题。</li>
     <li>播放 / 暂停 → 有授权播放地址时「播放」从当前位置推进波形与「00:00 / 02:24 · 0%」，播放到末尾自动停止；「暂停」停在当前时间，不弹 Toast。<code>?mock=no-media</code>、<code>?mock=revoked</code>、<code>?mock=expired</code> 时播放、暂停、速度与 A/B 按钮进入真实禁用态（surface 底、mut 字、无阴影、not-allowed），说明分别改为「当前内容没有授权播放地址；保留字幕与练习，未伪造音频。」「媒体权益已撤销，不能继续播放。」「播放授权已过期；重新读取后可再次授权。」。</li>
-    <li>A-B 循环 → 「设 A 点 / 设 B 点」以当前位置打点，行内显示「A 00:08 · B 00:16 · 仅在 A、B 都有效时循环。」；只设一点时另一端显示「—」；两点都有效且播放越过 B 点时回到 A 点；「清除 A-B」在任一点存在时出现，点击后隐藏说明行。所有时间使用 <code>00:00</code> 格式，不显示毫秒。</li>
+    <li>A-B 循环 → 「设为 A 点 / 设为 B 点」（<code>b11.listening.setA</code> / <code>setB</code>）以当前位置打点，行内显示「A 00:08 · B 00:16 · 仅在 A、B 都有效时循环。」；只设一点时另一端显示「—」；两点都有效且播放越过 B 点时回到 A 点；「清除 A-B」在任一点存在时出现，点击后隐藏说明行。所有时间使用 <code>00:00</code> 格式，不显示毫秒。</li>
     <li>播放速度 → 点击「1x」打开底部弹层，六档 0.5x / 0.75x / 1x / 1.25x / 1.5x / 2x（对齐真实页 <code>PLAYBACK_RATES</code>），当前档带 brand 对勾与 <code>aria-pressed</code>；选择后立即生效并关闭弹层，焦点回到速度按钮。<code>?mock=degraded</code> 显示「当前平台未声明音高保持能力；速度控制仍可用，已记录降级。」（<code>enableUniAudioPitchPreservation</code> 降级回调）。</li>
     <li>Language Clips → 片段横向滚动，显示标题与时间范围（「Ordering coffee · 00:08–00:16」）；点击后 chip 变为 brand 描边与 soft 底、<code>aria-pressed</code> 同步，面板提示「已切换 Language Clip；播放地址仍需权益清单确认。」（真实页 <code>selectClip</code> 文案），不自动跳转播放位置。</li>
     <li>字幕 / 音变时间轴 → 逐句 token 双列展示英文与 <code>00:00–00:00</code> 时间；进入页面即渲染，不依赖播放状态；播放与字幕不伪造未授权的音频。</li>
-    <li>听写提交 → 未填写答案时点击「提交听写」，字段下方出现 bad 色「请先读取真实听力会话并填写听写答案。」（真实页 <code>submitDictationAnswer</code> 守卫）并聚焦输入框；正常提交转圈「正在提交…」→ 0.9s 后出现结果块：答对为 ok 底「规则判定正确」、答错为 bad 底「已记录错题」，均附「已保存本次听写。」，焦点移到结果块。原型以答案是否包含「coffee」模拟规则判分，不显示 <code>feedbackCodes</code>。</li>
+    <li>听写提交 → 听写卡 eyebrow 为「听写答案」（<code>b11.listening.dictation</code>，与真实页一致，不再另设字段 label），输入框 placeholder「输入你听到的句子」；未填写答案时点击「提交听写」，字段下方出现 bad 色「请先读取真实听力会话并填写听写答案。」（真实页 <code>submitDictationAnswer</code> 守卫）并聚焦输入框；正常提交转圈「正在提交…」→ 0.9s 后出现结果块：答对为 ok 底「规则判定正确」、答错为 bad 底「已记录错题」，第二行固定为「已保存」（对齐真实页 <code>feedbackCodes.join(' · ') || '已保存'</code> 的回退文案；<code>feedbackCodes</code> 仍不展示），焦点移到结果块。原型以答案是否包含「coffee」模拟规则判分，不显示 <code>feedbackCodes</code>。</li>
     <li>提交失败 / 离线提交 → <code>?mock=submit-error</code> 首次提交失败：卡内 bad 色「听写提交失败，答案仍保留在当前页面。」（<code>submitDictationAnswer</code> catch 兜底），再次提交可正常判分；<code>?mock=submit-offline</code>（<code>isB11OfflineError</code> 分支）：卡内 warn 色「听写答案已保留到待同步队列，服务端尚未判定。」，状态面板同步为 offline、显示「待同步 1」+「恢复同步」，答案与材料保留；同步后清除离线标记，可再次提交。</li>
     <li>保存播放进度 → 有授权播放地址时启用；点击转圈「正在保存…」→ 1s 后显示 ok 提示「播放进度已由服务端确认。」（<code>saveMediaProgress</code> 成功文案），不弹 Toast。<code>?mock=save-error</code> 首次保存失败：状态面板转为 recovering「正在保留本地进度 / 进度未确认；联网后可恢复。」+「待同步 1」+「恢复同步」，位置仍在页面保留；同步成功后恢复 ready 并提示「待同步操作已由服务端确认。」。</li>
     <li>授权失效 → <code>?mock=expired</code>（404 / 410 → <code>expired</code>）：面板「播放授权已过期」+「重试」，播放相关按钮禁用；「重试」1.1s 后重新获得授权、恢复可播放。<code>?mock=revoked</code>（<code>rightsStatus === 'REVOKED'</code>）：面板 forbidden「当前会话没有访问权限 / 当前媒体权益已撤销，字幕与历史进度不会伪造为可播放。」，字幕与听写仍可查看，播放相关按钮禁用。</li>
