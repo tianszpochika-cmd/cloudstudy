@@ -372,3 +372,26 @@
 - 会话练习卡 → 对齐真实页 `B10ExerciseCard` 的 CHOICE 分支：题干「选择正确的引导词补全句子：The book ____ you lent me is on the desk.」+ 三个选项（A that / B what / C who）+「本题由服务端规则判分，不使用生成式 AI。」；点击选项即按服务端规则反馈（that 为「练习正确：that 在从句中作宾语，修饰 The book。」，其余为「练习需要修复：what 不能引导定语从句，who 只指人。」），选中项保持 `aria-pressed` 与 brand 描边，反馈用 ok / bad 色并配文字；版本失效或提交中所有选项真实禁用；`?mock=exercise` 直接演示已答对状态。真实页的 `DRAG_SORTER` 由本页「调整句子积木顺序」内联承载，不重复 `ExerciseCard`；本原型不覆盖全部题型。
 - 出口 → 页尾两个次按钮：错题与报告 → `b10-report.html`、写作练习 → `b3-writing.html`；正常态下始终保留。
 - 文案边界 → 不显示内部错误码、反馈代码、规则版本号或原始题型枚举；知识点只以小字标注 CEFR 级别；反馈用「规则命中 / 需要修复」与规则依据表达，不只依赖颜色。
+
+### b3-reading（阅读精练）
+
+对应页面：`pages/b3-reading.html`；真实实现参照 `apps/mobile/src/pages/b3-reading/b3-reading.vue`、`apps/mobile/src/components/b10/B10StatusPanel.vue`、`apps/mobile/src/api/b10.ts` 的阅读接口、`apps/mobile/src/domain/practice-loop.ts` 的 `practiceFeedback`、`apps/mobile/src/domain/grammar-reading-pack.ts` 的 `packNotice('READING', n)`、`apps/mobile/src/platform/b10-foundation.ts` 的 `b10.reading` 文案与 `packages/i18n/src/mobile-experience.ts` 的 `pages.b3-reading` 文案。真实页先 `listReadingArticles` 读取授权文章，再读取段落与理解检查；阅读位置与文章版本 / epoch 绑定，保存失败保留最后位置并进入待同步；挖掘失败不伪造入库结果。原型用 mock 文章与两道理解检查在同一路由内演示。
+
+- 主题与直达参数 → 工具条「浅色 / 深色」切换整页 token 并写入 `localStorage['uispec-theme']`；`?theme=light|dark` 固定主题；`?state=normal|loading|empty|error|forbidden|offline` 直达页面状态；`?mock=translation|saved|queued|save-error|stale|mined|mine-error|closed|answered-ok|answered-bad|answer-stale|revoked` 演示译文展开、已保存、待同步、保存失败、版本失效、已挖掘、挖掘失败、题组关闭、已作答正确 / 需再练、提交时版本失效与授权撤回。截图：`b3-reading-{light,dark}.png`。
+- 页面状态 → 工具条「正常 / 加载 / 空 / 错误 / 无权限 / 离线」：正常为文章卡、阅读位置与理解检查；加载为 `role=status`「正在加载学习内容…」+ 骨架屏（`aria-busy`）；空为「暂时没有可用的授权文章 / 内容准备好后会在这里显示。」（对齐 `b10.reading.noArticle` 与 `b10.status.noSample`）+「重试」；错误为「阅读服务暂时不可用 / 请检查网络后重试；最后保存的位置不会被清空。」+「重试」；无权限对齐 `rightsStatus === 'REVOKED'` → 「当前文章版权状态不允许阅读 / 这篇文章的授权已撤回，阅读进度与理解检查不会保存。」+「返回练习」→ `b2-practice.html`（不提供重试）；离线为「网络暂时不可用 / 待同步不等于已结算。」+「重试」+ 待同步队列行「1 · 待同步不等于已结算。/ 阅读进度 · 等待联网后提交」+「同步」。
+- 状态恢复 → 空、错误与离线「重试」转圈「正在读取…／正在重试…」→ 1.1s 后回到正常态，不弹成功 Toast；离线队列「同步」转圈「正在同步…」1.1s 后回到正常态、徽标改为「已保存」并显示页内提示「待同步阅读记录已提交。」；无权限只保留「返回练习」。
+- 切换状态副作用 → 离开正常态会关闭画质弹层、作废未完成的保存 / 挖掘 / 提交计时并恢复按钮，不出现延迟反馈；切回正常态保留阅读位置与已选答案。
+- 页头与导航 → 导航栏「阅读精练」（`pages.json` 标题）+ 返回（`backMobile`：返回上一页；无历史时回首页，原型 `data-back="home.html"`），右上角设置 → `settings.html`；页内 kicker「阅读角」、标题「在阅读里，遇见世界。」、说明「读懂一段文字，收藏值得反复回味的表达。」（`pages.b3-reading`）；不显示底部 TabBar（TabBar「练习」指向 `b2-practice.html`）。
+- 文章信息 → 顶部「授权文章 · 1 篇」与「画质 · 舒适」同排；文章卡显示 CEFR 级别、词数、预计时长（「B2 · 726 词 · 约 6 分钟」）与标题，右上徽标「未保存（mut）/ 已保存（ok）」；标题带 `tabindex="-1"` 供保存后聚焦。
+- 正文字号 → A− / A＋ 每次 10%，范围 85%–135%，中间显示当前百分比；到达上下限时对应按钮进入真实禁用态（surface 底、mut 字、not-allowed），不只靠透明度；字号只作用于英文正文，译文保持 14px，135% 下无横向溢出。
+- 显示译文 → 工具按钮在「显示译文 / 隐藏译文」间切换，`aria-pressed` 同步；译文以 surface 底色块出现在对应段落后并带「译文」小标题；没有译文的分段不显示空块。`?mock=translation` 直接展开。
+- 挖掘为表达 → 每段下方按钮「挖掘为表达」（对齐 `b10.reading.mining`）→ 转圈「正在挖掘…」→ 0.8s 后变为「已加入复习信号」（`b10.reading.mined`）并进入真实禁用态（ok-soft 底、ok 字），同时弹成功 Toast；`?mock=mine-error` 第一次点击显示 bad 色 `role=alert`「表达挖掘失败，未伪造入库结果。」，最后保存的阅读位置不变，第二次点击成功；`?mock=mined` 直接演示已挖掘状态（第一段）。
+- 阅读位置 → 拖动滑块实时更新百分比与 `aria-valuetext`；拖动即把保存徽标改回「未保存」、清除待同步横幅；`?mock=queued` 直接显示 warn 横幅「阅读进度保存失败，最后位置已保留。」+ 队列行 +「同步待处理记录」，点击转圈「正在同步…」0.9s 后清除横幅、徽标改为「已保存」并显示页内提示。
+- 保存阅读进度 → 主按钮「保存阅读进度」（`b10.reading.save`）→ 转圈「正在保存…」，同时滑块与挖掘按钮真实禁用，防止重复提交 → 1s 后徽标改为「已保存」，顶部出现 ok 色 `role=status`「已准备好，可以开始 / 阅读进度已保存。」（`b10.status.ready`），2.4s 后淡出，不弹 Toast；`?mock=save-error` 首次保存进入上述待同步横幅，保留最后位置。
+- 版本失效 → `?mock=stale`（对齐 `contentVersionStale` → `status='stale'`）显示 warn 横幅「内容版本已失效 / 当前版本已下线或发生变化，请重新读取。」；滑块、保存、挖掘与全部「提交答案」进入真实禁用态（surface 底、mut 字、虚线边框、not-allowed）；「重试」转圈「正在读取…」0.9s 后横幅消失、功能恢复，顶部提示「阅读内容已更新。」。`?mock=answer-stale` 在提交答案时进入同一横幅，当前答案保留。
+- 理解检查 → 题干 + 三个选项（A / B / C），选项为单选：点击后 brand 描边、soft 底、圆形字母标记反色，`aria-checked` 同步；未选择时「提交答案」为真实禁用态，选择后可提交；题干与选项在提交中或版本失效时不可改。
+- 提交答案 → 转圈「正在提交…」→ 0.9s 后卡内出现反馈块：ok 底「已保存 / 正确」或 bad 底「已保存 / 需要再练」，并给出「本次练习已完成」或「下一题：第 2 题」（对齐 `practiceFeedback` 的 `savedReceipt` / `feedbackText` / `nextQuestion`）；反馈出现后焦点移到反馈块，选项保持已选并可重新选择、再次提交；`?mock=answered-ok|answered-bad` 直接演示两种结果。
+- 练习数量与关闭 → 文章卡下方显示「本次阅读练习 2 道」（对齐 `packNotice('READING', n)` 的「本次阅读练习 n 道」）；`?mock=closed` 改为 warn 色「这组题还没备齐，本次练习已关闭。」（`PACK_CLOSED_COPY`）并隐藏理解检查，阅读、译文与挖掘照常可用。
+- 画质 → 顶部「画质 · 舒适」打开底部弹层，四档「精致 / 舒适 / 轻量 / 省资源」，当前档带 brand 对勾与 `aria-pressed`；选择后更新顶部文案并关闭弹层，焦点回到画质按钮；遮罩、取消与 Esc 均可关闭（对齐 `B10StatusPanel` 的画质选择）。
+- 出口 → 页尾两个次按钮：单词复习 → `b2-vocabulary.html`（挖掘的表达会在复习信号中出现）、错题与报告 → `b10-report.html`；正常态下始终保留。
+- 文案边界 → 不显示文章 ID、内容版本号、反馈代码或原始状态枚举；CEFR 级别只作小字标识；同步与失效状态同时用文字说明，不只依赖颜色。
