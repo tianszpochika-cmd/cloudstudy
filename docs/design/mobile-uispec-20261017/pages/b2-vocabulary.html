@@ -1022,6 +1022,8 @@
   /* ---------- 刷新队列：重新读取当前批次，回到加载 → 正常 / 完成态，不弹 Toast ---------- */
   refreshBtn.addEventListener('click', function () {
     if (refreshBtn.classList.contains('is-busy')) return;
+    // 重新读取即以服务端结果为准：先丢弃上次「重试」留下的 ready 面板
+    state.queueReady = false;
     UISpec.setBusy(refreshBtn, true, '正在刷新…');
     setTimeout(function () {
       UISpec.setBusy(refreshBtn, false);
@@ -1078,8 +1080,11 @@
         render();
         return;
       }
+      // 同步成功后队列已提交：queued / syncPartial / queueReady 一并复位，
+      // 否则先前「重试」留下的 ready 面板会在 render() 里重新出现，和成功提示互相矛盾
       state.queued = false;
       state.syncPartial = false;
+      state.queueReady = false;
       queueBanner.hidden = true;
       if (wasOffline || UISpec.getScreenState() === 'offline') UISpec.setScreenState('normal');
       render();
@@ -1124,7 +1129,10 @@
 
   /* 离开正常态：结束未完成的读取 / 评分，恢复按钮 */
   document.addEventListener('uispec:state', function (event) {
-    if (event.detail.state === 'normal') return;
+    // 切换工具条状态即离开当前会话场景：丢弃「重试」留下的 ready 面板，
+    // 避免回到正常态时横幅凭空出现
+    state.queueReady = false;
+    if (event.detail.state === 'normal') { render(); return; }
     UISpec.closeAllOverlays();
     if (revealTimer) { clearTimeout(revealTimer); revealTimer = null; }
     if (rateTimer) { clearTimeout(rateTimer); rateTimer = null; }
