@@ -466,3 +466,25 @@
 - 登录门禁 → 对齐真实页 `load`：先 `session.restore()`，未登录跳转登录页、不渲染听力内容；原型以无权限态承载该分支，回跳地址与其它 b11 页面一致。
 - 切换状态副作用 → 离开正常态会关闭画质与速度弹层、停止模拟播放、作废未完成的读取 / 同步 / 保存 / 提交计时并恢复按钮；切回正常态保留当前位置、A-B、片段与听写内容。
 - 文案边界 → 不显示反馈代码、内容版本号、媒体 ID 或原始状态枚举；授权状态同时用中文徽标与文字说明，不只依赖颜色。真实页没有页尾出口，本稿不新增「学习报告」「单词复习」入口。
+
+### b3-speaking（口语与音标）
+
+对应页面：`pages/b3-speaking.html`；真实实现参照 `apps/mobile/src/pages/b3-speaking/b3-speaking.vue`、`apps/mobile/src/components/b2/B2StatusPanel.vue`、`apps/mobile/src/api/b3.ts` 的 `getPhonetics` / `listListeningMaterials` / `createRecording` / `deleteRecording` / `submitSelfRating` / `createRoleplaySession` / `submitRoleplayTurn`、`apps/mobile/src/domain/b3.ts` 的 `Phoneme` / `MouthProfile` / `SpeakingRecording` / `RoleplaySession`、`apps/mobile/src/platform/uni-runtime.ts` 的录音 / 安全存储适配器与 `packages/i18n/src/mobile-experience.ts` 的 `pages.b3-speaking` 文案。真实页 `onMounted` 只校验登录（`closed practice: no live load`），模板顶部固定显示 `data-closed-practice` 关闭说明（录音上传与发音评分尚未接入），音标 / 录音 / 角色扮演模板分支在服务接入前不可达；原型默认演示该关闭态，并用 `?mock=` 预览上线后的模板分支。
+
+- 主题与直达参数 → 工具条「浅色 / 深色」切换整页 token 并写入 `localStorage['uispec-theme']`；`?theme=light|dark` 固定主题；`?state=normal|loading|empty|error|forbidden|offline` 直达页面状态；`?mock=ready|no-audio|revoked|degraded|recording|recorded|saved|roleplay|roleplay-done|register-error|record-error` 演示模板分支与操作结果（`record-error` 需在页面内点「开始录音」触发）。截图：`b3-speaking-{light,dark}.png` 与 `b3-speaking-{loading,empty,error,forbidden,offline,ready,no-audio,revoked,degraded,recording,recorded,saved,roleplay,roleplay-done,register-error,record-error}-{light,dark}.png`。
+- 页面状态 → 工具条「正常 / 加载 / 空 / 错误 / 无权限 / 离线」：加载为「正在读取服务端数据」+ 音标与口型骨架屏（`aria-busy`，取 `B2StatusPanel` 的 loading 标题）；空为「暂时没有可用的音标内容 / 音标目录未返回完整的 48 项内容。」+「重新读取」（对齐真实页 `load` 的 48 项校验与 `status.empty`）；错误为「服务端暂时不可用 / 音标服务暂时不可用，未使用本地假数据。」+「重试」；无权限为「当前会话没有访问权限 / 登录后可以继续口语练习。」+ 单个「去登录」→ `login.html?returnTo=%2Fpages%2Fb3-speaking%2Fb3-speaking`（不提供重试）；离线为「网络暂时不可用 / 断点和待同步事件仍保留；待同步不等于已掌握。」（`B2StatusPanel` 默认文案）+「重试」。切换离开正常态会关闭画质与删除弹层、停止模拟录音与所有计时并恢复按钮。
+- 状态恢复 → 空、错误与离线「重新读取 / 重试」转圈 → 1.1s 后回到正常态，不弹成功 Toast；无权限只保留「去登录」。
+- 页头与导航 → 导航栏「口语与音标」（`pages.json` 标题）+ 返回（`backMobile`：返回上一页；无历史时回 `home.html`，原型 `data-back="home.html"`），右上角设置 → `settings.html`；页内 kicker「自信开口」（`ZH_KICKERS`）、标题「开口，就是新的开始。」、说明「学习发音、录下声音，在回听中找到自己的进步。」（`pages.b3-speaking`）；不显示底部 TabBar（TabBar「练习」指向 `b2-practice.html`）。
+- 关闭说明 → 对齐真实页 `data-closed-practice`：锁图标 +「口语」+「跟读练习」+「即将开放」徽标 +「跟读需要录音上传和发音评分服务，目前尚未接入，无法给出真实评分。」+「回到可用学习」→ `today.html`；默认打开即显示关闭说明与状态条，带任一 `?mock=` 打开时隐藏关闭说明并渲染模板分支。
+- 状态条 → 等价 `B2StatusPanel`：idle / ready 为「服务状态 / 掌握与判分以服务端结果为准。」，loading 为「正在读取服务端数据」，empty 为「当前没有可用内容 / 没有使用本地样例填充页面。」，error 为「服务端暂时不可用」，offline 为「网络暂时不可用 / 断点和待同步事件仍保留；待同步不等于已掌握。」；error 与 offline 同时出现「重试」。录音失败的 error 分支显示「录音失败，未生成虚假的评测结果。」（真实页 `onError` 文案）。
+- 音标目录 → 小字「共 48 个 · 点选后查看口型与示例词」；四列可点按钮展示 48 个音标（元音 / 双元音 / 辅音连续排列，不另设分组标题，对齐真实页单一 `phoneme-grid`），选中项 brand 描边 + soft 底 + `aria-pressed`，同时更新口型卡片的音标、示例词、唇形说明与「下颌 / 舌高 / 唇圆 / 声带」数值；不显示内部 phonemeId 或 mouthProfile 版本号。
+- 口型示意 → 录音卡内 2D 口型图按所选音标的下颌开合、舌位高低与唇圆度变化，右侧同时用文字给出同样的数值与「声带振动 / 清音」，不只依赖图形或颜色；明确标注「2D 口型示意 · 不加载 3D 解剖」。
+- 示范音频 → 有短时授权时显示「播放示范音频」，点击转圈「正在播放…」→ 1.5s 后显示 ok 色「示范音频播放完毕，可以开始跟读。」；`?mock=no-audio` 隐藏播放按钮并显示 warn 色「示范音频当前没有可播放授权地址；已降级为文本脚本和 2D 口型。」；`?mock=revoked` 为「示范音频权益已撤销；已降级为文本脚本和 2D 口型。」；`?mock=degraded` 保留按钮，点击后显示「示范音频当前无法播放；已降级为文本脚本和 2D 口型。」（对齐真实页 `playDemoAudio` catch）。示范句始终以文本给出，不伪造音频状态。
+- 录音 → 「开始录音」进入录音态：按钮变「停止录音」、文案显示红点 +「录音进行中… 00:07 / 最长 60 秒」，计时到 60 秒自动停止；停止后显示「录音文件已返回，点击“加密并登记”前会先计算真实 SHA-256。」并启用「加密并登记」；录音中「安全回放」「加密并登记」「删除录音」为真实禁用态（surface 底、mut 字、not-allowed）。`?mock=recording` 直接以录音中状态打开，`?mock=recorded` 以已录音待登记状态打开，`?mock=record-error` 点「开始录音」后状态条转 error「录音失败，未生成虚假的评测结果。」。
+- 加密并登记 → 已录音且时长不少于 500ms 时点击，按钮转圈「正在加密…」→ 0.9s 后显示 ok 色「录音已由 Keychain/Keystore 适配器加密；服务端只登记哈希和生命周期元数据。」，出现「已登记 · 时长 7 秒 · 自评：未选择」与「删除录音」；时长不足时显示 warn 色「请先完成至少 500ms 的真实录音。」；`?mock=register-error` 以 bad 色「录音加密或登记失败，未标记为成功。」打开，录音仍保留，可再次登记并成功。
+- 安全回放 / 自评 → 「安全回放」仅在已登记后可用，点击转圈「正在解密…」→ 0.7s 后显示 ok 色「安全回放已开始；音频只在本机内存中解密。」；三个自评 chip 单选（需要练习 / 基本准确 / 比较流利）；未登记时点击显示 warn 色「请先登记一次真实录音，再提交自评。」，登记后点击保存并显示「自评已保存：基本准确。Phase 1 不生成 AI 分数。」。<code>?mock=saved</code> 以已登记 + 基本准确打开。
+- 删除录音 → 已登记时出现「删除录音」→ 打开确认对话框「删除这段录音？/ 录音和本机加密文件会一并清理，学习记录不受影响。」（危险按钮 bad 色）；取消 / 遮罩 / Esc 关闭，确认后清理已登记状态、回放与删除按钮、自评与摘要，并 Toast「录音已删除」。
+- 角色扮演 → 「开始角色扮演」转圈「正在打开…」→ 0.9s 后显示「预编角色扮演已打开；分支和回合由服务端脚本控制。」与第 1 回合（回合 1 / 共 4 · 店员）；每次选择后提示「回合已保存，继续下一步。」并进入下一回合；第 2 回合带「本回合需要先登记一次真实录音。」，未登记时选择显示 warn 色「当前回合需要先完成并登记真实录音。」；第 4 回合后隐藏回合卡，显示 ok 色「角色扮演完成；Phase 1 只记录回合和自评，不生成 AI 分数。」，开始按钮变为「重新开始角色扮演」。选择按钮只显示中文意图，不显示内部 choiceCode。`?mock=roleplay` 直接打开第 2 回合，`?mock=roleplay-done` 直接打开完成状态。
+- 画质 → 点击「画质 · 高清」打开底部弹层，四档取 `B2StatusPanel` 的「极致 / 高清 / 标准 / 省电」，当前档带 brand 对勾与 `aria-pressed`；选择后更新顶部文案并关闭弹层，焦点回到画质按钮；遮罩、取消与 Esc 均可关闭。
+- 登录门禁 → 对齐真实页 `onMounted`：先 `session.restore()`，未登录直接跳转 `login.html?returnTo=%2Fpages%2Fb3-speaking%2Fb3-speaking`，不渲染口语内容；原型以无权限态承载该分支，登录页回跳地址与真实页一致。
+- 文案边界 → 不显示内部错误码、反馈代码、录音 ID、内容版本号或原始状态枚举；时长统一「7 秒 / 0.5 秒」中文写法；Phase 1 的发音评分与角色扮演均明确「不生成 AI 分数」，不把自评写成自动评分。真实页没有页尾出口，本稿不新增「学习报告」「单词复习」入口。

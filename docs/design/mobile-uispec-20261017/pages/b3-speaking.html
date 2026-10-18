@@ -1,0 +1,1377 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>口语与音标 · 语学星移动端 UI 稿</title>
+<link rel="stylesheet" href="../shared.css">
+<script src="../shared.js"></script>
+<style>
+  /* 仅本页布局；组件与 token 全部来自 shared.css */
+  .spk-page { padding: 4px 20px 28px; }
+  .spk-page [hidden] { display: none !important; }
+
+  /* 页头 */
+  .spk-head { margin: 4px 0 16px; }
+  .spk-kicker {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0 0 4px;
+    color: var(--v2-brand);
+    font-size: 13px;
+    line-height: 1.6;
+    font-weight: 600;
+    letter-spacing: .04em;
+  }
+  .spk-kicker .icon { flex: none; }
+  .spk-title {
+    margin: 0;
+    color: var(--v2-ink);
+    font-size: 28px;
+    line-height: 1.4;
+    font-weight: 650;
+    letter-spacing: -.01em;
+  }
+  .spk-intro {
+    margin: 6px 0 0;
+    color: var(--v2-mut);
+    font-size: 14px;
+    line-height: 1.75;
+  }
+
+  /* 顶部：画质 */
+  .spk-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+    min-height: 44px;
+    margin: 0 0 12px;
+  }
+  .spk-quality {
+    gap: 4px;
+    max-width: 150px;
+    min-height: 44px;
+    padding: 0 10px;
+    font-size: 13px;
+    white-space: nowrap;
+  }
+  .spk-quality .icon { flex: none; color: var(--v2-mut); }
+  .spk-quality__label { overflow: hidden; text-overflow: ellipsis; }
+
+  /* 即将开放：真实页为关闭状态，录音上传与发音评分尚未接入 */
+  .spk-closed {
+    display: grid;
+    gap: 8px;
+    margin: 0 0 16px;
+    padding: 18px 16px;
+    border-radius: var(--v2-radius-lg);
+    background: var(--v2-warn-soft);
+    color: var(--v2-warn);
+  }
+  .spk-closed__eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+    font-size: 12px;
+    line-height: 1.6;
+    font-weight: 600;
+    letter-spacing: .04em;
+  }
+  .spk-closed__eyebrow .icon { flex: none; }
+  .spk-closed__title-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .spk-closed__title {
+    margin: 0;
+    color: var(--v2-ink);
+    font-size: 20px;
+    line-height: 1.4;
+    font-weight: 650;
+  }
+  .spk-closed__badge {
+    background: var(--v2-card);
+    color: var(--v2-warn);
+  }
+  .spk-closed__text {
+    margin: 0;
+    color: var(--v2-warn);
+    font-size: 14px;
+    line-height: 1.75;
+  }
+  .spk-closed .btn { justify-self: start; margin-top: 4px; }
+
+  /* B2StatusPanel 等价状态条 */
+  .spk-status {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 0 0 12px;
+    padding: 12px 14px;
+    border: 1px solid var(--v2-line);
+    border-radius: var(--v2-radius-md);
+    background: var(--v2-card);
+  }
+  .spk-status:focus { outline: none; }
+  .spk-status__icon { flex: none; margin-top: 1px; }
+  .spk-status__icon--bad { color: var(--v2-bad); }
+  .spk-status__icon--warn { color: var(--v2-warn); }
+  .spk-status__copy { display: grid; gap: 2px; min-width: 0; flex: 1 1 auto; }
+  .spk-status__title { color: var(--v2-ink); font-size: 14px; line-height: 1.6; font-weight: 600; }
+  .spk-status__message { color: var(--v2-mut); font-size: 13px; line-height: 1.6; overflow-wrap: anywhere; }
+  .spk-status--bad { background: var(--v2-bad-soft); border-color: transparent; }
+  .spk-status--bad .spk-status__title { color: var(--v2-bad); }
+  .spk-status--bad .spk-status__message { color: var(--v2-bad); }
+  .spk-status--warn { background: var(--v2-warn-soft); border-color: transparent; }
+  .spk-status--warn .spk-status__title { color: var(--v2-warn); }
+  .spk-status--warn .spk-status__message { color: var(--v2-warn); }
+  .spk-status .btn { flex: none; white-space: nowrap; }
+
+  /* 卡片排版 */
+  .spk-stack { display: flex; flex-direction: column; gap: 16px; }
+  .spk-card { display: grid; gap: 10px; }
+  .spk-eyebrow {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 0;
+    color: var(--v2-mut);
+    font-size: 12px;
+    line-height: 1.6;
+    font-weight: 600;
+    letter-spacing: .04em;
+  }
+  .spk-eyebrow .icon { flex: none; }
+  .spk-card-title {
+    margin: 0;
+    color: var(--v2-ink);
+    font-size: 16px;
+    line-height: 1.5;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+  }
+  .spk-hint { margin: 0; color: var(--v2-mut); font-size: 13px; line-height: 1.65; overflow-wrap: anywhere; }
+  .spk-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin: 0;
+    color: var(--v2-mut);
+    font-size: 13px;
+    line-height: 1.65;
+    overflow-wrap: anywhere;
+  }
+  .spk-note .icon { flex: none; margin-top: 1px; }
+  .spk-note.is-warn { padding: 10px 12px; border-radius: var(--v2-radius-sm); background: var(--v2-warn-soft); color: var(--v2-warn); }
+  .spk-note.is-bad { padding: 10px 12px; border-radius: var(--v2-radius-sm); background: var(--v2-bad-soft); color: var(--v2-bad); }
+  .spk-note.is-ok { padding: 10px 12px; border-radius: var(--v2-radius-sm); background: var(--v2-ok-soft); color: var(--v2-ok); }
+  .spk-note.is-ok .icon { color: var(--v2-ok); }
+
+  /* 音标目录 */
+  .spk-phoneme-meta {
+    margin: 0;
+    color: var(--v2-brand);
+    font-size: 13px;
+    line-height: 1.6;
+    font-weight: 600;
+    letter-spacing: .03em;
+    font-variant-numeric: tabular-nums;
+  }
+  .spk-phoneme-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 6px;
+    margin-top: 4px;
+  }
+  .spk-phoneme {
+    display: grid;
+    justify-items: center;
+    align-content: center;
+    gap: 2px;
+    min-height: 52px;
+    padding: 5px 4px;
+    border: 1px solid var(--v2-line);
+    border-radius: var(--v2-radius-sm);
+    background: var(--v2-card);
+    color: var(--v2-ink);
+    font-family: inherit;
+    cursor: pointer;
+  }
+  .spk-phoneme:hover { border-color: var(--v2-brand); }
+  .spk-phoneme:focus-visible { outline: none; box-shadow: var(--v2-focus); }
+  .spk-phoneme[aria-pressed="true"] {
+    border-color: var(--v2-brand);
+    background: var(--v2-soft);
+    color: var(--v2-brand);
+  }
+  .spk-phoneme__symbol { font-size: 15px; line-height: 1.4; font-weight: 700; }
+  .spk-phoneme__word {
+    max-width: 100%;
+    color: var(--v2-mut);
+    font-size: 11px;
+    line-height: 1.4;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .spk-phoneme[aria-pressed="true"] .spk-phoneme__word { color: var(--v2-brand); }
+
+  /* 口型示意 */
+  .spk-mouth {
+    display: grid;
+    grid-template-columns: 108px minmax(0, 1fr);
+    gap: 14px;
+    align-items: center;
+    padding: 12px;
+    border-radius: var(--v2-radius-md);
+    background: var(--v2-surface);
+  }
+  .spk-mouth__figure { width: 108px; }
+  .spk-mouth__figure svg { display: block; width: 100%; height: auto; }
+  .spk-mouth__lips { fill: none; stroke: var(--v2-brand); stroke-width: 2.2; }
+  .spk-mouth__opening { fill: var(--v2-soft); stroke: var(--v2-line); stroke-width: 1; }
+  .spk-mouth__tongue { fill: var(--v2-brand2); opacity: .8; }
+  .spk-mouth__teeth { stroke: var(--v2-card); stroke-width: 3; stroke-linecap: round; }
+  .spk-mouth__voice { stroke: var(--v2-ok); stroke-width: 1.8; fill: none; stroke-linecap: round; }
+  .spk-mouth__copy { min-width: 0; }
+  .spk-mouth__symbol { margin: 0; color: var(--v2-ink); font-size: 20px; line-height: 1.3; font-weight: 650; }
+  .spk-mouth__word { color: var(--v2-mut); font-size: 13px; font-weight: 500; }
+  .spk-mouth__desc { margin: 3px 0 0; color: var(--v2-mut); font-size: 13px; line-height: 1.6; overflow-wrap: anywhere; }
+  .spk-mouth__meta {
+    margin: 6px 0 0;
+    color: var(--v2-mut);
+    font-size: 12px;
+    line-height: 1.6;
+    font-variant-numeric: tabular-nums;
+  }
+  .spk-mouth__fallback { margin: 2px 0 0; color: var(--v2-mut); font-size: 12px; line-height: 1.5; }
+
+  /* 示范音频 */
+  .spk-script {
+    margin: 0;
+    padding: 10px 12px;
+    border-radius: var(--v2-radius-md);
+    background: var(--v2-soft);
+    color: var(--v2-ink);
+    font-size: 14px;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+  }
+  .spk-script__label {
+    display: block;
+    margin-bottom: 2px;
+    color: var(--v2-brand);
+    font-size: 12px;
+    line-height: 1.6;
+    font-weight: 600;
+    letter-spacing: .04em;
+  }
+
+  /* 录音 */
+  .spk-copy {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin: 0;
+    color: var(--v2-mut);
+    font-size: 13px;
+    line-height: 1.65;
+    overflow-wrap: anywhere;
+  }
+  .spk-copy .icon { flex: none; margin-top: 1px; }
+  .spk-copy.is-bad { color: var(--v2-bad); }
+  .spk-copy.is-ok { color: var(--v2-ok); }
+  .spk-dot {
+    flex: none;
+    width: 8px;
+    height: 8px;
+    margin-top: 6px;
+    border-radius: 50%;
+    background: var(--v2-bad);
+    animation: spk-pulse 1.2s ease-in-out infinite;
+  }
+  .spk-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin-top: 2px;
+  }
+  .spk-actions .btn { width: 100%; padding: 0 12px; }
+  .spk-actions .btn--block { grid-column: 1 / -1; }
+  .spk-ratings { display: grid; gap: 8px; margin-top: 6px; }
+  .spk-rating-title { margin: 0; color: var(--v2-ink); font-size: 14px; line-height: 1.6; font-weight: 500; }
+  .spk-rating-chips { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+  .chip.spk-rating { justify-content: center; min-height: 44px; padding: 0 8px; white-space: nowrap; }
+  .spk-summary {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin: 0;
+    padding: 10px 12px;
+    border-radius: var(--v2-radius-sm);
+    background: var(--v2-surface);
+    color: var(--v2-ink);
+    font-size: 13px;
+    line-height: 1.65;
+    font-variant-numeric: tabular-nums;
+  }
+  .spk-summary .icon { flex: none; margin-top: 1px; color: var(--v2-ok); }
+
+  /* 角色扮演 */
+  .spk-turn {
+    display: grid;
+    gap: 10px;
+    padding: 14px;
+    border-radius: var(--v2-radius-md);
+    background: var(--v2-surface);
+  }
+  .spk-turn__meta {
+    margin: 0;
+    color: var(--v2-mut);
+    font-size: 12px;
+    line-height: 1.6;
+    font-weight: 600;
+    letter-spacing: .04em;
+    font-variant-numeric: tabular-nums;
+  }
+  .spk-turn__text { margin: 0; color: var(--v2-ink); font-size: 16px; line-height: 1.6; font-weight: 600; overflow-wrap: anywhere; }
+  .spk-turn__req {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+    color: var(--v2-warn);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .spk-turn__req .icon { flex: none; }
+  .spk-choices { display: grid; gap: 8px; }
+  .spk-choice {
+    width: 100%;
+    min-height: 44px;
+    padding: 10px 12px;
+    border: 1px solid var(--v2-line);
+    border-radius: var(--v2-radius-md);
+    background: var(--v2-card);
+    color: var(--v2-ink);
+    font-family: inherit;
+    font-size: 14px;
+    line-height: 1.6;
+    text-align: left;
+    cursor: pointer;
+  }
+  .spk-choice:hover { border-color: var(--v2-brand); }
+  .spk-choice:focus-visible { outline: none; box-shadow: var(--v2-focus); }
+  .spk-choice:disabled { background: var(--v2-surface); color: var(--v2-mut); border-style: dashed; cursor: not-allowed; }
+
+  /* 页面状态 */
+  .spk-state .state-block { padding-top: 24px; }
+  .spk-state .state-block__actions { flex-wrap: wrap; justify-content: center; }
+  .spk-loading-status {
+    margin: 0 0 16px;
+    color: var(--v2-mut);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  .spk-skeleton-card { display: grid; gap: 12px; padding: 20px; }
+  .spk-skeleton-card .skeleton { width: 100%; }
+
+  /* 弹层 */
+  .spk-sheet__item { justify-content: space-between; }
+  .spk-sheet__check { color: var(--v2-brand); display: inline-flex; visibility: hidden; }
+  .spk-sheet__item[aria-pressed="true"] .spk-sheet__check { visibility: visible; }
+  .spk-sheet__item[aria-pressed="true"] { color: var(--v2-brand); font-weight: 600; }
+
+  /* 关闭说明只属于正常态；加载 / 空 / 错误 / 无权限 / 离线页不叠加 */
+  html:not([data-screen-state="normal"]) .spk-closed { display: none; }
+
+  @keyframes spk-pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: .45; transform: scale(.85); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .spk-dot { animation: none; }
+    .progress__fill { transition: none; }
+  }
+
+  .interaction-notes code { overflow-wrap: anywhere; }
+</style>
+</head>
+<body>
+
+<div class="phone-stage">
+  <div data-ui="toolbar" data-states="normal,loading,empty,error,forbidden,offline"></div>
+
+  <div class="phone phone--scroll" id="phone">
+    <div data-ui="statusbar"></div>
+    <div data-ui="navbar" data-title="口语与音标" data-back="home.html" data-action="<a class='hit-44' href='settings.html' aria-label='设置'><span data-icon='settings' data-icon-size='22'></span></a>"></div>
+
+    <div class="phone__scroll">
+      <div class="spk-page">
+
+        <header class="spk-head">
+          <p class="spk-kicker"><span data-icon="mic" data-icon-size="16"></span>自信开口</p>
+          <h1 class="spk-title">开口，就是新的开始。</h1>
+          <p class="spk-intro">学习发音、录下声音，在回听中找到自己的进步。</p>
+        </header>
+
+        <div class="spk-toolbar">
+          <button type="button" class="chip spk-quality" data-open-overlay="quality-sheet" aria-haspopup="dialog" aria-label="画质：高清">
+            <span>画质 · <span class="spk-quality__label" id="quality-label">高清</span></span>
+            <span data-icon="chevron-down" data-icon-size="14"></span>
+          </button>
+        </div>
+
+        <!-- 关闭说明：真实页当前为「即将开放」，录音上传与发音评分尚未接入 -->
+        <section class="spk-closed" id="closed-card" role="status">
+          <p class="spk-closed__eyebrow"><span data-icon="lock" data-icon-size="14"></span>口语</p>
+          <div class="spk-closed__title-row">
+            <h2 class="spk-closed__title">跟读练习</h2>
+            <span class="badge spk-closed__badge">即将开放</span>
+          </div>
+          <p class="spk-closed__text">跟读需要录音上传和发音评分服务，目前尚未接入，无法给出真实评分。</p>
+          <a class="btn btn--secondary btn--sm" href="today.html">回到可用学习</a>
+        </section>
+
+        <!-- 正常态：状态条 + 音标 / 示范音频 / 录音自评 / 角色扮演 -->
+        <div data-state-block="normal" class="spk-state">
+
+          <!-- B2StatusPanel 等价状态条：服务端状态与下一步 -->
+          <div class="spk-status" id="status-strip" role="status" tabindex="-1">
+            <span class="spk-status__icon" id="status-icon" hidden></span>
+            <span class="spk-status__copy">
+              <span class="spk-status__title" id="status-title">服务状态</span>
+              <span class="spk-status__message" id="status-message">掌握与判分以服务端结果为准。</span>
+            </span>
+            <button type="button" class="btn btn--secondary btn--sm" id="status-retry" hidden>
+              <span class="btn__spinner" aria-hidden="true"></span><span class="btn__label">重试</span>
+            </button>
+          </div>
+
+          <div class="spk-stack">
+
+            <!-- 音标目录（模板分支：服务端返回完整 48 项后出现） -->
+            <section class="card spk-card" id="phoneme-card" aria-labelledby="phoneme-title" hidden>
+              <p class="spk-eyebrow"><span data-icon="grid" data-icon-size="14"></span>音标目录</p>
+              <h2 class="spk-card-title" id="phoneme-title">选择一个音标</h2>
+              <p class="spk-phoneme-meta" id="phoneme-meta">共 48 个 · 点选后查看口型与示例词</p>
+              <div class="spk-phoneme-grid" id="phoneme-grid" role="group" aria-label="英语音标目录"></div>
+            </section>
+
+            <!-- 示范音频 -->
+            <section class="card spk-card" id="demo-card" aria-labelledby="demo-title" hidden>
+              <p class="spk-eyebrow"><span data-icon="volume" data-icon-size="14"></span>示范音频</p>
+              <h2 class="spk-card-title" id="demo-title">跟读前先听一遍示范</h2>
+              <p class="spk-script"><span class="spk-script__label">示范句</span>The coffee is hot, and the seat is warm.</p>
+              <button type="button" class="btn btn--secondary btn--block" id="demo-play">
+                <span class="btn__spinner" aria-hidden="true"></span><span class="btn__label">播放示范音频</span>
+              </button>
+              <p class="spk-note" id="demo-message" role="status" aria-live="polite"></p>
+            </section>
+
+            <!-- 本地录音与自评 -->
+            <section class="card spk-card" id="recorder-card" aria-labelledby="recorder-title" hidden>
+              <p class="spk-eyebrow"><span data-icon="target" data-icon-size="14"></span>本地录音</p>
+              <h2 class="spk-card-title" id="recorder-title">录下发音并自评</h2>
+
+              <div class="spk-mouth">
+                <div class="spk-mouth__figure" id="mouth-figure" aria-hidden="true"></div>
+                <div class="spk-mouth__copy">
+                  <p class="spk-mouth__symbol"><span id="mouth-symbol">/iː/</span> <span class="spk-mouth__word" id="mouth-word">see</span></p>
+                  <p class="spk-mouth__desc" id="mouth-desc">舌位高而靠前，嘴角展开。</p>
+                  <p class="spk-mouth__meta" id="mouth-meta">下颌 24 · 舌高 82 · 唇圆 18 · 声带振动</p>
+                  <p class="spk-mouth__fallback">2D 口型示意 · 不加载 3D 解剖</p>
+                </div>
+              </div>
+
+              <p class="spk-copy" id="recorder-copy" role="status" aria-live="polite"></p>
+
+              <div class="spk-actions">
+                <button type="button" class="btn btn--primary btn--block" id="record-btn">
+                  <span class="btn__spinner" aria-hidden="true"></span><span class="btn__label">开始录音</span>
+                </button>
+                <button type="button" class="btn btn--secondary" id="playback-btn" disabled>
+                  <span class="btn__spinner" aria-hidden="true"></span><span class="btn__label">安全回放</span>
+                </button>
+                <button type="button" class="btn btn--secondary" id="register-btn" disabled>
+                  <span class="btn__spinner" aria-hidden="true"></span><span class="btn__label">加密并登记</span>
+                </button>
+                <button type="button" class="btn btn--danger btn--block" id="delete-btn" data-open-overlay="delete-dialog" aria-haspopup="dialog" hidden>
+                  <span class="btn__label">删除录音</span>
+                </button>
+              </div>
+
+              <div class="spk-ratings">
+                <p class="spk-rating-title" id="rating-title">完成后自评</p>
+                <div class="spk-rating-chips" role="group" aria-labelledby="rating-title">
+                  <button type="button" class="chip spk-rating" data-rating="NEEDS_PRACTICE" aria-pressed="false">需要练习</button>
+                  <button type="button" class="chip spk-rating" data-rating="BASIC" aria-pressed="false">基本准确</button>
+                  <button type="button" class="chip spk-rating" data-rating="FLUENT" aria-pressed="false">比较流利</button>
+                </div>
+              </div>
+
+              <p class="spk-summary" id="recording-summary" role="status" hidden>
+                <span data-icon="check-circle" data-icon-size="16"></span>
+                <span id="recording-summary-text"></span>
+              </p>
+
+              <p class="spk-hint">录音在本机加密；服务端只登记哈希与生命周期元数据，不做发音评分。</p>
+            </section>
+
+            <!-- 预编角色扮演 -->
+            <section class="card spk-card" id="roleplay-card" aria-labelledby="roleplay-title" hidden>
+              <p class="spk-eyebrow"><span data-icon="users" data-icon-size="14"></span>角色扮演</p>
+              <h2 class="spk-card-title" id="roleplay-title">咖啡店场景，分回合推进</h2>
+              <p class="spk-hint">预编脚本，不接入生成式 AI；每回合只记录选择与录音。</p>
+
+              <button type="button" class="btn btn--primary btn--block" id="roleplay-btn">
+                <span class="btn__spinner" aria-hidden="true"></span><span class="btn__label">开始角色扮演</span>
+              </button>
+
+              <div class="spk-turn" id="roleplay-turn" hidden>
+                <p class="spk-turn__meta" id="roleplay-meta"></p>
+                <p class="spk-turn__text" id="roleplay-text"></p>
+                <p class="spk-turn__req" id="roleplay-req" hidden>
+                  <span data-icon="mic" data-icon-size="14"></span><span>本回合需要先登记一次真实录音。</span>
+                </p>
+                <div class="spk-choices" id="roleplay-choices"></div>
+              </div>
+
+              <p class="spk-note" id="roleplay-message" role="status" aria-live="polite" hidden></p>
+            </section>
+
+          </div>
+        </div>
+
+        <!-- 加载：读取音标目录与示范音频 -->
+        <div data-state-block="loading" class="spk-state" aria-busy="true">
+          <p class="spk-loading-status" role="status" aria-live="polite">正在读取服务端数据</p>
+          <div class="card spk-skeleton-card" aria-hidden="true">
+            <div class="skeleton skeleton-line skeleton-line--sm" style="width: 28%"></div>
+            <div class="skeleton skeleton-line" style="width: 56%"></div>
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px;">
+              <div class="skeleton skeleton-block" style="height: 52px"></div>
+              <div class="skeleton skeleton-block" style="height: 52px"></div>
+              <div class="skeleton skeleton-block" style="height: 52px"></div>
+              <div class="skeleton skeleton-block" style="height: 52px"></div>
+              <div class="skeleton skeleton-block" style="height: 52px"></div>
+              <div class="skeleton skeleton-block" style="height: 52px"></div>
+              <div class="skeleton skeleton-block" style="height: 52px"></div>
+              <div class="skeleton skeleton-block" style="height: 52px"></div>
+            </div>
+          </div>
+          <div class="card spk-skeleton-card" style="margin-top: 16px" aria-hidden="true">
+            <div class="skeleton skeleton-line skeleton-line--sm" style="width: 30%"></div>
+            <div class="skeleton skeleton-block" style="height: 24px; width: 70%"></div>
+            <div class="skeleton skeleton-block" style="height: 96px"></div>
+            <div class="skeleton skeleton-block" style="height: 48px"></div>
+          </div>
+        </div>
+
+        <!-- 空：音标目录不完整 -->
+        <div data-state-block="empty" class="spk-state">
+          <div class="state-block" role="status">
+            <span class="state-block__icon" data-icon="mic" data-icon-size="24"></span>
+            <span class="state-block__title">暂时没有可用的音标内容</span>
+            <span class="state-block__text">音标目录未返回完整的 48 项内容。</span>
+            <span class="state-block__actions">
+              <button type="button" class="btn btn--primary btn--sm" data-retry-state="normal" data-retry-label="正在读取…">
+                <span class="btn__spinner" aria-hidden="true"></span><span class="btn__label">重新读取</span>
+              </button>
+            </span>
+          </div>
+        </div>
+
+        <!-- 错误：音标服务不可用 -->
+        <div data-state-block="error" class="spk-state">
+          <div class="state-block" role="alert">
+            <span class="state-block__icon state-block__icon--bad" data-icon="alert-triangle" data-icon-size="24"></span>
+            <span class="state-block__title">服务端暂时不可用</span>
+            <span class="state-block__text">音标服务暂时不可用，未使用本地假数据。</span>
+            <span class="state-block__actions">
+              <button type="button" class="btn btn--primary btn--sm" data-retry-state="normal" data-retry-label="正在重试…">
+                <span class="btn__spinner" aria-hidden="true"></span><span class="btn__label">重试</span>
+              </button>
+            </span>
+          </div>
+        </div>
+
+        <!-- 无权限：未登录访问口语页 -->
+        <div data-state-block="forbidden" class="spk-state">
+          <div class="state-block" role="alert">
+            <span class="state-block__icon state-block__icon--warn" data-icon="lock" data-icon-size="24"></span>
+            <span class="state-block__title">当前会话没有访问权限</span>
+            <span class="state-block__text">登录后可以继续口语练习。</span>
+            <span class="state-block__actions">
+              <a class="btn btn--primary btn--sm" href="login.html?returnTo=%2Fpages%2Fb3-speaking%2Fb3-speaking">去登录</a>
+            </span>
+          </div>
+        </div>
+
+        <!-- 离线：录音与自评暂时无法提交 -->
+        <div data-state-block="offline" class="spk-state">
+          <div class="state-block" role="alert">
+            <span class="state-block__icon state-block__icon--warn" data-icon="globe" data-icon-size="24"></span>
+            <span class="state-block__title">网络暂时不可用</span>
+            <span class="state-block__text">断点和待同步事件仍保留；待同步不等于已掌握。</span>
+            <span class="state-block__actions">
+              <button type="button" class="btn btn--primary btn--sm" data-retry-state="normal" data-retry-label="正在重试…">
+                <span class="btn__spinner" aria-hidden="true"></span><span class="btn__label">重试</span>
+              </button>
+            </span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="toast-host" role="status" aria-live="polite"></div>
+
+    <!-- 画质弹层（对齐 B2StatusPanel：极致 / 高清 / 标准 / 省电） -->
+    <div class="overlay-layer" id="quality-sheet" aria-hidden="true">
+      <div class="overlay__scrim" data-close></div>
+      <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="quality-title">
+        <div class="sheet__handle"></div>
+        <p class="sheet__title" id="quality-title">画质</p>
+        <p class="sheet__sub">选择适合当前设备的画质。</p>
+        <div class="sheet__list" id="quality-list"></div>
+        <button type="button" class="sheet__cancel" data-close>取消</button>
+      </div>
+    </div>
+
+    <!-- 删除录音确认 -->
+    <div class="overlay-layer" id="delete-dialog" aria-hidden="true">
+      <div class="overlay__scrim" data-close></div>
+      <div class="dialog" role="alertdialog" aria-modal="true" aria-labelledby="delete-title" aria-describedby="delete-text">
+        <h2 class="dialog__title" id="delete-title">删除这段录音？</h2>
+        <p class="dialog__text" id="delete-text">录音和本机加密文件会一并清理，学习记录不受影响。</p>
+        <div class="dialog__actions">
+          <button type="button" class="btn btn--secondary" data-close>取消</button>
+          <button type="button" class="btn btn--danger" id="delete-confirm" data-dialog-confirm="录音已删除" data-confirm-kind="ok">删除</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="interaction-notes">
+  <h2>交互说明（b3-speaking）</h2>
+  <ul>
+    <li>主题与直达参数 → 工具条「浅色 / 深色」切换整页 token 并写入 <code>localStorage['uispec-theme']</code>；<code>?theme=light|dark</code> 固定主题；<code>?state=normal|loading|empty|error|forbidden|offline</code> 直达页面状态；<code>?mock=ready|no-audio|revoked|degraded|recording|recorded|saved|roleplay|roleplay-done|register-error|record-error</code> 演示模板分支与操作结果。截图：<code>b3-speaking-{light,dark}.png</code> 与 <code>b3-speaking-{loading,empty,error,forbidden,offline,ready,no-audio,revoked,degraded,recording,recorded,saved,roleplay,roleplay-done,register-error,record-error}-{light,dark}.png</code>。</li>
+    <li>页面状态 → 工具条「正常 / 加载 / 空 / 错误 / 无权限 / 离线」：加载为「正在读取服务端数据」+ 音标与口型骨架屏（<code>aria-busy</code>，取 <code>B2StatusPanel</code> 的 loading 标题）；空为「暂时没有可用的音标内容 / 音标目录未返回完整的 48 项内容。」+「重新读取」（对齐真实 <code>load</code> 的 48 项校验）；错误为「服务端暂时不可用 / 音标服务暂时不可用，未使用本地假数据。」+「重试」；无权限为「当前会话没有访问权限 / 登录后可以继续口语练习。」+ 单个「去登录」→ <code>login.html?returnTo=%2Fpages%2Fb3-speaking%2Fb3-speaking</code>（不提供重试）；离线为「网络暂时不可用 / 断点和待同步事件仍保留；待同步不等于已掌握。」（<code>B2StatusPanel</code> 默认文案）+「重试」。切换离开正常态会关闭画质与删除弹层、停止模拟录音与所有计时并恢复按钮。</li>
+    <li>状态恢复 → 空、错误与离线「重新读取 / 重试」转圈 → 1.1s 后回到正常态，不弹成功 Toast；无权限只保留「去登录」。</li>
+    <li>页头与导航 → 导航栏「口语与音标」（<code>pages.json</code> 标题）+ 返回（<code>backMobile</code>：返回上一页；无历史时回 <code>home.html</code>，原型 <code>data-back="home.html"</code>），右上角设置 → <code>settings.html</code>；页内 kicker「自信开口」（<code>ZH_KICKERS</code>）、标题「开口，就是新的开始。」、说明「学习发音、录下声音，在回听中找到自己的进步。」（<code>pages.b3-speaking</code>）；不显示底部 TabBar（TabBar「练习」指向 <code>b2-practice.html</code>）。</li>
+    <li>关闭说明 → 对齐真实页 <code>data-closed-practice</code>：锁图标 +「口语」+「跟读练习」+「即将开放」徽标 +「跟读需要录音上传和发音评分服务，目前尚未接入，无法给出真实评分。」+「回到可用学习」→ <code>today.html</code>；默认打开即显示关闭说明与状态条，带任一 <code>?mock=</code> 打开时隐藏关闭说明并渲染模板分支。</li>
+    <li>状态条 → 等价 <code>B2StatusPanel</code>：idle / ready 为「服务状态 / 掌握与判分以服务端结果为准。」，loading 为「正在读取服务端数据」，empty 为「当前没有可用内容 / 没有使用本地样例填充页面。」，error 为「服务端暂时不可用」，offline 为「网络暂时不可用 / 断点和待同步事件仍保留；待同步不等于已掌握。」；error 与 offline 同时出现「重试」。录音失败的 error 分支显示「录音失败，未生成虚假的评测结果。」（真实页 <code>onError</code> 文案），<code>?mock=record-error</code> 打开后点「开始录音」即可触发。</li>
+    <li>音标目录 → 顶部小字「48 / 48 个音标」；四列可点按钮展示 48 个音标，选中项 brand 描边 + soft 底 + <code>aria-pressed</code>，同时更新口型卡片的音标、示例词、唇形说明与「下颌 / 舌高 / 唇圆 / 声带」数值；48 项固定为可滚动页面内容，不做弹层或二级页。</li>
+    <li>口型示意 → 录音卡内 2D 口型图按所选音标的下颌开合、舌位高低与唇圆度变化，右侧同时用文字给出同样的数值与「声带振动 / 清音」，不只依赖图形或颜色；明确标注「2D 口型示意 · 不加载 3D 解剖」。</li>
+    <li>示范音频 → 有短时授权时显示「播放示范音频」，点击转圈「正在播放…」→ 1.5s 后显示 ok 色「示范音频播放完毕，可以开始跟读。」；<code>?mock=no-audio</code> 隐藏播放按钮并显示 warn 色「示范音频当前没有可播放授权地址；已降级为文本脚本和 2D 口型。」；<code>?mock=revoked</code> 为「示范音频权益已撤销；已降级为文本脚本和 2D 口型。」；<code>?mock=degraded</code> 保留按钮，点击后显示「示范音频当前无法播放；已降级为文本脚本和 2D 口型。」（对齐真实页 <code>playDemoAudio</code> catch）。示范句始终以文本给出，不伪造音频状态。</li>
+    <li>录音 → 「开始录音」进入录音态：按钮变「停止录音」、文案显示红点 +「录音进行中… 00:07 / 最长 60 秒」，计时到 60 秒自动停止；停止后按真实返回结果给出「录音文件已返回，点击“加密并登记”前会先计算真实 SHA-256。」，并启用「加密并登记」；录音中「安全回放」「加密并登记」「删除录音」为真实禁用态。<code>?mock=recording</code> 直接以录音中状态打开，<code>?mock=recorded</code> 以已录音待登记状态打开。</li>
+    <li>加密并登记 → 已录音且时长不少于 500ms 时点击，按钮转圈「正在加密…」→ 0.9s 后显示 ok 色「录音已由 Keychain/Keystore 适配器加密；服务端只登记哈希和生命周期元数据。」，出现「已登记 · 时长 7 秒 · 自评：未选择」与「删除录音」；时长不足时显示 warn 色「请先完成至少 500ms 的真实录音。」；<code>?mock=register-error</code> 以 bad 色「录音加密或登记失败，未标记为成功。」打开，录音仍保留，可再次登记并成功。</li>
+    <li>安全回放 / 自评 → 「安全回放」仅在已登记后可用，点击转圈「正在解密…」→ 0.7s 后显示 ok 色「安全回放已开始；音频只在本机内存中解密。」；三个自评 chip 单选（需要练习 / 基本准确 / 比较流利）；未登记时点击显示 warn 色「请先登记一次真实录音，再提交自评。」，登记后点击保存并显示「自评已保存：基本准确。Phase 1 不生成 AI 分数。」。<code>?mock=saved</code> 以已登记 + 基本准确打开。</li>
+    <li>删除录音 → 已登记时出现「删除录音」→ 打开确认对话框「删除这段录音？/ 录音和本机加密文件会一并清理，学习记录不受影响。」（危险按钮 bad 色）；取消 / 遮罩 / Esc 关闭，确认后清理已登记状态、回放与删除按钮、自评与摘要，并 Toast「录音已删除」。</li>
+    <li>角色扮演 → 「开始角色扮演」转圈「正在打开…」→ 0.9s 后显示「预编角色扮演已打开；分支和回合由服务端脚本控制。」与第 1 回合（回合 1 / 共 4 · 店员）；每次选择后提示「回合已保存，继续下一步。」并进入下一回合；第 2 回合带「本回合需要先登记一次真实录音。」，未登记时选择显示 warn 色「当前回合需要先完成并登记真实录音。」；第 4 回合后隐藏回合卡，显示 ok 色「角色扮演完成；Phase 1 只记录回合和自评，不生成 AI 分数。」，开始按钮变为「重新开始角色扮演」。选择按钮只显示中文意图，不显示内部 choiceCode。<code>?mock=roleplay</code> 直接打开第 2 回合，<code>?mock=roleplay-done</code> 直接打开完成状态。</li>
+    <li>画质 → 点击「画质 · 高清」打开底部弹层，四档取 <code>B2StatusPanel</code> 的「极致 / 高清 / 标准 / 省电」，当前档带 brand 对勾与 <code>aria-pressed</code>；选择后更新顶部文案并关闭弹层，焦点回到画质按钮；遮罩、取消与 Esc 均可关闭。</li>
+    <li>登录门禁 → 对齐真实页 <code>onMounted</code>：先 <code>session.restore()</code>，未登录直接跳转 <code>login.html?returnTo=%2Fpages%2Fb3-speaking%2Fb3-speaking</code>，不渲染口语内容；原型以无权限态承载该分支，登录页回跳地址与真实页一致。</li>
+    <li>文案边界 → 不显示内部错误码、反馈代码、录音 ID、内容版本号或原始状态枚举；时长统一「7 秒 / 0.5 秒」中文写法；Phase 1 的发音评分与角色扮演均明确「不生成 AI 分数」，不把自评写成自动评分。真实页没有页尾出口，本稿不新增「学习报告」「单词复习」入口。</li>
+  </ul>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var params = new URLSearchParams(location.search);
+  function q(name) {
+    var value = params.get(name) || '';
+    var cut = value.indexOf('?');
+    return cut >= 0 ? value.slice(0, cut) : value;
+  }
+  function themedParam() {
+    var match = /[?&]theme=(light|dark)/g;
+    var found = null;
+    var item;
+    while ((item = match.exec(location.search))) found = item[1];
+    return found;
+  }
+  var THEME_PARAM = themedParam();
+  if (THEME_PARAM) UISpec.setTheme(THEME_PARAM);
+
+  var MOCK = q('mock');
+  var STATE_PARAM = q('state');
+  var VALID_STATES = ['normal', 'loading', 'empty', 'error', 'forbidden', 'offline'];
+  var INITIAL_STATE = VALID_STATES.indexOf(STATE_PARAM) >= 0 ? STATE_PARAM : 'normal';
+
+  /* 对齐 apps/mobile/src/pages/b3-speaking/b3-speaking.vue 的模板分支：
+   * 音标目录 → 示范音频 → 本地录音与自评 → 预编角色扮演。
+   * 真实页当前为「即将开放」关闭态，onMounted 不发起真实读取。 */
+
+  function P(symbol, word, group, jaw, tongue, lip, voiced, desc) {
+    return { symbol: symbol, word: word, group: group, jaw: jaw, tongue: tongue, lip: lip, voiced: voiced, desc: desc };
+  }
+
+  var PHONEMES = [
+    P('iː', 'see', '单元音', 24, 82, 18, true, '舌位高而靠前，嘴角展开。'),
+    P('ɪ', 'sit', '单元音', 30, 66, 22, true, '舌位略低，发音短促。'),
+    P('e', 'bed', '单元音', 42, 54, 26, true, '舌位中前，开口适中。'),
+    P('æ', 'cat', '单元音', 58, 42, 30, true, '开口较大，舌位低而靠前。'),
+    P('ɑː', 'car', '单元音', 62, 20, 34, true, '开口大，舌位低而后。'),
+    P('ɒ', 'hot', '单元音', 56, 24, 58, true, '双唇略圆，舌位低而后。'),
+    P('ɔː', 'door', '单元音', 48, 28, 66, true, '双唇收圆，声音拉长。'),
+    P('ʊ', 'book', '单元音', 32, 58, 54, true, '双唇稍圆，发音短。'),
+    P('uː', 'food', '单元音', 28, 70, 76, true, '双唇收紧前突，声音拉长。'),
+    P('ʌ', 'cup', '单元音', 48, 44, 30, true, '口型放松，舌位居中。'),
+    P('ɜː', 'bird', '单元音', 40, 50, 32, true, '舌位中央，双唇自然。'),
+    P('ə', 'about', '单元音', 36, 46, 28, true, '最放松的弱读音，轻而短。'),
+    P('eɪ', 'day', '双元音', 40, 56, 26, true, '从 e 滑向 ɪ，口型收窄。'),
+    P('aɪ', 'time', '双元音', 58, 34, 30, true, '从 a 滑向 ɪ，开口由大变小。'),
+    P('ɔɪ', 'boy', '双元音', 50, 32, 60, true, '从 ɔ 滑向 ɪ，先圆后展。'),
+    P('aʊ', 'now', '双元音', 60, 30, 44, true, '从 a 滑向 ʊ，双唇渐圆。'),
+    P('əʊ', 'go', '双元音', 42, 46, 52, true, '从 ə 滑向 ʊ，双唇收圆。'),
+    P('ɪə', 'near', '双元音', 36, 60, 24, true, '从 ɪ 滑向 ə，尾音放松。'),
+    P('eə', 'hair', '双元音', 44, 52, 26, true, '从 e 滑向 ə，口型自然。'),
+    P('ʊə', 'tour', '双元音', 34, 56, 50, true, '从 ʊ 滑向 ə，唇形放松。'),
+    P('p', 'pen', '辅音', 26, 30, 30, false, '双唇闭合后送气，清辅音。'),
+    P('b', 'bag', '辅音', 26, 30, 30, true, '双唇闭合后放开，声带振动。'),
+    P('t', 'tea', '辅音', 30, 34, 26, false, '舌尖抵上齿龈后送气。'),
+    P('d', 'dog', '辅音', 30, 34, 26, true, '舌尖抵上齿龈后放开，声带振动。'),
+    P('k', 'key', '辅音', 34, 24, 24, false, '舌根抵软腭后送气。'),
+    P('g', 'go', '辅音', 34, 24, 24, true, '舌根抵软腭后放开，声带振动。'),
+    P('f', 'fish', '辅音', 24, 28, 24, false, '上齿轻触下唇，气流摩擦。'),
+    P('v', 'van', '辅音', 24, 28, 24, true, '上齿轻触下唇，声带振动。'),
+    P('θ', 'think', '辅音', 28, 30, 24, false, '舌尖轻触上齿，气流摩擦。'),
+    P('ð', 'this', '辅音', 28, 30, 24, true, '舌尖轻触上齿，声带振动。'),
+    P('s', 'sun', '辅音', 26, 34, 24, false, '舌尖靠近齿龈，气流细而急。'),
+    P('z', 'zoo', '辅音', 26, 34, 24, true, '舌尖靠近齿龈，声带振动。'),
+    P('ʃ', 'shoe', '辅音', 30, 40, 50, false, '舌面抬起，双唇略圆。'),
+    P('ʒ', 'measure', '辅音', 30, 40, 50, true, '舌面抬起，双唇略圆，声带振动。'),
+    P('h', 'hat', '辅音', 44, 38, 26, false, '气流从喉部轻轻送出。'),
+    P('tʃ', 'chair', '辅音', 30, 38, 48, false, '先阻塞再摩擦，清辅音。'),
+    P('dʒ', 'job', '辅音', 30, 38, 48, true, '先阻塞再摩擦，声带振动。'),
+    P('m', 'man', '辅音', 20, 26, 26, true, '双唇闭合，气流从鼻腔通过。'),
+    P('n', 'nose', '辅音', 28, 34, 26, true, '舌尖抵齿龈，气流从鼻腔通过。'),
+    P('ŋ', 'sing', '辅音', 32, 22, 26, true, '舌根抵软腭，气流从鼻腔通过。'),
+    P('l', 'leg', '辅音', 32, 46, 26, true, '舌尖抵齿龈，气流从舌侧通过。'),
+    P('r', 'red', '辅音', 32, 42, 44, true, '舌尖上卷但不触齿龈。'),
+    P('j', 'yes', '辅音', 30, 60, 24, true, '舌面接近硬腭，快速滑开。'),
+    P('w', 'we', '辅音', 30, 56, 70, true, '双唇收圆后快速放开。'),
+    P('tr', 'tree', '辅音', 30, 38, 40, false, '舌尖后卷，t 与 r 快速连读。'),
+    P('dr', 'dream', '辅音', 30, 38, 40, true, '舌尖后卷，声带振动。'),
+    P('ts', 'cats', '辅音', 30, 36, 26, false, '舌尖抵齿龈，t 与 s 快速连读。'),
+    P('dz', 'beds', '辅音', 30, 36, 26, true, '舌尖抵齿龈，声带振动。')
+  ];
+
+  var ROLEPLAY = {
+    turns: [
+      { speaker: '店员', text: 'Hi! What can I get for you today?', recordingRequired: false, choices: [
+        { code: 'ORDER_LATTE', label: '点一杯拿铁' },
+        { code: 'ASK_RECOMMEND', label: '问问今天的推荐' },
+        { code: 'JUST_WATER', label: '只要一杯水' }
+      ] },
+      { speaker: '店员', text: 'Sure. Would you like it hot or iced?', recordingRequired: true, choices: [
+        { code: 'HOT', label: '要热的' },
+        { code: 'ICED', label: '要冰的' }
+      ] },
+      { speaker: '店员', text: 'Anything else? A pastry, maybe?', recordingRequired: false, choices: [
+        { code: 'NO_THANKS', label: '不用了，谢谢' },
+        { code: 'ADD_CROISSANT', label: '加一个可颂' }
+      ] },
+      { speaker: '店员', text: 'Great. That’ll be four dollars. Paying by card?', recordingRequired: false, choices: [
+        { code: 'CARD', label: '刷卡' },
+        { code: 'CASH', label: '现金' }
+      ] }
+    ]
+  };
+
+  var QUALITY = [
+    { id: 'ultra', label: '极致' },
+    { id: 'high', label: '高清' },
+    { id: 'medium', label: '标准' },
+    { id: 'performance', label: '省电' }
+  ];
+
+  var RATING_LABELS = {
+    NEEDS_PRACTICE: '需要练习',
+    BASIC: '基本准确',
+    FLUENT: '比较流利'
+  };
+
+  var OPEN_MOCKS = ['ready', 'no-audio', 'revoked', 'degraded', 'recording', 'recorded', 'saved', 'roleplay', 'roleplay-done', 'register-error', 'record-error'];
+
+  /* ---------- 元素 ---------- */
+  var closedCard = document.getElementById('closed-card');
+  var phonemeCard = document.getElementById('phoneme-card');
+  var phonemeGrid = document.getElementById('phoneme-grid');
+  var phonemeMeta = document.getElementById('phoneme-meta');
+  var demoCard = document.getElementById('demo-card');
+  var demoPlay = document.getElementById('demo-play');
+  var demoMessage = document.getElementById('demo-message');
+  var recorderCard = document.getElementById('recorder-card');
+  var mouthFigure = document.getElementById('mouth-figure');
+  var mouthSymbol = document.getElementById('mouth-symbol');
+  var mouthWord = document.getElementById('mouth-word');
+  var mouthDesc = document.getElementById('mouth-desc');
+  var mouthMeta = document.getElementById('mouth-meta');
+  var recorderCopy = document.getElementById('recorder-copy');
+  var recordBtn = document.getElementById('record-btn');
+  var playbackBtn = document.getElementById('playback-btn');
+  var registerBtn = document.getElementById('register-btn');
+  var deleteBtn = document.getElementById('delete-btn');
+  var recordingSummary = document.getElementById('recording-summary');
+  var recordingSummaryText = document.getElementById('recording-summary-text');
+  var ratingButtons = Array.prototype.slice.call(document.querySelectorAll('[data-rating]'));
+  var roleplayCard = document.getElementById('roleplay-card');
+  var roleplayBtn = document.getElementById('roleplay-btn');
+  var roleplayTurn = document.getElementById('roleplay-turn');
+  var roleplayMeta = document.getElementById('roleplay-meta');
+  var roleplayText = document.getElementById('roleplay-text');
+  var roleplayReq = document.getElementById('roleplay-req');
+  var roleplayChoices = document.getElementById('roleplay-choices');
+  var roleplayMessage = document.getElementById('roleplay-message');
+  var statusStrip = document.getElementById('status-strip');
+  var statusIcon = document.getElementById('status-icon');
+  var statusTitle = document.getElementById('status-title');
+  var statusMessage = document.getElementById('status-message');
+  var statusRetry = document.getElementById('status-retry');
+  var qualityLabel = document.getElementById('quality-label');
+  var qualityButton = document.querySelector('.spk-quality');
+  var qualityList = document.getElementById('quality-list');
+  var deleteConfirm = document.getElementById('delete-confirm');
+
+  /* ---------- 状态 ---------- */
+  var state = {
+    open: OPEN_MOCKS.indexOf(MOCK) >= 0,
+    status: OPEN_MOCKS.indexOf(MOCK) >= 0 ? 'ready' : 'idle',
+    message: null,
+    quality: 'high',
+    selected: 0,
+    demo: 'authorized',
+    demoMessage: '示范音频已获得短时授权。',
+    demoKind: '',
+    recording: false,
+    elapsed: 0,
+    localPath: null,
+    localDuration: 0,
+    encrypted: false,
+    saved: false,
+    rating: '',
+    recorderMessage: '',
+    recorderKind: '',
+    roleplay: null,
+    roleplayMessage: '',
+    roleplayKind: '',
+    busy: ''
+  };
+
+  if (MOCK === 'no-audio') {
+    state.demo = 'none';
+    state.demoMessage = '示范音频当前没有可播放授权地址；已降级为文本脚本和 2D 口型。';
+    state.demoKind = 'warn';
+  }
+  if (MOCK === 'revoked') {
+    state.demo = 'revoked';
+    state.demoMessage = '示范音频权益已撤销；已降级为文本脚本和 2D 口型。';
+    state.demoKind = 'warn';
+  }
+  if (MOCK === 'degraded') {
+    state.demo = 'failed';
+    state.demoMessage = '示范音频当前无法播放；已降级为文本脚本和 2D 口型。';
+    state.demoKind = 'warn';
+  }
+  if (MOCK === 'recording') {
+    state.recording = true;
+    state.elapsed = 7000;
+  }
+  if (MOCK === 'recorded' || MOCK === 'register-error') {
+    state.localPath = 'local';
+    state.localDuration = 7400;
+  }
+  if (MOCK === 'saved' || MOCK === 'roleplay' || MOCK === 'roleplay-done') {
+    state.localPath = 'local';
+    state.localDuration = 7400;
+    state.encrypted = true;
+    state.saved = true;
+    state.rating = 'BASIC';
+  }
+  if (MOCK === 'register-error') {
+    state.recorderMessage = '录音加密或登记失败，未标记为成功。';
+    state.recorderKind = 'bad';
+  }
+  if (MOCK === 'roleplay') {
+    state.roleplay = { status: 'ACTIVE', turnIndex: 1 };
+  }
+  if (MOCK === 'roleplay-done') {
+    state.roleplay = { status: 'COMPLETED', turnIndex: ROLEPLAY.turns.length };
+    state.roleplayMessage = '角色扮演完成；Phase 1 只记录回合和自评，不生成 AI 分数。';
+    state.roleplayKind = 'ok';
+  }
+
+  var gen = 0;
+  var recordTimer = null;
+
+  function later(fn, ms) {
+    var g = gen;
+    setTimeout(function () { if (g === gen) fn(); }, ms);
+  }
+  function focusSoon(el) {
+    if (!el) return;
+    try { el.focus({ preventScroll: false }); } catch (e) { /* ignore */ }
+  }
+  function two(n) { return n < 10 ? '0' + n : String(n); }
+  function seconds(ms) {
+    var total = Math.round(ms / 100) / 10;
+    return (total % 1 === 0 ? String(total) : total.toFixed(1)) + ' 秒';
+  }
+  function clock(ms) {
+    var total = Math.floor(ms / 1000);
+    return two(Math.floor(total / 60)) + ':' + two(total % 60);
+  }
+  function escapeText(value) {
+    return String(value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+  /* ---------- 画质 ---------- */
+  function qualityLabelOf(id) {
+    for (var i = 0; i < QUALITY.length; i++) {
+      if (QUALITY[i].id === id) return QUALITY[i].label;
+    }
+    return '高清';
+  }
+  function renderQuality() {
+    var label = qualityLabelOf(state.quality);
+    qualityLabel.textContent = label;
+    qualityButton.setAttribute('aria-label', '画质：' + label);
+    qualityList.innerHTML = QUALITY.map(function (item) {
+      return '<button type="button" class="sheet__item spk-sheet__item" data-quality="' + item.id + '" aria-pressed="' +
+        String(item.id === state.quality) + '"><span>' + item.label + '</span><span class="spk-sheet__check">' +
+        UISpec.icon('check', 18) + '</span></button>';
+    }).join('');
+  }
+  qualityList.addEventListener('click', function (event) {
+    var item = event.target.closest('[data-quality]');
+    if (!item) return;
+    state.quality = item.getAttribute('data-quality');
+    renderQuality();
+    var layer = document.getElementById('quality-sheet');
+    if (layer) UISpec.closeOverlay(layer);
+    qualityButton.focus({ preventScroll: true });
+  });
+
+  /* ---------- 状态条 ---------- */
+  function statusCopy() {
+    if (state.status === 'loading') {
+      return { title: '正在读取服务端数据', message: '掌握与判分以服务端结果为准。', kind: '' };
+    }
+    if (state.status === 'empty') {
+      return { title: '当前没有可用内容', message: '没有使用本地样例填充页面。', kind: '' };
+    }
+    if (state.status === 'error') {
+      return { title: '服务端暂时不可用', message: state.message || '音标服务暂时不可用，未使用本地假数据。', kind: 'bad', icon: 'alert-triangle' };
+    }
+    if (state.status === 'offline') {
+      return { title: '网络暂时不可用', message: state.message || '断点和待同步事件仍保留；待同步不等于已掌握。', kind: 'warn', icon: 'globe' };
+    }
+    return { title: '服务状态', message: state.message || '掌握与判分以服务端结果为准。', kind: '' };
+  }
+  function renderStatus() {
+    var copy = statusCopy();
+    statusStrip.classList.toggle('spk-status--bad', copy.kind === 'bad');
+    statusStrip.classList.toggle('spk-status--warn', copy.kind === 'warn');
+    statusTitle.textContent = copy.title;
+    statusMessage.textContent = copy.message;
+    if (copy.icon) {
+      statusIcon.hidden = false;
+      statusIcon.className = 'spk-status__icon spk-status__icon--' + copy.kind;
+      statusIcon.innerHTML = UISpec.icon(copy.icon, 18);
+    } else {
+      statusIcon.hidden = true;
+      statusIcon.innerHTML = '';
+    }
+    statusRetry.hidden = !(copy.kind === 'bad' || copy.kind === 'warn');
+  }
+
+  /* ---------- 音标目录 ---------- */
+  function renderPhonemeGrid() {
+    phonemeMeta.textContent = '共 ' + PHONEMES.length + ' 个 · 点选后查看口型与示例词';
+    phonemeGrid.innerHTML = PHONEMES.map(function (item, index) {
+      return '<button type="button" class="spk-phoneme" data-phoneme="' + index + '" aria-pressed="' +
+        String(index === state.selected) + '" aria-label="/' + item.symbol + '/，' + item.word + '，' + item.group + '">' +
+        '<span class="spk-phoneme__symbol">/' + item.symbol + '/</span>' +
+        '<span class="spk-phoneme__word">' + item.word + '</span></button>';
+    }).join('');
+  }
+  function markPhonemeSelection() {
+    phonemeGrid.querySelectorAll('[data-phoneme]').forEach(function (btn) {
+      btn.setAttribute('aria-pressed', String(parseInt(btn.getAttribute('data-phoneme'), 10) === state.selected));
+    });
+  }
+  phonemeGrid.addEventListener('click', function (event) {
+    var item = event.target.closest('[data-phoneme]');
+    if (!item) return;
+    state.selected = parseInt(item.getAttribute('data-phoneme'), 10);
+    markPhonemeSelection();
+    renderMouth();
+  });
+
+  /* ---------- 口型示意 ---------- */
+  function renderMouth() {
+    var p = PHONEMES[state.selected] || PHONEMES[0];
+    mouthSymbol.textContent = '/' + p.symbol + '/';
+    mouthWord.textContent = p.word + ' · ' + p.group;
+    mouthDesc.textContent = p.desc;
+    mouthMeta.textContent = '下颌 ' + p.jaw + ' · 舌高 ' + p.tongue + ' · 唇圆 ' + p.lip + ' · ' + (p.voiced ? '声带振动' : '清音');
+
+    var lipsRx = 30 + p.lip * 0.07;
+    var lipsRy = 20 + p.jaw * 0.2;
+    var openRx = 19 + p.lip * 0.06;
+    var openRy = 4 + p.jaw * 0.18;
+    var openCy = 50;
+    var tongueCy = openCy + openRy * 0.45 - p.tongue * 0.012;
+    var tongueRx = openRx * (0.5 + p.lip * 0.0015);
+    var tongueRy = 2.5 + openRy * 0.22;
+    var teethY = openCy - openRy * 0.62;
+    var waves = p.voiced
+      ? '<path class="spk-mouth__voice" d="M96 43a14 14 0 0 1 0 20M101 38a21 21 0 0 1 0 30"/>'
+      : '<path class="spk-mouth__voice" d="M97 48l6 8M103 48l-6 8" style="stroke: var(--v2-mut)"/>';
+
+    mouthFigure.innerHTML =
+      '<svg viewBox="0 0 118 100" role="img" aria-label="' + escapeText(p.desc) + '">' +
+        '<ellipse class="spk-mouth__lips" cx="56" cy="' + openCy + '" rx="' + lipsRx.toFixed(1) + '" ry="' + lipsRy.toFixed(1) + '"/>' +
+        '<ellipse class="spk-mouth__opening" cx="56" cy="' + openCy + '" rx="' + openRx.toFixed(1) + '" ry="' + openRy.toFixed(1) + '"/>' +
+        '<path class="spk-mouth__teeth" d="M' + (56 - openRx * 0.72).toFixed(1) + ' ' + teethY.toFixed(1) + 'h' + (openRx * 1.44).toFixed(1) + '"/>' +
+        '<ellipse class="spk-mouth__tongue" cx="56" cy="' + tongueCy.toFixed(1) + '" rx="' + tongueRx.toFixed(1) + '" ry="' + tongueRy.toFixed(1) + '"/>' +
+        waves +
+      '</svg>';
+  }
+
+  /* ---------- 示范音频 ---------- */
+  function renderDemo() {
+    demoPlay.hidden = state.demo !== 'authorized';
+    demoMessage.className = 'spk-note' + (state.demoKind ? ' is-' + state.demoKind : '');
+    demoMessage.innerHTML = (state.demoKind === 'warn'
+      ? UISpec.icon('info', 16)
+      : UISpec.icon('volume', 16)) + '<span>' + escapeText(state.demoMessage) + '</span>';
+  }
+  demoPlay.addEventListener('click', function () {
+    if (state.busy) return;
+    if (state.demo === 'failed') {
+      state.demoMessage = '示范音频当前无法播放；已降级为文本脚本和 2D 口型。';
+      state.demoKind = 'warn';
+      renderDemo();
+      return;
+    }
+    state.busy = 'demo';
+    UISpec.setBusy(demoPlay, true, '正在播放…');
+    later(function () {
+      UISpec.setBusy(demoPlay, false);
+      state.busy = '';
+      state.demoMessage = '示范音频播放完毕，可以开始跟读。';
+      state.demoKind = 'ok';
+      renderDemo();
+    }, 1500);
+  });
+
+  /* ---------- 录音 ---------- */
+  function stopRecordTimer() {
+    if (recordTimer) { clearInterval(recordTimer); recordTimer = null; }
+  }
+  function startRecordTimer() {
+    stopRecordTimer();
+    recordTimer = setInterval(function () {
+      if (!state.recording) return;
+      state.elapsed += 1000;
+      if (state.elapsed >= 60000) {
+        finishRecording();
+        return;
+      }
+      renderRecorder();
+    }, 1000);
+  }
+  function setRecorderMessage(message, kind) {
+    state.recorderMessage = message || '';
+    state.recorderKind = kind || '';
+  }
+  function renderRecorderCopy() {
+    recorderCopy.className = 'spk-copy' + (state.recorderKind ? ' is-' + state.recorderKind : '');
+    if (state.recorderMessage) {
+      recorderCopy.innerHTML = (state.recorderKind === 'bad'
+        ? UISpec.icon('alert-circle', 16)
+        : state.recorderKind === 'ok'
+          ? UISpec.icon('check-circle', 16)
+          : UISpec.icon('info', 16)) + '<span>' + escapeText(state.recorderMessage) + '</span>';
+      return;
+    }
+    if (state.recording) {
+      recorderCopy.innerHTML = '<span class="spk-dot" aria-hidden="true"></span><span>录音进行中… ' + clock(state.elapsed) + ' / 最长 60 秒</span>';
+      return;
+    }
+    if (state.saved) {
+      recorderCopy.innerHTML = UISpec.icon('check-circle', 16) + '<span>这段录音已登记，可以安全回放、删除或重新录制。</span>';
+      return;
+    }
+    if (state.localPath) {
+      recorderCopy.innerHTML = UISpec.icon('info', 16) + '<span>录音文件已返回，点击“加密并登记”前会先计算真实 SHA-256。</span>';
+      return;
+    }
+    recorderCopy.innerHTML = UISpec.icon('info', 16) + '<span>录音权限需用户操作；不可用时仍可学习音标、口型和文本跟读。</span>';
+  }
+  function renderRecorder() {
+    recordBtn.querySelector('.btn__label').textContent = state.recording ? '停止录音' : (state.saved ? '重新录音' : '开始录音');
+    playbackBtn.disabled = !state.encrypted || state.recording;
+    registerBtn.disabled = !state.localPath || state.recording || state.saved;
+    deleteBtn.hidden = !state.saved;
+    recordingSummary.hidden = !state.saved;
+    if (state.saved) {
+      recordingSummaryText.textContent = '已登记 · 时长 ' + seconds(state.localDuration) + ' · 自评：' + (state.rating ? RATING_LABELS[state.rating] : '未选择');
+    }
+    ratingButtons.forEach(function (btn) {
+      btn.setAttribute('aria-pressed', String(btn.getAttribute('data-rating') === state.rating));
+    });
+    renderRecorderCopy();
+  }
+  function beginRecording() {
+    state.recording = true;
+    state.elapsed = 0;
+    state.localPath = null;
+    state.localDuration = 0;
+    state.encrypted = false;
+    state.saved = false;
+    state.rating = '';
+    setRecorderMessage('', '');
+    startRecordTimer();
+    renderAll();
+  }
+  function finishRecording() {
+    stopRecordTimer();
+    state.recording = false;
+    state.localDuration = state.elapsed;
+    state.localPath = state.elapsed > 0 ? 'local' : null;
+    if (state.localPath) {
+      setRecorderMessage('录音文件已返回，点击“加密并登记”前会先计算真实 SHA-256。', '');
+    } else {
+      setRecorderMessage('录音已停止，但平台未返回本地媒体引用。', 'warn');
+    }
+    renderAll();
+  }
+  recordBtn.addEventListener('click', function () {
+    if (state.recording) {
+      finishRecording();
+      return;
+    }
+    if (MOCK === 'record-error') {
+      later(function () {
+        state.status = 'error';
+        state.message = '录音失败，未生成虚假的评测结果。';
+        renderStatus();
+      }, 700);
+      return;
+    }
+    beginRecording();
+    focusSoon(recorderCopy);
+  });
+
+  registerBtn.addEventListener('click', function () {
+    if (state.busy) return;
+    if (!state.localPath || state.localDuration < 500) {
+      setRecorderMessage('请先完成至少 500ms 的真实录音。', 'warn');
+      renderRecorder();
+      return;
+    }
+    state.busy = 'register';
+    UISpec.setBusy(registerBtn, true, '正在加密…');
+    later(function () {
+      UISpec.setBusy(registerBtn, false);
+      state.busy = '';
+      state.encrypted = true;
+      state.saved = true;
+      setRecorderMessage('录音已由 Keychain/Keystore 适配器加密；服务端只登记哈希和生命周期元数据。', 'ok');
+      renderAll();
+    }, 900);
+  });
+
+  playbackBtn.addEventListener('click', function () {
+    if (state.busy || !state.encrypted) return;
+    state.busy = 'playback';
+    UISpec.setBusy(playbackBtn, true, '正在解密…');
+    later(function () {
+      UISpec.setBusy(playbackBtn, false);
+      state.busy = '';
+      setRecorderMessage('安全回放已开始；音频只在本机内存中解密。', 'ok');
+      renderRecorder();
+    }, 700);
+  });
+
+  ratingButtons.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      if (!state.saved) {
+        setRecorderMessage('请先登记一次真实录音，再提交自评。', 'warn');
+        renderRecorder();
+        return;
+      }
+      state.rating = btn.getAttribute('data-rating');
+      setRecorderMessage('自评已保存：' + RATING_LABELS[state.rating] + '。Phase 1 不生成 AI 分数。', 'ok');
+      renderRecorder();
+      focusSoon(recordingSummary);
+    });
+  });
+
+  deleteConfirm.addEventListener('click', function () {
+    state.saved = false;
+    state.encrypted = false;
+    state.localPath = null;
+    state.localDuration = 0;
+    state.rating = '';
+    setRecorderMessage('', '');
+    renderAll();
+  });
+
+  /* ---------- 角色扮演 ---------- */
+  function renderRoleplay() {
+    var current = state.roleplay;
+    var active = current && current.status === 'ACTIVE';
+    roleplayBtn.hidden = active;
+    roleplayBtn.querySelector('.btn__label').textContent = current && current.status === 'COMPLETED' ? '重新开始角色扮演' : '开始角色扮演';
+    roleplayTurn.hidden = !active;
+    if (active) {
+      var turn = ROLEPLAY.turns[current.turnIndex];
+      if (!turn) {
+        roleplayTurn.hidden = true;
+      } else {
+        roleplayMeta.textContent = '回合 ' + (current.turnIndex + 1) + ' / 共 ' + ROLEPLAY.turns.length + ' · ' + turn.speaker;
+        roleplayText.textContent = turn.text;
+        roleplayReq.hidden = !turn.recordingRequired;
+        roleplayChoices.innerHTML = turn.choices.map(function (choice) {
+          return '<button type="button" class="spk-choice" data-choice="' + choice.code + '">' + choice.label + '</button>';
+        }).join('');
+      }
+    }
+    roleplayMessage.hidden = !state.roleplayMessage;
+    roleplayMessage.className = 'spk-note' + (state.roleplayKind ? ' is-' + state.roleplayKind : '');
+    roleplayMessage.innerHTML = state.roleplayMessage
+      ? (state.roleplayKind === 'ok' ? UISpec.icon('check-circle', 16) : state.roleplayKind === 'warn' ? UISpec.icon('info', 16) : '') +
+        '<span>' + escapeText(state.roleplayMessage) + '</span>'
+      : '';
+  }
+  roleplayBtn.addEventListener('click', function () {
+    if (state.busy) return;
+    state.busy = 'roleplay';
+    UISpec.setBusy(roleplayBtn, true, '正在打开…');
+    later(function () {
+      UISpec.setBusy(roleplayBtn, false);
+      state.busy = '';
+      state.roleplay = { status: 'ACTIVE', turnIndex: 0 };
+      state.roleplayMessage = '预编角色扮演已打开；分支和回合由服务端脚本控制。';
+      state.roleplayKind = '';
+      renderRoleplay();
+    }, 900);
+  });
+  roleplayChoices.addEventListener('click', function (event) {
+    var choice = event.target.closest('[data-choice]');
+    if (!choice || !state.roleplay || state.roleplay.status !== 'ACTIVE') return;
+    var turn = ROLEPLAY.turns[state.roleplay.turnIndex];
+    if (!turn) return;
+    if (turn.recordingRequired && !state.saved) {
+      state.roleplayMessage = '当前回合需要先完成并登记真实录音。';
+      state.roleplayKind = 'warn';
+      renderRoleplay();
+      return;
+    }
+    state.roleplay.turnIndex += 1;
+    if (state.roleplay.turnIndex >= ROLEPLAY.turns.length) {
+      state.roleplay.status = 'COMPLETED';
+      state.roleplayMessage = '角色扮演完成；Phase 1 只记录回合和自评，不生成 AI 分数。';
+      state.roleplayKind = 'ok';
+    } else {
+      state.roleplayMessage = '回合已保存，继续下一步。';
+      state.roleplayKind = 'ok';
+    }
+    renderRoleplay();
+  });
+
+  /* ---------- 显隐 / 渲染 ---------- */
+  function renderVisibility() {
+    var open = state.open;
+    closedCard.hidden = open;
+    phonemeCard.hidden = !open;
+    demoCard.hidden = !open;
+    recorderCard.hidden = !open;
+    roleplayCard.hidden = !open;
+  }
+  function renderAll() {
+    renderVisibility();
+    renderStatus();
+    renderDemo();
+    if (state.open) {
+      renderMouth();
+      renderRecorder();
+      renderRoleplay();
+    }
+  }
+
+  /* ---------- 状态恢复 ---------- */
+  statusRetry.addEventListener('click', function () {
+    if (state.busy) return;
+    UISpec.setBusy(statusRetry, true, '正在重试…');
+    later(function () {
+      UISpec.setBusy(statusRetry, false);
+      state.status = state.open ? 'ready' : 'idle';
+      state.message = null;
+      state.recorderMessage = '';
+      state.recorderKind = '';
+      renderAll();
+    }, 1100);
+  });
+
+  /* ---------- 页面级状态重试 ---------- */
+  document.addEventListener('click', function (event) {
+    var btn = event.target.closest('[data-retry-state]');
+    if (!btn) return;
+    event.preventDefault();
+    if (btn.classList.contains('is-busy')) return;
+    UISpec.setBusy(btn, true, btn.getAttribute('data-retry-label') || '正在重试…');
+    later(function () {
+      UISpec.setBusy(btn, false);
+      UISpec.setScreenState(btn.getAttribute('data-retry-state'));
+    }, 1100);
+  });
+
+  /* 离开正常态：关闭弹层、停止录音、取消未完成动作 */
+  document.addEventListener('uispec:state', function (event) {
+    if (event.detail.state === 'normal') {
+      renderAll();
+      return;
+    }
+    gen += 1;
+    UISpec.closeAllOverlays();
+    stopRecordTimer();
+    state.recording = false;
+    state.busy = '';
+    [recordBtn, playbackBtn, registerBtn, demoPlay, roleplayBtn, statusRetry].forEach(function (btn) {
+      if (btn && btn.classList.contains('is-busy')) UISpec.setBusy(btn, false);
+    });
+    renderAll();
+  });
+
+  /* ---------- 初始渲染 ---------- */
+  renderQuality();
+  renderPhonemeGrid();
+  renderAll();
+  if (state.recording) startRecordTimer();
+
+  if (INITIAL_STATE !== 'normal') {
+    document.addEventListener('DOMContentLoaded', function () {
+      UISpec.setScreenState(INITIAL_STATE);
+    });
+  }
+})();
+</script>
+
+</body>
+</html>
