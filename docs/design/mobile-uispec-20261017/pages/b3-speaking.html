@@ -369,7 +369,8 @@
   }
   .spk-choice:hover { border-color: var(--v2-brand); }
   .spk-choice:focus-visible { outline: none; box-shadow: var(--v2-focus); }
-  .spk-choice:disabled { background: var(--v2-surface); color: var(--v2-mut); border-style: dashed; cursor: not-allowed; }
+  /* 与 shared.css 次按钮禁用态一致：surface 底、mut 字、实线边框、not-allowed */
+  .spk-choice:disabled { background: var(--v2-surface); color: var(--v2-mut); border: 1px solid var(--v2-line); cursor: not-allowed; }
 
   /* 页面状态 */
   .spk-state .state-block { padding-top: 24px; }
@@ -654,7 +655,7 @@
         <p class="dialog__text" id="delete-text">录音和本机加密文件会一并清理，学习记录不受影响。</p>
         <div class="dialog__actions">
           <button type="button" class="btn btn--secondary" data-close>取消</button>
-          <button type="button" class="btn btn--danger" id="delete-confirm" data-dialog-confirm="录音已删除" data-confirm-kind="ok">删除</button>
+          <button type="button" class="btn btn--danger" id="delete-confirm" data-dialog-confirm="录音已删除，原生加密文件已请求清理。" data-confirm-kind="ok">删除</button>
         </div>
       </div>
     </div>
@@ -673,11 +674,11 @@
     <li>音标目录 → 顶部小字「48 / 48 个音标」；四列可点按钮展示 48 个音标，选中项 brand 描边 + soft 底 + <code>aria-pressed</code>，同时更新口型卡片的音标、示例词、唇形说明与「下颌 / 舌高 / 唇圆 / 声带」数值；48 项固定为可滚动页面内容，不做弹层或二级页。</li>
     <li>口型示意 → 录音卡内 2D 口型图按所选音标的下颌开合、舌位高低与唇圆度变化，右侧同时用文字给出同样的数值与「声带振动 / 清音」，不只依赖图形或颜色；明确标注「2D 口型示意 · 不加载 3D 解剖」。</li>
     <li>示范音频 → 有短时授权时显示「播放示范音频」，点击转圈「正在播放…」→ 1.5s 后显示 ok 色「示范音频播放完毕，可以开始跟读。」；<code>?mock=no-audio</code> 隐藏播放按钮并显示 warn 色「示范音频当前没有可播放授权地址；已降级为文本脚本和 2D 口型。」；<code>?mock=revoked</code> 为「示范音频权益已撤销；已降级为文本脚本和 2D 口型。」；<code>?mock=degraded</code> 保留按钮，点击后显示「示范音频当前无法播放；已降级为文本脚本和 2D 口型。」（对齐真实页 <code>playDemoAudio</code> catch）。示范句始终以文本给出，不伪造音频状态。</li>
-    <li>录音 → 「开始录音」进入录音态：按钮变「停止录音」、文案显示红点 +「录音进行中… 00:07 / 最长 60 秒」，计时到 60 秒自动停止；停止后按真实返回结果给出「录音文件已返回，点击“加密并登记”前会先计算真实 SHA-256。」，并启用「加密并登记」；录音中「安全回放」「加密并登记」「删除录音」为真实禁用态。<code>?mock=recording</code> 直接以录音中状态打开，<code>?mock=recorded</code> 以已录音待登记状态打开。</li>
+    <li>录音 → 「开始录音」进入录音态：按钮变「停止录音」、文案显示红点 +「录音进行中… 00:07 / 最长 60 秒」，计时到 60 秒自动停止；停止后按真实返回结果给出「录音文件已返回，点击“加密并登记”前会先计算真实 SHA-256。」，并启用「加密并登记」；录音中「安全回放」「加密并登记」「删除录音」为真实禁用态（surface 底、mut 字、实线边框、not-allowed，复用 <code>.btn:disabled</code>，不使用虚线）。<code>?mock=recording</code> 直接以录音中状态打开，<code>?mock=recorded</code> 以已录音待登记状态打开。</li>
     <li>加密并登记 → 已录音且时长不少于 500ms 时点击，按钮转圈「正在加密…」→ 0.9s 后显示 ok 色「录音已由 Keychain/Keystore 适配器加密；服务端只登记哈希和生命周期元数据。」，出现「已登记 · 时长 7 秒 · 自评：未选择」与「删除录音」；时长不足时显示 warn 色「请先完成至少 500ms 的真实录音。」；<code>?mock=register-error</code> 以 bad 色「录音加密或登记失败，未标记为成功。」打开，录音仍保留，可再次登记并成功。</li>
     <li>安全回放 / 自评 → 「安全回放」仅在已登记后可用，点击转圈「正在解密…」→ 0.7s 后显示 ok 色「安全回放已开始；音频只在本机内存中解密。」；三个自评 chip 单选（需要练习 / 基本准确 / 比较流利）；未登记时点击显示 warn 色「请先登记一次真实录音，再提交自评。」，登记后点击保存并显示「自评已保存：基本准确。Phase 1 不生成 AI 分数。」。<code>?mock=saved</code> 以已登记 + 基本准确打开。</li>
-    <li>删除录音 → 已登记时出现「删除录音」→ 打开确认对话框「删除这段录音？/ 录音和本机加密文件会一并清理，学习记录不受影响。」（危险按钮 bad 色）；取消 / 遮罩 / Esc 关闭，确认后清理已登记状态、回放与删除按钮、自评与摘要，并 Toast「录音已删除」。</li>
-    <li>角色扮演 → 「开始角色扮演」转圈「正在打开…」→ 0.9s 后显示「预编角色扮演已打开；分支和回合由服务端脚本控制。」与第 1 回合（回合 1 / 共 4 · 店员）；每次选择后提示「回合已保存，继续下一步。」并进入下一回合；第 2 回合带「本回合需要先登记一次真实录音。」，未登记时选择显示 warn 色「当前回合需要先完成并登记真实录音。」；第 4 回合后隐藏回合卡，显示 ok 色「角色扮演完成；Phase 1 只记录回合和自评，不生成 AI 分数。」，开始按钮变为「重新开始角色扮演」。选择按钮只显示中文意图，不显示内部 choiceCode。<code>?mock=roleplay</code> 直接打开第 2 回合，<code>?mock=roleplay-done</code> 直接打开完成状态。</li>
+    <li>删除录音 → 已登记时出现「删除录音」→ 打开确认对话框「删除这段录音？/ 录音和本机加密文件会一并清理，学习记录不受影响。」（危险按钮 bad 色）；取消 / 遮罩 / Esc 关闭，确认后清理已登记状态、回放与删除按钮、自评与摘要，并 Toast「录音已删除，原生加密文件已请求清理。」（对齐真实页 <code>removeRecording</code>）。</li>
+    <li>角色扮演 → 「开始角色扮演」转圈「正在打开…」→ 0.9s 后显示「预编角色扮演已打开；分支和回合由服务端脚本控制。」与第 1 回合（回合 1 / 共 4 · 店员）；每次选择后提示「回合已保存，继续下一步。」并进入下一回合；第 2 回合带「本回合需要先登记一次真实录音。」，未登记时选择显示 warn 色「当前回合需要先完成并登记真实录音。」；第 4 回合后隐藏回合卡，显示 ok 色「已完成全部预编回合；无 AI 评分。」（对齐真实页完成文案），开始按钮变为「重新打开咖啡店场景」。选择按钮只显示中文意图，不显示内部 choiceCode；不可选时按次按钮禁用态呈现（surface 底、mut 字、<code>var(--v2-line)</code> 实线边框、not-allowed），不使用虚线。<code>?mock=roleplay</code> 直接打开第 2 回合，<code>?mock=roleplay-done</code> 直接打开完成状态。</li>
     <li>画质 → 点击「画质 · 高清」打开底部弹层，四档取 <code>B2StatusPanel</code> 的「极致 / 高清 / 标准 / 省电」，当前档带 brand 对勾与 <code>aria-pressed</code>；选择后更新顶部文案并关闭弹层，焦点回到画质按钮；遮罩、取消与 Esc 均可关闭。</li>
     <li>登录门禁 → 对齐真实页 <code>onMounted</code>：先 <code>session.restore()</code>，未登录直接跳转 <code>login.html?returnTo=%2Fpages%2Fb3-speaking%2Fb3-speaking</code>，不渲染口语内容；原型以无权限态承载该分支，登录页回跳地址与真实页一致。</li>
     <li>文案边界 → 不显示内部错误码、反馈代码、录音 ID、内容版本号或原始状态枚举；时长统一「7 秒 / 0.5 秒」中文写法；Phase 1 的发音评分与角色扮演均明确「不生成 AI 分数」，不把自评写成自动评分。真实页没有页尾出口，本稿不新增「学习报告」「单词复习」入口。</li>
@@ -909,7 +910,7 @@
   }
   if (MOCK === 'roleplay-done') {
     state.roleplay = { status: 'COMPLETED', turnIndex: ROLEPLAY.turns.length };
-    state.roleplayMessage = '角色扮演完成；Phase 1 只记录回合和自评，不生成 AI 分数。';
+    state.roleplayMessage = '已完成全部预编回合；无 AI 评分。';
     state.roleplayKind = 'ok';
   }
 
@@ -1237,7 +1238,7 @@
     var current = state.roleplay;
     var active = current && current.status === 'ACTIVE';
     roleplayBtn.hidden = active;
-    roleplayBtn.querySelector('.btn__label').textContent = current && current.status === 'COMPLETED' ? '重新开始角色扮演' : '开始角色扮演';
+    roleplayBtn.querySelector('.btn__label').textContent = current && current.status === 'COMPLETED' ? '重新打开咖啡店场景' : '开始角色扮演';
     roleplayTurn.hidden = !active;
     if (active) {
       var turn = ROLEPLAY.turns[current.turnIndex];
@@ -1286,7 +1287,7 @@
     state.roleplay.turnIndex += 1;
     if (state.roleplay.turnIndex >= ROLEPLAY.turns.length) {
       state.roleplay.status = 'COMPLETED';
-      state.roleplayMessage = '角色扮演完成；Phase 1 只记录回合和自评，不生成 AI 分数。';
+      state.roleplayMessage = '已完成全部预编回合；无 AI 评分。';
       state.roleplayKind = 'ok';
     } else {
       state.roleplayMessage = '回合已保存，继续下一步。';
