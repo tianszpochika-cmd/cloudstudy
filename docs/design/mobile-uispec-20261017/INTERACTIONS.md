@@ -293,3 +293,19 @@
 - 画质 → 顶部「画质 · 舒适」打开底部弹层，四档「精致 / 舒适 / 轻量 / 省资源」；当前档带 brand 色对勾与 `aria-pressed`，选择后立即更新顶部文案并关闭弹层，焦点回到画质按钮；遮罩、取消与 Esc 均可关闭。
 - TabBar 与导航 → 一级 Tab 页：底部 5 项，「成长」选中并带 `aria-current="page"`，其余跳转 `home.html` / `b2-practice.html` / `learn.html` / `profile.html`；右上角设置跳转 `settings.html`。
 - 文案边界 → 不显示内部错误码、概率版本号或原始状态枚举；连续学习状态用中文徽标与说明同时表达，不只依赖颜色；奖励只说明免费、非现金与非客户端抽取。
+
+### profile（我的账户）
+
+对应页面：`pages/profile.html`；真实实现参照 `apps/mobile/src/pages/profile/profile.vue`、`apps/mobile/src/components/MobilePageHeader.vue`、`apps/mobile/src/stores/learner-content.ts` 的 account 投影与 `packages/i18n/src/mobile-experience.ts` 的 `pages.profile` 文案。真实页由 `mobileLearnerContentApi.readAccount()` 读取目标 / 每日时长 / 成人核验 / 界面与学习语言，并按 `store.accountStatus` 渲染读取中、读取失败与正常视图；原型用 mock 资料在同一路由内演示。
+
+- 主题与直达参数 → 工具条「浅色 / 深色」切换整页 token 并写入 `localStorage['uispec-theme']`；`?theme=light|dark` 固定主题；`?state=normal|loading|error|forbidden|offline` 直达页面状态；`?mock=no-goal|adult-pending|adult-rejected|locale-unknown|nav-failed|logout-failed` 演示目标未设置、成人核验待核验 / 未通过、语言暂未识别、页面打开失败与退出失败。
+- 页面状态 → 工具条「正常 / 加载 / 错误 / 无权限 / 离线」：正常为学习档案、账号与语言、学习与服务、退出登录；加载为 `role=status`「正在读取学习资料…」+ 骨架屏（`aria-busy`，对应真实页「正在读取学习资料…」）；错误为「学习资料暂时不可用 / 请检查网络后重试。」+「重试」；无权限为「登录后查看账号资料 / 账号资料与学习记录需要登录后查看。」+「去登录」跳转 `login.html?returnTo=%2Fpages%2Fprofile%2Fprofile`（不提供重试）；离线保留已读取资料，并在顶部显示 warn 色 `role=status`「网络暂时不可用 / 已显示上次读取的账号资料，联网后可继续同步。」+「重试」。
+- 状态恢复 → 错误与离线「重试」转圈「正在重试…」→ 1.1s 后回到正常态，不弹成功 Toast；无权限只保留「去登录」。
+- 切换状态副作用 → 离开正常态会关闭退出登录对话框，取消未完成的目标跳转 / 退出 / 重试计时并恢复按钮，不出现延迟跳转；离线时保留已读取资料与服务入口，但退出登录不打开确认框，直接提示「网络暂时不可用，请连接网络后再退出登录。」。
+- 学习档案 → 头像「学」+「我的学习」，下方为目标与每日时长「四六级备考 · 每天 15 分钟」（对齐真实页 `goalLabel` + `dailyGoal`）；`?mock=no-goal` 时改为「还没有设置学习目标。」，目标按钮文案变「设置学习目标」。
+- 账号与语言 → 三行只读资料：成人核验（已通过 ok 徽标）、界面语言（中文）、学习语言（英语），右上角「前往设置」跳转 `settings.html`。成人核验待核验为 warn 徽标「待核验」+ warn 色说明「完成成人核验后才能开始学习。」+「去核验」跳转 `onboarding.html`；未通过为 bad 徽标「未通过」+「当前版本暂不能向此账号开放学习。」+「查看帮助」跳转 `support.html`；`?mock=locale-unknown` 时两种语言显示 mut 色「暂未识别」。
+- 修改学习目标 → 点击 → 按钮保持宽度转圈「正在打开…」，期间服务入口仍可浏览但退出登录不可点 → 0.9s 后跳转 `onboarding.html`；`?mock=nav-failed` 时停留在本页，按钮下方显示 bad 色 `role=alert`「页面未能打开，请重试。」，可再次点击，错误在下一次操作开始时清除。
+- 学习与服务 → 九行入口：学习报告 → `b10-report.html`、今日任务 → `today.html`、学习权益 → `b5-commerce.html`、离线学习 → `b4-offline.html`、设备与会话 → `devices.html`、我的形象 → `b4-avatar.html`、设置 → `settings.html`、画质与设备 → `b6-platform.html`、帮助中心 → `support.html`；每行含图标、标题、说明与箭头，命中区 ≥44px，键盘焦点环可见。
+- 退出登录 → 点击底部文字按钮打开确认对话框「退出登录？ / 退出后，需要重新登录才能继续学习。本机已下载的内容不会删除。」；「取消」、遮罩与 Esc 均可关闭；「退出登录」为 bad 色危险按钮，确认后关闭对话框、按钮转圈「正在退出…」→ 1.1s 后跳转 `login.html`（真实页退出后回到登录入口，无 Toast）。对话框为设计新增，真实页直接退出，需同步实现。`?mock=logout-failed` 时停留本页，按钮下方显示 bad 色 `role=alert`「退出登录未完成，请重试。」并把焦点移回退出按钮。
+- TabBar 与导航 → 一级 Tab 页：底部 5 项，「我的」选中并带 `aria-current="page"`，其余跳转 `home.html` / `b2-practice.html` / `world.html` / `learn.html`；右上角设置跳转 `settings.html`。
+- 文案边界 → 不显示内部错误码、账号 ID、原始版本号或账号是否存在；成人核验状态与语言同时用文字表达，不只依赖颜色；退出登录说明只描述影响范围，不做挽留。
