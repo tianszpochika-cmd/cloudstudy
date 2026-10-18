@@ -559,3 +559,21 @@
 - 页尾出口 → 「词汇复习」→ `b2-vocabulary.html`、「继续练习」→ `b2-practice.html`，与真实页 `b10-links` 一致；位于状态块之外，加载 / 空 / 错误 / 无权限 / 离线态下同样始终可见。
 - 登录门禁 → 对齐真实页 `onShow`：先 `session.restore()`，未登录直接跳转登录页，不渲染错题与报告；原型以无权限态承载该分支，登录页回跳地址与真实页一致。
 - 文案边界 → 不显示报告 ID、计算版本、内部错误码或原始状态枚举；闭环状态中文显示；Phase 1 的报告建议明确是规则建议，不写成 AI 分析。真实页没有额外页尾说明，本稿不新增。
+
+## report-share（分享的学习报告）
+
+对应页面：`pages/report-share.html`；真实实现参照 `apps/mobile/src/pages/report-share/report-share.vue`、`apps/mobile/src/components/MobilePageHeader.vue`、`apps/mobile/src/api/b10.ts` 的 `issueReportShare` / `revokeReportShare` 与 `packages/contracts/openapi/v1/openapi.json` 的 `getLearningReportShare`（`/api/v1/public/learning/report-shares/{ref}`，`security: []`、`publicFieldsOnly`、`noToken`、`noPrivateReport`），服务端快照字段见 `LearningPeriodReport.publicFields` / `publicView`（ACTIVE / REVOKED / EXPIRED，7 天失效）。本页在 `apps/mobile/src/auth/navigation.ts` 的 `PUBLIC_PATHS` 中，是不需要登录的公开只读页。原型全部使用 mock 数据，不访问服务端。
+
+- 主题与直达参数 → 工具条「浅色 / 深色」切换整页 token 并写入 `localStorage['uispec-theme']`；`?theme=light|dark` 固定主题；`?state=normal|loading|empty|error|offline` 直达页面状态；`?mock=active|partial|no-records|never|generating|failed|revoked|expired` 演示分享快照分支。截图：`report-share-{light,dark}.png`。
+- 页面状态 → 工具条「正常 / 加载 / 空 / 错误 / 离线」：加载为「正在打开分享…」+ 报告骨架屏（`aria-busy`）；空为「没有找到这份分享 / 链接可能不完整，或分享已经被删除。请向分享者确认后再打开。」+「返回首页」；错误为「分享暂时无法读取 / 服务暂时不可用，请稍后再试。」+「重试」；离线为「网络暂时不可用 / 请连接网络后重新读取这份分享。」+「重试」。切换离开正常态会取消未完成的模拟读取并恢复按钮。
+- 状态恢复 → 错误与离线「重试」转圈「正在读取…」→ 1.1s 后回到正常态，不弹成功 Toast；空态只保留「返回首页」，不提供「重试」。
+- 页头与导航 → 导航栏「分享的学习报告」（`pages.json` 标题）+ 返回（`backMobile`：返回上一页；无历史时回 `home.html`，原型 `data-back="home.html"`）；页内 kicker「只读分享」、标题「分享的学习报告」、说明「这是只读分享，不包含登录信息。」（对齐 `MobilePageHeader` 的 `kicker/title/description`）；不显示底部 TabBar，也不显示账号设置入口——公开访客没有可管理的账号。
+- 报告快照 → 对齐公开字段：统计范围、新学 / 复习、有效学习时长、规则建议与依据；不显示 `accuracy`、`reportId`、`digest`、`ruleVersion`、`reportType`、分享引用或分享者身份；统计不是正式分数（`officialScore=false`），不写成能力评分。
+- 规则建议 → 使用 `soft` 底色给出「建议：…」与「依据：…。这是规则建议，不是已开放的 AI 功能。」；依据代码（`MISTAKES` / `DUE_REVIEW` / `STARTER` / `PARTIAL_FACTS`）中文化，不显示内部枚举。
+- 分享说明 → 「关于这份分享」列出分享状态（有效，可以打开）、到期时间（签发后 7 天）、包含内容（学习统计与规则建议）与不包含（账号、登录信息、错题原文）；说明「这份报告由分享者主动公开，只保留当时的统计快照。分享者可以随时撤销，但撤销不会影响已看过的内容。」
+- 已撤销 → `?mock=revoked`：报告与分享说明收起，显示 warn 图标 +「这份分享已经撤销 / 分享者已关闭这份报告的公开访问。」+「返回首页」，不提供重试。
+- 已过期 → `?mock=expired`：显示「这份分享已经过期 / 只读链接在分享后 7 天自动失效。」+「返回首页」，不提供重试。撤销与过期分开表述，不合并成通用错误。
+- 统计分支 → `?mock=partial` 显示「部分统计」徽标与「这部分统计还不完整。」，保留已有统计与时长，不把缺口当成零分；`?mock=no-records` 显示「暂无记录 / 这段时间还没有学习记录。」；`?mock=never` 显示「尚未开始 / 还没有开始学习。这不是能力评分。」；`?mock=generating` 显示「生成中 / 报告还在生成。」；`?mock=failed` 显示「未生成 / 报告没有生成，请稍后刷新。」。后四种只保留说明与建议，不渲染统计与时长。
+- 页尾入口 → 正常态「想记录自己的学习？」下方「开始使用语学星」→ `register.html`；空态、失效与过期视图的「返回首页」→ `home.html`。
+- 真实页差异 → 真实页读取失败（网络或服务）统一落到「没有找到这份分享。」；本稿按 STYLE-BRIEF 将错误与离线单独呈现并提供重试。真实页共用 `MobilePageHeader` 会显示设置入口；本页是公开只读页，不把访客引向账号设置。
+- 文案边界 → 不显示分享引用、账号是否存在、内部错误码或原始状态枚举；只描述当前状态与下一步。
