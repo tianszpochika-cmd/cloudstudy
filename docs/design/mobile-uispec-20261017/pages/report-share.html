@@ -124,48 +124,6 @@
   .rs-suggest__title { margin: 0; color: var(--v2-brand); font-size: 14px; line-height: 1.6; font-weight: 600; overflow-wrap: anywhere; }
   .rs-suggest__basis { margin: 0; color: var(--v2-mut); font-size: 13px; line-height: 1.6; overflow-wrap: anywhere; }
 
-  /* 分享说明 */
-  .rs-info { display: grid; gap: 12px; }
-  .rs-info__title { margin: 0; color: var(--v2-ink); font-size: 16px; line-height: 1.5; font-weight: 600; }
-  .rs-info-list { margin: 0; padding: 0; }
-  .rs-info-row {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 16px;
-    padding: 10px 0;
-    border-top: 1px solid var(--v2-line);
-    font-size: 14px;
-    line-height: 1.6;
-  }
-  .rs-info-row:first-child { border-top: 0; padding-top: 0; }
-  .rs-info-row dt { margin: 0; color: var(--v2-mut); flex: none; }
-  .rs-info-row dd {
-    margin: 0;
-    color: var(--v2-ink);
-    font-weight: 600;
-    text-align: right;
-    overflow-wrap: anywhere;
-  }
-  .rs-note {
-    margin: 0;
-    padding-top: 12px;
-    border-top: 1px solid var(--v2-line);
-    color: var(--v2-mut);
-    font-size: 13px;
-    line-height: 1.7;
-  }
-
-  /* 页尾入口 */
-  .rs-cta { display: grid; gap: 8px; margin-top: 4px; }
-  .rs-cta__text {
-    margin: 0;
-    color: var(--v2-mut);
-    font-size: 14px;
-    line-height: 1.6;
-    text-align: center;
-  }
-
   /* 加载 */
   .rs-loading {
     margin: 0 0 16px;
@@ -200,13 +158,13 @@
 
         <div data-state-block="normal">
 
-          <!-- 有效分享：只公开学习统计与规则建议 -->
+          <!-- 有效快照：只公开学习统计与规则建议 -->
           <div class="rs-stack" id="view-report">
 
             <section class="card rs-card" aria-labelledby="share-copy">
               <div class="rs-card__head">
-                <p class="rs-eyebrow"><span data-icon="chart" data-icon-size="16"></span>学习统计</p>
-                <span class="badge badge--ok" id="share-badge">有效分享</span>
+                <p class="rs-eyebrow"><span data-icon="chart" data-icon-size="16"></span>只读分享</p>
+                <span class="badge badge--ok" id="share-badge">已汇总</span>
               </div>
               <h2 class="rs-copy" id="share-copy">这段统计来自已记录的学习活动。</h2>
               <p class="rs-range" id="share-range">统计范围 10月12日 至 10月19日（北京时间）</p>
@@ -217,28 +175,12 @@
               <ul class="rs-metrics" id="share-metrics">
                 <li class="rs-metric"><span>有效学习</span><span class="rs-metric__value" id="share-duration">3 小时 12 分钟</span></li>
               </ul>
-              <p class="rs-duration-note" id="share-duration-note">只计已记录的有效学习时段；暂停和后台停留没有计入。</p>
+              <p class="rs-duration-note" id="share-duration-note">只统计已记录的有效学习时段。暂停和后台停留没有计入。</p>
               <div class="rs-suggest">
                 <p class="rs-suggest__title" id="share-suggestion">建议：先订正这段时间里答错的练习。</p>
                 <p class="rs-suggest__basis" id="share-basis">依据：这段时间有答错的练习。这是规则建议，不是已开放的 AI 功能。</p>
               </div>
             </section>
-
-            <section class="card rs-info" aria-labelledby="share-info-title">
-              <h2 class="rs-info__title" id="share-info-title">关于这份分享</h2>
-              <dl class="rs-info-list">
-                <div class="rs-info-row"><dt>分享状态</dt><dd id="share-info-status">有效，可以打开</dd></div>
-                <div class="rs-info-row"><dt>到期时间</dt><dd id="share-info-expiry">10月25日 09:20</dd></div>
-                <div class="rs-info-row"><dt>包含内容</dt><dd>学习统计与规则建议</dd></div>
-                <div class="rs-info-row"><dt>不包含</dt><dd>账号、登录信息、错题原文</dd></div>
-              </dl>
-              <p class="rs-note">这份报告由分享者主动公开，只保留当时的统计快照。分享者可以随时撤销，但撤销不会影响已看过的内容。</p>
-            </section>
-
-            <div class="rs-cta">
-              <p class="rs-cta__text">想记录自己的学习？</p>
-              <a class="btn btn--secondary btn--block" href="register.html">开始使用语学星</a>
-            </div>
 
           </div>
 
@@ -246,7 +188,7 @@
           <div class="rs-unavailable" id="view-unavailable" hidden>
             <div class="state-block" role="alert">
               <span class="state-block__icon state-block__icon--warn" id="unavailable-icon" data-icon="lock" data-icon-size="24"></span>
-              <span class="state-block__title" id="unavailable-title">这份分享已经撤销</span>
+              <span class="state-block__title" id="unavailable-title">这份分享已经撤销。</span>
               <span class="state-block__text" id="unavailable-text">分享者已关闭这份报告的公开访问。</span>
               <span class="state-block__actions">
                 <a class="btn btn--secondary btn--sm" href="home.html">返回首页</a>
@@ -273,8 +215,7 @@
         <div data-state-block="empty" class="rs-state">
           <div class="state-block" role="status">
             <span class="state-block__icon" data-icon="search" data-icon-size="24"></span>
-            <span class="state-block__title">没有找到这份分享</span>
-            <span class="state-block__text">链接可能不完整，或分享已经被删除。请向分享者确认后再打开。</span>
+            <span class="state-block__title">没有找到这份分享。</span>
             <span class="state-block__actions">
               <a class="btn btn--secondary btn--sm" href="home.html">返回首页</a>
             </span>
@@ -319,17 +260,18 @@
 <div class="interaction-notes">
   <h2>交互说明（report-share）</h2>
   <ul>
-    <li>主题与直达参数 → 工具条「浅色 / 深色」切换整页 token 并写入 <code>localStorage['uispec-theme']</code>；<code>?theme=light|dark</code> 固定主题；<code>?state=normal|loading|empty|error|offline</code> 直达页面状态；<code>?mock=active|partial|no-records|never|generating|failed|revoked|expired</code> 演示分享快照分支。截图：<code>report-share-{light,dark}.png</code>。</li>
-    <li>页面状态 → 工具条「正常 / 加载 / 空 / 错误 / 离线」：加载为「正在打开分享…」+ 报告骨架屏（<code>aria-busy</code>）；空为「没有找到这份分享 / 链接可能不完整，或分享已经被删除。请向分享者确认后再打开。」+「返回首页」；错误为「分享暂时无法读取 / 服务暂时不可用，请稍后再试。」+「重试」；离线为「网络暂时不可用 / 请连接网络后重新读取这份分享。」+「重试」。</li>
+    <li>主题与直达参数 → 工具条「浅色 / 深色」切换整页 token 并写入 <code>localStorage['uispec-theme']</code>；<code>?theme=light|dark</code> 固定主题；<code>?state=normal|loading|empty|error|offline</code> 直达页面状态；<code>?mock=active|partial|no-records|never|generating|failed|not-ready|revoked|expired</code> 演示分享快照分支。截图：<code>report-share-{light,dark}.png</code>、<code>report-share-{loading,empty,error,offline}-{light,dark}.png</code>、<code>report-share-{partial,no-records,never,generating,failed,not-ready,revoked,expired}-{light,dark}.png</code>（页面状态用 <code>?state=</code>、快照分支用 <code>?mock=</code>，均以 <code>?theme=light|dark</code> 各拍一张）。</li>
+    <li>页面状态 → 工具条「正常 / 加载 / 空 / 错误 / 离线」：加载为「正在打开分享…」+ 报告骨架屏（<code>aria-busy</code>）；空为「没有找到这份分享。」+「返回首页」；错误为「分享暂时无法读取 / 服务暂时不可用，请稍后再试。」+「重试」；离线为「网络暂时不可用 / 请连接网络后重新读取这份分享。」+「重试」。</li>
     <li>状态恢复 → 错误与离线「重试」转圈「正在读取…」→ 1.1s 后回到正常态，不弹成功 Toast；空态只保留「返回首页」，不提供「重试」。切换状态会取消未完成的模拟读取。</li>
     <li>页头与导航 → 导航栏「分享的学习报告」（<code>pages.json</code> 标题）+ 返回（<code>backMobile</code>：返回上一页；无历史时回 <code>home.html</code>，原型 <code>data-back="home.html"</code>）；页内 kicker「只读分享」、标题「分享的学习报告」、说明「这是只读分享，不包含登录信息。」（对齐真实页 <code>MobilePageHeader</code>）；不显示底部 TabBar。本页是公开只读页（<code>PUBLIC_PATHS</code> 含 <code>/pages/report-share/report-share</code>），不需要登录，也不显示账号设置入口。</li>
-    <li>报告快照 → 字段对齐公开契约 <code>LearningPeriodReport.publicFields</code>：统计范围、新学 / 复习、有效学习时长、规则建议与依据；不显示 <code>accuracy</code>、<code>reportId</code>、<code>digest</code>、<code>ruleVersion</code>、<code>reportType</code> 等非公开字段，也不把统计写成正式分数（<code>officialScore=false</code>）。</li>
-    <li>规则建议 → 使用 <code>soft</code> 底色给出「建议：…」与「依据：…。这是规则建议，不是已开放的 AI 功能。」；依据代码（<code>MISTAKES</code> / <code>DUE_REVIEW</code> / <code>STARTER</code> / <code>PARTIAL_FACTS</code>）中文化，不显示内部枚举。</li>
-    <li>分享说明 → 「关于这份分享」列出分享状态、到期时间、包含内容与不包含内容；说明「这份报告由分享者主动公开，只保留当时的统计快照。分享者可以随时撤销，但撤销不会影响已看过的内容。」</li>
-    <li>已撤销 → <code>?mock=revoked</code>：报告卡与分享说明收起，显示「这份分享已经撤销 / 分享者已关闭这份报告的公开访问。」+「返回首页」，不提供重试。</li>
-    <li>已过期 → <code>?mock=expired</code>：显示「这份分享已经过期 / 只读链接在分享后 7 天自动失效。」+「返回首页」，不提供重试。</li>
-    <li>统计分支 → <code>?mock=partial</code> 显示「部分统计」徽标、「这部分统计还不完整。」与已有统计，不把缺口当成零分；<code>?mock=no-records</code> 显示「暂无记录 / 这段时间还没有学习记录。」；<code>?mock=never</code> 显示「尚未开始 / 还没有开始学习。这不是能力评分。」；<code>?mock=generating</code> 显示「生成中 / 报告还在生成。」；<code>?mock=failed</code> 显示「未生成 / 报告没有生成，请稍后刷新。」。后四种只保留说明与建议，不渲染统计与时长。</li>
-    <li>页尾入口 → 「开始使用语学星」→ <code>register.html</code>；空态、失效与过期视图的「返回首页」→ <code>home.html</code>。</li>
+    <li>报告快照 → 字段严格对齐公开契约 <code>LearningPeriodReport.publicView</code> / <code>publicFields</code>：<code>availability</code>、<code>copy</code>、<code>periodStart</code>、<code>periodEndExclusive</code>、<code>newItems</code>、<code>reviewItems</code>、<code>durationStatus</code>、<code>durationCopy</code>、<code>activeMillis</code>、<code>suggestion</code>、<code>suggestionBasis</code>；不显示 <code>expiresAt</code>、<code>accuracy</code>、<code>reportId</code>、<code>digest</code>、<code>ruleVersion</code>、<code>reportType</code> 等非公开字段，也不把统计写成正式分数（<code>officialScore=false</code>）。</li>
+    <li>报告卡头 → eyebrow 固定「只读分享」（对齐真实页）；右侧徽标只表达 <code>availability</code>：READY「已汇总」、PARTIAL「部分统计」、EMPTY「暂无记录」、NEVER_STUDIED「尚未开始」、GENERATING「生成中」、FAILED「未生成」、NOT_READY「未就绪」；不把分享状态（ACTIVE）写成「有效分享」。</li>
+    <li>时长文案 → 与 <code>LearningPeriodReport</code> 原文一致：<code>durationStatus=COUNTED</code> 用 DURATION_COUNTED「只统计已记录的有效学习时段。暂停和后台停留没有计入。」；<code>NOT_RECORDED</code> 用 DURATION_MISSING「有效时长还没有记录，不会用间隔冒充。」；<code>activeMillis</code> 为空时不显示时长数值行，只显示 DURATION_MISSING。</li>
+    <li>规则建议 → 文案取服务端 <code>LearningPeriodReport.suggestion()</code> 原文，使用 <code>soft</code> 底色显示「建议：…」与「依据：…。这是规则建议，不是已开放的 AI 功能。」；依据代码（<code>MISTAKES</code> / <code>DUE_REVIEW</code> / <code>STARTER</code> / <code>PARTIAL_FACTS</code> / <code>START</code> / <code>EMPTY_WINDOW</code> / <code>GENERATING</code> / <code>FAILED</code> / <code>NOT_READY</code>）中文化，不显示内部枚举。</li>
+    <li>已撤销 → <code>?mock=revoked</code>：报告卡收起，显示「这份分享已经撤销。」+ 短说明「分享者已关闭这份报告的公开访问。」+「返回首页」，不提供重试。</li>
+    <li>已过期 → <code>?mock=expired</code>：显示「这份分享已经过期。」+ 短说明「只读链接在分享后 7 天自动失效。」+「返回首页」，不提供重试。</li>
+    <li>统计分支 → <code>?mock=partial</code> 显示「部分统计」徽标、PARTIAL_COPY「这部分统计还不完整。」、已有统计与建议「统计还不完整。先看已经记下的活动，不把缺口当成零分。」；<code>?mock=no-records</code>（EMPTY）服务端返回 <code>newItems=0</code> / <code>reviewItems=0</code>，显示「新学 0 / 复习 0」与 DURATION_MISSING；<code>?mock=never</code> 显示「尚未开始 / 还没有开始学习。这不是能力评分。」；<code>?mock=generating</code> 显示「生成中 / 报告还在生成。」；<code>?mock=failed</code> 显示「未生成 / 报告没有生成，请稍后刷新。」与建议「报告没有生成，先不要把它当成学习结果。」；<code>?mock=not-ready</code> 显示「未就绪 / 统计还没准备好，请稍后刷新。」。never / generating / failed / not-ready 的计数为空，不渲染统计行；所有分支都渲染时长说明。</li>
+    <li>页尾 → 正常态没有注册或产品推广出口（真实 <code>report-share.vue</code> 无此出口），只保留页头返回；空态、失效与过期视图的「返回首页」→ <code>home.html</code>。</li>
     <li>真实页差异 → 真实页读取失败（网络或服务）统一落到「没有找到这份分享。」；本稿按 STYLE-BRIEF 将错误与离线单独呈现，并提供重试。真实页共用 <code>MobilePageHeader</code> 会显示设置入口；本页是公开只读页，不把访客引向账号设置。</li>
     <li>文案边界 → 不显示分享引用、分享者身份、账号是否存在、内部错误码或原始状态枚举；撤销与过期分开表述，不泄露报告私有内容。</li>
   </ul>
@@ -351,25 +293,30 @@
   var VALID_STATES = ['normal', 'loading', 'empty', 'error', 'offline'];
   var INITIAL_STATE = VALID_STATES.indexOf(STATE_PARAM) >= 0 ? STATE_PARAM : 'normal';
 
-  /* 对齐 apps/mobile/src/pages/report-share/report-share.vue：公开读取
+  /* 对齐 apps/mobile/src/pages/report-share/report-share.vue 与
+   * services/learning-service/.../LearningPeriodReport.java：公开读取
    * /api/v1/public/learning/report-shares/{ref}，按 ACTIVE / REVOKED / EXPIRED /
-   * NOT_FOUND 呈现；页面公开，不需要登录。数据全部为 mock。 */
+   * NOT_FOUND 呈现；页面公开，不需要登录。数据全部为 mock，不访问服务端。 */
+
+  var DURATION_COUNTED = '只统计已记录的有效学习时段。暂停和后台停留没有计入。';
+  var DURATION_MISSING = '有效时长还没有记录，不会用间隔冒充。';
 
   var VARIANTS = {
     active: {
-      badge: '有效分享',
+      availability: 'READY',
+      badge: '已汇总',
       kind: 'ok',
       copy: '这段统计来自已记录的学习活动。',
       range: '统计范围 10月12日 至 10月19日（北京时间）',
       newItems: 126,
       reviewItems: 240,
       duration: '3 小时 12 分钟',
-      durationNote: '只计已记录的有效学习时段；暂停和后台停留没有计入。',
+      durationCopy: DURATION_COUNTED,
       suggestion: '先订正这段时间里答错的练习。',
-      basis: '这段时间有答错的练习。',
-      infoStatus: '有效，可以打开'
+      basis: '这段时间有答错的练习。'
     },
     partial: {
+      availability: 'PARTIAL',
       badge: '部分统计',
       kind: 'warn',
       copy: '这部分统计还不完整。',
@@ -377,12 +324,12 @@
       newItems: 118,
       reviewItems: 231,
       duration: '3 小时 5 分钟',
-      durationNote: '只计已记录的有效学习时段；暂停和后台停留没有计入。',
-      suggestion: '先看已经记下的活动，不把缺口当成零分。',
-      basis: '部分统计还不完整。',
-      infoStatus: '有效，可以打开'
+      durationCopy: DURATION_COUNTED,
+      suggestion: '统计还不完整。先看已经记下的活动，不把缺口当成零分。',
+      basis: '部分统计还不完整。'
     },
     'no-records': {
+      availability: 'EMPTY',
       badge: '暂无记录',
       kind: 'mut',
       copy: '这段时间还没有学习记录。',
@@ -390,12 +337,12 @@
       newItems: 0,
       reviewItems: 0,
       duration: null,
-      durationNote: '',
+      durationCopy: DURATION_MISSING,
       suggestion: '这段时间没有新的练习记录。',
-      basis: '本期没有可统计的练习记录。',
-      infoStatus: '有效，可以打开'
+      basis: '本期没有可统计的练习记录。'
     },
     never: {
+      availability: 'NEVER_STUDIED',
       badge: '尚未开始',
       kind: 'mut',
       copy: '还没有开始学习。这不是能力评分。',
@@ -403,12 +350,12 @@
       newItems: null,
       reviewItems: null,
       duration: null,
-      durationNote: '',
+      durationCopy: DURATION_MISSING,
       suggestion: '先完成一次练习，再看建议。',
-      basis: '还没有可统计的学习活动。',
-      infoStatus: '有效，可以打开'
+      basis: '以完成一次练习作为起点。'
     },
     generating: {
+      availability: 'GENERATING',
       badge: '生成中',
       kind: 'warn',
       copy: '报告还在生成。',
@@ -416,12 +363,12 @@
       newItems: null,
       reviewItems: null,
       duration: null,
-      durationNote: '',
+      durationCopy: DURATION_MISSING,
       suggestion: '报告生成后再看建议。',
-      basis: '报告尚未生成。',
-      infoStatus: '有效，可以打开'
+      basis: '报告还在生成。'
     },
     failed: {
+      availability: 'FAILED',
       badge: '未生成',
       kind: 'bad',
       copy: '报告没有生成，请稍后刷新。',
@@ -429,22 +376,36 @@
       newItems: null,
       reviewItems: null,
       duration: null,
-      durationNote: '',
-      suggestion: '先不要把它当成学习结果。',
-      basis: '报告生成失败；分享快照保留当时的结果。',
-      infoStatus: '有效，可以打开'
+      durationCopy: DURATION_MISSING,
+      suggestion: '报告没有生成，先不要把它当成学习结果。',
+      basis: '报告生成失败。'
+    },
+    'not-ready': {
+      availability: 'NOT_READY',
+      badge: '未就绪',
+      kind: 'mut',
+      copy: '统计还没准备好，请稍后刷新。',
+      range: '统计范围 10月12日 至 10月19日（北京时间）',
+      newItems: null,
+      reviewItems: null,
+      duration: null,
+      durationCopy: DURATION_MISSING,
+      suggestion: '统计准备好之后，再按今日任务起步。',
+      basis: '统计还没有准备好。'
     }
   };
 
   var UNAVAILABLE = {
     revoked: {
       icon: 'lock',
-      title: '这份分享已经撤销',
+      title: '这份分享已经撤销。',
+      docTitle: '这份分享已经撤销',
       text: '分享者已关闭这份报告的公开访问。'
     },
     expired: {
       icon: 'clock',
-      title: '这份分享已经过期',
+      title: '这份分享已经过期。',
+      docTitle: '这份分享已经过期',
       text: '只读链接在分享后 7 天自动失效。'
     }
   };
@@ -462,7 +423,6 @@
   var durationNoteEl = document.getElementById('share-duration-note');
   var suggestionEl = document.getElementById('share-suggestion');
   var basisEl = document.getElementById('share-basis');
-  var infoStatusEl = document.getElementById('share-info-status');
   var unavailableIcon = document.getElementById('unavailable-icon');
   var unavailableTitle = document.getElementById('unavailable-title');
   var unavailableText = document.getElementById('unavailable-text');
@@ -489,7 +449,7 @@
     unavailableIcon.className = 'state-block__icon state-block__icon--warn';
     unavailableTitle.textContent = item.title;
     unavailableText.textContent = item.text;
-    document.title = item.title + ' · 语学星移动端 UI 稿';
+    document.title = item.docTitle + ' · 语学星移动端 UI 稿';
   }
 
   function showReport(kind) {
@@ -501,7 +461,6 @@
     badge.textContent = item.badge;
     copyEl.textContent = item.copy;
     rangeEl.textContent = item.range;
-    infoStatusEl.textContent = item.infoStatus;
 
     var hasCounts = typeof item.newItems === 'number' && typeof item.reviewItems === 'number';
     statsEl.hidden = !hasCounts;
@@ -512,9 +471,8 @@
 
     var hasDuration = !!item.duration;
     metricsEl.hidden = !hasDuration;
-    durationNoteEl.hidden = !item.durationNote;
     if (hasDuration) durationEl.textContent = item.duration;
-    if (item.durationNote) durationNoteEl.textContent = item.durationNote;
+    durationNoteEl.textContent = item.durationCopy;
 
     suggestionEl.textContent = '建议：' + item.suggestion;
     basisEl.textContent = '依据：' + item.basis + '这是规则建议，不是已开放的 AI 功能。';
@@ -550,7 +508,7 @@
     });
     var titles = {
       loading: '正在打开分享…',
-      empty: '没有找到这份分享',
+      empty: '没有找到这份分享。',
       error: '分享暂时无法读取',
       offline: '网络暂时不可用'
     };
