@@ -440,3 +440,29 @@
 - 暂无材料 / 重新读取 → 正常态没有材料时显示真实页空材料卡「暂无材料 / 暂时没有可用的授权听力材料。」+「重新读取」；点击转圈「正在读取…」1.1s 后重新渲染：有材料则显示材料卡，没有材料则状态条转为「当前没有可用内容」，不弹 Toast。
 - 登录门禁 → 对齐真实页 `onMounted`：先 `session.restore()`，未登录直接跳转 `login.html?returnTo=%2Fpages%2Fb3-listening%2Fb3-listening`，不渲染听力内容；原型以无权限态承载该分支，登录页回跳地址与真实页一致。
 - 文案边界 → 不显示反馈代码、内容版本号、媒体 ID 或原始状态枚举；时间统一为 `00:00` 格式，CEFR 级别只作小字标识；播放与禁用状态同时用文字说明，不只依赖颜色。真实页没有页尾出口，本稿不新增「学习报告」「单词复习」入口。
+
+### b11-listening（听力与 Language Clips）
+
+对应页面：`pages/b11-listening.html`；真实实现参照 `apps/mobile/src/pages/b11-listening/b11-listening.vue`、`apps/mobile/src/stores/b11-learning.ts`（`loadListening` / `setPlaybackRate` / `setABPoint` / `clearAB` / `selectLanguageClip` / `saveMediaProgress` / `submitDictationAnswer` / `syncOffline`）、`apps/mobile/src/components/b11/B11StatusPanel.vue`、`apps/mobile/src/api/b11.ts` 的听力接口、`apps/mobile/src/platform/b11-foundation.ts` 的 `b11.status` / `b11.listening` / `b11.common` 文案与 `packages/i18n/src/mobile-experience.ts` 的 `pages.b11-listening` 文案。真实页 `onMounted` 为 `closed practice: no live load`，模板顶部固定显示 `data-closed-practice` 关闭说明（音频素材尚未上传到媒体库），材料模板分支在素材上线前不可达；原型默认演示该关闭态，并用 `?mock=` 预览上线后的模板分支。
+
+- 主题与直达参数 → 工具条「浅色 / 深色」切换整页 token 并写入 `localStorage['uispec-theme']`；`?theme=light|dark` 固定主题；`?state=normal|loading|empty|error|forbidden|offline` 直达页面状态；`?mock=ready|empty|no-media|revoked|expired|queued|ab|clip|filled|ok|wrong|submit-error|submit-offline|save-error|degraded|motion-off` 演示材料模板与操作结果（`mock=empty` 为正常态内的空面板；`save-error` 需在页面内点「保存播放进度」观察首次失败）。截图：`b11-listening-{light,dark}.png` 与 `b11-listening-{loading,empty,error,forbidden,offline,ready,no-media,revoked,expired,queued,ab,clip,filled,ok,wrong,submit-error,submit-offline,degraded,motion-off}-{light,dark}.png`。
+- 页面状态 → 工具条「正常 / 加载 / 空 / 错误 / 无权限 / 离线」：加载为 `role=status`「正在加载内容」+ 骨架屏（`aria-busy`，取 `b11.status.loading`）；空为「当前没有可用内容 / 内容准备好后会在这里显示。」+「重试」（`b11.status.empty` + `b11.common.noSample`）；错误为「服务暂时不可用 / 听力服务暂时不可用；本地进度仍会保留。」+「重试」（`b11.status.error` + `loadListening` catch 兜底说明）；无权限为「当前会话没有访问权限 / 登录后可以继续听力练习。」+ 唯一「去登录」→ `login.html?returnTo=%2Fpages%2Fb11-listening%2Fb11-listening`，不提供重试；离线为「暂时无法连接服务 / 网络暂时不可用；当前页面和待同步队列仍保留。」（`b11.status.offline` + `b11ErrorText` 网络分支）+「重试」+ 待同步队列行「待同步 1 / 播放进度 · 等待联网后提交」+「恢复同步」。
+- 状态恢复 → 空、错误与离线「重试」转圈「正在读取…／正在重试…」→ 1.1s 后回到正常态，不弹成功 Toast；离线队列「恢复同步」转圈「正在同步…」→ 1.1s 后回到正常态、清空队列并显示「待同步操作已由服务端确认。」（`syncOffline` 成功文案）；无权限只保留「去登录」。
+- 页头与导航 → 导航栏「听力与 Language Clips」（`pages.json` 标题）+ 返回（`backMobile` 语义，无历史时回 `home.html`，原型 `data-back="home.html"`），右上角设置 → `settings.html`；页内 kicker「听力室」（`ZH_KICKERS`）、标题「听见更大的世界。」、说明「逐句精听、循环片段，让耳朵慢慢熟悉语言。」（`pages.b11-listening`）；不显示底部 TabBar。
+- 关闭说明 → 对齐真实页 `data-closed-practice`：锁图标 +「听力」+「听力练习」+「即将开放」徽标 +「音频素材尚未上传到媒体库，播放地址无法签发；素材上线后即可在这里播放并听写。」+「回到可用学习」→ `today.html`；正常态默认显示关闭说明与状态面板，带任一 `?mock=` 打开时隐藏关闭说明并渲染材料模板；切换页面状态时始终不显示该说明，避免与空 / 错误态叠加。
+- 状态面板 → 等价 `B11StatusPanel`：idle「正在准备内容」、loading「正在加载内容」、ready「内容已就绪」（只保留画质、动效与临时提示行，不再套空卡片）、empty「当前没有可用内容」、offline「暂时无法连接服务」、forbidden「当前会话没有访问权限」、expired「播放授权已过期」、recovering「正在保留本地进度 / 联网后可重试。」、error「服务暂时不可用」；empty / offline / forbidden / expired / error 带「重试」，有队列时同时显示「待同步 n」+「恢复同步」。ready 下的面板消息承载播放授权提示、片段切换提示与同步结果，不重复听写判分。
+- 材料信息 → 顶部状态面板下为材料卡：CEFR 级别、时长与段号（「B1 · 2 分 24 秒 · 第 1 段 / 共 4 段」）、英文标题与中文授权徽标（授权有效 / 已过期 / 已撤销）；不显示媒体 ID、内容版本号或原始状态枚举（真实页 `内容版本` 行按不泄露原始版本字符串规则省略）。
+- 画质 → 状态面板「画质：舒适」打开底部弹层，四档「精致 / 舒适 / 轻量 / 省资源」（`b11.status.quality*`），当前档带 brand 对勾与 `aria-pressed`；选择后更新面板文案并关闭弹层，焦点回到画质按钮；选「省资源」时波形切换为静态时间轴。遮罩、取消与 Esc 均可关闭。
+- 动效 → 状态面板「关闭动效 / 开启动效」（`b11.status.motionOff` / `status.motionOn`）切换文案与 `.is-motion-off`；关闭后波形改为「静态时间轴 / 已关闭波形动效，播放与进度仍然可用。」，进度过渡停止，播放与 A-B 循环仍可用；`?mock=motion-off` 直接以关闭状态打开；不改动全局主题。
+- 播放 / 暂停 → 有授权播放地址时「播放」从当前位置推进波形与「00:00 / 02:24 · 0%」，播放到末尾自动停止；「暂停」停在当前时间，不弹 Toast。`?mock=no-media`、`?mock=revoked`、`?mock=expired` 时播放、暂停、速度、A/B 与「保存播放进度」进入真实禁用态（surface 底、mut 字、无阴影、not-allowed），说明分别改为「当前内容没有授权播放地址；保留字幕与练习，未伪造音频。」「媒体权益已撤销，不能继续播放。」「播放授权已过期；重新读取后可再次授权。」。
+- A-B 循环 → 「设 A 点 / 设 B 点」以当前位置打点，行内显示「A 00:08 · B 00:16 · 仅在 A、B 都有效时循环。」；只设一点时另一端显示「—」；两点都有效且播放越过 B 点时回到 A 点；「清除 A-B」在任一点存在时出现，点击后隐藏说明行；时间统一 `00:00` 格式，不显示毫秒。
+- 播放速度 → 点击「1x」打开底部弹层，六档 0.5x / 0.75x / 1x / 1.25x / 1.5x / 2x（对齐真实页 `PLAYBACK_RATES`），当前档带 brand 对勾与 `aria-pressed`；选择后立即生效并关闭弹层，焦点回到速度按钮。`?mock=degraded` 显示「当前平台未声明音高保持能力；速度控制仍可用，已记录降级。」（`enableUniAudioPitchPreservation` 降级回调）。
+- Language Clips → 片段横向滚动，显示标题与时间范围（「Ordering coffee · 00:08–00:16」）；点击后 chip 变为 brand 描边与 soft 底、`aria-pressed` 同步，面板提示「已切换 Language Clip；播放地址仍需权益清单确认。」（真实页 `selectClip` 文案），不自动跳转播放位置。
+- 字幕 / 音变时间轴 → 逐句 token 双列展示英文与 `00:00–00:00` 时间；进入页面即渲染，不依赖播放状态；播放与字幕不伪造未授权的音频。
+- 听写提交 → 未填写答案时点击「提交听写」，听写卡内出现 bad 色「请先读取真实听力会话并填写听写答案。」（`submitDictationAnswer` 守卫）并聚焦输入框；正常提交转圈「正在提交…」→ 0.9s 后出现结果块：答对为 ok 底「规则判定正确」、答错为 bad 底「已记录错题」，均附「已保存本次听写。」，焦点移到结果块。原型以答案是否包含「coffee」模拟规则判分，不显示 `feedbackCodes`。
+- 提交失败 / 离线提交 → `?mock=submit-error` 对齐 `submitDictationAnswer` catch 兜底：卡内 bad 色「听写提交失败，答案仍保留在当前页面。」，答案不变，再次提交可正常判分；`?mock=submit-offline` 对齐 `isB11OfflineError` 分支：卡内 warn 色「听写答案已保留到待同步队列，服务端尚未判定。」，状态面板同步为「暂时无法连接服务」并显示「待同步 1」+「恢复同步」，答案与材料保留；同步后清除离线标记，可再次提交。
+- 保存播放进度 → 有授权播放地址时启用；点击转圈「正在保存…」→ 1s 后显示 ok 提示「播放进度已由服务端确认。」（`saveMediaProgress` 成功文案），不弹 Toast；`?mock=save-error` 首次保存失败改为状态面板 recovering「正在保留本地进度 / 进度未确认；联网后可恢复。」+「待同步 1」+「恢复同步」，位置仍在页面保留，同步成功后恢复 ready 并提示「待同步操作已由服务端确认。」。
+- 授权失效 → `?mock=expired`（404 / 410 → `expired`）：面板「播放授权已过期」+「重试」，播放相关按钮禁用；「重试」1.1s 后重新获得授权、恢复可播放。`?mock=revoked`（`rightsStatus === 'REVOKED'`）：面板 forbidden「当前会话没有访问权限 / 当前媒体权益已撤销，字幕与历史进度不会伪造为可播放。」，字幕与听写仍可查看，播放相关按钮禁用。
+- 登录门禁 → 对齐真实页 `load`：先 `session.restore()`，未登录跳转登录页、不渲染听力内容；原型以无权限态承载该分支，回跳地址与其它 b11 页面一致。
+- 切换状态副作用 → 离开正常态会关闭画质与速度弹层、停止模拟播放、作废未完成的读取 / 同步 / 保存 / 提交计时并恢复按钮；切回正常态保留当前位置、A-B、片段与听写内容。
+- 文案边界 → 不显示反馈代码、内容版本号、媒体 ID 或原始状态枚举；授权状态同时用中文徽标与文字说明，不只依赖颜色。真实页没有页尾出口，本稿不新增「学习报告」「单词复习」入口。
