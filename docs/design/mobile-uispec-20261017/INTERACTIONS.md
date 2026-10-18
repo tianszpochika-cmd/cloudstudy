@@ -347,3 +347,26 @@
 - 画质 → 顶部「画质 · 舒适」打开底部弹层，四档「精致 / 舒适 / 轻量 / 省资源」；当前档带 brand 对勾与 `aria-pressed`，选择后更新顶部文案并关闭弹层，焦点回到画质按钮；遮罩、取消与 Esc 均可关闭（对齐 `B10StatusPanel` 的画质选择）。
 - 导航 → 二级页：导航栏返回按 `backMobile`——返回上一页，无历史时回 `home.html`，右上角设置 → `settings.html`，不显示底部 TabBar（TabBar「练习」指向 `b2-practice.html`）。
 - 文案边界 → 不显示内部错误码、算法版本、批次 ID 或原始状态枚举；来源与掌握度用中文徽标表达，待同步与失效状态同时用文字说明，不只依赖颜色。
+
+### b3-grammar（语法结构）
+
+对应页面：`pages/b3-grammar.html`；真实实现参照 `apps/mobile/src/pages/b3-grammar/b3-grammar.vue`、`apps/mobile/src/components/b10/B10StatusPanel.vue`、`B10ExerciseCard.vue`、`B10FeedbackCard.vue`、`apps/mobile/src/domain/b10.ts`、`apps/mobile/src/platform/b10-foundation.ts` 的 `b10.grammar` 文案与 `packages/i18n/src/mobile-experience.ts` 的 `pages.b3-grammar` 文案。真实页由 `b10LearningApi.listGrammarPoints` 读取语法知识树，再按选中知识点读取长难句结构图、创建语法会话，提交顺序 / 仿写 / 病句改错后由服务端规则返回反馈；原型用 mock 知识点与句法结构在同一路由内演示。
+
+- 主题与直达参数 → 工具条「浅色 / 深色」切换整页 token 并写入 `localStorage['uispec-theme']`；`?theme=light|dark` 固定主题；`?state=normal|loading|empty|error|forbidden|offline` 直达页面状态；`?mock=degraded|feedback-ok|feedback-bad|stale|no-graph|submit-error` 演示线性句法、提交命中 / 需要修复、版本失效、无可解析长难句与提交失败。截图：`b3-grammar-{light,dark}.png` 与各状态截图。
+- 页面状态 → 工具条「正常 / 加载 / 空 / 错误 / 无权限 / 离线」：正常为语法知识树、长难句 X 光机与规则练习；加载为 `role=status`「正在加载学习内容…」+ 骨架屏（`aria-busy`）；空对齐 `b10.status.empty` / `b10.grammar.noGraph`「暂时没有可用的句法结构。」+ `b10.status.noSample`「内容准备好后会在这里显示。」+「重试」；错误为「语法知识树暂时不可用 / 请检查网络后重试；当前顺序与草稿不会被清空。」+「重试」；无权限为「当前会话没有访问权限 / 登录后可以继续学习语法。」+ 单个「去登录」→ `login.html?returnTo=%2Fpages%2Fb3-grammar%2Fb3-grammar`（不提供重试）；离线为「网络暂时不可用 / 待同步不等于已结算。」+「重试」。
+- 状态恢复 → 空、错误与离线「重试」转圈「正在读取…／正在重试…」→ 1.1s 后回到正常态，不弹成功 Toast；无权限只保留「去登录」。
+- 切换状态副作用 → 离开正常态会关闭画质弹层、取消未完成的提交计时并恢复按钮，不出现延迟反馈；切回正常态保留当前知识点、积木顺序与已填槽位。
+- 页头 → 导航栏「语法结构」+ 返回（`backMobile`：返回上一页；无历史时回首页，原型 `data-back="home.html"`），右上角设置 → `settings.html`；页内 kicker「句子实验室」、标题「读懂句子的秘密。」、说明「拆解结构、调整语序，把语法变成表达的底气。」（`pages.b3-grammar`）；不显示底部 TabBar。
+- 语法知识树 → 顶部「语法知识树 · 3 个知识点」与「画质 · 舒适」同排；三个知识点 chip 单选，选中项 brand 描边与 `aria-pressed`，命中区 44px；下方展示当前知识点代码、标题、中文说明、结构公式、前置知识点与掌握投影。切换知识点时显示 `role=status`「正在读取语法结构…」、chip 短暂禁用，600ms 后更新内容并重置积木顺序、槽位与反馈（对齐真实页 `loadPoint` 的选择上下文重置）。
+- 长难句 X 光机 → 展示原句 20px、中文翻译与按角色拆分的结构行（主语 / 定语从句 / 谓语 / 状语），角色用文字标注；下方「依存关系 n 条」列出修饰、宾语、地点状语等关系（对齐真实页 `graph.edges`）；右上徽标标明「结构图 / 线性句法」。
+- 画质降级 → 顶部「画质 · 舒适」打开底部弹层，四档「精致 / 舒适 / 轻量 / 省资源」；选择「省资源」后句子卡切换为线性句法：隐藏依存关系、显示「线性切片」与 warn 说明「画质为省资源，结构图已切换为线性句法。」（对齐 `b10.grammar.degraded` 与 `AdaptivePerformanceEngine`），徽标改为「线性句法」；选回其他档位恢复结构图。`?mock=degraded` 直接以省资源档打开。遮罩、取消与 Esc 均可关闭，选择后焦点回到画质按钮。
+- 调整句子积木顺序 → 每行积木带序号、文本与上移 / 下移 44px 按钮；首行上移、末行下移为真实禁用态（透明底、mut 字、虚线边框、not-allowed）；移动后立即重排并把焦点移回相邻按钮（对齐真实页 `moveBlock` 与 `B10ExerciseCard` 的无拖拽兼容按钮）。
+- 提交句子顺序 → 按钮转圈「正在提交…」→ 0.9s 后出现规则反馈卡：顺序与参考一致为 ok 底「规则命中」，否则为 bad 底「需要修复」并给出原因；反馈卡包含「答案已保存，记录可在学习报告中查看。」、规则依据（标签 / 解释 / 原句）与下一步，来源徽标「句子积木」，焦点移到反馈标题（对齐 `B10FeedbackCard` 的 `savedReceipt` / `feedbackText` / `nextQuestion` / `evidence`）。
+- 提交失败 → `?mock=submit-error`（对齐 `submitBlocks` 的 catch 分支）：积木区显示 bad 色 `role=alert`「句子积木提交失败，当前顺序已保留。」，顺序不变，可再次提交；错误在下一次提交开始时清除。
+- 按结构槽位仿写 → 两个槽位（主语 / 定语从句）带占位提示；未填满时「提交结构仿写」为真实禁用态（surface 底、mut 字、虚线边框、not-allowed），填满后可提交，转圈「正在提交…」0.9s 后显示「规则命中」反馈，来源徽标「结构仿写」（对齐 `b10.grammar.imitate` 与 `submitImitation`）。
+- 病句改错 → 固定病句「The book what you lent me is on the desk.」；输入为空时「提交改错」为真实禁用态；提交转圈 0.8s 后按改法给出反馈：包含 that 为「规则命中」，否则为「需要修复」并提示「还需要指出错误位置：what 不能引导定语从句。」，来源徽标「病句改错」（对齐 `b10.grammar.correction`、`submitCorrection` 与真实页「规则反馈与自评」说明）。
+- 版本失效 → `?mock=stale`（对齐 `contentVersionStale` → `status='stale'`）：显示 warn 横幅「内容版本已失效 / 当前版本已下线或发生变化，请重新读取。」+「重试」，三个提交按钮与知识点 chip 禁用；点击转圈「正在读取…」0.9s 后横幅消失、提交恢复，顶部显示 ok 色 `role=status`「已准备好，可以开始 / 语法结构已更新。」（对齐 `b10.status.ready`），2.4s 后淡出，不弹 Toast。
+- 无可解析长难句 → `?mock=no-graph`（对齐 `loadPoint` 的「当前知识点还没有发布可解析的长难句。」分支）：隐藏句子卡与反馈卡，显示 info 横幅「当前知识点还没有发布可解析的长难句。/ 可以先在下方完成病句改错，或切换其他知识点。」，病句改错仍可用。
+- 直接演示反馈 → `?mock=feedback-ok` 直接显示顺序正确的「规则命中」反馈；`?mock=feedback-bad` 显示「需要修复」反馈与规则依据，便于核对深色对比度与禁用态。
+- 出口 → 页尾两个次按钮：错题与报告 → `b10-report.html`、写作练习 → `b3-writing.html`；正常态下始终保留。
+- 文案边界 → 不显示内部错误码、反馈代码、规则版本号或原始题型枚举；知识点只以小字标注 CEFR 级别；反馈用「规则命中 / 需要修复」与规则依据表达，不只依赖颜色。
