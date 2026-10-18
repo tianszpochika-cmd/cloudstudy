@@ -732,3 +732,21 @@
 - 反馈与焦点 → 成功与失败 / 说明反馈都显示在卡内列表（或读取失败条）下方，带图标与文字（不只靠颜色）；操作完成后焦点移到反馈条；对话框打开时焦点进入「取消」，Esc 关闭。
 - 登录门禁 → 对齐真实页 `onShow`：先 `ensureMobilePageAccess`，未登录直接跳转登录页，不渲染设备页；原型以无权限态承载该分支（设计新增）。
 - 文案边界 → 不显示原始状态枚举、内部错误码、会话 token 或设备指纹；退出结果以服务端确认为准，刷新失败时明确要求用户刷新核对，不把请求提交说成列表已更新。
+
+## b6-platform（画质与设备）
+
+对应页面：`pages/b6-platform.html`；真实实现参照 `apps/mobile/src/pages/b6-platform/b6-platform.vue`、`apps/mobile/src/api/b6.ts`（设备适配 / 无障碍说明）、`apps/mobile/src/domain/b6.ts`、`packages/performance/src/index.ts` 的 `AdaptivePerformanceEngine`、`apps/mobile/src/platform/experience.ts` 的 `setMobileQuality`、`apps/mobile/src/pages.json` 标题、`packages/i18n/src/mobile-experience.ts` 的 `pages.b6-platform` 与 `ZH_KICKERS`。原型全部使用 mock 数据，不访问服务端。
+
+- 主题与直达参数 → 工具条「浅色 / 深色」切换整页 token 并写入 `localStorage['uispec-theme']`；`?theme=light|dark` 固定主题；`?state=normal|loading|error|forbidden` 直达页面状态；`?mock=load-error|no-matrix|refresh-error|degrade` 演示首次读取失败、适配清单缺失、刷新失败与自动降级；`?level=ultra|high|medium|performance` 指定初始画质。截图（每项 `?theme=light|dark` 各一张）：`b6-platform-{light,dark}.png`；`b6-platform-{loading,error,forbidden}-{light,dark}.png`；`b6-platform-{load-error,no-matrix,refresh-error,degrade}-{light,dark}.png`。
+- 页头与导航 → 导航栏「画质与设备」（`pages.json` 标题）+ 返回 `settings.html`（真实入口为「设置 › 性能帮助与设备适配说明」，「我的」也有同名入口）；页内 kicker「设备适配」（`ZH_KICKERS`）、标题「让学习，流畅又舒适。」、说明「选择适合设备的画质，了解无障碍与兼容支持。」（`packages/i18n` 的 `pages.b6-platform`）；不显示底部 TabBar。
+- 内容顺序 → 真实页先「目标端矩阵」后「画质与降级」；本稿按主任务把可操作的画质卡放在最前，设备适配与无障碍作为说明性内容依次在后（**设计调整**，不改变内容与接口）。
+- 画质档位 → 四档「超高 / 高 / 均衡 / 省资源」，默认「高」；每档附一句效果说明（3D 与完整动效 / 3D 与适度动效 / 2.5D 与基础动效 / 2D 静态，关闭动效）。选择后立即在本机生效并写入 `localStorage['uispec-quality-level']`，卡头徽标与选项同步更新，选项下方显示「画质已切换为「均衡」，本机立即生效。」（`role="status"`），不弹 Toast、不发服务端请求；选项为 `role="radiogroup"` + `role="radio"`，方向键 / Home / End 切换并把焦点留在新档位；画质只影响本机显示。文案统一说明：真实 b6 页用「极致 / 高清 / 标准 / 省电」，与设置页同一 `PerformanceLevel` 的「超高 / 高 / 均衡 / 省资源」不一致，本稿统一为设置页文案并**需同步实现**。
+- 自动降级 → `?mock=degrade` 打开即呈现「自动降级后」的结果：画质在当前档位基础上下调一档（默认「高」→「均衡」），选项下方显示 warn 色「检测到设备压力，画质已自动降为「均衡」。」；`?mock=degrade&level=performance` 时已是最低档，显示「检测到设备压力，画质已自动降为「省资源」。」。真实页由 `AdaptivePerformanceEngine` 在帧率低于 30、内存压力、离线或存储压力时自动降级，本稿只模拟该结果与提示；这是设计新增的状态呈现，需同步实现。
+- 刷新 → 设备适配卡头「刷新」转圈并禁用（文案保持「刷新」）→ 0.9s 后重新读取；成功时隐藏失败条、恢复卡内列表，并在页头下方短暂显示「设备适配信息已更新。」（2.6s 后消失），不弹 Toast；画质选项在读取期间仍可操作（画质为本机设置，**设计明确**）。`?mock=refresh-error` 首次刷新失败后按钮恢复可点，再次刷新 / 重试即成功（便于反复演示同一分支）。
+- 读取失败 → 首次读取失败（`?mock=load-error`）或刷新失败（`?mock=refresh-error`）时，页头下方显示 warn 条「网络不可用，当前使用本地性能设置。」+「重试」，设备适配与无障碍卡内改为单行「…暂时无法读取，请稍后刷新。」，画质卡保持完整可用；「重试」转圈「正在重试…」→ 0.9s 后成功读取，隐藏失败条并恢复两张卡与「设备适配信息已更新。」提示。
+- 设备适配卡 → eyebrow「兼容」，标题「设备适配」，右上「刷新」；七行目标端：移动网页 / 网页版（已就绪 ok 徽标）、iOS App / Android App / iPad（待验证 warn 徽标）、微信小程序 / Windows 桌面版（计划中 mut 徽标）；每行只显示中文平台名、一句使用方式与状态徽标，不显示 `platformCode`、优先级枚举、构建状态枚举、矩阵版本或内部编号。卡尾说明「待验证的目标端尚未完成真机验收，不代表已上线。」（**设计新增**：真实页直接平铺英文状态与版本串）。`?mock=no-matrix` 时列表隐藏，只显示「设备适配清单暂时无法读取，请稍后刷新。」。
+- 无障碍卡 → eyebrow「无障碍」，标题「无障碍替代路径」，右上「3 项」；三行：键盘与焦点、颜色不是唯一信号（ok 圆形勾）、读屏与真机验证（warn 感叹号 +「待验证」徽标，徽标单列一行避免标题折断）。真实页对三项都渲染绿色 ✓，本稿把仍在进行中的真机 / 读屏验证标为待验证，避免把未完成的检查说成已通过（**设计新增，需同步实现**）。
+- 页面状态 → 加载为「正在读取设备适配信息…」+ 三张卡骨架屏（`aria-busy`）；错误为单行「设备适配信息暂时无法读取。」+「画质仍可在本机调整，不受影响。」+「重试」「继续调整画质」；无权限为「登录后查看设备适配与画质设置。」+「去登录」→ `login.html?returnTo=%2Fpages%2Fb6-platform%2Fb6-platform`（真实页 `ensureMobilePageAccess` 未登录直接跳转，本态为设计新增）。本页没有用户内容列表，故不设整页空态；空数据以卡内单行文案承载（`?mock=no-matrix`）。
+- 状态恢复 → 工具条切换离开正常态会取消未完成的刷新 / 重试计时并恢复按钮；错误态「重试」转圈 1.0s 后回到正常态，不弹成功 Toast；「继续调整画质」直接回到正常态，保留失败条与卡内不可读说明，并把焦点移到第一个画质选项，方便键盘用户继续操作；切回正常态恢复按 `?mock` 预置的失败条与 `?mock=degrade` 的降级结果。
+- 登录门禁 → 对齐真实页 `onShow`：先 `ensureMobilePageAccess`，未登录直接跳转登录页，不渲染本页；原型以无权限态承载该分支。
+- 文案边界 → 不显示 `platformCode`、`matrixVersion`、原始构建 / 证据状态枚举、纹理 MB、粒子数或内部错误码；不上线未验证的目标端，不把「待验证 / 计划中」写成已支持。
