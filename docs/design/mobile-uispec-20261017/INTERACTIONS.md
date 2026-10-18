@@ -543,12 +543,12 @@
 
 - 主题与直达参数 → 工具条「浅色 / 深色」切换整页 token 并写入 `localStorage['uispec-theme']`；`?theme=light|dark` 固定主题；`?state=normal|loading|empty|error|forbidden|offline` 直达页面状态；`?mock=ready|weekly|no-mistakes|not-practiced|no-report|partial|stale|share|retry-error` 演示模板分支与操作结果。截图：`b10-report-{light,dark}.png` 与 `b10-report-{loading,empty,error,forbidden,offline,weekly,no-mistakes,not-practiced,no-report,partial,stale,share,retry-error}-{light,dark}.png`（页面状态用 `?state=`、模板分支用 `?mock=`，均以 `?theme=light|dark` 各拍一张）。
 - 页面状态 → 工具条「正常 / 加载 / 空 / 错误 / 无权限 / 离线」：加载为「正在加载学习内容」+ 错题与报告骨架屏（`aria-busy`）；空为「当前没有待修复错题 / 这次练习都答对了」+「继续练习」→ `b2-practice.html`（`b10.report.noMistakes` + `emptyBook(attemptCount, 0).copy`）；错误为「错题本暂时没有读出来 / 错题服务暂时不可用。」+「重试」（`READ_FAILED_COPY`）；无权限为「当前会话没有访问权限 / 登录后可以继续查看错题与报告。」+ 单个「去登录」→ `login.html?returnTo=%2Fpages%2Fb10-report%2Fb10-report`（不提供重试）；离线为「网络暂时不可用 / 待同步不等于已结算。」+「重试」。切换离开正常态会关闭画质弹层、取消未完成的订正 / 分享 / 读取计时并恢复按钮。
-- 状态恢复 → 空、错误与离线「重试」转圈 → 1.1s 后回到正常态，不弹成功 Toast；无权限只保留「去登录」。
+- 状态恢复 → 空态只有「继续练习」动作（不提供「重试」）；错误与离线「重试」转圈 → 1.1s 后回到正常态，不弹成功 Toast；无权限只保留「去登录」；状态条 stale / error / offline 的「重试」同样转圈「正在读取…」后回到正常态。
 - 页头与导航 → 导航栏「错题与报告」（`pages.json` 标题）+ 返回（`backMobile`：返回上一页；无历史时回 `home.html`，原型 `data-back="home.html"`），右上角设置 → `settings.html`；页内 kicker「看看你的进步」（`ZH_KICKERS`）、标题「看见进步，找到下一步。」、说明「回顾学习记录，订正错题，让薄弱处慢慢变强。」（`pages.b10-report`）；不显示底部 TabBar（TabBar「练习」指向 `b2-practice.html`）。
 - 状态条 → 等价 `B10StatusPanel`：idle「准备开始」、loading「正在加载学习内容」、ready「已准备好，可以开始 / 错题记录与报告已读取。」、empty「当前没有可用内容」、offline「网络暂时不可用 / 待同步不等于已结算。」、stale「内容版本已失效 / 当前版本已下线或发生变化，请重新读取。」、error「服务暂时不可用」；error / offline / stale 右侧出现「重试」（`status.retry`），其余状态只保留画质按钮。状态条下方始终显示「错题本只保留整次答错的练习。」（`ZERO_ONLY_COPY`）。
 - 画质 → 状态条「画质 · 舒适」打开底部弹层，四档「精致 / 舒适 / 轻量 / 省资源」（`B10StatusPanel` 档位），当前档带 brand 对勾与 `aria-pressed`；选择后更新文案并关闭弹层，焦点回到画质按钮；遮罩、取消与 Esc 均可关闭。
 - 报告周期 → 「日报 / 周报」分段控件（`role=tablist`，`aria-selected`）切换后状态条短暂显示「正在加载学习内容」，0.7s 后用该周期更新统计范围、新学 / 复习、累计时长、规则建议与学习报告分数，不改动错题列表；切换期间不可重复触发。
-- 错题与错误原因 → 卡片标题取 `b10.report.mistakes`「错题与错误原因」，右上角「共 n 道」；每道错题显示错误分类、题干、闭环状态（待补救 / 待次日验证 / 重新打开 / 本次补救已通过，warn 或 ok 徽标）、掌握状态与规则原因（标签 · 依据）。闭环文案走 `closureLabel` / `reportLabels`，不显示内部枚举；已掌握（`MASTERED`）的错题按钮为真实禁用态（surface 底、mut 字、实线边框、not-allowed，复用 `.btn:disabled`）。
+- 错题与错误原因 → 卡片标题取 `b10.report.mistakes`「错题与错误原因」，真实页没有数量角标，本稿同样不显示；每道错题显示错误分类、题干、闭环状态（待补救 / 待次日验证 / 重新打开 / 本次补救已通过，warn 或 ok 徽标）、掌握状态与规则原因（标签 · 依据）。闭环文案走 `closureLabel` / `reportLabels`，不显示内部枚举；已掌握（`MASTERED`）的错题按钮为真实禁用态（surface 底、mut 字、实线边框、not-allowed，复用 `.btn:disabled`）。
 - 开始订正 → 对齐 `b10.report.retry` 与 `startMistakeRetry`：按钮转圈「正在创建…」→ 0.9s 后状态条说明变为「订正会话已创建。」（`store.message`），该错题闭环徽标更新为「待补救」并保持可订正；`?mock=retry-error` 首次点击模拟失败：状态条转 error「服务暂时不可用 / 错题订正暂时不可用。」+「重试」，按钮恢复可点，再次点击成功。
 - 规则建议 → 使用 `soft` 底色给出「建议：…」与「依据：…。这是规则建议，不是已开放的 AI 功能。」；不显示内部规则版本或报告 ID。
 - 生成只读链接 → 按钮转圈「正在生成…」→ 0.9s 后出现「只读报告链接已生成」、链接「打开只读报告」→ `report-share.html?ref=…`，下方说明「只读链接不含登录信息，7 天后失效。」（对齐 `shareNote`）；同时出现「撤销分享」，焦点移到链接。`?mock=share` 以已生成状态打开。
@@ -556,6 +556,6 @@
 - 学习报告 → 报告头显示状态徽标（已生成 / 部分生成 / 生成失败）；有分数时显示「82 / 100」，部分生成（`PARTIAL`）时改为「报告部分生成，稍后可重试」并隐藏指标；规则证据按标签与说明逐条列出，不显示计算版本号。`?mock=partial` 以部分生成状态打开；`?mock=no-report` 隐藏日报 / 周报与学习报告卡，只保留错题与页尾出口。
 - 空错题分支 → `?mock=no-mistakes` 错题卡内显示「当前没有待修复错题 / 这次练习都答对了」（`b10.report.noMistakes` + `emptyBook` 的 `ALL_CORRECT`）；`?mock=not-practiced` 显示 `attemptCount = 0` 的「还没有开始练习」（`NOT_PRACTICED`），同时把今日统计归零。
 - 版本失效 → `?mock=stale` 打开即显示状态条「内容版本已失效 / 当前版本已下线或发生变化，请重新读取。」+「重试」；点「重试」转圈「正在读取…」1.1s 后状态条回到「已准备好，可以开始」。
-- 页尾出口 → 「词汇复习」→ `b2-vocabulary.html`、「继续练习」→ `b2-practice.html`，与真实页 `b10-links` 一致，所有状态下保留。
+- 页尾出口 → 「词汇复习」→ `b2-vocabulary.html`、「继续练习」→ `b2-practice.html`，与真实页 `b10-links` 一致；位于状态块之外，加载 / 空 / 错误 / 无权限 / 离线态下同样始终可见。
 - 登录门禁 → 对齐真实页 `onShow`：先 `session.restore()`，未登录直接跳转登录页，不渲染错题与报告；原型以无权限态承载该分支，登录页回跳地址与真实页一致。
 - 文案边界 → 不显示报告 ID、计算版本、内部错误码或原始状态枚举；闭环状态中文显示；Phase 1 的报告建议明确是规则建议，不写成 AI 分析。真实页没有额外页尾说明，本稿不新增。
