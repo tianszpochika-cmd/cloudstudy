@@ -601,3 +601,30 @@
 - 目录为空 → `?mock=empty` 目录卡内只显示一行「暂无可用游戏。」，数量显示「0 项」；工具条「空」是整页空态，两者不重复叠加。
 - 登录门禁 → 对齐真实 `onShow`：先 `session.restore()`，未登录直接跳转登录页，不渲染游戏目录；原型以无权限态承载该分支，登录页回跳地址与真实页一致（`/pages/b4-games/b4-games`）。
 - 文案边界 → 不显示 P0 / P1 / 发布阶段、服务端错误码、会话 ID 或原始状态枚举；未开放玩法明确写成「即将开放」，不提供可点击的伪开始按钮，也不提供虚构的玩法详情弹层；Phase 1 的游戏只做规则化巩固，不写成 AI 功能。
+
+## b4-social（虚拟自习室）
+
+对应页面：`pages/b4-social.html`；真实实现参照 `apps/mobile/src/pages/b4-social/b4-social.vue`、`apps/mobile/src/components/b4/B4StatusPanel.vue`、`apps/mobile/src/components/b12/B12SocialExtensions.vue`、`apps/mobile/src/domain/b4.ts` 的 `interactionLabel` / `formatSeconds` / `B4_PERFORMANCE_LEVELS` 与 `apps/mobile/src/stores/b4.ts` 的 `loadWorld` / `joinRoom` / `leaveRoom` / `startFocus` / `updateFocus` / `sendInteraction` / `readNotification` / `readAllNotifications`。原型全部使用 mock 数据，不访问服务端。
+
+- 主题与直达参数 → 工具条「浅色 / 深色」切换整页 token 并写入 `localStorage['uispec-theme']`；`?theme=light|dark` 固定主题；`?state=normal|loading|empty|error|forbidden|offline` 直达页面状态；`?mock=focus|paused|completed|queue|sync-rejected|no-rooms|no-notifications|notification-loading|notification-error|leaderboard-empty|board-error|interaction-offline|join-error|leave-error|focus-error|complete-error|interaction-error|read-error|read-all-error|report-error` 演示专注、通知、排行榜与失败分支。截图（均以 `?theme=light|dark` 各一张）：`b4-social-{light,dark}.png`；状态图 `b4-social-{loading,empty,error,forbidden,offline}-{light,dark}.png`；分支图 `b4-social-{focus,paused,completed,queue,no-rooms,no-notifications,notification-error,leaderboard-empty,board-error,interaction-offline}-{light,dark}.png`。
+- 页面状态 → 工具条「正常 / 加载 / 空 / 错误 / 无权限 / 离线」，对齐 `B4StatusPanel` 与 `stores/b4.ts` 的 `loadWorld` / `fail`：加载为「网络可用 · 正在加载成长记录」+ 自习室骨架屏（`aria-busy`）；空为「暂时没有正在开放的自习室。」+「去练习」→ `b2-practice.html`（**设计新增，需同步实现**：真实 `b4-social.vue` 的房间空态只有单行文案）；错误为「网络可用 · 学习同步状态 / 自习室暂时无法读取。」+「重试」；无权限为「当前没有读取自习室的权限。 / 登录后可以查看房间、专注记录与通知。」+ 单个「去登录」→ `login.html?returnTo=%2Fpages%2Fb4-social%2Fb4-social`（不提供重试）；离线为「网络不可用 · 学习同步状态 / 自习室暂时无法读取。」+「重试」，有队列时同时显示「待同步 N」与「同步」。
+- 状态恢复 → 错误与离线「重试」转圈「正在重试…」→ 1.1s 后回到正常态，不弹成功 Toast；空态只保留「去练习」；无权限只保留「去登录」。切换离开正常态会关闭全部弹层、取消未完成的加入 / 离开 / 专注 / 通知 / 举报计时并恢复按钮；切回正常态保留已选画质、房间、专注会话、通知与排行榜。
+- 页头与导航 → 导航栏「虚拟自习室」（`pages.json` 标题）+ 返回 `world.html`（`backMobile`：返回上一页，无历史时回 `home.html`），右上角设置 → `settings.html`；页内 kicker「一起专注」（`ZH_KICKERS`）、标题「一起专注，各自闪光。」、说明「找一间自习室，给自己一段不被打扰的时光。」（`pages.b4-social`）；不显示底部 TabBar。
+- 状态条 → 等价 `B4StatusPanel`：标题「网络可用 · 学习同步状态」，默认说明「成长记录会随学习进度更新。」；操作成功后说明取 `stores/b4.ts` 原文（入室 / 离室 / 专注 / 互动 / 全部已读）；`?mock=queue` 说明为「本机有 2 条待同步记录，联网后可继续同步。」，右侧出现 warn 徽标「待同步 2」与「同步」；`?mock=interaction-offline` 打开即显示「网络不可用 · 学习同步状态 / 网络不可用，互动待同步。」与「待同步 1」。
+- 同步 → 点「同步」转圈「正在同步…」→ 0.9s 后队列清空，说明「服务端已接受 2 条事件。」，不弹 Toast，焦点回到状态条；`?mock=sync-rejected` 队列保留，说明「服务端未接受事件，队列已保留。」；离线态的「同步」在断网时说明「网络不可用，队列仍保留。」。
+- 画质 → 状态条右侧 chip 只显示当前档位「舒适」+ 下拉箭头（`aria-label="画质：舒适"`），打开底部弹层「画质」，四档「精致 / 舒适 / 轻量 / 省资源」（`B4_PERFORMANCE_LEVELS`），当前档带 brand 对勾与 `aria-pressed`；选择后更新 chip 文案并关闭弹层，焦点回到画质按钮；遮罩、取消与 Esc 均可关闭。
+- 自习室列表 → 卡片标题「自习室」+ 右侧「3 间」；每间显示名称、房间类型（专注房 / 自习房）、人数「N / 容量 人」、聊天模式（仅预设互动 / 不开放聊天），对齐 `B4Room`；已加入房间带 ok 徽标「已加入」与「离开」按钮，未加入显示「加入」；`?mock=no-rooms` 卡内只显示「暂时没有可加入的自习室。」，数量「0 间」，排行榜显示「暂无可查看的房间榜单。」且不渲染房间 chip。
+- 加入 / 离开 → 「加入」转圈「正在加入…」→ 0.8s 后徽标变「已加入」、人数 +1、出现专注时长与操作区，说明「入室状态已由服务端确认。」；「离开」转圈「正在离开…」→ 人数 -1、操作区收起，若当前专注属于该房间则同时收起专注卡，说明「离室状态已由服务端确认。」；`?mock=join-error|leave-error` 失败时说明「加入自习室失败。」/「离开自习室失败。」，房间状态不变。
+- 专注时长 → 已加入房间内「专注时长」分段控件「25 分钟 / 45 分钟」（`role=group`，`aria-pressed`），选择后同步所有已加入房间，对应真实页共享的 `focusMinutes`。
+- 开始专注 → 「开始专注」转圈「正在开始…」→ 0.9s 后顶部出现「番茄专注」卡：36px 等宽数字倒计时、细进度条、暂停 / 完成专注，说明「番茄专注已由服务端建立。」；已有专注会话时所有「开始专注」为真实禁用态（surface 底、mut 字、not-allowed）并显示「专注进行中」，避免重复建立会话；`?mock=focus|paused` 以运行 / 暂停会话打开；`?mock=focus-error` 说明「番茄专注启动失败。」。
+- 暂停 / 恢复 → 「暂停」转圈「正在暂停…」→ 徽标变「已暂停」、按钮变「恢复」、提示「已暂停，恢复后继续记录专注时长。」，说明「专注状态已由服务端确认。」；「恢复」同理回到「进行中」并继续倒计时；倒计时归零时徽标变「已到时间」、暂停按钮隐藏、提示「时间到了，可以完成这次专注。」。
+- 完成专注 → 「完成专注」转圈「正在结算…」→ 0.9s 后专注卡收起，显示「本次专注已完成」+「有效专注 N 分钟 · 房间名」+「再来一次」，说明「专注状态已由服务端确认。」；`?mock=completed` 以完成摘要打开；`?mock=complete-error` 说明「专注状态更新失败。」并保留专注卡。
+- 再来一次 → 在第一个已加入房间重新建立所选时长的专注，转圈「正在开始…」，说明「番茄专注已由服务端建立。」；没有已加入房间时说明「请先加入自习室。」。
+- 发送鼓励 → 已加入房间「发送鼓励」打开底部弹层「发送鼓励」，副标题「只能发送预设互动，不能自由输入。」，五个预设（给你打气 / 一起学习 / 完成得好 / 再试一次 / 今晚一起20分钟，`interactionLabel`），单选带 brand 对勾；「发送」转圈「正在发送…」→ 关闭弹层，说明「预设鼓励已收到服务端确认。」；`?mock=interaction-error` 说明「预设互动发送失败。」；`?mock=interaction-offline` 发送后队列再 +1，说明「网络不可用，互动待同步。」。
+- 房间排行榜 → 卡片「房间排行榜」+「今日」+ 副说明「只展示脱敏标识」；房间 chip 单选切换榜单，切换时显示「正在读取排行榜…」0.6s；条目显示「#排名 · 匿名学员 / 我 · 有效专注 N 分钟」；`?mock=leaderboard-empty` 显示「当前房间暂无可展示的专注快照。」；`?mock=board-error` 显示「排行榜暂时无法读取。」+「重试」（转圈「正在读取…」0.9s 后恢复）；页脚固定隐私说明「排行榜只展示服务端允许的脱敏标识，不接收用户编号输入。」（对齐 `social.privacy`）。
+- 举报 → 非本人条目「举报」打开底部弹层「举报此成员」，副标题「举报会进入服务端审核队列，不会向对方公开。」；五个原因（垃圾信息 / 骚扰 / 敏感内容 / 冒充他人 / 其他，`B12_REPORT_REASONS`）单选，未选原因时「提交举报」为真实禁用态；「提交举报」转圈「正在提交…」→ 关闭弹层，条目按钮变禁用「已举报」，行内显示 ok 提示「举报已进入服务端审核队列。」；`?mock=report-error` 行内显示 bad 提示「举报没有提交成功，请稍后再试。」并保留可再次举报。本人条目与匿名标识不提供举报入口，只显示脱敏说明。
+- 通知 → 卡片标题「通知」+ 未读数量 +「全部已读」（无未读时隐藏）；条目显示标题、未读徽标、正文、分类与时间，未读条目带「已读」按钮；`?mock=no-notifications` 显示「暂无通知。」并隐藏未读数，`?mock=notification-loading` 显示「正在读取通知…」，`?mock=notification-error` 显示「通知暂时无法读取。」+「重试」（转圈「正在读取…」0.9s 后恢复）；对齐 `notificationStatus` 的 loading / ready / error。
+- 单条已读 → 「已读」转圈「正在标记…」→ 0.7s 后该条未读徽标与按钮消失、未读数减 1，不弹 Toast；`?mock=read-error` 说明「通知已读状态未获服务端确认。」并保留未读。
+- 全部已读 → 「全部已读」转圈「正在标记…」→ 0.8s 后所有条目变已读、未读数量变「0 条未读」、按钮隐藏，说明「全部已读状态已由服务端确认。」；`?mock=read-all-error` 说明「全部已读操作未获服务端确认。」。
+- 登录门禁 → 对齐真实页 `onShow`：先 `session.restore()`，未登录直接跳转登录页，不渲染自习室；原型以无权限态承载该分支，登录页回跳地址为 `/pages/b4-social/b4-social`。
+- 文案边界 → 不显示用户编号、房间 ID、会话 ID、内部错误码或原始状态枚举；排行榜只展示脱敏标识；互动只允许预设文案，不提供自由输入；专注时长以服务端记录为准，不用本地计时冒充结算；Phase 1 的自习室是规则化的陪伴专注，不写成 AI 陪学。
