@@ -667,3 +667,21 @@
 - 画质 → 状态条右侧 chip（`aria-label="画质：舒适"`）打开底部弹层「画质」，四档「精致 / 舒适 / 轻量 / 省资源」（`B4_PERFORMANCE_LEVELS`），当前档带 brand 对勾与 `aria-pressed`；选择后更新 chip 文案并关闭弹层，焦点回到画质按钮；遮罩、取消与 Esc 均可关闭。画质只影响本机显示。
 - 登录门禁 → 对齐真实页 `onShow`：先 `session.restore()`，未登录直接跳转登录页，不渲染离线页；原型以无权限态承载该分支，登录页回跳地址为 `/pages/b4-offline/b4-offline`。
 - 文案边界 → 不显示 packageId、downloadId、sha256、签名、内部错误码或原始状态枚举；离线能力未上线时明确写「即将开放」，不把授权或部分下载说成可离线使用；同步失败只描述中文原因，不在本地伪造已同步。
+
+## b5-commerce（学习权益）
+
+对应页面：`pages/b5-commerce.html`；真实实现参照 `apps/mobile/src/pages/b5-commerce/b5-commerce.vue`、`apps/mobile/src/api/b5.ts`（转出 `b13.ts` 的公开目录 / 订单 / 权益 / 创建订单 / 支付恢复）、`apps/mobile/src/domain/b5.ts` 的 `MobileB5PublicPlan` / `MobileB5Order` / `MobileB5Entitlement` / `money`、`packages/i18n/src/mobile-experience.ts` 的 `pages.b5-commerce`。原型全部使用 mock 数据，不访问服务端。
+
+- 主题与直达参数 → 工具条「浅色 / 深色」切换整页 token 并写入 `localStorage['uispec-theme']`；`?theme=light|dark` 固定主题；`?state=normal|loading|empty|error|forbidden` 直达页面状态；`?mock=no-entitlement|no-orders|empty-catalog|create-error|recover-error` 演示权益为空、订单为空、方案为空与创建 / 恢复失败分支。截图（每项 `?theme=light|dark` 各一张）：`b5-commerce-{light,dark}.png`；`b5-commerce-{loading,empty,error,forbidden}-{light,dark}.png`；`b5-commerce-{no-entitlement,no-orders,empty-catalog,create-error,recover-error}-{light,dark}.png`。
+- 页面状态 → 工具条「正常 / 加载 / 空 / 错误 / 无权限」：加载为「正在读取学习权益…」+ 三张卡骨架屏（`aria-busy`）；空为「暂时没有可购买的学习方案。」+「继续学习」→ `today.html`（**设计新增，需同步实现**：真实页没有整页空态，只在各卡内显示单行文案）；错误为「学习权益暂时无法读取。/ 商业化服务暂时不可用，请稍后重试。」（对齐真实页 `load()` catch 的默认文案「商业化服务暂时不可用。」）+「重试」；无权限为「登录后查看学习权益。」+ 单个「去登录」→ `login.html?returnTo=%2Fpages%2Fb5-commerce%2Fb5-commerce`。
+- 状态恢复 → 错误「重试」转圈「正在重试…」→ 1.1s 后回到正常态，不弹成功 Toast；空态只保留「继续学习」；无权限只保留「去登录」。切换离开正常态会取消未完成的创建 / 恢复计时并恢复按钮、清除反馈条；切回正常态保留已创建的订单数据。
+- 页头与导航 → 导航栏「学习权益」（`pages.json` 标题）+ 返回 `world.html`（真实页 `goBack` 打开成长页）；页内 kicker「学习权益」（`ZH_KICKERS`）、标题「让学习，多一些可能。」、说明「查看可用课程权益、订单与恢复进度。」（`pages.b5-commerce`）；不显示底部 TabBar。
+- 当前权益 → 对齐真实页：只列出生效中（`ACTIVE`）的权益，名称按 `PREMIUM_MONTHLY / PREMIUM_YEARLY` 显示「月度会员权益 / 年度会员权益」，副文案「有效至 2026-11-18」，右侧 ok 徽标「生效中」，数量「1 项生效中」；已过期 / 已撤销权益不在此卡展示。无生效权益时（`?mock=no-entitlement`）显示「暂无生效权益 / 选择下方学习方案即可开通。」，数量改为「暂无」。
+- 学习方案 → 每行显示方案名、「有效期 30 天 / 365 天」与价格「¥19.00 / ¥108.00」（对齐 `money()` 的 CNY 格式）：点「选择方案」转圈「正在创建…」→ 0.9s 后在「订单」顶部新增一笔「待支付」订单，反馈条显示成功「订单已创建，请在订单中查看后续状态。」（真实页 `message` 原文），不弹 Toast，焦点移到反馈条；创建期间其它方案按钮为真实禁用态（surface 底、mut 字、not-allowed），避免重复下单。不显示 SKU 编号。
+- 订单 → 对齐真实页「订单恢复」：每行显示方案名（由 `skuId` 映射）、中文状态徽标（待支付 / 已支付 / 已取消 / 已退款 / 支付失败）、下单日期与金额，不显示 `orderId`、`skuId` 或原始状态枚举；仅「待支付」订单显示「恢复支付」。
+- 恢复支付 → 「恢复支付」转圈「正在恢复…」→ 0.9s 后反馈条显示「支付恢复已发起，请按支付渠道提示完成付款。」，订单保持「待支付」（真实页只回传支付恢复状态，支付结果仍需服务端回调确认，本稿不伪造已支付）；`?mock=recover-error` 打开即预置该失败反馈，点击「恢复支付」重复同一结果，订单保持原状态。
+- 创建失败 → `?mock=create-error` 打开即预置错误反馈，点「选择方案」后转圈 0.9s 再次得到「订单暂时无法创建，请稍后重试。」，方案与订单保持不变，按钮恢复可点。
+- 订单为空 → `?mock=no-orders` 卡内显示「还没有订单 / 选择方案后，订单状态会显示在这里。」，数量显示「0 笔」。
+- 方案为空 → `?mock=empty-catalog` 以整页空态打开，不显示权益、方案与订单卡；工具条仍可切到其它状态。
+- 登录门禁 → 对齐真实页 `onShow`：先 `session.restore()`，未登录直接跳转登录页，不渲染权益页；原型以无权限态承载该分支。
+- 文案边界 → 不显示 orderId、skuId、支付渠道号、内部错误码或原始状态枚举；价格与权益范围以服务端返回为准；支付恢复只表示「已发起」，不写成「已支付」；Phase 1 不含 AI 伴学，页尾明确写出开放阶段。
