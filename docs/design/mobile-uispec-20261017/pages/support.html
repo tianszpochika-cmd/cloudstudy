@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>客服与帮助 · 语学星移动端 UI 稿</title>
+<link rel="stylesheet" href="../shared.css">
+<script src="../shared.js"></script>
+<style>
+  /* 仅本页布局；组件与 token 全部来自 shared.css */
+  .sp-page { padding: 4px 20px 28px; }
+  .sp-page [hidden] { display: none !important; }
+
+  /* 页头（MobilePageHeader：kicker + 标题 + 说明） */
+  .sp-head { margin: 4px 0 20px; }
+  .sp-kicker {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0 0 4px;
+    color: var(--v2-brand);
+    font-size: 13px;
+    line-height: 1.6;
+    font-weight: 600;
+    letter-spacing: .04em;
+  }
+  .sp-kicker .icon { flex: none; }
+  .sp-title {
+    margin: 0;
+    color: var(--v2-ink);
+    font-size: 28px;
+    line-height: 1.4;
+    font-weight: 650;
+    letter-spacing: -.01em;
+  }
+  .sp-intro { margin: 6px 0 0; color: var(--v2-mut); font-size: 14px; line-height: 1.75; }
+
+  /* 卡片 */
+  .sp-card { display: grid; gap: 12px; }
+  .sp-card + .sp-card { margin-top: 16px; }
+  .sp-cardhead { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+  .sp-titles { display: grid; gap: 2px; min-width: 0; }
+  .sp-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--v2-mut);
+    font-size: 12px;
+    line-height: 1.6;
+    font-weight: 600;
+    letter-spacing: .04em;
+  }
+  .sp-eyebrow .icon { flex: none; }
+  .sp-cardtitle { margin: 0; color: var(--v2-ink); font-size: 16px; line-height: 1.5; font-weight: 600; }
+  .sp-note { margin: 0; color: var(--v2-mut); font-size: 14px; line-height: 1.75; overflow-wrap: anywhere; }
+  .sp-note--sub { font-size: 13px; line-height: 1.6; }
+  .sp-cardhead .badge { flex: none; margin-top: 2px; }
+
+  .sp-supportno {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+    color: var(--v2-mut);
+    font-size: 13px;
+    line-height: 1.6;
+    font-variant-numeric: tabular-nums;
+  }
+  .sp-supportno strong { color: var(--v2-ink); font-weight: 600; }
+
+  .sp-new-hint { margin: -4px 0 0; color: var(--v2-mut); font-size: 13px; line-height: 1.6; }
+
+  /* 卡头刷新 */
+  .sp-refresh {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 44px;
+    margin: -6px -6px 0 0;
+    padding: 0 10px;
+    border: 1px solid var(--v2-line);
+    border-radius: var(--v2-radius-sm);
+    background: var(--v2-card);
+    color: var(--v2-ink);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.6;
+    cursor: pointer;
+  }
+  .sp-refresh:hover { border-color: var(--v2-brand); color: var(--v2-brand); }
+  .sp-refresh:focus-visible { outline: none; box-shadow: var(--v2-focus); }
+  .sp-refresh:disabled { background: var(--v2-surface); color: var(--v2-mut); border-color: transparent; cursor: not-allowed; }
+  .sp-refresh svg { flex: none; }
+  .sp-refresh .btn__spinner { width: 14px; height: 14px; border-width: 1.5px; }
+  .sp-refresh.is-busy { cursor: progress; }
+  .sp-refresh.is-busy .btn__spinner { display: inline-block; }
+  .sp-cardhead__actions { display: inline-flex; flex: none; align-items: center; gap: 8px; }
+  .sp-cardhead__actions .badge { margin-top: 0; }
+
+  /* 卡内状态 */
+  .sp-inline {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 8px 12px;
+    padding: 12px 14px;
+    border-radius: var(--v2-radius-md);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .sp-inline .icon { flex: none; margin-top: 1px; }
+  .sp-inline__body { flex: 1 1 180px; min-width: 0; overflow-wrap: anywhere; }
+  .sp-inline--bad { background: var(--v2-bad-soft); color: var(--v2-bad); }
+  .sp-inline--info { background: var(--v2-soft); color: var(--v2-ink); }
+  .sp-inline .btn { flex: none; margin-left: auto; }
+
+  /* 类型筛选 */
+  .sp-filters { gap: 8px; }
+  .sp-filters .chip { min-height: 40px; }
+
+  /* 工单列表 */
+  .sp-list { display: grid; }
+  .sp-ticket {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    width: 100%;
+    min-height: 64px;
+    padding: 14px 0;
+    border: 0;
+    border-top: 1px solid var(--v2-line);
+    background: transparent;
+    color: var(--v2-ink);
+    font-family: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+  .sp-list > .sp-ticket:first-child { border-top: 0; padding-top: 2px; }
+  .sp-list > .sp-ticket:last-child { padding-bottom: 0; }
+  .sp-ticket:hover .sp-ticket__name { color: var(--v2-brand); }
+  .sp-ticket:active .sp-ticket__name { color: var(--v2-brand2); }
+  .sp-ticket:focus-visible { outline: none; box-shadow: var(--v2-focus); border-radius: var(--v2-radius-sm); }
+  .sp-ticket__copy { display: grid; gap: 2px; flex: 1 1 auto; min-width: 0; }
+  .sp-ticket__name { color: var(--v2-ink); font-size: 16px; line-height: 1.5; font-weight: 600; overflow-wrap: anywhere; }
+  .sp-ticket__meta { color: var(--v2-mut); font-size: 13px; line-height: 1.6; overflow-wrap: anywhere; }
+  .sp-ticket .badge { margin-top: 2px; }
+  .sp-ticket__chevron { flex: none; display: inline-flex; margin-top: 4px; color: var(--v2-mut); }
+
+  .sp-filtered-empty { margin: 2px 0 0; color: var(--v2-mut); font-size: 14px; line-height: 1.75; }
+
+  /* 工单详情弹层 */
+  .sp-kv { display: grid; gap: 0; margin: 0 0 8px; }
+  .sp-kv__row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 12px 0;
+    border-top: 1px solid var(--v2-line);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  .sp-kv__row:first-child { border-top: 0; padding-top: 0; }
+  .sp-kv__row:last-child { border-bottom: 0; }
+  .sp-kv dt { color: var(--v2-mut); flex: none; }
+  .sp-kv dd { margin: 0; color: var(--v2-ink); text-align: right; font-weight: 500; overflow-wrap: anywhere; }
+  .sp-sheet-note {
+    margin: 0 0 12px;
+    padding: 12px 14px;
+    border-radius: var(--v2-radius-md);
+    background: var(--v2-surface);
+    color: var(--v2-ink);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .sheet__cancel { margin-top: 0; }
+
+  /* 高对比度下的边框加强（仅本页预览） */
+  html[data-contrast="high"] .sp-page .card { border: 1px solid var(--v2-ink); box-shadow: none; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sp-refresh.is-busy .btn__spinner { animation: none; opacity: .6; }
+  }
+</style>
+</head>
+<body>
+
+<div class="phone-stage">
+  <div data-ui="toolbar" data-states="normal,loading,empty,error,forbidden"></div>
+
+  <div class="phone phone--scroll" id="phone">
+    <div data-ui="statusbar"></div>
+    <div data-ui="navbar" data-title="客服与帮助" data-back="profile.html"></div>
+
+    <div class="phone__scroll">
+      <div class="sp-page">
+
+        <!-- MobilePageHeader：kicker / 标题 / 说明 -->
+        <header class="sp-head">
+          <p class="sp-kicker"><span data-icon="help" data-icon-size="16"></span>我们来帮你</p>
+          <h1 class="sp-title">有疑问，我们一起解决。</h1>
+          <p class="sp-intro">选择问题类型，查看与跟进你的帮助请求。</p>
+        </header>
+
+        <div data-state-block="normal">
+
+          <!-- 提交问题：当前版本不能新建工单，只保留说明与禁用态主按钮 -->
+          <section class="card sp-card" aria-labelledby="sp-submit-title">
+            <div class="sp-cardhead">
+              <span class="sp-titles">
+                <span class="sp-eyebrow"><span data-icon="help" data-icon-size="14"></span>客服与帮助</span>
+                <h2 class="sp-cardtitle" id="sp-submit-title">提交问题</h2>
+              </span>
+            </div>
+            <p class="sp-note">暂不能提交新工单，可查看已有工单。</p>
+            <p class="sp-supportno" id="sp-supportno" hidden>
+              <span data-icon="link" data-icon-size="14"></span>
+              <span>支持编号 <strong id="sp-supportno-value"></strong></span>
+            </p>
+            <button type="button" class="btn btn--primary btn--block" id="sp-new-ticket" disabled aria-describedby="sp-new-hint">
+              <span class="btn__label">新建工单</span>
+            </button>
+            <p class="sp-new-hint" id="sp-new-hint">提交入口暂未开放。</p>
+          </section>
+
+          <!-- 我的工单 -->
+          <section class="card sp-card" aria-labelledby="sp-tickets-title">
+            <div class="sp-cardhead">
+              <span class="sp-titles">
+                <span class="sp-eyebrow"><span data-icon="ticket" data-icon-size="14"></span>工单记录</span>
+                <h2 class="sp-cardtitle" id="sp-tickets-title">我的工单</h2>
+                <p class="sp-note sp-note--sub">按类型筛选，点开查看详情。</p>
+              </span>
+              <span class="sp-cardhead__actions">
+                <span class="badge" id="sp-count">0 张</span>
+                <button type="button" class="sp-refresh" id="sp-refresh">
+                  <span class="btn__spinner" aria-hidden="true"></span>
+                  <span data-icon="refresh" data-icon-size="14"></span>
+                  <span>刷新</span>
+                </button>
+              </span>
+            </div>
+
+            <div class="sp-inline sp-inline--info" id="sp-loading" role="status" hidden>
+              <span data-icon="refresh" data-icon-size="16"></span>
+              <span class="sp-inline__body">正在读取工单…</span>
+            </div>
+
+            <div class="sp-inline sp-inline--bad" id="sp-read-error" role="alert" hidden>
+              <span data-icon="alert-circle" data-icon-size="16"></span>
+              <span class="sp-inline__body">工单暂不可用，请重试。</span>
+              <button type="button" class="btn btn--secondary btn--sm" id="sp-retry">
+                <span class="btn__spinner" aria-hidden="true"></span><span class="btn__label">重试</span>
+              </button>
+            </div>
+
+            <div class="sp-inline sp-inline--info" id="sp-inline-empty" role="status" hidden>
+              <span data-icon="inbox" data-icon-size="16"></span>
+              <span class="sp-inline__body">暂无可见工单。</span>
+            </div>
+
+            <div id="sp-ready">
+              <div class="chip-row sp-filters" id="sp-filters" role="group" aria-label="按问题类型筛选"></div>
+              <div class="sp-list" id="sp-list"></div>
+              <p class="sp-filtered-empty" id="sp-filtered-empty" hidden>该类型下暂无工单。</p>
+            </div>
+          </section>
+
+        </div>
+
+        <!-- 加载：首屏读取工单 -->
+        <div data-state-block="loading" aria-busy="true">
+          <div class="card sp-card">
+            <div class="sp-cardhead">
+              <span class="sp-titles">
+                <span class="sp-eyebrow"><span data-icon="ticket" data-icon-size="14"></span>工单记录</span>
+                <h2 class="sp-cardtitle">我的工单</h2>
+                <p class="sp-note sp-note--sub">按类型筛选，点开查看详情。</p>
+              </span>
+              <button type="button" class="sp-refresh is-busy" disabled aria-busy="true">
+                <span class="btn__spinner" aria-hidden="true"></span>
+                <span>刷新</span>
+              </button>
+            </div>
+            <div class="sp-inline sp-inline--info" role="status">
+              <span data-icon="refresh" data-icon-size="16"></span>
+              <span class="sp-inline__body">正在读取工单…</span>
+            </div>
+            <div class="skeleton skeleton-line skeleton-line--sm" style="width: 32%"></div>
+            <div class="skeleton skeleton-block" style="height: 64px"></div>
+            <div class="skeleton skeleton-block" style="height: 64px"></div>
+            <div class="skeleton skeleton-block" style="height: 64px"></div>
+          </div>
+        </div>
+
+        <!-- 空：没有可见工单 -->
+        <div data-state-block="empty">
+          <div class="state-block" role="status">
+            <span class="state-block__icon" data-icon="inbox" data-icon-size="24"></span>
+            <span class="state-block__title">暂无可见工单。</span>
+            <span class="state-block__text">提交问题后，可以在这里查看处理进度。</span>
+            <span class="state-block__actions">
+              <button type="button" class="btn btn--primary btn--sm" data-retry-state="normal">
+                <span class="btn__spinner" aria-hidden="true"></span><span class="btn__label">刷新</span>
+              </button>
+            </span>
+          </div>
+        </div>
+
+        <!-- 错误：工单读取失败 -->
+        <div data-state-block="error">
+          <div class="state-block" role="alert">
+            <span class="state-block__icon state-block__icon--bad" data-icon="alert-triangle" data-icon-size="24"></span>
+            <span class="state-block__title">工单暂不可用，请重试。</span>
+            <span class="state-block__actions">
+              <button type="button" class="btn btn--primary btn--sm" data-retry-state="normal">
+                <span class="btn__spinner" aria-hidden="true"></span><span class="btn__label">重试</span>
+              </button>
+            </span>
+          </div>
+        </div>
+
+        <!-- 无权限：未登录（真实页 ensureMobilePageAccess 会直接跳转登录） -->
+        <div data-state-block="forbidden">
+          <div class="state-block" role="alert">
+            <span class="state-block__icon state-block__icon--warn" data-icon="lock" data-icon-size="24"></span>
+            <span class="state-block__title">登录后查看你的帮助请求。</span>
+            <span class="state-block__actions">
+              <a class="btn btn--primary btn--sm" href="login.html?returnTo=%2Fpages%2Fsupport%2Fsupport">去登录</a>
+            </span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="toast-host" role="status" aria-live="polite"></div>
+
+    <!-- 工单详情 -->
+    <div class="overlay-layer" id="sp-detail" aria-hidden="true">
+      <div class="overlay__scrim" data-close></div>
+      <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sp-detail-title">
+        <div class="sheet__handle"></div>
+        <h2 class="sheet__title" id="sp-detail-title">工单详情</h2>
+        <p class="sheet__sub" id="sp-detail-sub"></p>
+        <dl class="sp-kv" id="sp-detail-kv"></dl>
+        <p class="sp-sheet-note" id="sp-detail-note" hidden></p>
+        <button type="button" class="sheet__cancel" data-close>关闭</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="interaction-notes">
+  <h2>交互说明（support）</h2>
+  <ul>
+    <li>主题与直达参数 → 工具条「浅色 / 深色」切换整页 token 并写入 <code>localStorage['uispec-theme']</code>；<code>?theme=light|dark</code> 固定主题；<code>?state=normal|loading|empty|error|forbidden</code> 直达页面状态；<code>?mock=no-tickets|load-error|refresh-error|board</code> 演示无工单、首次读取失败、刷新失败一次、显示支持编号。截图（每项 <code>?theme=light|dark</code> 各一张）：<code>support-{light,dark}.png</code>；<code>support-{loading,empty,error,forbidden}-{light,dark}.png</code>；<code>support-{no-tickets,load-error,refresh-error,board}-{light,dark}.png</code>。</li>
+    <li>页头与导航 → 导航栏「客服与帮助」（<code>pages.json</code> 标题）+ 返回 <code>profile.html</code>（真实入口「我的 › 帮助中心」）；<code>MobilePageHeader</code> 的 kicker「我们来帮你」（<code>ZH_KICKERS</code>）、标题「有疑问，我们一起解决。」、说明「选择问题类型，查看与跟进你的帮助请求。」（<code>pages.support</code>）；不显示底部 TabBar。</li>
+    <li>提交问题卡 → eyebrow 图标 help +「客服与帮助」，标题「提交问题」，正文「暂不能提交新工单，可查看已有工单。」（<code>support.vue</code> 原文）。「新建工单」主按钮为真实禁用态（surface 底、mut 字、not-allowed），下方标注「提交入口暂未开放。」，不弹 Toast、不打开空弹层。受控正文的兜底长句（<code>ticketNotice</code> 的「受控正文尚未批准…」）是内部流程语言，本稿改写为上面的用户可读说明（<strong>设计调整</strong>，见 STYLE-BRIEF 文案规则）。</li>
+    <li>支持编号 → <code>?mock=board</code> 时在提交问题卡中显示「支持编号 YS-2026-1042」（<code>supportNotice(closure)</code> 的 <code>supportNumber</code> 分支，翻译为「支持编号」）；默认 mock 无编号，该行隐藏。</li>
+    <li>我的工单卡 → eyebrow 图标 ticket +「工单记录」，标题「我的工单」，说明「按类型筛选，点开查看详情。」；右上「刷新」按钮转圈时文案保持「刷新」并禁用。标题行右侧徽标显示当前筛选下的工单数量（如「4 张」）。</li>
+    <li>类型筛选 → 按已有工单动态生成「全部 / 内容纠错 / 账号访问 / 订单权益 / 设备问题」chip（<strong>设计新增</strong>，对齐页头「选择问题类型」；vue 无筛选）。单选：点击写 <code>aria-pressed</code> 与选中样式，列表立即过滤；当前类型下无工单时显示单行「该类型下暂无工单。」，不显示空插画。筛选不访问服务端、不改变工单状态。</li>
+    <li>工单行 → 每行显示「工单 {编号}」、分类与预计处理时间（列表只写日期，如「内容纠错 · 预计处理 10月20日」，完整时间在详情里显示为「10月20日 18:00」）以及中文状态徽标：已提交 / 已受理 / 处理中（brand 徽标）、等待补充（warn）、已解决（ok）、已关闭（mut）；未知分类回落「历史分类」、未知状态回落「处理中」（对齐 web <code>SupportPage.vue</code>）。行整块可点击（≥44px），右侧 chevron。</li>
+    <li>工单详情 → 点击工单行打开底部弹层「工单详情」，副标题「工单 {编号}」，四行只读信息：引用 / 分类 / 状态 / 预计处理时间（<code>Intl.DateTimeFormat('zh-CN')</code> 格式化，缺失时「待确认」）。「等待补充」追加说明「客服正在等待你补充信息。补充入口暂未开放，可稍后在本页查看。」；「已解决 / 已关闭」追加「确认与重开暂不可用。」（<code>SupportPage.vue</code> 原文）。遮罩、Esc、「关闭」均可关闭，关闭后焦点回到触发工单行；弹层内不提供提交或回复入口。</li>
+    <li>刷新 → 「刷新」转圈并禁用行操作 → 0.9s 后重新读取工单，读取前清空旧列表；成功时不弹 Toast、不清除类型筛选；失败时列表清空并显示卡内 bad 条「工单暂不可用，请重试。」+「重试」（对齐 vue <code>load()</code> 的 catch：<code>tickets=[]</code>、<code>error</code> 赋值）。<code>?mock=load-error</code> 打开即首次读取失败，点「重试」成功恢复；<code>?mock=refresh-error</code> 打开即正常列表，首次刷新失败并清空，再次刷新成功。</li>
+    <li>空态 → <code>?mock=no-tickets</code> 卡内显示单行「暂无可见工单。」（vue 原文）并保留类型筛选与刷新；工具条空态为整页单行「暂无可见工单。」+「提交问题后，可以在这里查看处理进度。」+「刷新」（<strong>设计新增</strong>，回到正常态）。</li>
+    <li>页面状态 → 加载：卡内「正在读取工单…」+ 卡头刷新转圈 + 三行骨架（<strong>设计新增</strong>）；错误：单行「工单暂不可用，请重试。」+「重试」；无权限：「登录后查看你的帮助请求。」+「去登录」→ <code>login.html?returnTo=%2Fpages%2Fsupport%2Fsupport</code>（真实页 <code>ensureMobilePageAccess</code> 未登录直接跳转，本态为设计新增）。<code>document.title</code> 同步：正常「客服与帮助」、加载「正在读取工单…」、空「暂无可见工单」、错误「工单暂不可用，请重试。」、无权限「登录后查看你的帮助请求。」。</li>
+    <li>状态恢复 → 切换离开正常态会关闭详情弹层、取消未完成的读取计时并恢复按钮；错误与空态「重试 / 刷新」转圈 1.0s 后回到正常态，不弹成功 Toast；切回正常态按 <code>?mock</code> 重新预置。</li>
+    <li>登录门禁 → 对齐真实页 <code>onShow</code>：先 <code>ensureMobilePageAccess</code>，未登录直接跳转登录页，不渲染本页；原型以无权限态承载该分支。</li>
+    <li>文案边界 → 不显示原始分类 / 状态枚举、内部错误码、工单正文或受控流程说明；工单编号与支持编号为用户可读的 mock；状态同时用文字与颜色表达，不只依赖颜色。</li>
+  </ul>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  /* 本页额外的线性图标（路径对齐 apps/mobile/src/theme/v2-icons.ts），
+   * 只在本页注册，不改 shared.js。 */
+  if (window.UISpec && UISpec.icons) {
+    if (!UISpec.icons.help) UISpec.icons.help = '<circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.6M12 17h.01"/>';
+    if (!UISpec.icons.ticket) UISpec.icons.ticket = '<path d="M3 8a2 2 0 0 0 2-2h14a2 2 0 0 0 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 0-2 2H5a2 2 0 0 0-2-2v-2a2 2 0 0 0 0-4z"/><path d="M14 6v12" stroke-dasharray="2 2.5"/>';
+    if (!UISpec.icons.inbox) UISpec.icons.inbox = '<path d="M3 13h5l2 3h4l2-3h5"/><path d="M5 5h14l2 8v6a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-6z"/>';
+  }
+
+  var params = new URLSearchParams(location.search);
+  function q(name) {
+    var value = params.get(name) || '';
+    var cut = value.indexOf('?');
+    return cut >= 0 ? value.slice(0, cut) : value;
+  }
+  function themedParam() {
+    var match = /[?&]theme=(light|dark)/g;
+    var found = null;
+    var item;
+    while ((item = match.exec(location.search))) found = item[1];
+    return found;
+  }
+  var THEME_PARAM = themedParam();
+  if (THEME_PARAM) UISpec.setTheme(THEME_PARAM);
+
+  var MOCK = q('mock');
+  var STATE_PARAM = q('state');
+  var VALID_STATES = ['normal', 'loading', 'empty', 'error', 'forbidden'];
+  var INITIAL_STATE = VALID_STATES.indexOf(STATE_PARAM) >= 0 ? STATE_PARAM : 'normal';
+
+  /* 对齐 apps/mobile/src/pages/support/support.vue 与 api/support.ts：
+   * loadMobileSupportDesk() 读取工单摘要与 closure board；
+   * 读取失败时 tickets 清空并显示错误；当前版本不能提交新工单。
+   * 数据全部为 mock，不访问服务端。 */
+
+  var CATEGORY_LABELS = {
+    CONTENT_CORRECTION: '内容纠错',
+    ACCOUNT_ACCESS: '账号访问',
+    BILLING: '订单权益',
+    LEARNING_DATA: '学习记录',
+    PRIVACY_REQUEST: '隐私请求',
+    TECHNICAL: '设备问题'
+  };
+  var STATE_LABELS = {
+    OPEN: '已提交',
+    ACKNOWLEDGED: '已受理',
+    IN_PROGRESS: '处理中',
+    WAITING_CUSTOMER: '等待补充',
+    RESOLVED: '已解决',
+    CLOSED: '已关闭'
+  };
+  var STATE_BADGES = {
+    OPEN: 'badge',
+    ACKNOWLEDGED: 'badge',
+    IN_PROGRESS: 'badge',
+    WAITING_CUSTOMER: 'badge badge--warn',
+    RESOLVED: 'badge badge--ok',
+    CLOSED: 'badge badge--mut'
+  };
+
+  function categoryLabel(code) {
+    return CATEGORY_LABELS[String(code || '').toUpperCase()] || '历史分类';
+  }
+  function stateLabel(code) {
+    return STATE_LABELS[String(code || '').toUpperCase()] || '处理中';
+  }
+  function stateBadge(code) {
+    return STATE_BADGES[String(code || '').toUpperCase()] || 'badge';
+  }
+  function dueShortLabel(value) {
+    if (!value) return '待确认';
+    var date = new Date(value);
+    if (Number.isNaN(date.getTime())) return '待确认';
+    return new Intl.DateTimeFormat('zh-CN', { month: 'long', day: 'numeric' }).format(date);
+  }
+  function dueLabel(value) {
+    if (!value) return '待确认';
+    var date = new Date(value);
+    if (Number.isNaN(date.getTime())) return '待确认';
+    return new Intl.DateTimeFormat('zh-CN', { month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }).format(date);
+  }
+
+  /* 工单 mock（摘要字段对齐 MobileSupportTicket；预计处理时间来自 web 详情） */
+  var TICKETS = [
+    { ticketId: 'YX-2410-0186', categoryCode: 'CONTENT_CORRECTION', state: 'IN_PROGRESS', slaDueAt: '2026-10-20T18:00:00' },
+    { ticketId: 'YX-2410-0142', categoryCode: 'ACCOUNT_ACCESS', state: 'WAITING_CUSTOMER', slaDueAt: '2026-10-21T12:00:00' },
+    { ticketId: 'YX-2409-0971', categoryCode: 'BILLING', state: 'RESOLVED', slaDueAt: null },
+    { ticketId: 'YX-2409-0803', categoryCode: 'TECHNICAL', state: 'CLOSED', slaDueAt: null }
+  ];
+
+  function copy(value) { return JSON.parse(JSON.stringify(value)); }
+
+  var state = {
+    tickets: copy(TICKETS),
+    filter: 'ALL',
+    status: 'ready',
+    busy: false,
+    failNext: MOCK === 'refresh-error',
+    boardNumber: MOCK === 'board' ? 'YS-2026-1042' : '',
+    pendingTicket: null
+  };
+
+  var gen = 0;
+  function later(fn, ms) {
+    var g = gen;
+    setTimeout(function () { if (g === gen) fn(); }, ms);
+  }
+
+  var $ = function (id) { return document.getElementById(id); };
+  var refreshBtn = $('sp-refresh');
+  var loadingEl = $('sp-loading');
+  var readError = $('sp-read-error');
+  var retryBtn = $('sp-retry');
+  var inlineEmpty = $('sp-inline-empty');
+  var readyEl = $('sp-ready');
+  var filtersEl = $('sp-filters');
+  var listEl = $('sp-list');
+  var filteredEmpty = $('sp-filtered-empty');
+  var countBadge = $('sp-count');
+  var supportNo = $('sp-supportno');
+  var supportNoValue = $('sp-supportno-value');
+  var detailLayer = $('sp-detail');
+  var detailSub = $('sp-detail-sub');
+  var detailKv = $('sp-detail-kv');
+  var detailNote = $('sp-detail-note');
+
+  /* ---------- 渲染 ---------- */
+  function matches(ticket) {
+    return state.filter === 'ALL' || ticket.categoryCode === state.filter;
+  }
+  function visibleTickets() {
+    return state.tickets.filter(matches);
+  }
+  function categories() {
+    var seen = [];
+    state.tickets.forEach(function (ticket) {
+      if (seen.indexOf(ticket.categoryCode) < 0) seen.push(ticket.categoryCode);
+    });
+    return seen;
+  }
+
+  function renderFilters() {
+    var items = [{ code: 'ALL', label: '全部' }].concat(categories().map(function (code) {
+      return { code: code, label: categoryLabel(code) };
+    }));
+    filtersEl.innerHTML = items.map(function (item) {
+      var on = item.code === state.filter;
+      return '<button type="button" class="chip' + (on ? ' is-selected' : '') + '" data-filter="' + item.code + '" aria-pressed="' + on + '">' + item.label + '</button>';
+    }).join('');
+  }
+
+  function renderList() {
+    var items = visibleTickets();
+    countBadge.textContent = items.length + ' 张';
+    listEl.innerHTML = items.map(function (ticket) {
+      var meta = categoryLabel(ticket.categoryCode);
+      if (ticket.slaDueAt) meta += ' · 预计处理 ' + dueShortLabel(ticket.slaDueAt);
+      return '<button type="button" class="sp-ticket" data-ticket="' + ticket.ticketId + '">' +
+        '<span class="sp-ticket__copy">' +
+          '<span class="sp-ticket__name">工单 ' + ticket.ticketId + '</span>' +
+          '<span class="sp-ticket__meta">' + meta + '</span>' +
+        '</span>' +
+        '<span class="' + stateBadge(ticket.state) + '">' + stateLabel(ticket.state) + '</span>' +
+        '<span class="sp-ticket__chevron" aria-hidden="true">' + UISpec.icon('chevron-right', 18) + '</span>' +
+      '</button>';
+    }).join('');
+    listEl.hidden = items.length === 0;
+    filteredEmpty.hidden = items.length > 0;
+    filtersEl.hidden = state.tickets.length === 0;
+    readyEl.hidden = state.status !== 'ready';
+    countBadge.textContent = items.length + ' 张';
+  }
+
+  function render() {
+    var loading = state.status === 'loading';
+    loadingEl.hidden = !loading;
+    readError.hidden = state.status !== 'error';
+    inlineEmpty.hidden = state.status !== 'empty';
+    readyEl.hidden = state.status !== 'ready';
+    refreshBtn.disabled = state.busy || loading;
+    refreshBtn.classList.toggle('is-busy', loading || state.busy);
+    if (state.status === 'ready') renderList();
+    countBadge.hidden = state.status !== 'ready';
+  }
+
+  /* ---------- 读取 ---------- */
+  function load() {
+    if (state.busy) return;
+    state.busy = true;
+    state.status = 'loading';
+    /* 对齐 vue load()：读取前清空旧列表 */
+    state.tickets = [];
+    listEl.innerHTML = '';
+    render();
+    later(function () {
+      state.busy = false;
+      if (state.failNext) {
+        state.failNext = false;
+        state.filter = 'ALL';
+        state.status = 'error';
+      } else {
+        state.tickets = copy(TICKETS);
+        state.status = state.tickets.length ? 'ready' : 'empty';
+        if (MOCK === 'no-tickets') {
+          state.tickets = [];
+          state.status = 'empty';
+        }
+      }
+      renderFilters();
+      render();
+    }, 900);
+  }
+
+  refreshBtn.addEventListener('click', load);
+  retryBtn.addEventListener('click', load);
+
+  /* ---------- 类型筛选 ---------- */
+  filtersEl.addEventListener('click', function (event) {
+    var chip = event.target.closest('[data-filter]');
+    if (!chip) return;
+    var next = chip.getAttribute('data-filter');
+    if (next === state.filter) return;
+    state.filter = next;
+    renderFilters();
+    renderList();
+    var target = filtersEl.querySelector('[data-filter="' + next + '"]');
+    if (target) target.focus({ preventScroll: true });
+  });
+
+  /* ---------- 工单详情 ---------- */
+  function findTicket(ticketId) {
+    var found = null;
+    state.tickets.forEach(function (ticket) { if (ticket.ticketId === ticketId) found = ticket; });
+    return found;
+  }
+
+  function renderDetail(ticket) {
+    detailSub.textContent = '工单 ' + ticket.ticketId;
+    detailKv.innerHTML = [
+      { label: '引用', value: ticket.ticketId },
+      { label: '分类', value: categoryLabel(ticket.categoryCode) },
+      { label: '状态', value: stateLabel(ticket.state) },
+      { label: '预计处理时间', value: dueLabel(ticket.slaDueAt) }
+    ].map(function (row) {
+      return '<div class="sp-kv__row"><dt>' + row.label + '</dt><dd>' + row.value + '</dd></div>';
+    }).join('');
+    var note = '';
+    if (ticket.state === 'WAITING_CUSTOMER') {
+      note = '客服正在等待你补充信息。补充入口暂未开放，可稍后在本页查看。';
+    } else if (ticket.state === 'RESOLVED' || ticket.state === 'CLOSED') {
+      note = '确认与重开暂不可用。';
+    }
+    detailNote.textContent = note;
+    detailNote.hidden = !note;
+  }
+
+  listEl.addEventListener('click', function (event) {
+    var row = event.target.closest('[data-ticket]');
+    if (!row) return;
+    var ticket = findTicket(row.getAttribute('data-ticket'));
+    if (!ticket) return;
+    state.pendingTicket = row;
+    renderDetail(ticket);
+    UISpec.openOverlay('sp-detail');
+  });
+
+  function restoreTicketFocus() {
+    var row = state.pendingTicket;
+    if (!row) return;
+    setTimeout(function () {
+      if (document.body.contains(row)) row.focus({ preventScroll: true });
+      state.pendingTicket = null;
+    }, 0);
+  }
+
+  detailLayer.addEventListener('click', function (event) {
+    if (!event.target.closest('[data-close]')) return;
+    restoreTicketFocus();
+  });
+
+  /* 捕获阶段先于 shared.js 的 Esc 关闭逻辑执行，据此把焦点还给触发工单行 */
+  document.addEventListener('keydown', function (event) {
+    if (event.key !== 'Escape') return;
+    if (detailLayer.classList.contains('is-open')) restoreTicketFocus();
+  }, true);
+
+  /* ---------- 页面状态 ---------- */
+  function renderSupportNumber() {
+    supportNo.hidden = !state.boardNumber;
+    supportNoValue.textContent = state.boardNumber || '';
+  }
+
+  function resetInteraction() {
+    gen += 1;
+    UISpec.closeAllOverlays();
+    state.pendingTicket = null;
+    state.busy = false;
+    document.querySelectorAll('.is-busy').forEach(function (btn) { UISpec.setBusy(btn, false); });
+  }
+
+  function applyPreset() {
+    state.tickets = copy(TICKETS);
+    state.filter = 'ALL';
+    state.status = state.tickets.length ? 'ready' : 'empty';
+    state.failNext = MOCK === 'refresh-error';
+    var requested = q('filter').toUpperCase();
+    if (requested && requested !== 'ALL' && categories().indexOf(requested) >= 0) {
+      state.filter = requested;
+    }
+    state.boardNumber = MOCK === 'board' ? 'YS-2026-1042' : '';
+    if (MOCK === 'no-tickets') {
+      state.tickets = [];
+      state.status = 'empty';
+    }
+    if (MOCK === 'load-error') {
+      state.tickets = [];
+      state.status = 'error';
+    }
+    renderSupportNumber();
+    renderFilters();
+    render();
+  }
+
+  document.addEventListener('uispec:state', function (event) {
+    resetInteraction();
+    var titles = {
+      normal: '客服与帮助',
+      loading: '正在读取工单…',
+      empty: '暂无可见工单',
+      error: '工单暂不可用，请重试。',
+      forbidden: '登录后查看你的帮助请求。'
+    };
+    if (event.detail.state === 'normal') applyPreset();
+    document.title = (titles[event.detail.state] || '客服与帮助') + ' · 语学星移动端 UI 稿';
+  });
+
+  /* 整页状态块的重试 / 刷新 */
+  document.addEventListener('click', function (event) {
+    var btn = event.target.closest('[data-retry-state]');
+    if (!btn) return;
+    event.preventDefault();
+    if (btn.classList.contains('is-busy')) return;
+    UISpec.setBusy(btn, true, '正在重试…');
+    later(function () {
+      UISpec.setBusy(btn, false);
+      UISpec.setScreenState(btn.getAttribute('data-retry-state'));
+    }, 1000);
+  });
+
+  /* ---------- 初始渲染 ---------- */
+  applyPreset();
+
+  if (INITIAL_STATE !== 'normal') {
+    document.addEventListener('DOMContentLoaded', function () {
+      UISpec.setScreenState(INITIAL_STATE);
+    });
+  }
+})();
+</script>
+</body>
+</html>

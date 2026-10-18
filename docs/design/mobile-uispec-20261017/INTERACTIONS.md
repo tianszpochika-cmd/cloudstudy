@@ -752,3 +752,21 @@
 - 状态恢复 → 工具条切换离开正常态会取消未完成的刷新计时并恢复按钮；错误态「重试」转圈 1.0s 后回到正常态，不弹成功 Toast；切回正常态按 `?mock` 重新预置失败提示、空数据与降级结果。
 - 登录门禁 → 对齐真实页 `onShow`：先 `ensureMobilePageAccess`，未登录直接跳转登录页，不渲染本页；原型以无权限态承载该分支。
 - 文案边界 → 不显示 `platformCode`、`matrixVersion`、原始状态枚举或内部错误码；平台名与实现方式使用中文 mock；未知状态显示「待确认」；纹理 MB 与粒子数按 vue 如实显示，不隐藏。
+
+## support（客服与帮助）
+
+对应页面：`pages/support.html`；真实实现参照 `apps/mobile/src/pages/support/support.vue`、`apps/mobile/src/api/support.ts` 的 `loadMobileSupportDesk`、`apps/mobile/src/domain/it7-closure.ts` 的 `ticketNotice` / `supportNotice`、`apps/learner-web/src/pages/SupportPage.vue`（分类 / 状态 / 预计处理时间文案）、`apps/mobile/src/pages.json` 标题、`packages/i18n/src/mobile-experience.ts` 的 `pages.support` 与 `ZH_KICKERS`。原型全部使用 mock 数据，不访问服务端。
+- 主题与直达参数 → 工具条「浅色 / 深色」切换整页 token 并写入 `localStorage['uispec-theme']`；`?theme=light|dark` 固定主题；`?state=normal|loading|empty|error|forbidden` 直达页面状态；`?mock=no-tickets|load-error|refresh-error|board` 演示无工单、首次读取失败、刷新失败一次、显示支持编号；`?filter=<CATEGORY>` 指定初始类型筛选。截图（每项 `?theme=light|dark` 各一张）：`support-{light,dark}.png`；`support-{loading,empty,error,forbidden}-{light,dark}.png`；`support-{no-tickets,load-error,refresh-error,board}-{light,dark}.png`。
+- 页头与导航 → 导航栏「客服与帮助」（`pages.json` 标题）+ 返回 `profile.html`（真实入口「我的 › 帮助中心」，设置页与访问权限页也链接到本页）；`MobilePageHeader` 的 kicker「我们来帮你」（`ZH_KICKERS`）、标题「有疑问，我们一起解决。」、说明「选择问题类型，查看与跟进你的帮助请求。」（`pages.support`）；不显示底部 TabBar。
+- 提交问题卡 → eyebrow 图标 help +「客服与帮助」，标题「提交问题」，正文「暂不能提交新工单，可查看已有工单。」（`support.vue` 原文）。「新建工单」主按钮为真实禁用态（surface 底、mut 字、not-allowed、无阴影），下方标注「提交入口暂未开放。」；点击无效，不弹 Toast、不打开空弹层。受控正文的兜底长句（`ticketNotice` 的「受控正文尚未批准…」）属内部流程语言，本稿改写为用户可读说明（**设计调整**，STYLE-BRIEF 文案规则）。
+- 支持编号 → `?mock=board` 时在提交问题卡中显示「支持编号 YS-2026-1042」（`supportNotice(closure)` 的 `supportNumber` 分支，翻译为「支持编号」）；默认 mock 无编号，该行隐藏。
+- 我的工单卡 → eyebrow 图标 ticket +「工单记录」，标题「我的工单」，说明「按类型筛选，点开查看详情。」；标题行右侧为当前筛选下的工单数量徽标（如「4 张」）与「刷新」按钮，数量徽标只在正常态显示，加载 / 读取失败时不出现。
+- 类型筛选 → 按已有工单动态生成「全部 / 内容纠错 / 账号访问 / 订单权益 / 设备问题」chip（**设计新增**，对齐页头「选择问题类型」；vue 无筛选）。单选：点击写 `aria-pressed` 与选中样式，列表与数量徽标立即更新，焦点留在新 chip；当前类型下无工单时显示单行「该类型下暂无工单。」，不显示空插画。筛选不访问服务端、不改变工单状态；刷新成功后按当前筛选重新计算。
+- 工单行 → 每行显示「工单 {编号}」、分类与预计处理日期（如「内容纠错 · 预计处理 10月20日」，列表只显示日期；完整时间在详情中用 `Intl.DateTimeFormat('zh-CN')` 格式化显示）以及中文状态徽标：已提交 / 已受理 / 处理中（brand 徽标）、等待补充（warn）、已解决（ok）、已关闭（mut）；未知分类回落「历史分类」、未知状态回落「处理中」（对齐 web `SupportPage.vue`）。行整块可点击（≥64px 高），右侧 chevron，焦点环可见。
+- 工单详情 → 点击工单行打开底部弹层「工单详情」，副标题「工单 {编号}」，四行只读信息：引用 / 分类 / 状态 / 预计处理时间（缺失时为「待确认」）。「等待补充」追加说明「客服正在等待你补充信息。补充入口暂未开放，可稍后在本页查看。」；「已解决 / 已关闭」追加「确认与重开暂不可用。」（`SupportPage.vue` 原文）。遮罩、Esc、「关闭」均可关闭，关闭后焦点回到触发工单行；弹层内不提供提交或回复入口。
+- 刷新 → 「刷新」转圈并禁用（文案保持「刷新」），读取期间清空旧列表与数量徽标 → 0.9s 后重新读取工单：成功时不弹 Toast、不清除类型筛选；失败时列表清空并显示卡内 bad 条「工单暂不可用，请重试。」+「重试」（对齐 vue `load()` 的 catch：`tickets=[]` 并进入错误态）。`?mock=load-error` 打开即首次读取失败，点「重试」成功恢复；`?mock=refresh-error` 打开即正常列表，首次刷新失败并清空，再次刷新成功。
+- 空态 → `?mock=no-tickets` 卡内显示单行「暂无可见工单。」（vue 原文）并保留刷新（无工单时类型筛选自动隐藏）；工具条空态为整页「暂无可见工单。」+「提交问题后，可以在这里查看处理进度。」+「刷新」（**设计新增**，回到正常态）。
+- 页面状态 → 加载：卡内「正在读取工单…」+ 卡头刷新转圈 + 三行骨架（`aria-busy`，骨架为**设计新增**）；错误：单行「工单暂不可用，请重试。」+「重试」；无权限：「登录后查看你的帮助请求。」+「去登录」→ `login.html?returnTo=%2Fpages%2Fsupport%2Fsupport`（真实页 `ensureMobilePageAccess` 未登录直接跳转，本态为设计新增）。`document.title` 同步：正常「客服与帮助」、加载「正在读取工单…」、空「暂无可见工单」、错误「工单暂不可用，请重试。」、无权限「登录后查看你的帮助请求。」。
+- 状态恢复 → 切换离开正常态会关闭详情弹层、取消未完成的读取计时并恢复按钮；错误与空态「重试 / 刷新」转圈 1.0s 后回到正常态，不弹成功 Toast；切回正常态按 `?mock` 与 `?filter` 重新预置。
+- 登录门禁 → 对齐真实页 `onShow`：先 `ensureMobilePageAccess`，未登录直接跳转登录页，不渲染本页；原型以无权限态承载该分支。
+- 文案边界 → 不显示原始分类 / 状态枚举、内部错误码、工单正文或受控流程说明；工单编号与支持编号为用户可读的 mock；状态同时用文字与颜色表达，不只依赖颜色。
