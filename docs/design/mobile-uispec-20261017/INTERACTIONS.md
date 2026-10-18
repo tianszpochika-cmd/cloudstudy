@@ -515,3 +515,24 @@
 - 登录门禁 → 对齐真实页 `load`：先 `session.restore()`，未登录跳转登录页、不渲染音标内容；原型以无权限态承载该分支，回跳地址与真实页一致。
 - 切换状态副作用 → 离开正常态会关闭画质与删除弹层、停止模拟录音与所有计时、作废未完成的申请 / 播放 / 保存 / 同步计时并恢复按钮；切回正常态保留已选音标、录音与自评。
 - 文案边界 → 不显示内部错误码、录音 ID、内容版本号或原始状态枚举；时长统一「7.4 秒 / 0.3 秒」中文写法；Phase 1 的跟读与自评明确「不生成 AI 分数」，不把自评写成自动评分。真实页没有页尾出口，本稿不新增「学习报告」「单词复习」入口。
+
+### b3-writing（写作练习）
+
+对应页面：`pages/b3-writing.html`；真实实现参照 `apps/mobile/src/pages/b3-writing/b3-writing.vue`、`apps/mobile/src/components/b10/B10StatusPanel.vue`、`apps/mobile/src/components/b10/B10FeedbackCard.vue`、`apps/mobile/src/domain/b10.ts` 的 `B10WritingPrompt` / `B10RuleFeedback`、`apps/mobile/src/api/b10.ts` 的 `listWritingPrompts` / `submitWriting` / `submitCorrection` / `b10ErrorInfo`、`apps/mobile/src/platform/b10-foundation.ts` 的 `writing.*` / `status.*` 文案与 `packages/i18n/src/mobile-experience.ts` 的 `pages.b3-writing` 文案。真实页 `onMounted` 只校验登录（`closed practice: no live load`），模板顶部固定显示 `data-closed-practice` 关闭说明（作文批改服务尚未接入），题目 / 草稿 / 反馈模板分支在服务接入前不可达；原型默认演示该关闭态，并用 `?mock=` 预览上线后的模板分支与操作结果。
+
+- 主题与直达参数 → 工具条「浅色 / 深色」切换整页 token 并写入 `localStorage['uispec-theme']`；`?theme=light|dark` 固定主题；`?state=normal|loading|empty|error|forbidden|offline` 直达页面状态；`?mock=ready|filled|ok|bad|correction|feedback-stale|submit-error|submit-offline|draft-error|empty` 演示题目模板分支与提交结果。截图：`b3-writing-{light,dark}.png` 与 `b3-writing-{loading,empty,error,forbidden,offline,ready,filled,ok,bad,correction,feedback-stale,submit-error,submit-offline,draft-error}-{light,dark}.png`。
+- 页面状态 → 工具条「正常 / 加载 / 空 / 错误 / 无权限 / 离线」：加载为「正在读取服务端数据」+ 题目与输入框骨架屏（`aria-busy`）；空为「暂时没有可用的写作题目 / 没有使用本地样例填充页面。」+「重新读取」；错误为「服务端暂时不可用 / 写作服务暂时不可用，未使用本地样例；草稿仍保留在本机。」+「重试」；无权限为「当前会话没有访问权限 / 登录后可以继续写作练习。」+ 单个「去登录」→ `login.html?returnTo=%2Fpages%2Fb3-writing%2Fb3-writing`（不提供重试）；离线为「网络暂时不可用 / 本地草稿与待同步记录仍保留；待同步不等于已结算。」+「重试」。切换离开正常态会关闭题目与画质弹层、取消未完成的自动保存 / 读取 / 提交计时并恢复按钮。
+- 状态恢复 → 空、错误与离线「重新读取 / 重试」转圈 → 1.1s 后回到正常态，不弹成功 Toast；无权限只保留「去登录」。
+- 页头与导航 → 导航栏「写作练习」（`pages.json` 标题）+ 返回（`backMobile`：返回上一页；无历史时回 `home.html`，原型 `data-back="home.html"`），右上角设置 → `settings.html`；页内 kicker「写作台」（`ZH_KICKERS`）、标题「把想法，写成文字。」、说明「从一句话开始，在修改中找到更清晰的表达。」（`pages.b3-writing`）；不显示底部 TabBar（TabBar「练习」指向 `b2-practice.html`）。
+- 关闭说明 → 对齐真实页 `data-closed-practice`：锁图标 +「写作」+「写作练习」+「即将开放」徽标 +「作文批改服务尚未接入，现在提交只能得到占位分数，不能作为真实反馈。」+「回到可用学习」→ `today.html`；默认打开即显示关闭说明、状态条与暂无题目卡，带任一 `?mock=` 打开时隐藏关闭说明并渲染题目分支。
+- 状态条 → 等价 `B10StatusPanel`：idle「准备开始」、loading「正在加载学习内容」、ready「已准备好，可以开始」、empty「当前没有可用内容」、offline「网络暂时不可用 / 待同步不等于已结算。」、stale「内容版本已失效 / 提交结果基于旧版本，反馈中的依据可能已变化。」、error「服务暂时不可用」；error / offline / stale 右侧出现「重试」，其余状态只保留画质按钮。题目读取成功后说明为「题目已读取，草稿会保存在本机。」。
+- 画质 → 状态条「画质 · 舒适」打开底部弹层，四档「精致 / 舒适 / 轻量 / 省资源」（`B10StatusPanel` 档位），当前档带 brand 对勾与 `aria-pressed`；选择后更新文案并关闭弹层，焦点回到画质按钮；遮罩、取消与 Esc 均可关闭。
+- 切换题目 → 「翻译 · 把这句话翻译成英文」打开底部弹层，三个题目（翻译 / 邮件 / 改错）带类型、标题与一行摘要，当前项带 brand 对勾与 `aria-pressed`；选择后更新类型、标题、原文块、任务说明与要点标签，清空反馈并恢复该题自己的本地草稿，焦点回到题目按钮。
+- 本地草稿 → 输入后 260ms 自动保存，行内状态从「输入中」变为「已保存」；「保存草稿」立即保存并 Toast「草稿已保存在此设备。」；`?mock=draft-error` 模拟保存失败：行内显示 bad 色「本地草稿：未能保存」，状态条说明「草稿未能保存。」，输入内容仍留在页面上。草稿只存在本机，离开页面不清空。
+- 提交校验 → 未填答案点击「提交规则评测」，输入框下方出现 bad 色「请先填写答案再提交。」并聚焦输入框，状态条说明同步为同一句；开始输入后错误与说明自动恢复。
+- 提交评测 → 主按钮转圈「正在提交…」→ 1.2s 后出现规则反馈卡：答对为 ok 底「规则命中」+ 分数 88，答错为 bad 底「需要修复」+ 分数 55 与错误原因列表；反馈卡同时给出「已保存」、规则依据（标签 / 解释 / 原句）、下一步与「练习方式：规则反馈与自评」，焦点移到反馈标题。改错题按钮为「提交病句改错」（对齐 `writing.correction`）。原型以答案是否命中关键词模拟规则判分，不显示反馈代码或规则版本号。
+- 版本失效 → `?mock=feedback-stale` 以提交后的 stale 状态打开：状态条「内容版本已失效 / 提交结果基于旧版本，反馈中的依据可能已变化。」+「重试」，反馈卡底部显示「当前版本已下线或发生变化，请重新读取。」（`common.stale`）；点「重试」转圈「正在读取…」1.1s 后反馈卡清理、状态条回到「已准备好，可以开始」，并显示 ok 色 `role=status`「写作题目已更新。」，2.4s 后淡出，不弹 Toast。
+- 提交失败 / 离线 → `?mock=submit-error` 打开即显示状态条 error「服务暂时不可用 / 写作提交失败，草稿仍保留。」；`?mock=submit-offline` 显示 offline「网络暂时不可用 / 待同步不等于已结算。」（对齐 `b10ErrorInfo` 的离线分支与 `status.pending`）；两种情况下题目与答案都保留，点「重试」后恢复 ready，可再次提交。
+- 暂无题目 / 重新读取 → 正常态没有题目时显示真实页空题目卡「暂无题目 / 暂时没有可用写作题。」+「重新读取」；点击转圈「正在读取…」1.1s 后重新渲染，没有题目则状态条转为「当前没有可用内容」，不弹 Toast。
+- 登录门禁 → 对齐真实页 `onMounted`：先 `session.restore()`，未登录直接跳转 `login.html?returnTo=%2Fpages%2Fb3-writing%2Fb3-writing`，不渲染写作内容；原型以无权限态承载该分支，登录页回跳地址与真实页一致。
+- 文案边界 → 不显示反馈代码、内容版本号或原始状态枚举；Phase 1 只给规则反馈与自评，不写成自动批改或 AI 评分。真实页没有页尾出口，本稿不新增「错题与报告」「单词复习」入口。
