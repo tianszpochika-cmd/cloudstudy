@@ -350,7 +350,6 @@
               <p class="celebrate-card__title">今天的目标完成了</p>
               <p class="celebrate-card__sub">连续 12 天，明天也来见小星。</p>
             </div>
-            <span class="celebrate-card__badge"><span data-icon="star" data-icon-size="14" data-icon-weight="fill"></span>+20 星</span>
           </div>
 
           <div class="section-head home-practice-head">
@@ -573,7 +572,7 @@
     <li><strong>练习瓦片区</strong> → Hero 下新增一行「练习」，8 个 56px 渐变瓦片（词汇 / 语法 / 阅读 / 听力 / 口语 / 写作 / 游戏 / 社交），每个瓦片带顶部 inner highlight、彩色投影与白色 duotone 图标；横向可滑，全部指向现有功能页。这 8 个入口均来自现有功能，不新增业务。<span>【文案相对 Vue 已改，需同步 i18n】</span></li>
     <li><strong>吉祥物「小星」</strong> → 渐变五角星（#a78bfa→#f472b6）带高光、腮红、眼睛与柔光；本页用于达标庆祝（庆祝表情）与空/离线态（困惑）、错误态（加油）。<span>【文案相对 Vue 已改，需同步 i18n】</span></li>
     <li><strong>进度环</strong> → <code>stroke-dashoffset</code> 900ms 绘制 + 白色渐变描边与柔光；达标态 100% 且中心数字切换为「100%」。</li>
-    <li><strong>达标庆祝</strong> → 工具条切到「达标庆祝」：进度环补满 100%、Hero 显示「今日目标已完成」、出现小星庆祝卡（+20 星）、彩纸从顶部飘落（≤1.9s）、短 Toast「今日目标达成 · 连续 12 天」。彩纸与闪光在 <code>prefers-reduced-motion</code> 下完全关闭，仅保留静态卡片与 Toast。<span>【文案相对 Vue 已改，需同步 i18n】</span></li>
+    <li><strong>达标庆祝</strong> → 工具条切到「达标庆祝」：进度环补满 100%、Hero 显示「今日目标已完成」、出现小星庆祝卡、彩纸从顶部飘落（≤1.9s）、短 Toast「今日目标达成 · 连续 12 天」。彩纸与闪光在 <code>prefers-reduced-motion</code> 下完全关闭，仅保留静态卡片与 Toast。<span>【文案相对 Vue 已改，需同步 i18n】</span></li>
     <li><strong>TabBar</strong> → 悬浮毛玻璃胶囊（<code>backdrop-filter: blur(20px) saturate(180%)</code>，半透明白 / 深海军蓝），选中项有 260ms 弹簧滑动指示器；选中图标为 fill + 品牌渐变，未选中为 regular。内容区底部预留 96px 避让。</li>
     <li><strong>按压弹簧</strong> → 所有按钮 / 瓦片 / 任务行 / 分段项按下 scale(.96)，120ms 压下、320ms <code>cubic-bezier(.34,1.56,.64,1)</code> 回弹；工具条「按压态」用 class 把主按钮固定为按下并显示触感圈。</li>
     <li><strong>左滑任务</strong> → 任务行左滑露出「稍后」操作（拖拽跟手，松手按 42% 阈值吸附）；点击「稍后」收起并提示「已放到稍后，今天结束前都能做」。行下方有一行浅色提示说明该手势。</li>
@@ -626,7 +625,7 @@
     document.getElementById('ring-num').textContent = '40%';
     document.getElementById('hero-progress-text').textContent = '已完成 2 / 5';
     document.getElementById('hero-cta-label').textContent = '继续学习';
-    UISpec.ring(document.getElementById('home-ring'), 40);
+    document.getElementById('home-ring').setAttribute('data-ring-value', '40'); UISpec.ring(document.getElementById('home-ring'), 40);
   }
 
   var celebratedOnce = false;
@@ -642,7 +641,7 @@
 
     var ring = document.getElementById('home-ring');
     ring.setAttribute('aria-label', '今日目标完成 100%');
-    UISpec.ring(ring, 100);
+    ring.setAttribute('data-ring-value', '100'); UISpec.ring(ring, 100); setTimeout(function () { UISpec.ring(ring, 100); }, 80);
 
     var host = document.getElementById('confetti-host');
     host.innerHTML = '<span class="celebrate-flash"></span>';
@@ -729,7 +728,7 @@
 
   // 打开弹层时确保环动画已跑完
   document.addEventListener('DOMContentLoaded', function () {
-    UISpec.ring(document.getElementById('home-ring'), 40);
+    document.getElementById('home-ring').setAttribute('data-ring-value', '40'); UISpec.ring(document.getElementById('home-ring'), 40);
     var state = UISpec.getScreenState();
     if (state === 'celebrate') celebrate();
     if (state === 'sheet') openTaskSheet();
