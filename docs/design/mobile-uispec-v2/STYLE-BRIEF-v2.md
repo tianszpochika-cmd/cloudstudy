@@ -138,3 +138,28 @@ Round 2。功能范围与页面清单不变（见 PAGES.md），**布局与文�
 
 ## 启动流程
 splash（渐变全屏 + 品牌星 + 名字）→ 2–3 屏价值轮播（大插画位 + Display 标题 + 一句说明 + 指示点）→ 底部固定：主按钮「开始学习」+ 文字链「我已有账号」。之后才进入成人确认/同意/目标（每步一主按钮，退出放「⋯」）。
+
+---
+# v2C 图标与动效（2026-10-19，覆盖前文冲突处）
+
+## 图标
+- 统一使用 **Phosphor Icons v2.1.1（MIT）**，本地 vendored 于 `icons/{regular,fill,duotone}/*.svg`，含 LICENSE。禁止混用其它线性图标。
+- 通用 UI：regular，24px；TabBar：未选中 regular、选中 fill + 品牌渐变；功能瓦片：duotone。
+- **功能瓦片（词汇/语法/阅读/听力/口语/写作/游戏/社交）**：56×56、圆角 18，渐变底（每个功能一组：紫 #7c4dff→#b388ff、薄荷 #10b981→#6ee7b7、杏 #fb923c→#fdba74、天蓝 #3b82f6→#93c5fd、玫红 #ec4899→#f9a8d4、柠檬 #eab308→#fde047），顶部 inner highlight（白 35%→0 线性），底部柔和彩色投影；图标白色 duotone 28px。
+- **吉祥物「小星」**：圆润五角星 SVG，渐变 #a78bfa→#f472b6，高光、腮红、眼睛；表情变体：开心（默认）、加油（眨眼+拳）、庆祝（星星眼+闪光）、困惑（空/错态）。
+
+## 动效（真实 CSS/JS 实现，尊重 prefers-reduced-motion）
+- 按压：spring `transform: scale(.96)` 120ms，回弹 cubic-bezier(.34,1.56,.64,1) 320ms。
+- TabBar：悬浮毛玻璃胶囊（backdrop-filter blur(20px) saturate(180%)，半透明白/深海军蓝），选中项滑动指示器。
+- 进度环：stroke-dashoffset 900ms 动画 + 渐变描边；达标触发彩纸/闪光微庆祝（≤1.2s）。
+- 轮播：卡片堆叠 + 视差（前景插画移动 1.0x、背景 0.4x），指示点拉伸。
+- 骨架：shimmer 渐变扫光 1.4s 循环。
+- Bottom sheet：抓手条、弹簧上滑 380ms、遮罩渐显。
+- 任务行：左滑露出「跳过 / 稍后」操作。
+- 分段控件：滑动指示器 260ms。
+- 触感（交互说明标注）：主按钮 light impact；达标 success notification；错误 warning。
+
+## 质感
+- 渐变网格（2–3 个模糊色斑叠加）+ 2–3% 噪点纹理（SVG feTurbulence）。
+- 深色：真深海军蓝 #0b1020 底、卡片 #141a2e，强调色带外发光（box-shadow 0 0 24px 品牌色 35%）。
+- 8pt 网格；字体：数字/英文 "Inter Tight"/Inter，中文 PingFang SC / 思源黑体。
