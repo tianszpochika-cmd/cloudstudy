@@ -37,7 +37,8 @@ Round 2 交互说明。文案相对 Vue 有改动时标注【文案相对 Vue �
 - 动效：Hero/任务行按下 scale(.96) 弹簧回弹；进度环 900ms 绘制；达标 100% + 小星庆祝卡 + 彩纸（≤1.9s）+ Toast「今日目标达成 · 连续 12 天」；左滑跟手、42% 阈值吸附；sheet 380ms 弹簧上滑，遮罩 / 抓手 / Esc 关闭；全部尊重 prefers-reduced-motion（彩纸与闪光关闭，仅留静态卡片与 Toast）。【文案相对 Vue 已改，需同步 i18n】
 - 设计新增：Hero 圆角进度环布局、8 瓦片练习区、小星庆祝卡、今日学习 sheet、左滑「稍后」手势与手势提示、骨架屏与「离线可读」轻提示；无新业务、奖励或规则。
 - 文案边界：无「服务端 / 待同步 / 结算 / 版本」等工程词；无常驻同步条或画质条；头像入口只写「你」，设置留在「我的」页。
-- v2T：只用 t-display/t-title/t-headline/t-label/t-body/t-caption/t-micro 阶梯；Hero 文字列宽 ≥240px（360 宽仍无孤字行）；单行标签不换行；typocheck 通过。
+- v2T：只用 t-display/t-title/t-headline/t-label/t-body/t-caption/t-micro 阶梯；Hero 文字列宽 ≥240px（360 宽仍无孤字行）；单行标签不换行。
+- typocheck 证据（2026-10-19，`node .luna-uispec/tools/typocheck.mjs docs/design/mobile-uispec-v2/pages/home.html`，默认覆盖 20 个状态 × 360/390 × 浅/深 = 80 组）：输出 `TYPOCHECK OK`，无孤字行 / 书名号断行 / 数字单位拆分 / 英文单词拆分 / 标点行首 / 单行标签换行 / 标题超 2 行。
 
 ## b11-reading
 - 标题区「今天读一篇」；顶栏右侧「⋯」，无常驻画质/动效条。【文案相对 Vue 已改，需同步 i18n】
