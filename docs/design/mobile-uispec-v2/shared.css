@@ -673,6 +673,27 @@ a.list__item, button.list__item { text-decoration: none; }
 .inline-state--warn { background: var(--v2-warn-soft); color: var(--v2-warn); }
 .inline-state--info { background: var(--v2-soft); color: var(--v2-ink); }
 
+/* 轻提示：只在离线 / 降级时出现，正常态不常驻。
+ * 同步条、就绪条、画质条不进首屏；需要时收进设置或「⋯」。 */
+.inline-note {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: var(--v2-radius-md);
+  background: var(--v2-surface);
+  color: var(--v2-ink);
+  font-size: 14px;
+  line-height: 1.6;
+}
+.inline-note[hidden] { display: none; }
+.inline-note .icon { flex: none; }
+.inline-note__body { flex: 1 1 auto; min-width: 0; }
+.inline-note--warn { background: var(--v2-warn-soft); color: var(--v2-warn); }
+.inline-note--warn .inline-note__body { color: var(--v2-ink); }
+.inline-note .btn--text { min-height: 36px; padding: 0 6px; color: var(--v2-brand); }
+.inline-note--warn .btn--text { color: var(--v2-warn); }
+
 .spinner {
   width: 20px; height: 20px;
   border-radius: 50%;
