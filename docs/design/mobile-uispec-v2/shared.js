@@ -126,6 +126,46 @@
     return '<svg class="' + cls + '" width="' + px + '" height="' + px + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">' + body + '</svg>';
   }
 
+  /* ---------- 插画 / 吉祥物占位（几何 SVG，非最终插画） ---------- */
+
+  // 吉祥物位：圆角星形角色（品牌紫 + 眼睛两点）
+  var mascotSeq = 0;
+  function mascot(size, extraClass) {
+    var px = size || 96;
+    var cls = 'mascot' + (extraClass ? ' ' + extraClass : '');
+    // 渐变 id 每个实例唯一，避免同页多个吉祥物互相覆盖
+    var gid = 'mascot-grad-' + (++mascotSeq);
+    var star = 'M48 12 L57.1 33.5 L80.3 35.5 L62.7 50.8 L68 73.5 L48 61.5 L28 73.5 L33.3 50.8 L15.7 35.5 L38.9 33.5 Z';
+    return '<svg class="' + cls + '" width="' + px + '" height="' + px + '" viewBox="0 0 96 96" fill="none" aria-hidden="true" focusable="false">' +
+      '<defs><linearGradient id="' + gid + '" x1="16" y1="10" x2="82" y2="78" gradientUnits="userSpaceOnUse">' +
+      '<stop stop-color="#8b5cf6"/><stop offset="1" stop-color="#f472b6"/></linearGradient></defs>' +
+      '<path d="' + star + '" transform="translate(48 46) scale(.92) translate(-48 -46)" fill="#fff" opacity=".10"/>' +
+      '<path d="' + star + '" fill="url(#' + gid + ')" stroke="url(#' + gid + ')" stroke-width="10" stroke-linejoin="round"/>' +
+      '<circle cx="39" cy="45" r="3.6" fill="#2a1466"/>' +
+      '<circle cx="57" cy="45" r="3.6" fill="#2a1466"/>' +
+      '<circle cx="40.2" cy="43.8" r="1.2" fill="#fff"/>' +
+      '<circle cx="58.2" cy="43.8" r="1.2" fill="#fff"/>' +
+      '<path d="M43.5 52.5c2.6 2.8 6.4 2.8 9 0" stroke="#2a1466" stroke-width="2.6" stroke-linecap="round"/>' +
+      '<circle cx="31" cy="52" r="3.4" fill="#fda4c8" opacity=".85"/>' +
+      '<circle cx="65" cy="52" r="3.4" fill="#fda4c8" opacity=".85"/>' +
+      '</svg>';
+  }
+
+  // 插画位：几何形组合（书、星、对话气泡、斑点）
+  var ILLUS = {
+    books: '<path d="M18 58c8-4 16-4 24 0V26c-8-4-16-4-24 0z" fill="currentColor" opacity=".16"/><path d="M42 58c8-4 16-4 24 0V26c-8-4-16-4-24 0z" fill="currentColor" opacity=".28"/><path d="M18 58c8-4 16-4 24 0V26c-8-4-16-4-24 0M42 58c8-4 16-4 24 0V26c-8-4-16-4-24 0" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/>',
+    chat: '<path d="M16 30a8 8 0 0 1 8-8h36a8 8 0 0 1 8 8v18a8 8 0 0 1-8 8H38l-12 10V56h-2a8 8 0 0 1-8-8z" fill="currentColor" opacity=".18"/><circle cx="30" cy="39" r="3" fill="currentColor"/><circle cx="42" cy="39" r="3" fill="currentColor" opacity=".7"/><circle cx="54" cy="39" r="3" fill="currentColor" opacity=".45"/>',
+    star: '<path d="M42 14l7 18 19 2-14 13 4 19-16-10-16 10 4-19-14-13 19-2z" fill="currentColor" opacity=".22"/><path d="M42 14l7 18 19 2-14 13 4 19-16-10-16 10 4-19-14-13 19-2z" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round" opacity=".8"/>',
+    target: '<circle cx="42" cy="42" r="26" fill="currentColor" opacity=".10"/><circle cx="42" cy="42" r="17" fill="currentColor" opacity=".14"/><circle cx="42" cy="42" r="8" fill="currentColor"/><path d="M42 10v10M42 64v10M10 42h10M64 42h10" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" opacity=".7"/>'
+  };
+
+  function illustration(name, size, extraClass) {
+    var body = ILLUS[name] || ILLUS.star;
+    var px = size || 84;
+    var cls = 'illus__svg' + (extraClass ? ' ' + extraClass : '');
+    return '<svg class="' + cls + '" width="' + px + '" height="' + px + '" viewBox="0 0 84 84" fill="none" aria-hidden="true" focusable="false">' + body + '</svg>';
+  }
+
   /* ---------- 框内骨架 ---------- */
 
   var STATUS_SIGNAL = '<svg width="18" height="12" viewBox="0 0 18 12" aria-hidden="true"><path d="M1 9.8V11M4.7 7.6V11M8.4 5.4V11M12.1 3.1V11M15.8 1V11" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>';
@@ -168,7 +208,7 @@
     var prefix = el.getAttribute('data-prefix') || '';
     return '<nav class="tabbar" aria-label="主导航">' + TABS.map(function (tab) {
       var selected = tab.id === active;
-      return '<a class="tabbar__item' + (selected ? ' is-selected' : '') + '" href="' + prefix + tab.href + '"' + (selected ? ' aria-current="page"' : '') + '>' + icon(tab.icon, 24) + '<span>' + tab.label + '</span></a>';
+      return '<a class="tabbar__item' + (selected ? ' is-selected' : '') + '" href="' + prefix + tab.href + '"' + (selected ? ' aria-current="page"' : '') + '><span class="tabbar__pill">' + icon(tab.icon, 23) + '</span><span>' + tab.label + '</span></a>';
     }).join('') + '</nav>';
   }
 
@@ -181,7 +221,14 @@
     error: '错误',
     forbidden: '无权限',
     offline: '离线',
-    success: '成功'
+    success: '成功',
+    // 流程页（onboarding 等）可注册自定义步骤名
+    splash: '闪屏',
+    'carousel-1': '轮播 1',
+    'carousel-2': '轮播 2',
+    'carousel-3': '轮播 3',
+    adult: '成人确认',
+    goal: '学习目标'
   };
 
   function buildToolbar(el) {
@@ -396,6 +443,17 @@
       }).join('');
       host.dataset.rendered = '1';
     });
+    document.querySelectorAll('[data-mascot]').forEach(function (el) {
+      if (el.dataset.rendered) return;
+      el.classList.add('mascot-host');
+      el.innerHTML = mascot(parseInt(el.getAttribute('data-mascot') || '96', 10));
+      el.dataset.rendered = '1';
+    });
+    document.querySelectorAll('[data-illus]').forEach(function (el) {
+      if (el.dataset.rendered) return;
+      el.innerHTML = illustration(el.getAttribute('data-illus'), parseInt(el.getAttribute('data-illus-size') || '84', 10));
+      el.dataset.rendered = '1';
+    });
   }
 
   document.addEventListener('DOMContentLoaded', init);
@@ -563,6 +621,8 @@
   window.UISpec = {
     icon: icon,
     icons: ICONS,
+    mascot: mascot,
+    illustration: illustration,
     statusBar: statusBarHTML,
     navbar: navbarHTML,
     tabbar: tabbarHTML,

@@ -3,47 +3,66 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>分级阅读 · 语学星移动端 UI 稿 v2</title>
+<title>分级阅读 · 语学星移动端 UI 稿 v2B</title>
 <link rel="stylesheet" href="../shared.css">
 <script src="../shared.js"></script>
 <style>
   /* 仅本页布局；组件与 token 全部来自 shared.css */
-  .br-page { padding: 4px 20px 32px; }
+  .br-page { padding: 4px 24px 32px; }
   .br-page [hidden] { display: none !important; }
+  .br-state { display: none; }
+  html[data-screen-state="normal"] .br-state[data-state-block="normal"],
+  html[data-screen-state="loading"] .br-state[data-state-block="loading"],
+  html[data-screen-state="empty"] .br-state[data-state-block="empty"],
+  html[data-screen-state="error"] .br-state[data-state-block="error"],
+  html[data-screen-state="offline"] .br-state[data-state-block="offline"] { display: block; }
 
-  /* 页头：标题即场景，无 kicker */
-  .br-head { margin: 4px 0 16px; }
+  /* 页头 */
+  .br-head { margin: 2px 0 20px; }
   .br-title {
     margin: 0;
     color: var(--v2-ink);
-    font-size: 28px;
-    line-height: 1.35;
-    font-weight: 650;
-    letter-spacing: -.01em;
+    font-size: 34px;
+    line-height: 1.14;
+    font-weight: 800;
+    letter-spacing: -.02em;
   }
-  .br-intro { margin: 6px 0 0; color: var(--v2-mut); font-size: 14px; line-height: 1.7; }
+  .br-intro { margin: 8px 0 0; color: var(--v2-mut); font-size: 15px; line-height: 1.5; }
 
-  /* 文章卡 */
-  .br-card { display: grid; gap: 6px; }
+  /* 文章卡：大圆角、舒适留白 */
+  .br-card {
+    padding: 24px 22px 22px;
+    border-radius: var(--v2-radius-hero);
+  }
+  .br-card__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
   .br-meta {
-    margin: 0;
-    color: var(--v2-brand);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--v2-mut);
     font-size: 13px;
-    line-height: 1.6;
+    line-height: 1.4;
     font-weight: 600;
     font-variant-numeric: tabular-nums;
   }
   .br-article-title {
     margin: 0;
     color: var(--v2-ink);
-    font-size: 20px;
-    line-height: 1.4;
-    font-weight: 650;
+    font-size: 25px;
+    line-height: 1.24;
+    font-weight: 800;
+    letter-spacing: -.015em;
     overflow-wrap: anywhere;
   }
   .br-article-title:focus { outline: none; }
 
-  .br-progress { display: grid; gap: 6px; margin: 12px 0 2px; }
+  .br-progress { display: grid; gap: 8px; margin: 18px 0 4px; }
   .br-progress__head {
     display: flex;
     align-items: center;
@@ -51,149 +70,173 @@
     gap: 12px;
     color: var(--v2-mut);
     font-size: 13px;
-    line-height: 1.6;
+    line-height: 1.4;
     font-variant-numeric: tabular-nums;
   }
-  .br-progress__value { color: var(--v2-brand); font-weight: 650; }
+  .br-progress__value { color: var(--v2-brand); font-weight: 750; }
 
+  /* 阅读区：17 / 1.7 */
   .br-passage {
-    margin: 10px 0 0;
-    padding: 16px;
-    border-radius: var(--v2-radius-md);
-    background: var(--v2-surface);
+    margin: 14px 0 0;
     color: var(--v2-ink);
-    font-size: 16px;
-    line-height: 1.85;
+    font-size: 17px;
+    line-height: 1.7;
+    letter-spacing: -.002em;
     overflow-wrap: anywhere;
   }
-  .br-translation {
-    display: grid;
-    gap: 2px;
-    margin-top: 8px;
-    padding: 0 2px;
+  .br-passage::first-letter { font-weight: 700; }
+
+  .br-translation { margin-top: 16px; }
+  .br-translation__toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 40px;
+    padding: 0 14px;
+    border: 0;
+    border-radius: var(--v2-radius-pill);
+    background: var(--v2-surface);
+    color: var(--v2-ink-2);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 650;
+    cursor: pointer;
+    transition: background var(--v2-motion-fast) ease, color var(--v2-motion-fast) ease;
   }
-  .br-translation__label {
-    color: var(--v2-mut);
-    font-size: 12px;
-    line-height: 1.6;
-    font-weight: 600;
+  .br-translation__toggle:hover { background: var(--v2-soft); color: var(--v2-brand); }
+  .br-translation__toggle:focus-visible { outline: none; box-shadow: var(--v2-focus); }
+  .br-translation__toggle .icon { transition: transform var(--v2-motion-base) var(--v2-ease); }
+  .br-translation__toggle[aria-expanded="true"] .icon { transform: rotate(180deg); }
+  .br-translation__body {
+    margin-top: 10px;
+    padding: 14px 16px;
+    border-radius: var(--v2-radius-md);
+    background: var(--v2-surface-2);
+    border-left: 3px solid var(--v2-soft);
   }
+  .br-translation__body[hidden] { display: none; }
   .br-translation__text {
     margin: 0;
     color: var(--v2-mut);
-    font-size: 14px;
-    line-height: 1.75;
+    font-size: 15px;
+    line-height: 1.6;
     overflow-wrap: anywhere;
   }
 
-  /* 段落切换是次要操作：两个文字链按钮，不与主按钮并排竞争 */
+  /* 上一段 / 下一段：文字链 */
   .br-seg {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 8px;
-    margin-top: 12px;
+    margin-top: 18px;
   }
   .br-seg .btn--text .icon { flex: none; }
   .br-seg .btn--text:disabled { color: var(--v2-mut); }
+  .br-seg__count {
+    color: var(--v2-mut);
+    font-size: 12px;
+    font-weight: 650;
+    font-variant-numeric: tabular-nums;
+  }
 
-  .br-save { margin-top: 6px; }
-  .br-save .icon { flex: none; }
-
-  /* 进度保存成功：一行安静的状态，不是常驻条 */
+  /* 底部固定主按钮 */
+  .br-actionbar {
+    display: none;
+    padding: 14px 24px calc(18px + env(safe-area-inset-bottom, 0px));
+  }
+  html[data-screen-state="normal"] .br-actionbar,
+  html[data-screen-state="offline"] .br-actionbar { display: block; }
   .br-saved {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 6px;
-    margin: 10px 0 0;
+    margin: 0 0 10px;
     color: var(--v2-ok);
     font-size: 13px;
-    line-height: 1.6;
+    line-height: 1.4;
   }
   .br-saved[hidden] { display: none; }
   .br-saved .icon { flex: none; }
 
   /* 理解检查 */
   .br-questions { display: grid; gap: 12px; }
-  .br-questions .section-head { margin: 28px 0 0; }
-  .br-q { display: grid; gap: 12px; }
+  .br-questions .section-head { margin: 32px 0 2px; }
+  .br-q { display: grid; gap: 12px; padding: 20px; }
   .br-q__eyebrow {
     margin: 0;
     color: var(--v2-mut);
     font-size: 12px;
-    line-height: 1.6;
-    font-weight: 600;
+    line-height: 1.4;
+    font-weight: 650;
     letter-spacing: .04em;
   }
   .br-q__stem {
     margin: 0;
     color: var(--v2-ink);
-    font-size: 16px;
-    line-height: 1.5;
-    font-weight: 600;
+    font-size: 17px;
+    line-height: 1.45;
+    font-weight: 700;
+    letter-spacing: -.005em;
     overflow-wrap: anywhere;
   }
   .br-options { display: grid; gap: 8px; }
   .br-option {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     width: 100%;
-    min-height: 48px;
-    padding: 10px 12px;
-    border: 1px solid var(--v2-line);
+    min-height: 54px;
+    padding: 10px 16px;
+    border: 1.5px solid transparent;
     border-radius: var(--v2-radius-md);
-    background: var(--v2-card);
+    background: var(--v2-surface);
     color: var(--v2-ink);
     font-family: inherit;
-    font-size: 14px;
-    line-height: 1.6;
+    font-size: 15px;
+    line-height: 1.45;
     text-align: left;
     cursor: pointer;
+    transition: border-color var(--v2-motion-fast) ease, background var(--v2-motion-fast) ease;
   }
   .br-option:hover:not(:disabled) { border-color: var(--v2-brand); }
   .br-option:focus-visible { outline: none; box-shadow: var(--v2-focus); }
   .br-option__dot {
     flex: none;
-    width: 20px; height: 20px;
+    width: 22px; height: 22px;
     display: inline-flex; align-items: center; justify-content: center;
     border-radius: 50%;
-    border: 2px solid var(--v2-line);
     background: var(--v2-card);
+    box-shadow: inset 0 0 0 2px var(--v2-line);
   }
   .br-option__dot::after { content: ""; width: 10px; height: 10px; border-radius: 50%; background: transparent; }
-  .br-option.is-selected { border-color: var(--v2-brand); background: var(--v2-soft); color: var(--v2-brand); font-weight: 600; }
-  .br-option.is-selected .br-option__dot { border-color: var(--v2-brand); }
+  .br-option.is-selected { border-color: var(--v2-brand); background: var(--v2-soft); color: var(--v2-brand); font-weight: 650; }
+  .br-option.is-selected .br-option__dot { box-shadow: inset 0 0 0 2px var(--v2-brand); }
   .br-option.is-selected .br-option__dot::after { background: var(--v2-brand); }
-  .br-option:disabled { background: var(--v2-surface); border-color: var(--v2-line); color: var(--v2-mut); cursor: not-allowed; }
-  .br-option:disabled.is-selected { border-color: var(--v2-brand); background: var(--v2-soft); color: var(--v2-brand); font-weight: 600; }
-  .br-option:disabled.is-selected .br-option__dot { border-color: var(--v2-brand); }
-  .br-option:disabled.is-selected .br-option__dot::after { background: var(--v2-brand); }
+  .br-option:disabled { background: var(--v2-surface); color: var(--v2-mut); cursor: not-allowed; }
+  .br-option:disabled.is-selected { border-color: var(--v2-brand); background: var(--v2-soft); color: var(--v2-brand); }
 
   .br-fb {
-    padding: 12px 14px;
+    padding: 12px 16px;
     border-radius: var(--v2-radius-md);
     font-size: 14px;
-    line-height: 1.6;
-    font-weight: 600;
+    line-height: 1.5;
+    font-weight: 650;
   }
   .br-fb--ok { background: var(--v2-ok-soft); color: var(--v2-ok); }
   .br-fb--done { background: var(--v2-surface); color: var(--v2-ink); }
 
-  /* 状态 */
-  .br-state .state-block { padding-top: 40px; }
-
-  /* 离线：保留可读内容，只在顶部加一条轻提示 */
+  /* 状态页 */
+  .br-state-block { padding-top: 4px; }
+  .br-state-block .state-block { padding-top: 30px; }
   .br-offline-note { margin: 0 0 16px; }
-  /* 离线时正文保持只读可见，但不与离线提示重复占位 */
-  html[data-screen-state="offline"] [data-state-block="normal"] { display: block; }
-  html[data-screen-state="offline"] [data-state-block="normal"] #offline-note { display: none; }
 
-  /* 阅读设置弹层（画质不常驻） */
+  /* 阅读设置弹层 */
   .br-sheet__item { justify-content: space-between; }
   .br-sheet__check { color: var(--v2-brand); display: inline-flex; visibility: hidden; }
   .br-sheet__item[aria-pressed="true"] .br-sheet__check { visibility: visible; }
-  .br-sheet__item[aria-pressed="true"] { color: var(--v2-brand); font-weight: 600; }
+  .br-sheet__item[aria-pressed="true"] { color: var(--v2-brand); font-weight: 700; }
 </style>
 </head>
 <body>
@@ -214,7 +257,7 @@
           <p class="br-intro">挑一篇适合你的文章，读完再回答两道小题。</p>
         </header>
 
-        <!-- 正常：分段阅读 + 理解检查 -->
+        <!-- ========== 正常 ========== -->
         <div data-state-block="normal" class="br-state">
 
           <div class="inline-note inline-note--warn br-offline-note" id="offline-note" role="status" hidden>
@@ -223,7 +266,11 @@
           </div>
 
           <section class="card br-card" aria-labelledby="article-title">
-            <p class="br-meta" id="article-meta">B1 · 486 词 · 约 4 分钟</p>
+            <div class="br-card__top">
+              <span class="chip chip--level" id="article-level">B1</span>
+              <p class="br-meta" id="article-meta">486 词 · 约 4 分钟</p>
+            </div>
+
             <h2 class="br-article-title" id="article-title" tabindex="-1">A City That Learned to Slow Down</h2>
 
             <div class="br-progress">
@@ -237,89 +284,104 @@
             </div>
 
             <p class="br-passage" id="block-text"></p>
-            <div class="br-translation" id="block-translation">
-              <span class="br-translation__label">译文</span>
-              <p class="br-translation__text" id="block-translation-text"></p>
+
+            <div class="br-translation">
+              <button type="button" class="br-translation__toggle" id="translation-toggle"
+                      aria-expanded="false" aria-controls="translation-body">
+                <span class="btn__label">显示译文</span>
+                <span data-icon="chevron-down" data-icon-size="16"></span>
+              </button>
+              <div class="br-translation__body" id="translation-body" hidden>
+                <p class="br-translation__text" id="block-translation-text"></p>
+              </div>
             </div>
 
             <div class="br-seg">
               <button type="button" class="btn btn--text" id="prev-btn">
                 <span data-icon="chevron-left" data-icon-size="16"></span><span class="btn__label">上一段</span>
               </button>
+              <span class="br-seg__count" id="seg-count">1 / 3</span>
               <button type="button" class="btn btn--text" id="next-btn">
                 <span class="btn__label">下一段</span><span data-icon="chevron-right" data-icon-size="16"></span>
               </button>
             </div>
-
-            <button type="button" class="btn btn--primary btn--block br-save" id="save-btn">
-              <span class="btn__spinner" aria-hidden="true"></span><span class="btn__label">保存进度</span>
-            </button>
-            <p class="br-saved" id="saved-note" role="status" aria-live="polite" hidden>
-              <span data-icon="check-circle" data-icon-size="16"></span><span id="saved-text">进度已保存</span>
-            </p>
           </section>
 
           <section class="br-questions" id="question-section" aria-labelledby="questions-title">
             <div class="section-head">
               <h2 class="section-title" id="questions-title">理解检查</h2>
-              <span class="badge badge--mut">2 题</span>
+              <span class="section-meta">2 题</span>
             </div>
             <div id="question-list"></div>
           </section>
         </div>
 
-        <!-- 加载：骨架屏 -->
+        <!-- ========== 加载 ========== -->
         <div data-state-block="loading" class="br-state" aria-busy="true">
           <span class="sr-only">正在打开文章</span>
-          <div class="card" style="display:grid; gap:12px" aria-hidden="true">
-            <div class="skeleton skeleton-line skeleton-line--sm" style="width: 34%"></div>
-            <div class="skeleton skeleton-block" style="height: 26px; width: 86%"></div>
-            <div class="skeleton skeleton-line skeleton-line--sm" style="width: 48%"></div>
-            <div class="skeleton skeleton-block" style="height: 8px; margin-top: 8px"></div>
-            <div class="skeleton skeleton-block" style="height: 104px; margin-top: 8px"></div>
-            <div class="skeleton skeleton-block" style="height: 60px"></div>
-            <div class="skeleton skeleton-block" style="height: 48px; margin-top: 8px"></div>
+          <div class="card br-card" style="display:grid; gap:14px" aria-hidden="true">
+            <div class="skeleton skeleton-line skeleton-line--sm" style="width: 28%"></div>
+            <div class="skeleton skeleton-block" style="height: 30px; width: 88%"></div>
+            <div class="skeleton skeleton-block" style="height: 8px; margin-top: 6px"></div>
+            <div class="skeleton skeleton-block" style="height: 132px"></div>
+            <div class="skeleton skeleton-block" style="height: 40px; width: 40%"></div>
           </div>
         </div>
 
-        <!-- 空：暂时没有可读的文章 -->
+        <!-- ========== 空 ========== -->
         <div data-state-block="empty" class="br-state">
-          <div class="state-block" role="status">
-            <span class="state-block__icon" data-icon="book" data-icon-size="24"></span>
-            <span class="state-block__title">暂时没有可读的文章</span>
-            <span class="state-block__text">换个时间再来，或先做一组词汇复习。</span>
-            <span class="state-block__actions">
-              <button type="button" class="btn btn--primary" data-retry-state="normal" data-retry-label="正在加载…">
-                <span class="btn__spinner" aria-hidden="true"></span><span class="btn__label">重新加载</span>
-              </button>
-            </span>
+          <div class="br-state-block">
+            <div class="state-block" role="status">
+              <div class="state-block__art" data-illus="books" data-illus-size="64" aria-hidden="true"></div>
+              <h1 class="state-block__title">暂时没有可读的文章</h1>
+              <p class="state-block__text">换个时间再来，或先做一组词汇复习。</p>
+              <div class="state-block__actions">
+                <button type="button" class="btn btn--primary" data-retry-state="normal" data-retry-label="正在加载…">
+                  <span class="btn__spinner" aria-hidden="true"></span><span class="btn__label">重新加载</span>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
 
-        <!-- 错误 -->
+        <!-- ========== 错误 ========== -->
         <div data-state-block="error" class="br-state">
-          <div class="state-block" role="alert">
-            <span class="state-block__icon state-block__icon--bad" data-icon="alert-triangle" data-icon-size="24"></span>
-            <span class="state-block__title">文章没加载出来</span>
-            <span class="state-block__text">阅读位置还留着，重新加载就能接着读。</span>
-            <span class="state-block__actions">
-              <button type="button" class="btn btn--primary" data-retry-state="normal" data-retry-label="正在重试…">
-                <span class="btn__spinner" aria-hidden="true"></span><span class="btn__label">重新加载</span>
-              </button>
-            </span>
+          <div class="br-state-block">
+            <div class="state-block" role="alert">
+              <div class="state-block__art" data-illus="star" data-illus-size="64" aria-hidden="true"></div>
+              <h1 class="state-block__title">文章没加载出来</h1>
+              <p class="state-block__text">阅读位置还留着，重新加载就能接着读。</p>
+              <div class="state-block__actions">
+                <button type="button" class="btn btn--primary" data-retry-state="normal" data-retry-label="正在重试…">
+                  <span class="btn__spinner" aria-hidden="true"></span><span class="btn__label">重新加载</span>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
 
-        <!-- 离线：轻提示，正文保持可读 -->
+        <!-- ========== 离线 ========== -->
         <div data-state-block="offline" class="br-state">
-          <div class="inline-note inline-note--warn" role="status">
-            <span data-icon="globe" data-icon-size="18"></span>
-            <span class="inline-note__body">网络断开了，已读内容仍可查看，连网后进度会自动保存。</span>
-            <button type="button" class="btn btn--text" data-retry-state="normal" data-retry-label="正在重连…">重试</button>
+          <div class="br-state-block">
+            <div class="inline-note inline-note--warn" role="status">
+              <span data-icon="globe" data-icon-size="18"></span>
+              <span class="inline-note__body">网络断开了，已读内容仍可查看，连网后进度会自动保存。</span>
+              <button type="button" class="btn btn--text" data-retry-state="normal" data-retry-label="正在重连…">重试</button>
+            </div>
           </div>
         </div>
 
       </div>
+    </div>
+
+    <!-- 底部固定：唯一主按钮「保存进度」 -->
+    <div class="action-bar br-actionbar">
+      <p class="br-saved" id="saved-note" role="status" aria-live="polite" hidden>
+        <span data-icon="check-circle" data-icon-size="16"></span><span id="saved-text">进度已保存</span>
+      </p>
+      <button type="button" class="btn btn--primary btn--block" id="save-btn">
+        <span class="btn__spinner" aria-hidden="true"></span><span class="btn__label">保存进度</span>
+      </button>
     </div>
 
     <div class="toast-host" role="status" aria-live="polite"></div>
@@ -339,19 +401,20 @@
 </div>
 
 <div class="interaction-notes">
-  <h2>交互说明（b11-reading · v2 试点）</h2>
+  <h2>交互说明（b11-reading · v2B 试点）</h2>
   <ul>
     <li><strong>主题</strong> → 工具条「浅色 / 深色」切换整页 token 并记住选择。</li>
-    <li><strong>状态</strong> → 工具条「正常 / 加载 / 空 / 错误 / 离线」：加载为骨架屏（<code>aria-busy</code>）；空为「暂时没有可读的文章 / 换个时间再来，或先做一组词汇复习。」+ 唯一主按钮「重新加载」；错误为「文章没加载出来 / 阅读位置还留着，重新加载就能接着读。」+「重新加载」；离线保留正文只读，并在顶部显示轻提示。<span>【文案相对 Vue 已改，需同步 i18n】</span></li>
-    <li><strong>去除常驻状态条</strong> → Round 1 的「阅读位置未确认」「待同步 N」「恢复同步」「播放授权已过期」横幅与顶部「画质 · 舒适 / 关闭动效」不再常驻；画质与动效收进导航栏「⋯ → 阅读设置」。</li>
-    <li><strong>页头</strong> → 导航栏「分级阅读」+ 返回；页面标题同为「分级阅读」，仅一句说明，无紫色 kicker、无「授权文章 · 1 篇」计数。</li>
-    <li><strong>阅读</strong> → 文章卡显示级别、词数、预计时长与标题；正文逐段显示英文与译文。进度条与「33% · 第 1 / 3 段」文字同步。</li>
-    <li><strong>上一段 / 下一段</strong> → 降级为文字链，避免与主按钮并排；第一段 / 最后一段进入真实禁用态。</li>
-    <li><strong>保存进度</strong> → 每屏唯一实心主按钮。点击后按钮转圈，1s 后下方出现一行绿色「进度已保存」，不弹横幅、不写「已由服务端确认」；切换段落时该行自动收起。</li>
-    <li><strong>离线</strong> → 顶部浅色提示「网络断开了，已读内容仍可查看，连网后进度会自动保存。」+「重试」文字链；正文保持可读。<code>?state=offline</code> 直达；正常态 <code>?offline=1</code> 也可预览同一提示。</li>
-    <li><strong>理解检查</strong> → 题干 + 三个单选；未选择时「提交答案」为次按钮禁用态。提交后答对显示「回答正确」，答错显示「记下了，再看一遍这一段」，不再出现「服务端已记录本次练习」。</li>
+    <li><strong>状态</strong> → 工具条「正常 / 加载 / 空 / 错误 / 离线」，也可用 <code>?state=</code> 直达。加载为骨架屏（<code>aria-busy</code>）；空/错/离线均为「插画位 + 一句人话 + 一个按钮」。<span>【文案相对 Vue 已改，需同步 i18n】</span></li>
+    <li><strong>文章卡</strong> → 28px 大圆角、24px 内边距；顶部为级别 chip（B1，淡紫胶囊）与词数/时长；标题 25px Display 字重。正文 17px / 行高 1.7，提升长文舒适度；不再有整块浅灰底。</li>
+    <li><strong>译文折叠</strong> → 默认收起，点击胶囊「显示译文 / 收起译文」展开当前段译文（<code>aria-expanded</code> + 箭头旋转 220ms）；切换段落时保持当前展开状态，不重复朗读。</li>
+    <li><strong>阅读进度</strong> → 进度条与「33% · 第 1 / 3 段」同步；段落切换时进度 600ms 过渡。</li>
+    <li><strong>上一段 / 下一段</strong> → 底部文字链，中间显示「1 / 3」；第一段/最后一段真实禁用。</li>
+    <li><strong>保存进度</strong> → 固定在手机框底部的唯一实心主按钮；点击后转圈，900ms 后按钮上方出现一行绿色「进度已保存」，2.4s 自动收起；不弹横幅、不说「已由服务端确认」。切换段落时该行收起。</li>
+    <li><strong>离线</strong> → 顶部轻提示 + 正文保持只读；此时主按钮仍可用，保存后提示「进度已保存在本机，连网后自动上传」。</li>
+    <li><strong>理解检查</strong> → 题干 + 三个单选（软底圆角行）；未选择时「提交答案」为次按钮禁用态。答对显示「回答正确」，答错显示「记下了，再看一遍这一段」。<span>【文案相对 Vue 已改，需同步 i18n】</span></li>
     <li><strong>提交失败（演示）</strong> → <code>?mock=submit-error</code>：卡内提示「没提交成功，答案还留着，再试一次」，答案保留可重提。</li>
-    <li><strong>阅读设置</strong> → 导航栏「⋯」打开底部弹层，四档画质「精致 / 舒适 / 轻量 / 省资源」，当前档带对勾与 <code>aria-pressed</code>；选择后关闭弹层，不弹 Toast。遮罩、完成、Esc 均可关闭。</li>
+    <li><strong>阅读设置</strong> → 导航栏「⋯」打开 28px 顶角底部弹层，四档画质「精致 / 舒适 / 轻量 / 省资源」；当前档带对勾与 <code>aria-pressed</code>。遮罩、完成、Esc 均可关闭。</li>
+    <li><strong>动效</strong> → 页面进入 320ms 上移渐显；译文展开/收起 220ms；进度条 600ms；按钮按下 scale .97；尊重 <code>prefers-reduced-motion</code>。</li>
     <li><strong>文案边界</strong> → 无「服务端」「待同步」「已确认」「版本」「授权」等词；不显示文章 ID、内容版本或状态枚举。</li>
   </ul>
 </div>
@@ -380,6 +443,7 @@
   var STATE_PARAM = q('state');
   var VALID_STATES = ['normal', 'loading', 'empty', 'error', 'offline'];
   var INITIAL_STATE = VALID_STATES.indexOf(STATE_PARAM) >= 0 ? STATE_PARAM : 'normal';
+  if (INITIAL_STATE !== 'normal') document.documentElement.dataset.screenState = INITIAL_STATE;
 
   var ARTICLE = {
     title: 'A City That Learned to Slow Down',
@@ -435,11 +499,13 @@
   ];
 
   var blockText = document.getElementById('block-text');
-  var blockTranslation = document.getElementById('block-translation');
   var blockTranslationText = document.getElementById('block-translation-text');
+  var translationToggle = document.getElementById('translation-toggle');
+  var translationBody = document.getElementById('translation-body');
   var progressLabel = document.getElementById('progress-label');
   var progressBar = document.getElementById('progress-bar');
   var progressFill = document.getElementById('progress-fill');
+  var segCount = document.getElementById('seg-count');
   var prevBtn = document.getElementById('prev-btn');
   var nextBtn = document.getElementById('next-btn');
   var saveBtn = document.getElementById('save-btn');
@@ -455,6 +521,7 @@
     attempts: {},
     busy: '',
     quality: 'high',
+    translationOpen: false,
     submitErrorShown: false,
     submitErrorAt: null
   };
@@ -491,6 +558,17 @@
     UISpec.closeOverlay(document.getElementById('reader-sheet'));
   });
 
+  /* ---------- 译文折叠 ---------- */
+  function renderTranslation() {
+    translationToggle.setAttribute('aria-expanded', String(state.translationOpen));
+    translationToggle.querySelector('.btn__label').textContent = state.translationOpen ? '收起译文' : '显示译文';
+    translationBody.hidden = !state.translationOpen;
+  }
+  translationToggle.addEventListener('click', function () {
+    state.translationOpen = !state.translationOpen;
+    renderTranslation();
+  });
+
   /* ---------- 正文 ---------- */
   var BLOCK_COUNT = ARTICLE.blocks.length;
   function percent() {
@@ -501,16 +579,17 @@
     var block = ARTICLE.blocks[state.blockIndex];
     blockText.textContent = block.text;
     blockTranslationText.textContent = block.translation;
-    blockTranslation.hidden = !block.translation;
 
     var value = percent();
     progressLabel.textContent = value + '% · 第 ' + (state.blockIndex + 1) + ' / ' + BLOCK_COUNT + ' 段';
     progressFill.style.width = value + '%';
     progressBar.setAttribute('aria-valuenow', String(value));
+    segCount.textContent = (state.blockIndex + 1) + ' / ' + BLOCK_COUNT;
 
     prevBtn.disabled = state.blockIndex === 0 || state.busy !== '';
     nextBtn.disabled = state.blockIndex === BLOCK_COUNT - 1 || state.busy !== '';
     saveBtn.disabled = state.busy !== '';
+    renderTranslation();
   }
 
   function goBlock(nextIndex) {
@@ -525,11 +604,15 @@
   prevBtn.addEventListener('click', function () { goBlock(state.blockIndex - 1); });
   nextBtn.addEventListener('click', function () { goBlock(state.blockIndex + 1); });
 
+  var savedTimer = null;
   function showSaved(text) {
     savedText.textContent = text;
     savedNote.hidden = false;
+    if (savedTimer) clearTimeout(savedTimer);
+    savedTimer = setTimeout(function () { savedNote.hidden = true; savedTimer = null; }, 2400);
   }
   function hideSaved() {
+    if (savedTimer) { clearTimeout(savedTimer); savedTimer = null; }
     savedNote.hidden = true;
   }
 
@@ -539,7 +622,7 @@
     state.busy = 'save';
     hideSaved();
     renderBlock();
-    UISpec.setBusy(saveBtn, true, '正在保存…');
+    UISpec.setBusy(saveBtn, true);
     var offline = document.documentElement.dataset.screenState === 'offline' || q('offline') === '1';
 
     later(function () {
@@ -579,7 +662,7 @@
         '<p class="br-q__eyebrow">第 ' + (index + 1) + ' 题 · ' + question.type + '</p>' +
         '<h3 class="br-q__stem">' + question.stem + '</h3>' +
         '<div class="br-options" role="radiogroup" aria-label="第 ' + (index + 1) + ' 题选项">' + options + '</div>' +
-        '<button type="button" class="btn btn--secondary btn--block" data-submit="' + key + '"' +
+        '<button type="button" class="btn btn--soft btn--block" data-submit="' + key + '"' +
         (!selected || busy || attempt ? ' disabled' : '') + '>' +
         '<span class="btn__spinner" aria-hidden="true"></span><span class="btn__label">' + (attempt ? '已提交' : '提交答案') + '</span></button>' +
         submitError +
@@ -654,12 +737,6 @@
   renderQuality();
   renderBlock();
   renderQuestions();
-
-  if (INITIAL_STATE !== 'normal') {
-    document.addEventListener('DOMContentLoaded', function () {
-      UISpec.setScreenState(INITIAL_STATE);
-    });
-  }
 })();
 </script>
 
