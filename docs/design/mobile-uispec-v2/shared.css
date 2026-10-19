@@ -1682,3 +1682,79 @@ html.reduced-motion .mascot__spark { animation: none !important; }
 /* v2C polish: sheet rows are not underlined links */
 .sheet a, .sheet__row, .sheet__row * { text-decoration: none !important; color: inherit; }
 
+
+/* =====================================================================
+   v2T 文字体系与断行规范（2026-10-19，强制；覆盖前文冲突处）
+   规则见 STYLE-BRIEF-v2.md「v2T 文字体系与断行」。自查：
+   node .luna-uispec/tools/typocheck.mjs <page.html>
+   ===================================================================== */
+:root {
+  /* 字号阶梯：size / line-height / weight / 最多行数 */
+  --t-display: 34px;   --t-display-lh: 1.15; --t-display-w: 800;  /* ≤2 行 */
+  --t-title: 26px;     --t-title-lh: 1.25;   --t-title-w: 750;    /* ≤2 行 */
+  --t-headline: 20px;  --t-headline-lh: 1.35;--t-headline-w: 700; /* ≤2 行 */
+  --t-label: 16px;     --t-label-lh: 1.4;    --t-label-w: 600;    /* 1 行，超出省略 */
+  --t-body: 15px;      --t-body-lh: 1.6;     --t-body-w: 400;     /* ≤3 行 */
+  --t-caption: 13px;   --t-caption-lh: 1.5;  --t-caption-w: 500;  /* ≤2 行 */
+  --t-micro: 12px;     --t-micro-lh: 1.4;    --t-micro-w: 600;    /* 1 行 */
+  --phone-w: 390px;
+}
+.phone { width: var(--phone-w); }
+
+/* 1) 全局 CJK 断行：词不拆、标点不落行首、宁可整句换行也不在词中间断 */
+.phone {
+  word-break: keep-all;
+  line-break: strict;
+  overflow-wrap: break-word;      /* 仅在一个片段确实放不下时才兜底断开 */
+  hanging-punctuation: allow-end;
+  text-wrap: pretty;              /* 正文避免末行孤字 */
+  -webkit-hyphens: none; hyphens: none;
+}
+.phone :is(h1, h2, h3, h4, [class*="title"], [class*="headline"], .t-display, .t-title, .t-headline) {
+  text-wrap: balance;
+}
+/* 长篇阅读正文（文章、题干段落）允许逐字排版，但仍避免孤字 */
+.phone :is(.prose, .reading-body, .article__body, [data-typo="prose"]) {
+  word-break: normal; line-break: strict; text-wrap: pretty;
+}
+/* 覆盖早期组件里的 anywhere 断词 */
+.phone .task-row__title { overflow-wrap: break-word; }
+
+/* 2) 语义单元：整体不拆 */
+.nowrap, .keep, .t-keep, .book, .num-unit { white-space: nowrap; }
+.keep-together { display: inline-block; white-space: nowrap; }
+/* 由 shared.js 自动包裹：《书名》、数字+单位、英文单词组 */
+.t-auto-keep { white-space: nowrap; }
+
+/* 3) 单行标签：按钮、Chip、Tab、徽标、字段名、导航标题 —— 不换行，超出省略 */
+.phone :is(.btn, .chip, .badge, .pill, .tag, .tab, [role="tab"], .tabbar__label,
+  .seg__btn, .segmented button, .field__label, .navbar__title, .list__value, .section-meta,
+  .auth-link, .field__trailing, .ring__label) {
+  white-space: nowrap;
+  text-wrap: nowrap;
+}
+.phone :is(.btn, .chip, .badge, .pill, .tag, .navbar__title, .field__label) {
+  overflow: hidden; text-overflow: ellipsis; max-width: 100%;
+}
+.phone .btn > span:not(.icon) { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+
+/* 4) 行数上限工具 */
+.clamp-1 { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.clamp-2, .clamp-3 { display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden; }
+.clamp-2 { -webkit-line-clamp: 2; }
+.clamp-3 { -webkit-line-clamp: 3; }
+.phone :is(.list__title, .card__title) { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
+.phone :is(.list__desc, .task-row__meta) { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
+
+/* 5) 字号阶梯工具类（新页面优先使用） */
+.t-display  { font-family: var(--v2-font-display); font-size: var(--t-display);  line-height: var(--t-display-lh);  font-weight: var(--t-display-w);  letter-spacing: -.02em; }
+.t-title    { font-size: var(--t-title);    line-height: var(--t-title-lh);    font-weight: var(--t-title-w);    letter-spacing: -.01em; }
+.t-headline { font-size: var(--t-headline); line-height: var(--t-headline-lh); font-weight: var(--t-headline-w); letter-spacing: -.005em; }
+.t-label    { font-size: var(--t-label);    line-height: var(--t-label-lh);    font-weight: var(--t-label-w); }
+.t-body     { font-size: var(--t-body);     line-height: var(--t-body-lh);     font-weight: var(--t-body-w); }
+.t-caption  { font-size: var(--t-caption);  line-height: var(--t-caption-lh);  font-weight: var(--t-caption-w); }
+.t-micro    { font-size: var(--t-micro);    line-height: var(--t-micro-lh);    font-weight: var(--t-micro-w); letter-spacing: .02em; }
+/* 数字：等宽，不与单位拆开 */
+.t-num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+/* 设计断点：仅在语义边界使用 <br class="br-sem">；窄屏(<360)可按需隐藏 */
+.br-sem { display: inline; }

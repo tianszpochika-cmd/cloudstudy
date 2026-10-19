@@ -374,7 +374,14 @@
     'carousel-2': '轮播 2',
     'carousel-3': '轮播 3',
     adult: '成人确认',
+    consent: '条款同意',
     goal: '学习目标',
+    // onboarding 子状态（表单校验 / 目标选择 / 保存）
+    'adult-invalid': '年龄校验',
+    'adult-underage': '未满 18',
+    'goal-selected': '已选目标',
+    'goal-saving': '保存中',
+    'goal-error': '保存失败',
     // 交互状态（v2C）：可作为独立状态直达截图
     celebrate: '达标庆祝',
     sheet: '打开 sheet',
@@ -993,4 +1000,50 @@
     focusFirstInvalid: focusFirstInvalid,
     validateForm: validateDemoForm
   };
+})();
+
+/* ---------- v2T 文字体系：语义单元自动保护 + ?w= 宽度预览 ---------- */
+(function () {
+  'use strict';
+  // ?w=360 / ?w=390：手机框宽度预览（断行自查用）
+  try {
+    var w = parseInt(new URLSearchParams(location.search).get('w'), 10);
+    if (w >= 320 && w <= 430) document.documentElement.style.setProperty('--phone-w', w + 'px');
+  } catch (e) {}
+  // 需整体保留的片段：《书名》「引号」、数字+单位、英文单词/短语、日期时间
+  var KEEP = /《[^》]{1,24}》|「[^」]{1,12}」|\d+(?:[.:/]\d+)*\s?(?:%|％|分钟|小时|秒|天|周|个月|月|年|岁|题|个|项|次|分|页|条|词|篇|节|课|级|星|人|元|MB|GB|KB|min|s)?(?=\D|$)|[A-Za-z][A-Za-z0-9'’.\-]*(?:\s[A-Za-z][A-Za-z0-9'’.\-]*){0,3}/g;
+  var SKIP = /^(SCRIPT|STYLE|TEXTAREA|INPUT|SELECT|OPTION|CODE|PRE|SVG|svg|NOSCRIPT)$/;
+  function protect(root) {
+    var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+      acceptNode: function (n) {
+        if (!n.nodeValue || !n.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
+        for (var p = n.parentNode; p && p !== root; p = p.parentNode) {
+          if (p.nodeType === 1 && (SKIP.test(p.nodeName) || p.classList.contains('t-auto-keep') ||
+              p.hasAttribute('data-typo-raw') || p.classList.contains('prose') || p.classList.contains('reading-body'))) return NodeFilter.FILTER_REJECT;
+        }
+        KEEP.lastIndex = 0;
+        return KEEP.test(n.nodeValue) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+      }
+    });
+    var nodes = []; while (walker.nextNode()) nodes.push(walker.currentNode);
+    nodes.forEach(function (n) {
+      var s = n.nodeValue, frag = document.createDocumentFragment(), last = 0, m;
+      KEEP.lastIndex = 0;
+      while ((m = KEEP.exec(s))) {
+        if (!m[0]) { KEEP.lastIndex++; continue; }
+        // 只包裹 ≥2 字符的片段，单个字母/数字无需处理
+        if (m[0].length < 2) continue;
+        if (m.index > last) frag.appendChild(document.createTextNode(s.slice(last, m.index)));
+        var span = document.createElement('span'); span.className = 't-auto-keep'; span.textContent = m[0];
+        frag.appendChild(span); last = m.index + m[0].length;
+      }
+      if (last === 0) return;
+      if (last < s.length) frag.appendChild(document.createTextNode(s.slice(last)));
+      n.parentNode.replaceChild(frag, n);
+    });
+  }
+  function run() { document.querySelectorAll('.phone').forEach(protect); }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run); else run();
+  document.addEventListener('uispec:state', function () { setTimeout(run, 0); });
+  if (window.UISpec) window.UISpec.protectText = protect;
 })();
