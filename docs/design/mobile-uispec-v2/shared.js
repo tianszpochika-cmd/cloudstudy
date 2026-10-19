@@ -378,7 +378,11 @@
     // 交互状态（v2C）：可作为独立状态直达截图
     celebrate: '达标庆祝',
     sheet: '打开 sheet',
-    pressed: '按压态'
+    pressed: '按压态',
+    // 表单 mock（login / register / reset 等）
+    invalid: '校验错误',
+    submitting: '提交中',
+    'auth-error': '登录失败'
   };
 
   function buildToolbar(el) {

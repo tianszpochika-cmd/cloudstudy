@@ -12,6 +12,11 @@
   .login-page [hidden] { display: none !important; }
   .login-state { display: none; }
   html[data-screen-state="normal"] .login-state[data-state-block="normal"],
+  html[data-screen-state="invalid"] .login-state[data-state-block="normal"],
+  html[data-screen-state="submitting"] .login-state[data-state-block="normal"],
+  html[data-screen-state="auth-error"] .login-state[data-state-block="normal"],
+  html[data-screen-state="pressed"] .login-state[data-state-block="normal"],
+  html[data-screen-state="success"] .login-state[data-state-block="normal"],
   html[data-screen-state="loading"] .login-state[data-state-block="loading"],
   html[data-screen-state="error"] .login-state[data-state-block="error"],
   html[data-screen-state="offline"] .login-state[data-state-block="offline"] { display: block; }
@@ -180,6 +185,15 @@
   .login-form .field__icon { color: var(--v2-mut); transition: color var(--v2-motion-fast) ease; }
   .login-form .field__control:focus-within .field__icon { color: var(--v2-brand); }
   .login-form .field.is-invalid .field__control { padding-left: 12px; }
+  /* 提交中：眼睛图标同步变暗（disabled 的字段控件已置灰） */
+  .login-form .field__eye:disabled { color: var(--v2-mut); opacity: .5; cursor: not-allowed; }
+  /* 工具条「按压态」：把主按钮按下的瞬间定格，无需真的按住鼠标 */
+  html[data-screen-state="pressed"] .login-submit:not(:disabled) {
+    transform: scale(.96);
+    background: var(--v2-brand2);
+    box-shadow: 0 6px 14px rgba(89, 53, 184, .20);
+    transition-duration: 120ms;
+  }
 
   .login-foot {
     display: flex;
@@ -235,7 +249,7 @@
 <body>
 
 <div class="phone-stage">
-  <div data-ui="toolbar" data-states="normal,loading,error,offline"></div>
+  <div data-ui="toolbar" data-states="normal,invalid,submitting,auth-error,success,pressed,loading,error,offline"></div>
 
   <div class="phone phone--scroll">
     <div data-ui="statusbar"></div>
@@ -383,19 +397,20 @@
   <h2>交互说明（login · v2C 试点）</h2>
   <ul>
     <li><strong>主题</strong> → 工具条「浅色 / 深色」切换整页 token 并记住选择；页面无其他主题入口。</li>
-    <li><strong>状态</strong> → 工具条「正常 / 加载 / 错误 / 离线」：正常为渐变 Hero + 上浮白色表单面板；加载为恢复登录的骨架屏（<code>aria-busy</code>）；错误/离线为插画位 + 一句人话 + 唯一主按钮。</li>
-    <li><strong>视觉结构</strong> → 顶部渐变 Hero 承载「欢迎回来」Display 标题、吉祥物位与成人标签；白色大圆角面板上浮 60px 压住 Hero 下缘，形成层次。品牌紫只出现在 Hero 与主按钮，页面主体保持白底。<span>【文案相对 Vue 已改，需同步 i18n】</span></li>
-    <li><strong>吉祥物「小星」</strong> → Hero 右侧为精致 SVG：渐变星身（#a78bfa→#f472b6）、左上高光、腮红、眼睛高光与柔光托盘；开心表情 + 4.2s 浮动，不承载功能。</li>
+    <li><strong>状态</strong> → 工具条「正常 / 校验错误 / 提交中 / 登录失败 / 成功 / 按压态 / 加载 / 错误 / 离线」，也可用 <code>?state=invalid|submitting|auth-error|success|pressed|loading|error|offline</code> 直达：正常为渐变 Hero + 上浮白色表单面板；校验错误为两个字段同时标红；提交中为已填表单整宽转圈；登录失败为面板内红底提示；成功为顶部 Toast「已登录」；按压态为主按钮 scale .96 的按下瞬间；加载为恢复登录的骨架屏（<code>aria-busy</code>）；错误/离线为小星 + 一句人话 + 唯一主按钮。</li>
+    <li><strong>视觉结构</strong> → 顶部渐变 Hero 承载「欢迎回来」Display 标题、小星与成人标签；白色大圆角面板上浮 56px 压住 Hero 下缘，形成层次。品牌紫只出现在 Hero 与主按钮，页面主体保持白底。<span>【文案相对 Vue 已改，需同步 i18n】</span></li>
+    <li><strong>吉祥物「小星」</strong> → Hero 右侧为渐变星身（#a78bfa→#f472b6）+ 高光、腮红、眼睛与柔光托盘；开心表情 + 4.2s 浮动，不承载功能。</li>
     <li><strong>图标</strong> → 全站统一 Phosphor Icons v2.1.1（MIT）：账号 / 密码字段前置 regular 图标、密文眼睛 eye / eye-slash、错误 warning-circle；TabBar 选中 fill + 渐变。</li>
-    <li><strong>动效与触感</strong> → 按钮按下 scale(.96) 弹簧回弹（320ms）；Hero 小星浮动；主按钮 hover 箭头右移 2px；真机登录按钮 light impact。</li>
+    <li><strong>动效与触感</strong> → 按钮按下 scale .97；Hero 小星 4.2s 浮动；主按钮 hover 箭头右移 2px；真机登录按钮 light impact。</li>
     <li><strong>唯一主按钮</strong> → 表单面板内为品牌实色 pill「登录」；「忘记密码？」与「注册」均为文字链，不与主按钮争夺注意力。</li>
     <li><strong>加载态</strong> → Hero 与面板位置显示骨架屏，不出现「等待登录」类静态占位。</li>
-    <li><strong>错误 / 离线重试</strong> → 点击「重试」→ 按钮转圈并变「正在重试…／正在重连…」→ 1.1s 后回到正常态并弹成功 Toast；失败重试不改变页面。</li>
-    <li><strong>字段校验</strong> → 点击「登录」或按回车：账号为空标红「请输入账号」、密码为空标红「请输入密码」，焦点落到第一个错误字段；输入后错误自动消失。</li>
+    <li><strong>错误 / 离线重试</strong> → 点击「重试」→ 按钮转圈并变「正在重试…／正在重连…」→ 1.1s 后回到正常态并弹恢复 Toast；失败重试不改变页面。「遇到问题？联系客服」为文字链。</li>
+    <li><strong>字段校验</strong> → 点击「登录」或按回车：账号为空标红「请输入账号」、密码为空标红「请输入密码」，焦点落到第一个错误字段；输入后错误自动消失。工具条「校验错误」即此状态。</li>
     <li><strong>密码可见</strong> → 点击眼睛切换明文 / 密文，<code>aria-label</code> 与图标同步；提交中不可切换。</li>
     <li><strong>提交中</strong> → 按钮保留「登录」原文 + 16px 转圈，整宽不变；账号、密码、眼睛、文字链全部不可操作，防止重复提交。</li>
     <li><strong>登录失败（演示）</strong> → <code>error@yuxuexing.com</code> → 面板内红底提示「账号或密码不正确，请再试一次。」；<code>locked@yuxuexing.com</code> → 「尝试次数有点多，请稍后再试。」；<code>rate@yuxuexing.com</code> → 「操作有点频繁，请稍后再试。」。失败时保留已填内容，密码框重新聚焦，不跳转。<span>【文案相对 Vue 已改，需同步 i18n】</span></li>
     <li><strong>登录成功（演示）</strong> → 其他任意账号 + 任意密码 → 1.2s 后顶部 Toast「已登录」→ 1s 后进入 <code>home.html</code>。</li>
+    <li><strong>设计新增</strong> → 渐变 Hero + 小星托盘、底部「继续即表示…」条款行（来自 onboarding 同意步，登录页可见文案），以及 <code>invalid / submitting / auth-error / success / pressed</code> 五条演示直达状态；不含新业务、新奖励或新规则。</li>
     <li><strong>范围说明</strong> → 本页不提供第三方登录与手机快捷登录（Round 1 亦无）；注册 / 忘记密码？跳转对应页面，提交中置灰不可点。</li>
     <li><strong>动效</strong> → 页面进入 320ms ease-out 上移 12px 渐显；按钮按下 scale .97；主按钮 hover 时箭头右移 2px；尊重 <code>prefers-reduced-motion</code>。</li>
   </ul>
@@ -419,11 +434,19 @@
   var submitting = false;
   var timer = null;
 
+  var STATES = ['normal', 'invalid', 'submitting', 'auth-error', 'success', 'pressed', 'loading', 'error', 'offline'];
   var params = new URLSearchParams(location.search);
   var initialState = params.get('state');
-  if (initialState && ['normal', 'loading', 'error', 'offline'].indexOf(initialState) >= 0) {
+  if (initialState && STATES.indexOf(initialState) >= 0) {
     document.documentElement.dataset.screenState = initialState;
   }
+
+  // 演示账号：error / locked / rate 触发对应文案，其余为成功
+  var MOCK_FAILURES = {
+    'error@yuxuexing.com': '账号或密码不正确，请再试一次。',
+    'locked@yuxuexing.com': '尝试次数有点多，请稍后再试。',
+    'rate@yuxuexing.com': '操作有点频繁，请稍后再试。'
+  };
 
   function showError(message) {
     errorText.textContent = message;
@@ -531,18 +554,65 @@
     }, 1100);
   });
 
-  // 离开表单态时取消未完成的模拟登录
+  // 工具条 / ?state= 直达的演示态：把表单摆到对应状态，便于逐张截图。
+  var DEMO_ACCOUNT = 'lin@yuxuexing.com';
+  function resetForm() {
+    identifier.value = '';
+    password.value = '';
+    password.type = 'password';
+    eye.innerHTML = UISpec.icon('eye', 19);
+    eye.setAttribute('aria-label', '显示密码');
+    eye.setAttribute('aria-pressed', 'false');
+    UISpec.clearFieldError(identifierField);
+    UISpec.clearFieldError(passwordField);
+    hideError();
+    setFormDisabled(false);
+    UISpec.setBusy(submitBtn, false);
+  }
+
+  function applyDemoState(state) {
+    if (state === 'invalid') {
+      resetForm();
+      UISpec.setFieldError(identifierField, '请输入账号');
+      UISpec.setFieldError(passwordField, '请输入密码');
+    } else if (state === 'submitting') {
+      resetForm();
+      identifier.value = DEMO_ACCOUNT;
+      password.value = 'learning2026';
+      setFormDisabled(true);
+      UISpec.setBusy(submitBtn, true);
+    } else if (state === 'auth-error') {
+      resetForm();
+      identifier.value = 'error@yuxuexing.com';
+      password.value = 'learning2026';
+      showError(MOCK_FAILURES['error@yuxuexing.com']);
+    } else if (state === 'pressed') {
+      resetForm();
+      identifier.value = DEMO_ACCOUNT;
+      password.value = 'learning2026';
+    } else if (state === 'success') {
+      resetForm();
+      identifier.value = DEMO_ACCOUNT;
+      UISpec.toast('已登录', 'ok', 2400);
+    } else if (state === 'normal') {
+      resetForm();
+    }
+  }
+
+  // 表单态（正常 / 校验错误 / 提交中 / 登录失败）直接摆好；其它状态取消未完成的模拟登录。
   document.addEventListener('uispec:state', function (event) {
-    if (event.detail.state === 'normal') return;
+    var state = event.detail.state;
     if (timer) {
       clearTimeout(timer);
       timer = null;
     }
-    if (submitting) {
-      submitting = false;
-      setFormDisabled(false);
-      UISpec.setBusy(submitBtn, false);
+    submitting = false;
+    if (['normal', 'invalid', 'submitting', 'auth-error', 'success', 'pressed'].indexOf(state) >= 0) {
+      applyDemoState(state);
+      return;
     }
+    setFormDisabled(false);
+    UISpec.setBusy(submitBtn, false);
     hideError();
   });
 })();
