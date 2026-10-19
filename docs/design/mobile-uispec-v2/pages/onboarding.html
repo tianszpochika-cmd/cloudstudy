@@ -10,15 +10,17 @@
   /* 仅本页布局与自定义流程状态；组件与 token 全部来自 shared.css */
   .ob-page [hidden] { display: none !important; }
 
-  /* ---------- 状态驱动 ---------- */
-  html[data-screen-state="splash"] [data-state-block="splash"] { display: flex !important; }
-  /* 其余状态不得显示闪屏（避免 display:flex 覆盖 [data-state-block] 默认隐藏） */
-  html:not([data-screen-state="splash"]) [data-state-block="splash"] { display: none !important; }
-  html[data-screen-state="carousel-1"] [data-state-block="carousel"],
-  html[data-screen-state="carousel-2"] [data-state-block="carousel"],
-  html[data-screen-state="carousel-3"] [data-state-block="carousel"] { display: flex; }
-  html[data-screen-state="adult"] [data-state-block="adult"],
-  html[data-screen-state="goal"] [data-state-block="goal"] { display: flex; }
+  /* ---------- 状态驱动 ----------
+   * 唯一事实源：<html data-screen-state>（URL ?state= / 工具条 / shared.js API）。
+   * 先统一隐藏所有状态块，再按当前状态显式打开，避免旧规则残留导致
+   * “切到轮播仍然显示闪屏”。 */
+  html[data-screen-state] .ob-page [data-state-block] { display: none !important; }
+  html[data-screen-state="splash"] .ob-page [data-state-block="splash"],
+  html[data-screen-state^="carousel"] .ob-page [data-state-block="carousel"],
+  html[data-screen-state="adult"] .ob-page [data-state-block="adult"],
+  html[data-screen-state="goal"] .ob-page [data-state-block="goal"] {
+    display: flex !important;
+  }
 
   .ob-bar { display: none; }
   html[data-screen-state="carousel-1"] .ob-bar--carousel,
@@ -27,8 +29,11 @@
   html[data-screen-state="adult"] .ob-bar--adult,
   html[data-screen-state="goal"] .ob-bar--goal { display: block; }
 
-  /* 闪屏：整部手机铺渐变；状态栏白字浮在上面 */
-  html[data-screen-state="splash"] .ob-phone { background: var(--v2-hero-bg); }
+  /* 闪屏：整部手机铺渐变（含状态栏与安全区）；状态栏白字浮在上面 */
+  html[data-screen-state="splash"] .ob-phone {
+    background: var(--v2-hero-bg);
+    background-color: var(--v2-hero-1);
+  }
   html[data-screen-state="splash"] .ob-phone .statusbar {
     position: absolute;
     top: 0; left: 0; right: 0;
@@ -37,24 +42,37 @@
     z-index: 6;
     pointer-events: none;
   }
-  html[data-screen-state="splash"] .ob-phone .phone__scroll { background: transparent; }
+  html[data-screen-state="splash"] .ob-phone .phone__scroll {
+    background: transparent;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  html[data-screen-state="splash"] .ob-page {
+    flex: 1 1 auto;
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
 
   .ob-phone { background: var(--v2-bg); }
 
   /* ---------- 闪屏 ---------- */
   .ob-splash {
     position: relative;
-    min-height: 844px;
+    flex: 1 1 auto;
     width: 100%;
+    min-height: 100%;
     display: none;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: 0;
-    padding: 120px 32px 100px;
+    padding: 120px 32px 140px;
     border: 0;
-    background: transparent;
-    color: #fff;
+    background: var(--v2-hero-bg);
+    background-color: var(--v2-hero-1);
+    color: var(--v2-hero-ink);
     text-align: center;
     font-family: inherit;
     cursor: pointer;
@@ -93,15 +111,16 @@
   .ob-splash__mark .icon path { fill: currentColor; stroke: none; }
   .ob-splash__name {
     margin: 0;
-    color: #fff;
+    color: var(--v2-hero-ink);
     font-size: 44px;
     line-height: 1.1;
     font-weight: 800;
     letter-spacing: -.02em;
+    text-shadow: 0 2px 18px rgba(40, 10, 90, .22);
   }
   .ob-splash__tag {
     margin: 14px 0 0;
-    color: rgba(255,255,255,.82);
+    color: var(--v2-hero-mut);
     font-size: 16px;
     line-height: 1.5;
     letter-spacing: .04em;
@@ -127,16 +146,38 @@
     45% { opacity: 1; transform: scale(1.12); }
   }
 
-  /* ---------- 轮播 ---------- */
+  /* ---------- 轮播（浅色底，填满状态栏与底部操作条之间） ---------- */
+  html[data-screen-state^="carousel"] .phone__scroll {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  html[data-screen-state^="carousel"] .ob-page {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
   .ob-carousel {
-    min-height: 660px;
+    flex: 1 1 auto;
+    min-height: 0;
+    min-width: 0;
+    width: 100%;
     display: none;
     flex-direction: column;
     padding: 4px 24px 0;
+    background: var(--v2-bg);
   }
-  html[data-screen-state="carousel-1"] .ob-carousel,
-  html[data-screen-state="carousel-2"] .ob-carousel,
-  html[data-screen-state="carousel-3"] .ob-carousel { display: flex; }
+  html[data-screen-state^="carousel"] .ob-carousel { display: flex; }
+
+  /* 每屏主色（紫 / 薄荷 / 杏） */
+  .ob-slide--violet { --ob-art-bg: var(--v2-tile-violet); --ob-art-ink: var(--v2-tile-violet-ink); }
+  .ob-slide--mint   { --ob-art-bg: var(--v2-tile-mint);   --ob-art-ink: var(--v2-tile-mint-ink); }
+  .ob-slide--peach  { --ob-art-bg: var(--v2-tile-peach);  --ob-art-ink: var(--v2-tile-peach-ink); }
+
+  .ob-carousel .ob-head { padding: 0 2px; }
 
   .ob-head {
     flex: none;
@@ -183,15 +224,15 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     gap: 0;
-    padding: 8px 8px 16px;
+    padding: 28px 8px 16px;
     text-align: center;
   }
   .ob-slide__art {
-    width: 264px;
-    height: 264px;
-    margin-bottom: 34px;
+    width: 288px;
+    height: 288px;
+    margin-bottom: 32px;
     flex: none;
   }
   .ob-slide__art svg { display: block; width: 100%; height: 100%; }
@@ -445,75 +486,95 @@
           <div class="ob-viewport" id="ob-viewport">
             <div class="ob-track" id="ob-track">
 
-              <!-- 第 1 屏：插画位 -->
-              <section class="ob-slide" aria-label="第 1 屏，共 3 屏">
+              <!-- 第 1 屏 · 紫 -->
+              <section class="ob-slide ob-slide--violet" aria-label="第 1 屏，共 3 屏">
                 <div class="ob-slide__art" aria-hidden="true">
-                  <svg viewBox="0 0 264 264" fill="none">
-                    <rect width="264" height="264" rx="56" fill="var(--v2-tile-peach)"/>
-                    <circle cx="196" cy="60" r="34" fill="var(--v2-tile-lemon)"/>
-                    <circle cx="196" cy="60" r="46" stroke="var(--v2-tile-lemon)" stroke-width="2" opacity=".7"/>
-                    <path d="M-18 206c40-42 84-42 124 0s84 42 124 0v80H-18z" fill="var(--v2-tile-mint)" opacity=".9"/>
-                    <path d="M-18 224c44-30 86-30 128 0s86 30 128 0v60H-18z" fill="var(--v2-tile-sky)" opacity=".8"/>
-                    <path d="M104 252c-16-30-6-54 22-70s34-34 22-56" stroke="#ffffff" stroke-width="16" stroke-linecap="round" opacity=".95"/>
-                    <circle cx="104" cy="204" r="7" fill="var(--v2-brand)"/>
-                    <circle cx="121" cy="156" r="6" fill="var(--v2-brand)" opacity=".7"/>
-                    <circle cx="140" cy="116" r="5" fill="var(--v2-brand)" opacity=".45"/>
-                    <path d="M148 76v-30" stroke="var(--v2-brand)" stroke-width="5" stroke-linecap="round"/>
-                    <path d="M148 48l26 8-26 9z" fill="var(--v2-tile-rose-ink)" opacity=".85"/>
-                    <path d="M58 74l4.5 11 11 4.5-11 4.5L58 105l-4.5-11-11-4.5 11-4.5z" fill="var(--v2-tile-mint-ink)" opacity=".55"/>
+                  <svg viewBox="0 0 288 288" fill="none">
+                    <rect width="288" height="288" rx="64" fill="var(--ob-art-bg)"/>
+                    <!-- 背景几何 -->
+                    <circle cx="228" cy="66" r="46" fill="var(--v2-tile-violet-ink)" opacity=".10"/>
+                    <circle cx="62" cy="228" r="30" fill="var(--v2-tile-violet-ink)" opacity=".12"/>
+                    <path d="M228 40l5.5 13.5L247 59l-13.5 5.5L228 78l-5.5-13.5L209 59l13.5-5.5z" fill="var(--v2-tile-violet-ink)" opacity=".45"/>
+                    <!-- 时钟外环 -->
+                    <circle cx="144" cy="144" r="76" fill="#ffffff"/>
+                    <circle cx="144" cy="144" r="76" stroke="var(--ob-art-ink)" stroke-width="2" opacity=".12"/>
+                    <circle cx="144" cy="144" r="60" stroke="var(--ob-art-ink)" stroke-width="14" stroke-linecap="round"
+                            stroke-dasharray="250 377" transform="rotate(-90 144 144)" opacity=".92"/>
+                    <circle cx="144" cy="144" r="6.5" fill="var(--ob-art-ink)"/>
+                    <path d="M144 112v32l22 14" stroke="var(--ob-art-ink)" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+                    <!-- 小太阳 -->
+                    <circle cx="66" cy="96" r="17" fill="var(--v2-tile-lemon)"/>
+                    <path d="M66 70v-8M66 130v-8M40 96h-8M100 96h-8" stroke="var(--v2-tile-lemon-ink)" stroke-width="4" stroke-linecap="round" opacity=".55"/>
+                    <!-- 进度胶囊 -->
+                    <rect x="88" y="236" width="32" height="10" rx="5" fill="var(--ob-art-ink)" opacity=".30"/>
+                    <rect x="128" y="236" width="32" height="10" rx="5" fill="var(--ob-art-ink)" opacity=".55"/>
+                    <rect x="168" y="236" width="32" height="10" rx="5" fill="var(--ob-art-ink)"/>
                   </svg>
                 </div>
-                <h2 class="ob-slide__title">每天 10 分钟</h2>
+                <h2 class="ob-slide__title">每天 10 分钟，<br>稳稳进步</h2>
                 <p class="ob-slide__desc">小步走，也能走到很远。</p>
               </section>
 
-              <!-- 第 2 屏：插画位 -->
-              <section class="ob-slide" aria-label="第 2 屏，共 3 屏">
+              <!-- 第 2 屏 · 薄荷 -->
+              <section class="ob-slide ob-slide--mint" aria-label="第 2 屏，共 3 屏">
                 <div class="ob-slide__art" aria-hidden="true">
-                  <svg viewBox="0 0 264 264" fill="none">
-                    <rect width="264" height="264" rx="56" fill="var(--v2-tile-sky)"/>
-                    <rect x="46" y="54" width="112" height="58" rx="22" fill="#ffffff"/>
-                    <path d="M70 112l-6 20 24-14z" fill="#ffffff"/>
-                    <text x="102" y="92" text-anchor="middle" font-family="Inter, sans-serif" font-size="30" font-weight="800" fill="var(--v2-tile-sky-ink)">Aa</text>
-                    <rect x="150" y="132" width="70" height="42" rx="18" fill="var(--v2-brand)"/>
-                    <path d="M210 174l8 16-20-10z" fill="var(--v2-brand)"/>
-                    <text x="185" y="159" text-anchor="middle" font-family="'PingFang SC', sans-serif" font-size="17" font-weight="700" fill="#ffffff">你好</text>
-                    <path d="M56 190c0-6 5-11 11-11h108c6 0 11 5 11 11v4H56z" fill="var(--v2-tile-violet-ink)" opacity=".18"/>
-                    <path d="M64 190h120c8 8 14 18 18 30H82c-8-8-14-18-18-30z" fill="#ffffff"/>
-                    <path d="M64 190h120c8 8 14 18 18 30H82c-8-8-14-18-18-30z" stroke="var(--v2-tile-sky-ink)" stroke-width="2.4" opacity=".55"/>
-                    <path d="M82 202h86M88 212h70" stroke="var(--v2-tile-sky-ink)" stroke-width="3" stroke-linecap="round" opacity=".35"/>
-                    <circle cx="200" cy="58" r="9" fill="var(--v2-tile-lemon)"/>
-                    <circle cx="218" cy="80" r="5" fill="var(--v2-tile-rose-ink)" opacity=".6"/>
+                  <svg viewBox="0 0 288 288" fill="none">
+                    <rect width="288" height="288" rx="64" fill="var(--ob-art-bg)"/>
+                    <!-- 背景几何 -->
+                    <circle cx="52" cy="60" r="34" fill="var(--v2-tile-mint-ink)" opacity=".10"/>
+                    <circle cx="240" cy="238" r="26" fill="var(--v2-tile-mint-ink)" opacity=".12"/>
+                    <path d="M236 46l4.5 11 11 4.5-11 4.5-4.5 11-4.5-11-11-4.5 11-4.5z" fill="var(--v2-tile-mint-ink)" opacity=".45"/>
+                    <!-- 语义网络 -->
+                    <path d="M104 108l72-23M104 108l63 68M176 85l21 78" stroke="var(--ob-art-ink)" stroke-width="3" stroke-linecap="round" stroke-dasharray="7 8" opacity=".42"/>
+                    <circle cx="104" cy="108" r="34" fill="#ffffff"/>
+                    <text x="104" y="117" text-anchor="middle" font-family="Inter, sans-serif" font-size="26" font-weight="800" fill="var(--ob-art-ink)">Aa</text>
+                    <circle cx="176" cy="85" r="25" fill="#ffffff"/>
+                    <text x="176" y="94" text-anchor="middle" font-family="'PingFang SC', sans-serif" font-size="20" font-weight="700" fill="var(--ob-art-ink)">听</text>
+                    <circle cx="197" cy="163" r="25" fill="#ffffff"/>
+                    <text x="197" y="172" text-anchor="middle" font-family="'PingFang SC', sans-serif" font-size="20" font-weight="700" fill="var(--ob-art-ink)">说</text>
+                    <circle cx="167" cy="176" r="25" fill="#ffffff"/>
+                    <text x="167" y="185" text-anchor="middle" font-family="'PingFang SC', sans-serif" font-size="20" font-weight="700" fill="var(--ob-art-ink)">读</text>
+                    <!-- 写卡片 -->
+                    <rect x="62" y="192" width="76" height="52" rx="16" fill="#ffffff"/>
+                    <path d="M80 210h40M80 222h28" stroke="var(--ob-art-ink)" stroke-width="5" stroke-linecap="round" opacity=".45"/>
+                    <circle cx="130" cy="222" r="9" fill="var(--v2-tile-lemon)"/>
+                    <!-- 声波 -->
+                    <path d="M230 118v26M240 108v46M250 120v22" stroke="var(--ob-art-ink)" stroke-width="5" stroke-linecap="round" opacity=".5"/>
                   </svg>
                 </div>
-                <h2 class="ob-slide__title">学 · 练 · 复习</h2>
-                <p class="ob-slide__desc">一个闭环，把学过的不再忘掉。</p>
+                <h2 class="ob-slide__title">听说读写，<br>一个 App 练全</h2>
+                <p class="ob-slide__desc">输入和输出，都在同一条学习线上。</p>
               </section>
 
-              <!-- 第 3 屏：插画位 -->
-              <section class="ob-slide" aria-label="第 3 屏，共 3 屏">
+              <!-- 第 3 屏 · 杏 -->
+              <section class="ob-slide ob-slide--peach" aria-label="第 3 屏，共 3 屏">
                 <div class="ob-slide__art" aria-hidden="true">
-                  <svg viewBox="0 0 264 264" fill="none">
-                    <defs>
-                      <linearGradient id="ob-ring" x1="70" y1="60" x2="200" y2="200" gradientUnits="userSpaceOnUse">
-                        <stop stop-color="var(--v2-tile-mint-ink)"/>
-                        <stop offset="1" stop-color="var(--v2-brand)"/>
-                      </linearGradient>
-                    </defs>
-                    <rect width="264" height="264" rx="56" fill="var(--v2-tile-mint)"/>
-                    <circle cx="132" cy="132" r="66" stroke="#ffffff" stroke-width="18" opacity=".65"/>
-                    <circle cx="132" cy="132" r="66" stroke="url(#ob-ring)" stroke-width="18" stroke-linecap="round"
-                            stroke-dasharray="300 415" transform="rotate(-90 132 132)"/>
-                    <path d="M132 108l6.4 15.6 16.6 1.4-12.6 10.8 3.9 16.2-14.3-8.7-14.3 8.7 3.9-16.2-12.6-10.8 16.6-1.4z" fill="var(--v2-brand)"/>
-                    <rect x="50" y="196" width="18" height="26" rx="7" fill="var(--v2-tile-peach-ink)" opacity=".55"/>
-                    <rect x="76" y="182" width="18" height="40" rx="7" fill="var(--v2-tile-sky-ink)" opacity=".55"/>
-                    <rect x="102" y="168" width="18" height="54" rx="7" fill="var(--v2-tile-mint-ink)" opacity=".6"/>
-                    <circle cx="204" cy="66" r="20" fill="var(--v2-tile-rose-ink)" opacity=".18"/>
-                    <path d="M204 54c5 5.5 8 9.5 8 13.5a8 8 0 1 1-16 0c0-4 3-8 8-13.5z" fill="var(--v2-tile-rose-ink)"/>
+                  <svg viewBox="0 0 288 288" fill="none">
+                    <rect width="288" height="288" rx="64" fill="var(--ob-art-bg)"/>
+                    <!-- 背景几何 -->
+                    <circle cx="232" cy="60" r="34" fill="var(--v2-tile-peach-ink)" opacity=".10"/>
+                    <circle cx="56" cy="236" r="24" fill="var(--v2-tile-peach-ink)" opacity=".12"/>
+                    <path d="M48 66l4.5 11 11 4.5-11 4.5L48 97l-4.5-11-11-4.5 11-4.5z" fill="var(--v2-tile-peach-ink)" opacity=".45"/>
+                    <!-- 回头箭头 -->
+                    <path d="M226 148a82 82 0 1 1-30-63" stroke="var(--ob-art-ink)" stroke-width="10" stroke-linecap="round" opacity=".35"/>
+                    <path d="M196 66l30 19-6 35" stroke="var(--ob-art-ink)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" opacity=".55"/>
+                    <!-- 错题卡堆叠 -->
+                    <rect x="82" y="92" width="124" height="84" rx="22" fill="#ffffff" opacity=".62" transform="rotate(-7 144 134)"/>
+                    <rect x="84" y="106" width="124" height="84" rx="22" fill="#ffffff" stroke="var(--ob-art-ink)" stroke-width="2.5" stroke-opacity=".22" transform="rotate(3 146 148)"/>
+                    <path d="M112 138h64M112 154h44" stroke="var(--ob-art-ink)" stroke-width="6" stroke-linecap="round" opacity=".45"/>
+                    <circle cx="186" cy="132" r="7" fill="var(--v2-tile-rose-ink)" opacity=".7"/>
+                    <!-- 红点与对勾 -->
+                    <circle cx="204" cy="188" r="30" fill="var(--v2-tile-rose)"/>
+                    <path d="M192 188l8 9 16-19" stroke="var(--v2-tile-rose-ink)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+                    <!-- 复习徽标 -->
+                    <rect x="74" y="196" width="86" height="32" rx="16" fill="var(--ob-art-ink)"/>
+                    <text x="117" y="217" text-anchor="middle" font-family="'PingFang SC', sans-serif" font-size="15" font-weight="700" fill="#ffffff">明天再见</text>
+                    <circle cx="228" cy="220" r="6" fill="var(--ob-art-ink)" opacity=".45"/>
+                    <circle cx="246" cy="200" r="4" fill="var(--ob-art-ink)" opacity=".30"/>
                   </svg>
                 </div>
-                <h2 class="ob-slide__title">看见进步</h2>
-                <p class="ob-slide__desc">连续学习、目标达成，都记在这一页。</p>
+                <h2 class="ob-slide__title">错题会自己<br>回来找你</h2>
+                <p class="ob-slide__desc">按遗忘曲线安排复习，忘不掉才叫学会。</p>
               </section>
 
             </div>
@@ -669,7 +730,7 @@
     <li><strong>主题</strong> → 工具条「浅色 / 深色」切换整页 token 并记住选择；页面无其他主题入口。</li>
     <li><strong>状态</strong> → 工具条「闪屏 / 轮播 1–3 / 成人确认 / 学习目标」直接切换流程步骤；也可用 <code>?state=carousel-1|carousel-2|carousel-3|adult|goal</code> 直达。<span>【文案相对 Vue 已改，需同步 i18n】</span></li>
     <li><strong>闪屏</strong> → 渐变全屏 + 品牌星标 + 「语学星」+ 一句品牌说明；轻触、回车或空格进入轮播第 1 屏。仅展示品牌，不出现加载百分比或版本号。</li>
-    <li><strong>轮播</strong> → 3 屏价值说明（每天 10 分钟 / 学·练·复习 / 看见进步），每屏 = 大插画位（几何占位图，待替换最终插画）+ Display 标题 + 一句说明；可左右滑、点指示点，指示点选中时拉长。<span>【文案相对 Vue 已改，需同步 i18n】</span></li>
+    <li><strong>轮播</strong> → 3 屏价值说明（每天 10 分钟，稳稳进步 / 听说读写，一个 App 练全 / 错题会自己回来找你），每屏 = 大插画位（紫 / 薄荷 / 杏三色几何组合，待替换最终插画）+ Display 40/800 标题 + 一句说明；可左右滑、点指示点，指示点选中时拉长。<span>【文案相对 Vue 已改，需同步 i18n】</span></li>
     <li><strong>底部固定</strong> → 轮播与后续步骤共用固定操作条，每屏只有一个实心主按钮；轮播底部为「开始学习」+ 文字链「我已有账号」→ <code>login.html</code>。文字链不与主按钮并排。</li>
     <li><strong>成人确认</strong> → 标题「先确认一下你的年龄」+ 出生年份 + 「我确认自己已满 18 周岁」；主按钮「继续」。年份为空 / 非四位 / 未满 18 时在字段下用 13px 红字说明；勾选未选时在勾选行下提示。不展示年龄校验的实现细节。</li>
     <li><strong>学习目标</strong> → 四个带彩色图标瓦片的目标行 + 每日时长分段控件（默认 15 分钟）；未选目标时主按钮「保存，开始学习」为真实禁用态；选择后可用，保存成功进入 <code>home.html</code>。</li>
