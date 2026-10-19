@@ -1678,3 +1678,7 @@ html.reduced-motion .mascot__spark { animation: none !important; }
 :root[data-theme="dark"] .skeleton {
   background-image: linear-gradient(100deg, var(--v2-surface) 20%, #34405f 40%, var(--v2-surface) 60%);
 }
+
+/* v2C polish: sheet rows are not underlined links */
+.sheet a, .sheet__row, .sheet__row * { text-decoration: none !important; color: inherit; }
+
