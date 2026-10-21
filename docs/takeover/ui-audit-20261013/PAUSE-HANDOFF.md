@@ -1,5 +1,8 @@
 # UI 重设计额度暂停交接
 
+> **2026-10-21 用户暂停检查点（最新）**：本地提交 `b64db8e9…` 成功（361文件，parent 5b3ca5a7），但 `git push origin HEAD:dev-redesign` 单次执行 exit **128**：msys `sh.exe` 直接崩溃于凭据 helper 子进程（非TLS/非凭据失效），未换transport、未force、未读数。远程未更新，本地UI 9/远程仍7（本轮未新核），MB005 758dc0fb与MB006 8a66cc73仍未推；需人类本机正常Git环境推送。详见[推送收据](PUSH-RECEIPT-20261021-USER-PAUSE.md)。
+
+
 > **2026-10-21 人类暂停并授权提交（最新）**：人类先说“先暂停工作”，随后要求“更新文档并把所有工作提交到远程”，为新的普通Git推送授权（不绕权限/不改安全配置/不探凭据/不换SSH/不force）。当前HEAD 5b3ca5a7、index0，本地UI 9/远程7仍为发布前；MB007 home C8 b097私有候选未签、浏览器未验，auth401/empty/cross-owner风险未清，旧C7具名PASS不套C8；自动任务已不存在且不创建替代。详见[用户暂停与提交指令](USER-PAUSE-AND-PUBLISH-20261021.md)。
 
 

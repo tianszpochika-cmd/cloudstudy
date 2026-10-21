@@ -1,6 +1,6 @@
 # Changelog
 
-- [UI-WIP-20261021] 用户暂停检查点/WIP：保存MB007真实首页C8会话恢复候选与Learn L2必要跳转修稿，未新增UI验收、未升级旧C7通过、未跑C8浏览器/构建；本地9/远程7仍为发布前，auth401/empty/cross-owner为未清风险。
+- [UI-WIP-20261021] 用户暂停检查点/WIP（已本地提交 b64db8e9，推送阻塞）：保存MB007真实首页C8会话恢复候选与Learn L2必要跳转修稿；未新增UI验收、未升级旧C7通过、未跑C8浏览器/构建；本地9/远程7未变，auth401/empty/cross-owner仍为未清风险。
 
 
 - [MB-006-C8-UI-20261021] 正式Mobile水平测评C8单页通过Root具名H5审签（UI_ACCEPTED_LOCAL / PUBLISH_BLOCKED）：受控合成API下6-case backguard 95/95、author 32/32、keyboard31/pointer30/busy31、matrix 34 contexts/226图、owner late submit 22/22与read 23/23、auth3 15/15、fonts 21、nav 15/17/12+reload11、Root H5 build exit 0；修复home别名intent、forward取消旧promise、onShow/owner/hide轻准备遮旧内容与syncTitle late promise。states完整suite仍因read/skip/restore三case的no-console-warnings（12/9/6条关联route警告）判FAIL，settings-baseline 9/today 2/owner-read 14条warnings原样保留并归未重排页面follow-up；真实后台/IAM/native与R1阶段门未升级。本地UI 9/远程7，单页提交待Root审stage后授权；不推送。
