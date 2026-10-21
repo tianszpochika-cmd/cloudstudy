@@ -1,0 +1,16 @@
+{
+  "archivedAt": "2026-10-21T07:53:32.8766020+08:00",
+  "note": "Pre-C5c-run1 helper archive; only count paragraph helper correction.",
+  "files": [
+    {
+      "file": "measure.cjs",
+      "sha256": "2a6fcfffe011b3faac2008c297cae4339bc79edb0a97eb72f8fdae3f2a83245a",
+      "bytes": 31662
+    },
+    {
+      "file": "matrix.cjs",
+      "sha256": "bfe57ec55ada68232c77a0d73b249865b54afa5e380b597d2e770e0e336cc69a",
+      "bytes": 52872
+    }
+  ]
+}

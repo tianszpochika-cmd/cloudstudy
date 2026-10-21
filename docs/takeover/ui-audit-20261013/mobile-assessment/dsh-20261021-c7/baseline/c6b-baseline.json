@@ -1,0 +1,12 @@
+{
+  "at": "2026-10-21T08:14:36.5063765+08:00",
+  "note": "C6b raw archived before C7",
+  "page": {
+    "raw": "ac8fb8d2831f4d5f1f20091e09abef7cc6a1314021545ecbbb84a31d11f157fd",
+    "bytes": 40572
+  },
+  "deps": {
+    "package": "484382c73929055cc4ecd9a83679f8bab72388dd8069f71a056b3bbc595c0078",
+    "lock": "d57a87ca84985549fd53c69b1fe1d59db0b136036f2f7bf640d3b30c0a106624"
+  }
+}

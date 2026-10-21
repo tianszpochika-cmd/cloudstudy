@@ -1,211 +1,618 @@
 <script setup lang="ts">
-import { placementScorePercent } from '../../domain/placement-score'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+// #ifdef H5
+// Public vue-router composition API only. The direct dependency is pinned to the
+// same vue-router version @dcloudio/uni-h5 already resolves (4.4.4). Native and
+// mini-program builds strip this H5-only block, and the native onBackPress path
+// stays untouched.
+import { isNavigationFailure, NavigationFailureType, onBeforeRouteLeave, useRouter } from 'vue-router'
+// #endif
+import { onBackPress, onHide, onReady, onShow } from '@dcloudio/uni-app'
+import { interpolate } from '@englishflow/i18n'
 import AppIcon from '../../components/AppIcon.vue'
-import MobilePageHeader from '../../components/MobilePageHeader.vue'
-import { useMobileExperience } from '../../platform/experience'
-const { experienceStyle, experienceMotion } = useMobileExperience()
-
-import { computed, ref, watch } from 'vue'
-import { onShow } from '@dcloudio/uni-app'
 import { ensureMobilePageAccess } from '../../auth/navigation'
 import { markPlacementEntryReached, selectOnboardingResumeStep } from '../../domain/onboarding-resume'
+import { placementScorePercent } from '../../domain/placement-score'
+import { mobileT, useMobileExperience } from '../../platform/experience'
 import { getUniRuntime } from '../../platform/uni-runtime'
+import { mobileI18n } from '../../platform/v2-foundation'
 import { useLearnerContentStore } from '../../stores/learner-content'
 import { useSessionStore } from '../../stores/session'
 
+const { experienceStyle, experienceMotion } = useMobileExperience()
 const store = useLearnerContentStore()
 const session = useSessionStore()
+const pageRoot = ref<{ $el?: HTMLElement } | null>(null)
 const selectedKey = ref('')
 const startedAt = ref(Date.now())
 const guidePending = ref(false)
 const guideChecked = ref(false)
 const startRequested = ref(false)
-const retestPending = ref(false)
-watch(() => session.identityRevision, () => { selectedKey.value = ''; startedAt.value = Date.now(); guidePending.value = false; guideChecked.value = false; startRequested.value = false }, { flush: 'sync' })
+const pending = ref<'entry' | 'read' | 'submit' | 'retest' | 'navigate' | null>(null)
+const errorKey = ref('')
+const retestConfirmation = ref(false)
+// Cached/show pages must not repaint the previous question/report while onShow
+// re-validates the session; only the lightweight preparing state is visible.
+const entryRevalidating = ref(true)
+type Destination = 'back' | 'settings' | 'home' | 'today'
+const leaveDestination = ref<Destination | null>(null)
+let active = false
+let navigationReady = false
+let pageVisible = false
+let allowingBack = false
+let entryChecking = false
+let operation = 0
+let showSequence = 0
+let draftQuestion = ''
+// H5 browser-history guard state. One prompt at most. A one-use page-navigation
+// permit marks an explicit, approved page-UI intent and is scoped to the exact
+// operation, owner revision and intended internal destination.
+let routeLeavePrompt: ((allow: boolean) => void) | null = null
+type NavigationPermit = { operation: number; revision: number; destination: Destination; target: string; aliases?: string[] }
+let navigationPermit: NavigationPermit | null = null
+let navigationPermitTimer: ReturnType<typeof setTimeout> | null = null
+
 const question = computed(() => store.placement.currentQuestion)
 const report = computed(() => store.placement.report)
 const isSkipped = computed(() => report.value?.resultKind === 'SKIPPED' || store.placement.status === 'SKIPPED')
-const heldCheckpoint = computed(() => Boolean(store.placement.sessionId?.startsWith('asess_') && !question.value && !report.value && store.placementStatus !== 'loading' && store.placementStatus !== 'idle' && store.placementStatus !== 'offline' && store.placementStatus !== 'error' && store.placementStatus !== 'forbidden'))
+const questionIdentity = computed(() => question.value ? `${store.placement.sessionId}:${question.value.questionId}:${question.value.itemId}:${question.value.stepIndex}` : '')
+const busy = computed(() => pending.value !== null || store.placementStatus === 'loading')
+const pageTitle = computed(() => mobileT(`assessment.${report.value || isSkipped.value ? 'resultTitle' : 'title'}`))
 const scorePercent = computed(() => placementScorePercent(report.value?.score))
 const countedReport = computed(() => {
   const full = report.value?.fullCount
   const total = report.value?.itemCount
-  return report.value?.resultKind === 'ASSESSED' && typeof full === 'number' && typeof total === 'number' ? { full, total } : null
+  return report.value?.resultKind === 'ASSESSED' && typeof full === 'number' && Number.isFinite(full) && full >= 0 && typeof total === 'number' && Number.isFinite(total) && total >= full ? { full, total } : null
 })
-const feedbackText = computed(() => {
-  if (store.placement.reconciledWithoutReceipt) return ''
-  if (store.placement.responseOutcome === 'FULL') return '刚才提交的这题答对了。'
-  if (store.placement.responseOutcome === 'ZERO') return '刚才提交的这题没有答对。'
-  return ''
+const totalSteps = computed(() => Number.isFinite(question.value?.totalSteps) ? Math.max(0, Math.floor(question.value?.totalSteps ?? 0)) : 0)
+const reloadLabel = computed(() => mobileT(store.placement.sessionId?.startsWith('asess_') ? 'assessment.reload' : 'assessment.retryStart'))
+const accepted = computed(() => Math.min(totalSteps.value, Math.max(0, Number.isFinite(store.placement.acceptedSequence) ? store.placement.acceptedSequence : 0)))
+const progressPercent = computed(() => totalSteps.value > 0 ? accepted.value / totalSteps.value * 100 : 0)
+const progressText = computed(() => copy('received', { count: number(accepted.value), total: number(totalSteps.value) }))
+const completedText = computed(() => copy('completedCount', { count: number(accepted.value) }))
+const questionText = computed(() => copy('questionCount', { current: number(question.value?.stepIndex ?? 0), total: number(totalSteps.value) }))
+const feedbackText = computed(() => store.placement.reconciledWithoutReceipt ? '' : store.placement.responseOutcome === 'FULL' ? mobileT('assessment.correct') : store.placement.responseOutcome === 'ZERO' ? mobileT('assessment.incorrect') : '')
+const heldCheckpoint = computed(() => Boolean(store.placement.sessionId?.startsWith('asess_') && !question.value && !report.value && !['loading', 'idle', 'offline', 'error', 'forbidden'].includes(store.placementStatus)))
+const pendingText = computed(() => {
+  if (!guideChecked.value || pending.value === 'entry' || pending.value === 'read' || store.placementStatus === 'loading') return mobileT('assessment.preparing')
+  if (store.placementStatus === 'forbidden') return mobileT('assessment.accessDenied')
+  if (store.placementStatus === 'offline' || store.placementStatus === 'error') return mobileT('assessment.readFailed')
+  return mobileT(`assessment.${heldCheckpoint.value ? 'checkpoint' : 'empty'}`)
 })
+const readingFailed = computed(() => store.placementStatus === 'offline' || store.placementStatus === 'error' || store.placementStatus === 'forbidden')
+const planPending = computed(() => report.value?.resultKind === 'ASSESSED' && (pending.value === 'submit' || store.placementStatus === 'loading'))
 
-async function load(): Promise<void> {
+function number(value: number): string { return mobileI18n.formatNumber(value) }
+function copy(key: string, values: Record<string, string | number>): string { return interpolate(mobileT(`assessment.${key}`), values) }
+function current(request: number, revision: number): boolean { return active && request === operation && revision === session.identityRevision && session.isAuthenticated }
+function clearDraft(): void { selectedKey.value = ''; draftQuestion = ''; startedAt.value = Date.now() }
+// A title update only applies to the currently visible, ready, authenticated page;
+// a stale framework task (page already replaced/removed) must not surface as an
+// unhandled rejection or change another page's title.
+function syncTitle(): void {
+  if (!active || !navigationReady || !pageVisible || !session.isAuthenticated) return
+  try {
+    const result: unknown = uni.setNavigationBarTitle({ title: pageTitle.value })
+    if (result && typeof (result as Promise<unknown>).catch === 'function') (result as Promise<unknown>).catch(() => undefined)
+  } catch { /* a failed title update never affects page state */ }
+}
+async function focus(id: string): Promise<void> {
+  const revision = session.identityRevision, show = showSequence
+  await nextTick()
+  if (!active || revision !== session.identityRevision || show !== showSequence) return
+  // #ifdef H5
+  pageRoot.value?.$el?.querySelector<HTMLElement>(`#${id}`)?.focus({ preventScroll: true })
+  // #endif
+}
+watch(questionIdentity, (identity) => {
+  if (!active) return
+  if (identity) {
+    if (identity !== draftQuestion) { clearDraft(); draftQuestion = identity }
+  } else if (report.value || isSkipped.value) clearDraft()
+}, { flush: 'sync' })
+watch(pageTitle, syncTitle, { flush: 'post' })
+onReady(() => { navigationReady = true; syncTitle() })
+
+function invalidate(): void {
+  operation++; clearDraft(); pending.value = null; errorKey.value = ''
+  retestConfirmation.value = false; leaveDestination.value = null
+  clearNavigationPermit()
+}
+// Settle the pending H5 guard promise exactly once. No global bypass is left
+// behind: the pointer is cleared before resolving and the router owns the URL.
+function settleRouteLeave(allow: boolean): void {
+  const settle = routeLeavePrompt
+  routeLeavePrompt = null
+  if (settle) settle(allow)
+}
+const PAGE_UI_TARGETS: Record<Exclude<Destination, 'back'>, string> = { settings: '/pages/settings/settings', home: '/pages/home/home', today: '/pages/today/today' }
+function normalizeInternalPath(path: unknown): string {
+  if (typeof path !== 'string') return ''
+  const clean = path.split(/[?#]/)[0]
+  return clean ? clean.replace(/^\/?/, '/') : ''
+}
+function clearNavigationPermit(operation?: number): void {
+  if (!navigationPermit) return
+  if (typeof operation === 'number' && navigationPermit.operation !== operation) return
+  navigationPermit = null
+  if (navigationPermitTimer !== null) { clearTimeout(navigationPermitTimer); navigationPermitTimer = null }
+}
+// A fulfilled/void navigate() is not proof that the route guard already ran, so
+// navigate() never clears this permit in its own finally. The guard, a confirmed
+// hide, a failure/rejection or this 4s expiry (matching the navigation timeout)
+// consumes it; an unconsumed expiry reports the existing honest unconfirmed state
+// only while that operation/owner is still current and the page is active.
+function armNavigationPermit(permit: NavigationPermit): void {
+  clearNavigationPermit()
+  navigationPermit = permit
+  navigationPermitTimer = setTimeout(() => {
+    const currentPermit = navigationPermit
+    if (!currentPermit || currentPermit.operation !== permit.operation || currentPermit.revision !== session.identityRevision) return
+    if (!active) return
+    navigationPermit = null
+    navigationPermitTimer = null
+    errorKey.value = 'navigationUnconfirmed'
+  }, 4000)
+}
+function takeNavigationPermit(to: { path?: string }): boolean {
+  const permit = navigationPermit
+  if (!permit) return false
+  // A permit belongs to one operation and owner: a changed operation (new
+  // begin/load/submit) or owner must never inherit it, even after a void nav.
+  if (permit.operation !== operation || permit.revision !== session.identityRevision) {
+    clearNavigationPermit(permit.operation)
+    return false
+  }
+  if (normalizeInternalPath(to.path) !== permit.target && !(permit.aliases || []).includes(normalizeInternalPath(to.path))) return false
+  clearNavigationPermit(permit.operation)
+  return true
+}
+function leave(): void { pageVisible = false; entryRevalidating.value = true; settleRouteLeave(false); active = false; showSequence++; invalidate() }
+onHide(leave)
+onBeforeUnmount(() => { leave(); navigationReady = false })
+watch(() => session.identityRevision, () => {
+  // A changed owner must not inherit the previous owner's pending navigation:
+  // cancel that guard promise, then drop the old draft/prompt. The redirect or
+  // navigation driven by the new auth state is a separate navigation and passes
+  // the guard because the draft is already cleared.
+  entryRevalidating.value = true
+  settleRouteLeave(false)
+  invalidate(); guideChecked.value = false; guidePending.value = false; startRequested.value = false
+  if (active && !entryChecking) void enterPage()
+}, { flush: 'sync' })
+
+async function readPlacement(request: number, revision: number): Promise<void> {
   await store.loadPlacement()
-  // The H5 response can finish one event-loop turn after the first page
-  // onShow. Re-run a legitimate server read once when the first response is
-  // an empty projection; this removes the need for a user to press Reload and
-  // still never fabricates a question or report locally.
-  if (store.placementStatus === 'empty' && !store.placement.report && !store.placement.currentQuestion) {
-    await new Promise((resolve) => setTimeout(resolve, 200))
+  if (!current(request, revision)) return
+  // Keep the existing single read-model retry; never invent a question or report.
+  if (store.placementStatus === 'empty' && !report.value && !question.value) {
+    await new Promise(resolve => setTimeout(resolve, 200))
+    if (!current(request, revision)) return
     await store.loadPlacement()
   }
-  selectedKey.value = ''
-  startedAt.value = Date.now()
+  if (!current(request, revision)) return
+  if (readingFailed.value && question.value) errorKey.value = 'answerUnconfirmed'
 }
-
+async function load(): Promise<void> {
+  if (!active || busy.value) return
+  const request = ++operation, revision = session.identityRevision
+  pending.value = 'read'; errorKey.value = ''
+  try { await readPlacement(request, revision) }
+  catch { if (current(request, revision)) errorKey.value = 'readFailed' }
+  finally { if (current(request, revision)) pending.value = null }
+}
+async function begin(): Promise<void> {
+  if (!active || busy.value || startRequested.value) return
+  startRequested.value = true; guidePending.value = false
+  await load()
+}
 async function submit(): Promise<void> {
-  if (!selectedKey.value) return
-  const answer = selectedKey.value
-  selectedKey.value = ''
-  await store.submitPlacementAnswer(answer, (Date.now() - startedAt.value) / 1000)
-  startedAt.value = Date.now()
+  if (!active || busy.value || leaveDestination.value || !selectedKey.value || !question.value || !question.value.options.some(option => option.key === selectedKey.value)) return
+  const request = ++operation, revision = session.identityRevision
+  const identity = questionIdentity.value, answer = selectedKey.value
+  pending.value = 'submit'; errorKey.value = ''
+  try {
+    await store.submitPlacementAnswer(answer, (Date.now() - startedAt.value) / 1000)
+    if (!current(request, revision)) return
+    // Store methods can resolve after a failed request. Only a changed server
+    // question/report is progress; retain this page's selection for the same item.
+    if (questionIdentity.value === identity) errorKey.value = 'answerUnconfirmed'
+    else if (!question.value && !report.value && !isSkipped.value) errorKey.value = 'answerUnconfirmed'
+  } catch { if (current(request, revision)) errorKey.value = 'answerUnconfirmed' }
+  finally { if (current(request, revision)) pending.value = null }
 }
-
-function begin(): void {
-  if (startRequested.value) return
-  startRequested.value = true
-  guidePending.value = false
-  void load()
+function select(key: string): void {
+  if (!active || busy.value || leaveDestination.value) return
+  selectedKey.value = key; draftQuestion = questionIdentity.value
 }
-
+function askRetest(): void {
+  if (!active || busy.value || !report.value || isSkipped.value) return
+  retestConfirmation.value = true; errorKey.value = ''; void focus('assessment-retest-title')
+}
+function cancelRetest(): void {
+  if (busy.value) return
+  retestConfirmation.value = false; void focus('assessment-retest')
+}
 async function retest(): Promise<void> {
-  if (retestPending.value) return
-  retestPending.value = true
-  selectedKey.value = ''
+  if (!active || busy.value || !retestConfirmation.value || !report.value || isSkipped.value) return
+  const request = ++operation, revision = session.identityRevision
+  const previousReport = report.value.reportId
+  pending.value = 'retest'; errorKey.value = ''
   try {
     await store.retestPlacement()
-    startedAt.value = Date.now()
-  } finally {
-    retestPending.value = false
-  }
+    if (!current(request, revision)) return
+    if (store.placementStatus === 'error' || !question.value || report.value?.reportId === previousReport) errorKey.value = 'retestFailed'
+    else { clearDraft(); draftQuestion = questionIdentity.value; retestConfirmation.value = false; void focus('assessment-title') }
+  } catch { if (current(request, revision)) errorKey.value = 'retestFailed' }
+  finally { if (current(request, revision)) pending.value = null }
 }
 
-function openToday(): void { getUniRuntime().navigateTo({ url: '/pages/today/today' }) }
-function openHome(): void { getUniRuntime().switchTab({ url: '/pages/home/home' }) }
+// The uni page stack is the supported route source (the same global already used
+// by onBackPress). A previous auth-landing form is not a valid return target: that
+// hop only carried the user into the assessment, so page-local back goes home.
+function currentPagePath(): string {
+  if (typeof getCurrentPages !== 'function') return ''
+  return normalizeInternalPath(getCurrentPages().at(-1)?.route)
+}
 
-onShow(async () => {
-  if (!(await ensureMobilePageAccess('/pages/assessment/assessment'))) return
+const AUTH_LANDING_PATHS = new Set(['/pages/login/login', '/pages/register/register', '/pages/reset-password/reset-password', '/pages/onboarding/onboarding'])
+function previousPagePath(): string {
+  if (typeof getCurrentPages !== 'function') return ''
+  const pages = getCurrentPages()
+  if (pages.length < 2) return ''
+  const route = pages.at(-2)?.route
+  if (typeof route !== 'string') return ''
+  const path = route.split(/[?#]/)[0]
+  return path ? path.replace(/^\/?/, '/') : ''
+}
+
+class NavigationUnconfirmedError extends Error {}
+async function navigate(destination: Destination): Promise<void> {
+  if (!active || busy.value) return
+  const request = ++operation, revision = session.identityRevision
+  pending.value = 'navigate'; errorKey.value = ''
   try {
-    const facts = await store.loadOnboardingResume()
-    if (selectOnboardingResumeStep(facts) === 'assessment') {
-      const storage = typeof sessionStorage === 'undefined' ? null : sessionStorage
-      markPlacementEntryReached(storage, session.verifiedSubject)
-    }
-  } catch { /* an unread resume does not count as reaching the placement entry */ }
-  store.restore()
-  if (store.placement.sessionId?.startsWith('asess_') || startRequested.value) {
-    guidePending.value = false
-    guideChecked.value = true
-    await load()
-    return
-  }
-  guidePending.value = true
-  guideChecked.value = true
+    const runtime = getUniRuntime() as ReturnType<typeof getUniRuntime> & { navigateBack?: (options: { delta: number }) => void | Promise<unknown> }
+    await new Promise<void>((resolve, reject) => {
+      let settled = false
+      const timer = setTimeout(() => finish(new NavigationUnconfirmedError()), 4000)
+      function finish(error?: unknown): void {
+        if (settled) return
+        settled = true; clearTimeout(timer)
+        if (error) reject(error); else resolve()
+      }
+      try {
+        if (!current(request, revision)) { finish(); return }
+        const previous = destination === 'back' ? previousPagePath() : ''
+        const currentPage = destination === 'back' ? currentPagePath() : ''
+        // H5 page-local back always exits to the learning home tab, exactly like the
+        // independent home button. The uni stack is not used to guess browser history:
+        // after a real browser back it can still name this page or a stale utility page.
+        let backToHome = false
+        // #ifdef H5
+        backToHome = true
+        // #endif
+        // Native keeps its usable-previous-page navigateBack, excluding this page and
+        // auth landing pages.
+        const canNavigateBack = destination === 'back' && !backToHome && Boolean(runtime.navigateBack) && Boolean(previous) && previous !== currentPage && !AUTH_LANDING_PATHS.has(previous)
+        const target = destination === 'back'
+          ? (canNavigateBack ? previous : PAGE_UI_TARGETS.home)
+          : PAGE_UI_TARGETS[destination]
+        // Every explicit approved page-UI intent (back/home/settings/today) gets a
+        // one-use permit before pending='navigate' makes busy true; the H5 guard
+        // consumes it for this operation/owner/exact target only.
+        // uni-h5 normalizes a switchTab to the entry page (home) to the framework's
+        // declared entry alias "/" before router.replace, so home-intent permits also
+        // accept that single canonical alias. Other intents never accept "/".
+        armNavigationPermit({ operation: request, revision, destination, target, aliases: target === PAGE_UI_TARGETS.home ? ['/'] : [] })
+        let result: void | Promise<unknown>
+        if (destination === 'back') {
+          if (canNavigateBack && runtime.navigateBack) {
+            allowingBack = true
+            // Method call keeps the runtime `this` binding.
+            try { result = runtime.navigateBack({ delta: 1 }) } finally { allowingBack = false }
+          } else result = runtime.switchTab({ url: '/pages/home/home' })
+        } else if (destination === 'home') result = runtime.switchTab({ url: '/pages/home/home' })
+        else result = runtime.navigateTo({ url: destination === 'settings' ? '/pages/settings/settings' : '/pages/today/today' })
+        void Promise.resolve(result).then(() => finish(), error => finish(error))
+      } catch (error) { finish(error) }
+    })
+  } catch (error) { clearNavigationPermit(request); if (current(request, revision)) errorKey.value = error instanceof NavigationUnconfirmedError ? 'navigationUnconfirmed' : 'navigationFailed' }
+  finally { if (current(request, revision)) pending.value = null }
+}
+function requestLeave(destination: Destination): void {
+  if (!active || busy.value) return
+  if (selectedKey.value && question.value) { leaveDestination.value = destination; void focus('assessment-leave-title') }
+  else void navigate(destination)
+}
+function cancelLeave(): void {
+  if (busy.value) return
+  settleRouteLeave(false)
+  leaveDestination.value = null; void focus('assessment-submit')
+}
+async function confirmLeave(): Promise<void> {
+  if (busy.value || !leaveDestination.value) return
+  const destination = leaveDestination.value
+  leaveDestination.value = null
+  // A browser-history prompt already owns a pending router navigation: allow that
+  // original navigation instead of replaying a history delta or guessing a target.
+  if (routeLeavePrompt) { settleRouteLeave(true); return }
+  // The confirmed page-UI path uses the same central navigate() permit, so the
+  // guard never asks twice and no separate bypass boolean is needed.
+  await navigate(destination)
+}
+onBackPress(() => {
+  if (!active) return false
+  if (allowingBack) return false
+  if (busy.value) return true
+  if (selectedKey.value && question.value) { requestLeave('back'); return true }
+  return false
 })
+
+// #ifdef H5
+// Standard browser document-unload warning (beforeunload), deliberately NOT a
+// popstate/history patch. It covers real reload/close/cross-document departure
+// where the SPA route guard cannot run: only an active authenticated page with an
+// unsent choice or an in-flight submit/retest write warns; clean or read-only
+// states and already-confirmed page-UI navigation do not.
+function beforeUnloadGuard(event: BeforeUnloadEvent): void {
+  if (!active || !session.isAuthenticated) return
+  // Only the permit of the current operation and owner exempts a document unload;
+  // a stale permit from an older operation/owner never does.
+  if (navigationPermit && navigationPermit.operation === operation && navigationPermit.revision === session.identityRevision) return
+  const unsentChoice = Boolean(selectedKey.value && question.value)
+  const inFlightWrite = pending.value === 'submit' || pending.value === 'retest'
+  if (!unsentChoice && !inFlightWrite) return
+  event.preventDefault()
+  event.returnValue = ''
+}
+onMounted(() => window.addEventListener('beforeunload', beforeUnloadGuard))
+onBeforeUnmount(() => window.removeEventListener('beforeunload', beforeUnloadGuard))
+// #endif
+
+// #ifdef H5
+// Public useRouter/afterEach: an old leave promise is invalidated only when public
+// router facts show the user is back on this page (a successful or duplicated
+// navigation to this route, e.g. browser forward) or a navigation actually left the
+// page. A rejected *other* leave attempt (aborted/cancelled) must not clear the first
+// confirmation. The draft stays and the next back asks again. Unmounted cleanup means
+// no long-lived global guard remains.
+const ASSESSMENT_PATH = '/pages/assessment/assessment'
+const router = useRouter()
+const removeRouteAfterEach = router.afterEach((to, from, failure) => {
+  if (!routeLeavePrompt || !active) return
+  const toPath = normalizeInternalPath(to.path)
+  const duplicated = isNavigationFailure(failure, NavigationFailureType.duplicated)
+  const returnedHere = toPath === ASSESSMENT_PATH && (failure === undefined || duplicated)
+  const leftPage = failure === undefined && toPath !== ASSESSMENT_PATH
+  if (!returnedHere && !leftPage) return
+  // Public facts show this navigation was superseded/left, so let the framework's own
+  // canceled check reject the old guard (CANCELLED) instead of resolving false, which
+  // would be ABORTED and make vue-router revert the old history delta. Manual cancel,
+  // owner change and unmount still resolve false separately.
+  settleRouteLeave(true)
+  leaveDestination.value = null
+  void focus('assessment-submit')
+})
+onBeforeUnmount(removeRouteAfterEach)
+// #endif
+
+// #ifdef H5
+// Public vue-router composition guard: the browser popstate changes the address bar
+// before any navigation guard can veto it. Vue Router 4.4.4 reverts that URL with
+// history.go(-delta) when this guard resolves false (cancel), and finalizes the
+// original pop-navigation when it resolves true (confirm) - so no delta is replayed
+// here. At most one prompt exists; a second popstate while prompting is vetoed
+// without stacking a second dialog. Page-UI confirmations bypass this guard once.
+onBeforeRouteLeave((to) => {
+  if (!active || !session.isAuthenticated) return true
+  // #ifdef H5
+  // Development-only diagnosis: public RouteLocationNormalized path/meta plus this
+  // page's own active/permit facts; never owner identities, tokens or headers.
+  if (import.meta.env.DEV) {
+    const permit = navigationPermit
+    console.info('[assessment-nav-guard]', JSON.stringify({
+      toPath: to.path,
+      toMetaRoute: (to.meta as { route?: string } | undefined)?.route ?? null,
+      toMetaIsEntry: Boolean((to.meta as { isEntry?: boolean } | undefined)?.isEntry),
+      active,
+      busy: busy.value,
+      permitDestination: permit ? permit.destination : null,
+      permitTarget: permit ? permit.target : null,
+      permitAliases: permit ? permit.aliases || [] : [],
+      permitOperationCurrent: Boolean(permit && permit.operation === operation),
+    }))
+  }
+  // #endif
+  // An approved page-UI navigation in flight passes once; no other navigation
+  // (including a genuine browser back) may reuse that permit.
+  if (takeNavigationPermit(to)) return true
+  // Match the native busy lock: while a read/entry/submit/navigate is pending, veto
+  // the navigation without prompting, even when no option is selected yet.
+  if (busy.value) return false
+  if (!selectedKey.value || !question.value) return true
+  if (leaveDestination.value || routeLeavePrompt) return false
+  leaveDestination.value = 'back'
+  // Same focus target as requestLeave(), so a browser-back prompt is announced and
+  // keyboard focus lands on the existing confirmation title.
+  void focus('assessment-leave-title')
+  return new Promise<boolean>((resolve) => { routeLeavePrompt = resolve })
+})
+// #endif
+
+async function enterPage(): Promise<void> {
+  const show = ++showSequence
+  entryChecking = true; pending.value = 'entry'; errorKey.value = ''
+  let revision = session.identityRevision
+  let reachable = false
+  try {
+    if (!(await ensureMobilePageAccess('/pages/assessment/assessment'))) return
+    if (!active || show !== showSequence) return
+    reachable = true
+    revision = session.identityRevision
+    const request = ++operation
+    pending.value = 'entry'
+    try {
+      const facts = await store.loadOnboardingResume()
+      if (!current(request, revision)) return
+      if (selectOnboardingResumeStep(facts) === 'assessment') {
+        const storage = typeof sessionStorage === 'undefined' ? null : sessionStorage
+        markPlacementEntryReached(storage, session.verifiedSubject)
+      }
+    } catch { /* An unread resume does not count as reaching the placement entry. */ }
+    if (!current(request, revision)) return
+    store.restore()
+    guideChecked.value = true
+    if (store.placement.sessionId?.startsWith('asess_') || startRequested.value) {
+      guidePending.value = false; pending.value = 'read'
+      await readPlacement(request, revision)
+    } else guidePending.value = true
+  } catch { if (active && show === showSequence) { guideChecked.value = true; errorKey.value = 'readFailed' } }
+  finally {
+    if (show === showSequence) {
+      entryChecking = false
+      if (active) {
+        pending.value = null
+        if (revision !== session.identityRevision) void enterPage()
+        else { if (reachable) entryRevalidating.value = false; await nextTick(); syncTitle() }
+      }
+    }
+  }
+}
+onShow(() => { active = true; pageVisible = true; entryRevalidating.value = true; void enterPage() })
 </script>
 
 <template>
-  <view class="yx-page" :style="experienceStyle" :data-motion="experienceMotion">
-    <MobilePageHeader page="assessment" />
+  <view id="assessment-page" ref="pageRoot" class="assessment-page" :style="experienceStyle" :data-motion="experienceMotion" :aria-busy="busy">
+    <view class="assessment-shell">
+      <view class="assessment-navigation">
+        <button id="assessment-back" class="assessment-nav-button" role="button" tabindex="0" :disabled="busy" :aria-disabled="busy" @click="requestLeave('back')"><AppIcon name="back" :size="22" /><text>{{ mobileT('back') }}</text></button>
+        <button id="assessment-settings" class="assessment-nav-button assessment-settings" role="button" tabindex="0" :aria-label="mobileT('settings')" :disabled="busy" :aria-disabled="busy" @click="requestLeave('settings')"><AppIcon name="gear" :size="22" /></button>
+      </view>
+      <text id="assessment-title" class="assessment-title" role="heading" aria-level="1" tabindex="-1">{{ pageTitle }}</text>
+      <text v-if="errorKey" id="assessment-error" class="assessment-error" role="alert">{{ mobileT(`assessment.${errorKey}`) }}</text>
 
-    <view class="v2-assess-body">
-    <view v-if="isSkipped" class="yx-card result-card card v2-assess-card v2-assess-skipped">
-      <text class="question-count v2-assess-meta v2-assess-eyebrow"><AppIcon name="flag" :size="14" /><text>已跳过测评</text></text>
-      <text class="result-title v2-assess-title v2-assess-h2">水平尚未验证</text>
-      <text data-placement-card class="v2-assess-d v2-assess-desc">这次跳过不是正式测评分数。</text>
-      <text v-if="report?.requestedStartingLevel" class="question v2-assess-desc v2-assess-row">你选择了 {{ report.requestedStartingLevel }} 作为起点；这不是测评等级。</text>
-      <text v-else class="question v2-assess-desc v2-assess-row">自选起点，水平尚未验证。</text>
-      <view class="v2-assess-row v2-assess-actions">
-        <button tabindex="0" role="button" class="yx-button btn v2-assess-btn v2-assess-opt v2-assess-submit" type="button" @click="openToday">查看今日状态<AppIcon name="chev" :size="14" /></button>
+      <view v-if="leaveDestination" id="assessment-leave-confirmation" class="assessment-confirmation" role="alertdialog" aria-labelledby="assessment-leave-title" aria-describedby="assessment-leave-description">
+        <text id="assessment-leave-title" class="assessment-confirm-title" role="heading" aria-level="2" tabindex="-1">{{ mobileT('assessment.leaveTitle') }}</text>
+        <text id="assessment-leave-description" class="assessment-description">{{ mobileT('assessment.leaveDescription') }}</text>
+        <view class="assessment-confirm-actions"><button id="assessment-leave-cancel" class="assessment-button assessment-secondary" role="button" tabindex="0" :disabled="busy" @click="cancelLeave">{{ mobileT('assessment.keepAnswering') }}</button><button id="assessment-leave-confirm" class="assessment-button assessment-primary" role="button" tabindex="0" :disabled="busy" @click="confirmLeave">{{ mobileT('assessment.leaveConfirm') }}</button></view>
       </view>
-    </view>
-    <view v-else-if="report" class="yx-card result-card card v2-assess-card v2-assess-report">
-      <text class="question-count v2-assess-meta v2-assess-eyebrow"><AppIcon name="chart" :size="14" /><text>报告已生成</text></text>
-      <text v-if="report.cefrLevel && scorePercent !== null" class="result-title v2-assess-title v2-assess-h2">{{ report.cefrLevel }} · {{ scorePercent }} 分</text>
-      <text data-placement-card class="v2-assess-d v2-assess-desc">这份报告和快照是同一版本。</text>
-      <text v-if="countedReport" class="question v2-assess-desc v2-assess-row">答对 {{ countedReport.full }} 题，共 {{ countedReport.total }} 题。</text>
-      <text v-if="feedbackText" class="question v2-assess-desc v2-assess-fb v2-assess-row" role="status">{{ feedbackText }}</text>
-      <text class="question v2-assess-desc v2-assess-row">重测会另开一套题，这份报告会保留。是否调整已有计划需要另外确认。</text>
-      <view class="v2-assess-row v2-assess-actions">
-        <button tabindex="0" role="button" class="yx-button btn v2-assess-btn v2-assess-opt v2-assess-submit" type="button" @click="openToday">查看今日状态<AppIcon name="chev" :size="14" /></button>
-        <button tabindex="0" role="button" class="yx-button yx-button--secondary btn v2-assess-btn v2-assess-opt" type="button" :disabled="retestPending" @click="retest">重测<AppIcon name="refresh" :size="14" /></button>
+
+      <view v-if="!entryRevalidating && isSkipped" id="assessment-skipped" class="assessment-result">
+        <view class="assessment-complete"><AppIcon name="flag" :size="20" /><text>{{ mobileT('assessment.skipped') }}</text></view>
+        <text class="assessment-result-heading" role="heading" aria-level="2">{{ mobileT('assessment.unverified') }}</text>
+        <text data-placement-card class="assessment-description">{{ mobileT('assessment.skippedDescription') }}</text>
+        <text class="assessment-description">{{ report?.requestedStartingLevel ? copy('startingLevel', { level: report.requestedStartingLevel }) : mobileT('assessment.startingLevelUnknown') }}</text>
+        <view class="assessment-actions"><button id="assessment-skipped-today" class="assessment-button assessment-primary" role="button" tabindex="0" :disabled="busy" @click="requestLeave('today')">{{ mobileT('assessment.today') }}</button></view>
       </view>
-    </view>
-    <view v-else-if="question" class="yx-card question-card card v2-assess-card v2-assess-question">
-      <view class="question-meta meta v2-assess-meta v2-assess-eyebrow"><AppIcon name="target" :size="14" /><text>第 {{ question.stepIndex }} 题，共 {{ question.totalSteps }} 题</text></view>
-      <view class="v2-assess-progress-track"><view class="v2-assess-progress-value" :style="{ width: `${(question.stepIndex / question.totalSteps) * 100}%` }"></view></view>
-      <text v-if="store.placement.acceptedSequence > 0" class="hint v2-assess-desc">服务端已接收 {{ store.placement.acceptedSequence }} 题。</text>
-      <text class="question v2-assess-stem v2-assess-title v2-assess-h2">{{ question.stemText }}</text>
-      <text v-if="feedbackText" class="hint v2-assess-desc v2-assess-fb" role="status">{{ feedbackText }}</text>
-      <view class="options v2-assess-list"><button tabindex="0" role="button" v-for="option in question.options" :key="option.key" class="option opt v2-assess-opt v2-assess-row" :class="{ selected: selectedKey === option.key }" type="button" @click="selectedKey = option.key"><text class="option-key v2-assess-opt-key">{{ option.key }}</text><text class="v2-assess-desc v2-assess-option-text">{{ option.text }}</text></button></view>
-      <text class="hint v2-assess-desc">当前选择只留在这一页。离开后，还没提交的选择不会保留。</text>
-      <text v-if="store.placementStatus === 'offline'" class="hint v2-assess-desc v2-assess-fb" role="alert">{{ store.lastError || '答案状态尚未确认。请先重新读取，不会因此新开一套题。' }}</text>
-      <view class="v2-assess-row v2-assess-actions">
-        <button v-if="store.placementStatus === 'offline'" tabindex="0" role="button" class="yx-button btn v2-assess-btn v2-assess-opt v2-assess-submit" type="button" @click="load">重新读取<AppIcon name="refresh" :size="14" /></button>
-        <button v-else tabindex="0" role="button" class="yx-button btn v2-assess-btn v2-assess-opt v2-assess-submit" type="button" :disabled="!selectedKey || store.placementStatus === 'loading'" @click="submit">{{ store.placementStatus === 'loading' ? '正在记录…' : '提交答案' }}<AppIcon name="check" :size="14" /></button>
+
+      <view v-else-if="!entryRevalidating && report" id="assessment-report" class="assessment-result">
+        <view class="assessment-complete"><view class="assessment-complete-icon"><AppIcon name="check" :size="20" /></view><text>{{ mobileT('assessment.completed') }}</text></view>
+        <view data-placement-card class="assessment-result-facts">
+          <text v-if="report.cefrLevel" class="assessment-level">{{ report.cefrLevel }}</text>
+          <text v-else class="assessment-description">{{ mobileT('assessment.levelUnavailable') }}</text>
+          <text v-if="scorePercent !== null" class="assessment-score">{{ copy('score', { score: number(scorePercent) }) }}</text>
+          <text v-else class="assessment-description">{{ mobileT('assessment.scoreUnavailable') }}</text>
+          <text v-if="countedReport" class="assessment-description">{{ copy('answerCount', { full: number(countedReport.full), total: number(countedReport.total) }) }}</text>
+        </view>
+        <text v-if="feedbackText" class="assessment-feedback" role="status">{{ feedbackText }}</text>
+        <text class="assessment-saved">{{ mobileT('assessment.saved') }}</text>
+        <text v-if="planPending" class="assessment-description" role="status">{{ mobileT('assessment.planPending') }}</text>
+        <text v-else-if="store.planNotice" class="assessment-error" role="alert">{{ mobileT('assessment.planUnavailable') }}</text>
+        <view class="assessment-actions"><button id="assessment-today" class="assessment-button assessment-primary" role="button" tabindex="0" :disabled="busy || retestConfirmation" :aria-disabled="busy || retestConfirmation" @click="requestLeave('today')">{{ mobileT('assessment.today') }}</button><button id="assessment-retest" class="assessment-button assessment-secondary" role="button" tabindex="0" :disabled="busy || retestConfirmation" :aria-disabled="busy || retestConfirmation" @click="askRetest">{{ mobileT('assessment.retest') }}</button></view>
+        <view v-if="retestConfirmation" id="assessment-retest-confirmation" class="assessment-confirmation" role="alertdialog" aria-labelledby="assessment-retest-title" aria-describedby="assessment-retest-description">
+          <text id="assessment-retest-title" class="assessment-confirm-title" role="heading" aria-level="2" tabindex="-1">{{ mobileT('assessment.retestTitle') }}</text>
+          <text id="assessment-retest-description" class="assessment-description">{{ mobileT('assessment.retestDescription') }}</text>
+          <view class="assessment-confirm-actions"><button id="assessment-retest-cancel" class="assessment-button assessment-secondary" role="button" tabindex="0" :disabled="busy" @click="cancelRetest">{{ mobileT('assessment.cancel') }}</button><button id="assessment-retest-confirm" class="assessment-button assessment-primary" role="button" tabindex="0" :disabled="busy" @click="retest">{{ mobileT(pending === 'retest' ? 'assessment.retesting' : 'assessment.confirmRetest') }}</button></view>
+        </view>
+        <text class="assessment-note">{{ mobileT('assessment.planUnchanged') }}</text>
       </view>
-    </view>
-    <view v-else-if="guideChecked && guidePending" class="yx-card card v2-assess-card v2-assess-guide">
-      <text class="question-count v2-assess-meta v2-assess-eyebrow v2-assess-title v2-assess-h2"><AppIcon name="spark" :size="14" /><text>开始定级</text></text>
-      <text class="question v2-assess-d v2-assess-desc">共 10 道题。用来了解你现在的英语起点，方便安排后面的学习。</text>
-      <view class="v2-assess-row v2-assess-actions">
-        <button tabindex="0" role="button" class="yx-button btn v2-assess-btn v2-assess-opt v2-assess-submit" type="button" @click="begin">开始<AppIcon name="chev" :size="14" /></button>
-        <button tabindex="0" role="button" class="yx-button yx-button--secondary btn v2-assess-btn v2-assess-opt" type="button" @click="openHome">返回学习首页<AppIcon name="back" :size="14" /></button>
+
+      <view v-else-if="!entryRevalidating && question" id="assessment-question" class="assessment-question">
+        <view class="assessment-question-meta"><text>{{ questionText }}</text><text>{{ completedText }}</text></view>
+        <view class="assessment-progress" role="progressbar" :aria-label="mobileT('assessment.progress')" :aria-valuemin="0" :aria-valuemax="totalSteps" :aria-valuenow="accepted" :aria-valuetext="progressText"><view class="assessment-progress-value" :style="{ width: `${progressPercent}%` }" /></view>
+        <text class="assessment-stem" role="heading" aria-level="2">{{ question.stemText }}</text>
+        <text v-if="feedbackText" class="assessment-feedback" role="status">{{ feedbackText }}</text>
+        <view class="assessment-options" role="group" :aria-label="mobileT('assessment.answers')">
+          <button v-for="option in question.options" :id="`assessment-option-${option.key}`" :key="option.key" class="assessment-option" :class="{ 'is-selected': selectedKey === option.key }" role="button" tabindex="0" :aria-pressed="selectedKey === option.key" :disabled="busy || !!leaveDestination" :aria-disabled="busy || !!leaveDestination" @click="select(option.key)"><text class="assessment-option-key">{{ option.key }}</text><text class="assessment-option-text">{{ option.text }}</text><view v-if="selectedKey === option.key" class="assessment-selected"><AppIcon name="check" :size="16" /><text>{{ mobileT('assessment.selected') }}</text></view></button>
+        </view>
+        <view class="assessment-actions"><button v-if="store.placementStatus === 'offline' || store.placementStatus === 'error' || errorKey === 'answerUnconfirmed'" id="assessment-reload-answer" class="assessment-button assessment-primary" role="button" tabindex="0" :disabled="busy || !!leaveDestination" :aria-disabled="busy || !!leaveDestination" @click="load">{{ reloadLabel }}</button><button v-else id="assessment-submit" class="assessment-button assessment-primary" role="button" tabindex="0" :disabled="busy || !selectedKey || !!leaveDestination" :aria-disabled="busy || !selectedKey || !!leaveDestination" @click="submit">{{ mobileT(pending === 'submit' ? 'assessment.submitting' : 'assessment.submit') }}</button></view>
+        <text class="assessment-note">{{ mobileT('assessment.localChoice') }}</text>
       </view>
-    </view>
-    <view v-else class="yx-card card v2-assess-card v2-assess-pending">
-      <text class="question-count v2-assess-meta v2-assess-eyebrow v2-assess-title v2-assess-h2"><AppIcon name="clock" :size="14" /><text>开始定级</text></text>
-      <text v-if="!guideChecked || store.placementStatus === 'loading' || store.placementStatus === 'idle'" class="question v2-assess-d v2-assess-desc" role="status">正在准备测评</text>
-      <text v-else-if="store.placementStatus === 'offline' || store.placementStatus === 'error'" class="question v2-assess-d v2-assess-desc" role="alert">测评暂时不可用，请稍后重试。</text>
-      <text v-else-if="store.placementStatus === 'forbidden'" class="question v2-assess-d v2-assess-desc" role="alert">当前账号没有测评权限。</text>
-      <text v-else-if="heldCheckpoint" class="question v2-assess-d v2-assess-desc">定级进度在服务端。重新读取会从已接收检查点的下一题继续，不会新开一套题。</text>
-      <text v-else class="question v2-assess-d v2-assess-desc">目前没有可用题目，可以稍后重试。</text>
-      <text v-if="!guideChecked || store.placementStatus === 'loading' || store.placementStatus === 'idle'" class="hint v2-assess-desc v2-assess-fb">请稍候。</text>
-      <view class="v2-assess-row v2-assess-actions">
-        <button v-if="guideChecked && store.placementStatus !== 'loading' && store.placementStatus !== 'idle'" tabindex="0" role="button" class="yx-button btn v2-assess-btn v2-assess-opt v2-assess-submit" type="button" @click="load">重新读取<AppIcon name="refresh" :size="14" /></button>
-        <button tabindex="0" role="button" class="yx-button yx-button--secondary btn v2-assess-btn v2-assess-opt" type="button" @click="openHome">返回学习首页<AppIcon name="back" :size="14" /></button>
+
+      <view v-else-if="!entryRevalidating && guideChecked && guidePending" id="assessment-guide" class="assessment-guide">
+        <text class="assessment-description">{{ mobileT('assessment.introduction') }}</text>
+        <view class="assessment-guide-points"><view class="assessment-guide-point"><view class="assessment-guide-icon"><AppIcon name="list" :size="24" /></view><view><text class="assessment-point-title">{{ mobileT('assessment.answerHonestly') }}</text><text class="assessment-description">{{ mobileT('assessment.answerDescription') }}</text></view></view><view class="assessment-guide-point"><view class="assessment-guide-icon"><AppIcon name="chart" :size="24" /></view><view><text class="assessment-point-title">{{ mobileT('assessment.viewResult') }}</text><text class="assessment-description">{{ mobileT('assessment.resultDescription') }}</text></view></view></view>
+        <view class="assessment-actions"><button id="assessment-start" class="assessment-button assessment-primary" role="button" tabindex="0" :disabled="busy" :aria-disabled="busy" @click="begin">{{ mobileT('assessment.start') }}</button><button id="assessment-home" class="assessment-button assessment-secondary" role="button" tabindex="0" :disabled="busy" :aria-disabled="busy" @click="requestLeave('home')">{{ mobileT('assessment.home') }}</button></view>
+        <text class="assessment-note">{{ mobileT('assessment.quickStartUnavailable') }}</text>
       </view>
-    </view>
+
+      <view v-else id="assessment-pending" class="assessment-pending">
+        <text class="assessment-description" :role="readingFailed ? 'alert' : 'status'">{{ pendingText }}</text>
+        <view class="assessment-actions"><button v-if="guideChecked && !busy" id="assessment-reload" class="assessment-button assessment-primary" role="button" tabindex="0" @click="load">{{ reloadLabel }}</button><button id="assessment-pending-home" class="assessment-button assessment-secondary" role="button" tabindex="0" :disabled="busy" :aria-disabled="busy" @click="requestLeave('home')">{{ mobileT('assessment.home') }}</button></view>
+      </view>
     </view>
   </view>
 </template>
 
 <style scoped>
-.question-count{color:var(--yx-brand);font-size:24rpx;font-weight:700}.question{display:block;margin:28rpx 0;font-size:34rpx;line-height:1.45}.hint{display:block;margin-top:18rpx;color:var(--yx-text-secondary);font-size:22rpx}.result-title{display:block;margin-top:16rpx;color:var(--yx-text-primary);font-size:48rpx;font-weight:800}.question-meta{display:flex;justify-content:space-between;color:var(--yx-brand);font-size:23rpx;font-weight:700}.options{display:grid;gap:14rpx;margin-bottom:22rpx}.option{display:flex;align-items:center;gap:14rpx;width:100%;padding:20rpx;border:1rpx solid var(--yx-border);border-radius:14rpx;color:var(--yx-text-primary);background:var(--yx-surface-card);text-align:left;font-size:28rpx}.option.selected{border-color:var(--yx-brand);background:var(--yx-brand-soft)}.option-key{color:var(--yx-brand);font-weight:800}
-.yx-button--secondary{color:var(--yx-brand);background:var(--yx-surface-card)}
-button:disabled{opacity:.55}
-/* v2 定级测评页换皮：对齐 practice.vue 与 today.vue 中 v2-* 卡片/eyebrow/标题/列表行/按钮同样数值，对齐 mobile/styles.css 与 refine.css 中 .card/.eyebrow/.list-row/.action-row/.opt/.fb/.btn，仅用 var(--v2-*)。 */
-.v2-assess-body{box-sizing:border-box;display:flex;flex-direction:column;gap:var(--v2-space-4);min-width:0;max-width:100%;font-family:var(--v2-font)}
-.v2-assess-card{box-sizing:border-box;display:grid;gap:var(--v2-space-2);min-width:0;max-width:100%;padding:var(--v2-space-5);border:1px solid var(--v2-line);border-radius:var(--v2-radius-lg);background:var(--v2-card);box-shadow:var(--v2-shadow);font-family:var(--v2-font);overflow-wrap:anywhere}
-.v2-assess-card:hover{border-color:var(--v2-brand)}
-.v2-assess-skipped,.v2-assess-report,.v2-assess-question,.v2-assess-guide,.v2-assess-pending{box-sizing:border-box;min-width:0;max-width:100%}
-.v2-assess-meta{box-sizing:border-box;display:flex;align-items:center;gap:var(--v2-space-2);min-width:0;max-width:100%;font-family:var(--v2-font);overflow-wrap:anywhere}
-.v2-assess-eyebrow{box-sizing:border-box;display:flex;align-items:center;gap:var(--v2-space-2);min-width:0;max-width:100%;margin:0 0 var(--v2-space-2);color:var(--v2-mut);font-family:var(--v2-font);font-size:var(--v2-text-xs);font-weight:700;letter-spacing:.06em;text-transform:uppercase;overflow-wrap:anywhere}
-.v2-assess-title{box-sizing:border-box;display:block;min-width:0;max-width:100%;margin:var(--v2-space-1) 0 0;color:var(--v2-ink);font-family:var(--v2-font);font-size:var(--v2-text-lg);font-weight:700;line-height:1.45;overflow-wrap:anywhere}
-.v2-assess-h2{box-sizing:border-box;min-width:0;max-width:100%;overflow-wrap:anywhere}
-.v2-assess-stem{box-sizing:border-box;display:block;min-width:0;max-width:100%;color:var(--v2-ink);font-family:var(--v2-font);font-size:var(--v2-text-lg);font-weight:700;line-height:1.45;overflow-wrap:anywhere}
-.v2-assess-d{box-sizing:border-box;display:block;min-width:0;max-width:100%;color:var(--v2-mut);font-family:var(--v2-font);font-size:var(--v2-text-sm);line-height:1.7;overflow-wrap:anywhere}
-.v2-assess-desc{box-sizing:border-box;display:block;min-width:0;max-width:100%;margin-top:var(--v2-space-2);color:var(--v2-mut);font-family:var(--v2-font);font-size:var(--v2-text-sm);line-height:1.7;overflow-wrap:anywhere}
-.v2-assess-fb{box-sizing:border-box;display:block;min-width:0;max-width:100%;margin-top:var(--v2-space-4);padding:var(--v2-space-3) var(--v2-space-4);border-radius:var(--v2-radius-md);background:var(--v2-surface);color:var(--v2-mut);font-family:var(--v2-font);font-size:var(--v2-text-sm);line-height:1.7;overflow-wrap:anywhere}
-.v2-assess-list{box-sizing:border-box;display:grid;gap:var(--v2-space-4);min-width:0;max-width:100%}
-.v2-assess-row{box-sizing:border-box;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--v2-space-2);min-width:0;max-width:100%;padding:var(--v2-space-4);border:1px solid var(--v2-line);border-radius:var(--v2-radius-md);background:var(--v2-card);font-family:var(--v2-font);overflow-wrap:anywhere}
-.v2-assess-row:hover{border-color:var(--v2-brand)}
-.v2-assess-actions{box-sizing:border-box;display:flex;flex-wrap:wrap;align-items:stretch;gap:var(--v2-space-2);min-width:0;max-width:100%;padding:0;border:0;background:none;font-family:var(--v2-font)}
-.v2-assess-actions .v2-assess-btn,.v2-assess-actions .v2-assess-opt{flex:1 1 0;width:auto}
-.v2-assess-btn,.v2-assess-opt{box-sizing:border-box;display:flex;align-items:center;justify-content:center;width:100%;max-width:100%;min-width:0;min-height:var(--v2-space-12);padding:var(--v2-space-3) var(--v2-space-4);border:1px solid var(--v2-line);border-radius:var(--v2-radius-md);background:var(--v2-card);color:var(--v2-ink);font-family:var(--v2-font);font-size:var(--v2-text-sm);font-weight:600;line-height:1.5;white-space:nowrap;overflow-wrap:anywhere}
-.v2-assess-opt:hover{border-color:var(--v2-brand)}
-.v2-assess-opt.selected{border-color:var(--v2-brand);background:var(--v2-soft)}
-.v2-assess-opt:active{transform:scale(.97)}
-.v2-assess-opt:focus-visible,.v2-assess-btn:focus-visible{box-shadow:var(--v2-focus);outline:none}
-.v2-assess-btn:disabled,.v2-assess-opt:disabled{background:var(--v2-surface);color:var(--v2-mut);border:1px dashed var(--v2-line);box-shadow:none}
-.v2-assess-submit{border-color:transparent;background:var(--v2-brand);color:var(--v2-inverse);font-family:var(--v2-font);font-weight:700}
-.v2-assess-submit:hover{border-color:var(--v2-brand)}
-.v2-assess-list .v2-assess-opt,.v2-assess-list .v2-assess-row{justify-content:flex-start;text-align:left}
-.v2-assess-opt-key{box-sizing:border-box;flex:none;min-width:0;color:var(--v2-brand);font-family:var(--v2-font);font-weight:800;overflow-wrap:anywhere}
-.v2-assess-option-text{box-sizing:border-box;display:block;flex:1 1 0;min-width:0;max-width:100%;color:var(--v2-ink);font-family:var(--v2-font);font-size:var(--v2-text-sm);line-height:1.7;white-space:normal;overflow-wrap:anywhere}
-.v2-assess-progress-track{box-sizing:border-box;display:block;min-width:0;max-width:100%;height:14rpx;margin:var(--v2-space-2) 0 var(--v2-space-4);border-radius:var(--v2-radius-pill);background:var(--v2-surface);overflow:hidden}
-.v2-assess-progress-value{display:block;min-width:0;max-width:100%;height:100%;border-radius:inherit;background:var(--v2-brand)}
-@media(max-width:360px){.v2-assess-actions{flex-direction:column;flex-wrap:nowrap;height:auto}.v2-assess-actions .v2-assess-btn,.v2-assess-actions .v2-assess-opt{flex:1 1 100%;width:100%}}
-.v2-assess-actions{display:flex;gap:var(--v2-space-2);min-width:0;max-width:100%}
-.v2-assess-actions .v2-assess-btn,.v2-assess-btn{flex:1 1 100%;max-width:100%;min-width:0;white-space:normal;overflow-wrap:anywhere;box-sizing:border-box}
+.assessment-page { --assessment-control-border: var(--yx-text-secondary); box-sizing: border-box; min-height: 100vh; padding: calc(16px + env(safe-area-inset-top)) 24px calc(40px + env(safe-area-inset-bottom)); background: var(--yx-surface-card); color: var(--yx-text-primary); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif; font-size: 16px; line-height: 1.5; }
+.assessment-shell { width: 100%; max-width: 560px; margin: 0 auto; }
+.assessment-navigation { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 40px; }
+.assessment-page .assessment-nav-button { display: inline-flex; align-items: center; justify-content: center; gap: 4px; min-width: 44px; min-height: 44px; margin: 0; padding: 8px 0; border: 0; border-radius: 6px; background: transparent; color: var(--yx-text-primary); font: inherit; line-height: 1.5; }
+.assessment-title { display: block; margin: 0 0 24px; font-size: 28px; font-weight: 650; line-height: 1.4; letter-spacing: 0; overflow-wrap: anywhere; }
+.assessment-description { display: block; color: var(--yx-text-secondary); font-size: 16px; line-height: 1.5; overflow-wrap: anywhere; }
+.assessment-guide-points { display: grid; gap: 28px; margin: 40px 0; }
+.assessment-guide-point { display: grid; grid-template-columns: 48px minmax(0, 1fr); align-items: start; gap: 16px; }
+.assessment-guide-icon { display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 50%; background: var(--yx-surface-soft); color: var(--yx-text-primary); }
+.assessment-point-title { display: block; margin-bottom: 6px; font-weight: 600; }
+.assessment-actions { display: grid; gap: 12px; margin-top: 32px; }
+/* Page-local control contour (>=3:1 vs the light, dark and high-contrast page and
+   the soft confirmation panel). The brand fill stays the primary button background;
+   only its boundary switches to this token, so high-contrast 2.62:1 / 1.88:1 no
+   longer depends on the fill. */
+.assessment-page .assessment-button { box-sizing: border-box; display: flex; width: 100%; min-width: 0; min-height: 48px; align-items: center; justify-content: center; gap: 8px; margin: 0; padding: 12px 16px; border: 1px solid var(--assessment-control-border); border-radius: 8px; font-family: inherit; font-size: 16px; font-weight: 600; line-height: 1.5; white-space: normal; overflow-wrap: anywhere; box-shadow: none; }
+.assessment-page .assessment-primary { background: var(--yx-action); color: var(--yx-on-brand); border-color: var(--assessment-control-border); }
+.assessment-page .assessment-secondary { background: var(--yx-surface-card); color: var(--yx-text-primary); border-color: var(--assessment-control-border); }
+.assessment-note { display: block; margin-top: 24px; color: var(--yx-text-secondary); font-size: 14px; line-height: 1.6; text-align: center; overflow-wrap: anywhere; }
+.assessment-question-meta { display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 8px 16px; color: var(--yx-text-secondary); font-size: 14px; }
+.assessment-progress { height: 4px; margin-top: 12px; overflow: hidden; border-radius: 4px; background: var(--yx-border); }
+.assessment-progress-value { height: 100%; max-width: 100%; border-radius: inherit; background: var(--yx-brand); }
+.assessment-stem { display: block; margin: 28px 0 20px; font-size: 20px; font-weight: 600; line-height: 1.5; overflow-wrap: anywhere; }
+.assessment-options { display: grid; gap: 12px; }
+.assessment-page .assessment-option { box-sizing: border-box; display: flex; width: 100%; min-width: 0; min-height: 60px; align-items: center; gap: 12px; margin: 0; padding: 12px 14px; border: 1px solid var(--assessment-control-border); border-radius: 8px; background: var(--yx-surface-card); color: var(--yx-text-primary); font-family: inherit; font-size: 16px; font-weight: 400; line-height: 1.5; text-align: left; white-space: normal; overflow-wrap: anywhere; }
+.assessment-option-key { display: flex; flex: none; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; background: var(--yx-surface-soft); }
+.assessment-option-text { flex: 1 1 0; min-width: 0; }
+.assessment-selected { display: flex; flex: none; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 4px; max-width: 7em; color: var(--yx-brand); font-size: 14px; font-weight: 600; }
+.assessment-page .assessment-option.is-selected { border-color: var(--yx-brand); box-shadow: inset 0 0 0 1px var(--yx-brand); background: var(--yx-brand-soft); }
+.is-selected .assessment-option-key { background: var(--yx-action); color: var(--yx-on-brand); }
+.assessment-result { text-align: center; }
+.assessment-complete { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 40px 0 24px; font-size: 16px; }
+.assessment-complete-icon { display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; color: var(--yx-success); background: var(--yx-success-soft); }
+.assessment-result-facts { display: grid; gap: 16px; }
+.assessment-level { display: block; font-size: 64px; font-weight: 650; line-height: 1.2; overflow-wrap: anywhere; }
+.assessment-score { display: block; font-size: 24px; line-height: 1.4; }
+.assessment-result-heading { display: block; margin-bottom: 16px; font-size: 24px; font-weight: 600; line-height: 1.4; }
+.assessment-saved { display: block; margin: 28px 0 0; padding: 24px 0 0; border-top: 1px solid var(--yx-border); color: var(--yx-text-secondary); }
+.assessment-result > .assessment-description { margin-top: 16px; }
+.assessment-feedback { display: block; margin: 16px 0; color: var(--yx-text-primary); font-size: 16px; line-height: 1.5; overflow-wrap: anywhere; }
+.assessment-error { display: block; margin: 16px 0; color: var(--yx-danger); font-size: 16px; line-height: 1.5; overflow-wrap: anywhere; }
+.assessment-confirmation { margin: 16px 0 24px; padding: 20px; border: 1px solid var(--yx-border); border-radius: 8px; background: var(--yx-surface-soft); text-align: left; }
+.assessment-confirm-title { display: block; margin-bottom: 8px; font-size: 18px; font-weight: 600; line-height: 1.5; }
+.assessment-confirm-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 20px; }
+.assessment-confirm-actions .assessment-button { flex: 1 1 8em; width: auto; }
+.assessment-page button::after { border: 0; }
+.assessment-page button:focus-visible { outline: 2px solid var(--yx-focus); outline-offset: 3px; }
+.assessment-page button[disabled] { opacity: .6; cursor: default; }
+.assessment-page .assessment-option[disabled] { opacity: 1; }
+@media (max-width: 360px) { .assessment-page { padding-right: 20px; padding-left: 20px; } }
+/* Narrow widths: the selected badge takes a normal-flow second row under the answer
+   text instead of consuming its inline width, so the option text keeps a readable
+   column and words are not split inside the word at 200% text. */
+@media (max-width: 599px) {
+  .assessment-page .assessment-option.is-selected { display: grid; grid-template-columns: auto minmax(0, 1fr); }
+  .assessment-option.is-selected .assessment-selected { grid-column: 2 / -1; justify-content: flex-start; max-width: none; }
+}
+@media (min-width: 600px) { .assessment-page { padding-top: calc(24px + env(safe-area-inset-top)); padding-bottom: calc(64px + env(safe-area-inset-bottom)); } .assessment-navigation { margin-bottom: 48px; } }
+@media (prefers-reduced-motion: reduce) { .assessment-page * { animation: none; transition: none; } }
 </style>

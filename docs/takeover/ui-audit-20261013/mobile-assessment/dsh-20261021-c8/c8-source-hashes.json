@@ -1,0 +1,21 @@
+{
+  "at": "2026-10-21T08:34:34.7693594+08:00",
+  "note": "C8 candidate; C7b pre-edit bytes archived from C7 evidence; C7/C7b and all old FAIL retained",
+  "c7b": {
+    "page": "37bad477e4239061972941c42b24468db5994b8afb89feb61f720fbe168c07e5",
+    "bytes": 42425
+  },
+  "c8": {
+    "page": {
+      "raw": "41e1670146621e532921a8916b2c81ea4954d880b2373c7bcc9945d6576d7e86",
+      "lf": "41e1670146621e532921a8916b2c81ea4954d880b2373c7bcc9945d6576d7e86",
+      "bytes": 44989
+    },
+    "four": {
+      "page": "41e1670146621e532921a8916b2c81ea4954d880b2373c7bcc9945d6576d7e86",
+      "i18n": "6ac6800e179de0ba15ab3607918b2f8427d364e19306eaf8f2a146f016247380",
+      "package": "484382c73929055cc4ecd9a83679f8bab72388dd8069f71a056b3bbc595c0078",
+      "lock": "d57a87ca84985549fd53c69b1fe1d59db0b136036f2f7bf640d3b30c0a106624"
+    }
+  }
+}

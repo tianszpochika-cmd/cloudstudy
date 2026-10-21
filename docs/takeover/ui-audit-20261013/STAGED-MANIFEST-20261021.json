@@ -1,0 +1,56 @@
+{
+  "at": "2026-10-21T09:11:15",
+  "status": "UI_ACCEPTED_LOCAL_PUBLISH_BLOCKED",
+  "head": "687af1017b8ae93da4f8c247ba12ed974898bb22",
+  "remote_observed": "3230ac94 (old read-only observation; not verified this session)",
+  "staged_files": 1273,
+  "staged_bytes": 53142461,
+  "products": [
+    {
+      "path": "apps/mobile/src/pages/assessment/assessment.vue",
+      "sha256": "41e1670146621e532921a8916b2c81ea4954d880b2373c7bcc9945d6576d7e86",
+      "bytes": 44989
+    },
+    {
+      "path": "packages/i18n/src/mobile-experience.ts",
+      "sha256": "6ac6800e179de0ba15ab3607918b2f8427d364e19306eaf8f2a146f016247380",
+      "bytes": 32760
+    },
+    {
+      "path": "apps/mobile/package.json",
+      "sha256": "484382c73929055cc4ecd9a83679f8bab72388dd8069f71a056b3bbc595c0078",
+      "bytes": 1734
+    },
+    {
+      "path": "pnpm-lock.yaml",
+      "sha256": "d57a87ca84985549fd53c69b1fe1d59db0b136036f2f7bf640d3b30c0a106624",
+      "bytes": 397670
+    }
+  ],
+  "protected_intersection": 0,
+  "categories": {
+    "diff": 2,
+    "vue": 1,
+    "raw": 40,
+    "md": 82,
+    "png": 797,
+    "json": 274,
+    "txt": 2,
+    "cjs": 73,
+    "ts": 1,
+    "yaml": 1
+  },
+  "gaps": [
+    "SKIPPED conservative plan contract",
+    "first-start unknown-result recovery",
+    "retest data{} vs bodyless not evidenced",
+    "real backend/IAM/native not PASS",
+    "states suite FAIL: no-console-warnings 12/9/6 in read503/skipped/restore401",
+    "warn ledgers: settings-baseline 9, today 2, owner-read 14 preserved",
+    "old 4.6.4 evidence kept as environment scope; fresh 4.4.4 confirmed",
+    "unstaged screenshots retained locally, not deleted"
+  ],
+  "local_ui_pages": 9,
+  "remote_ui_pages": 7,
+  "next_page": "MB007 home"
+}

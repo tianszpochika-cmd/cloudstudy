@@ -1,0 +1,19 @@
+{
+  "archive": "20261021-C3-guard-archive",
+  "archivedAtUtc": "2026-10-20T23:52:05Z",
+  "reason": "Preserve pre-C5c-label C3 guard files raw before updating to current C5c",
+  "files": [
+    {
+      "original": "source-freeze.json",
+      "archived": "source-freeze.json.c3.raw",
+      "sha256": "6736972c5d7f1f349921ab0d069d5364b12fb7baec884c04da8f6723b8d11060",
+      "bytes": 1399
+    },
+    {
+      "original": "lifecycle-lib.cjs",
+      "archived": "lifecycle-lib.cjs.c3.raw",
+      "sha256": "3da70a7f0812a309a8650f7255204a3a7c9e0fac03b0cfe7988e5b29fed25e9b",
+      "bytes": 16512
+    }
+  ]
+}

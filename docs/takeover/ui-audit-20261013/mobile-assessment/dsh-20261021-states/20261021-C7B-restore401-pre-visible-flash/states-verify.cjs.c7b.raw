@@ -1,0 +1,254 @@
+// MB006 STATES — bounded 4-case test preparation. NOT RUN BY DSH.
+// Real uni-app login/guard/UI + synthetic API transport only. No storage/session/
+// token/store/guard/lifecycle-hook injection. Root executes after C6 review/freeze.
+//
+// Run (Root review environment only):
+//   $env:MB006_CONFIRM_BROWSER='1'
+//   $env:MB006_STATES_EXPECTED_PAGE_SHA='<reviewed 64-hex page hash>'
+//   $env:MB006_STATES_RUN='states-c6-review-1'
+//   node docs/takeover/ui-audit-20261013/mobile-assessment/dsh-20261021-states/states-verify.cjs --case start503-retry
+//   (or --case read503-recovery | skipped-read | restore401 | all)
+//
+// Exit codes: 0 non-empty executed PASS; 1 measured FAIL; 2 setup/refusal/drift.
+'use strict';
+const lib = require('./states-lib.cjs');
+
+// Gate first: no fixture/Playwright import and no run directory before this passes.
+const config = lib.preflight();
+const f = require('./fixture.cjs');
+
+async function startQuestion(fixture, options = {}) {
+  const current = await fixture.fresh(options);
+  const page = current.page;
+  await lib.waitPresent(page, 'assessment-guide');
+  await lib.waitIdle(page);
+  await lib.pointerPress(page, '#assessment-start');
+  await lib.waitPresent(page, 'assessment-question');
+  await lib.waitIdle(page);
+  return current;
+}
+
+async function openSettings(page) {
+  await lib.pointerPress(page, '#assessment-settings');
+  try { await lib.waitRoute(page, '#/pages/settings/settings', 6000); return true; } catch { return false; }
+}
+
+function finishCase(reporter, fixtureModule, current) {
+  reporter.attachFixture(fixtureModule.report, current.state.id, current.state.counts);
+  reporter.auditTransport(fixtureModule.report, current.state.id, reporter.report.caseId);
+}
+
+const cases = {
+  // 1. A deliberate POST start 503 stays an honest retry-start failure; the real
+  // retry click starts a second POST and may succeed. Counts 1 -> 2 are explicit.
+  'start503-retry': async ({ reporter, fixture }) => {
+    const current = await fixture.fresh({ locale: 'zh-CN', theme: 'light', width: 390, height: 844 });
+    const page = current.page;
+    try {
+      reporter.setCounts(current.state.counts);
+      await lib.waitPresent(page, 'assessment-guide');
+      await lib.waitIdle(page);
+      let facts = await lib.facts(page);
+      reporter.check('start503-guide-ready', facts.present['assessment-guide'] === true && current.state.counts.start === 0, { route: facts.route, start: current.state.counts.start });
+
+      current.state.startError = true;
+      await lib.pointerPress(page, '#assessment-start');
+      await lib.waitPresent(page, 'assessment-pending');
+      await lib.waitPresent(page, 'assessment-reload');
+      await lib.waitIdle(page);
+      facts = await lib.facts(page);
+      const retryText = await page.locator('#assessment-reload').innerText();
+      reporter.setCounts(current.state.counts);
+      reporter.check('start503-honest-visible-read-failure', facts.present['assessment-pending'] === true && /无法读取|could not be read/i.test(facts.pendingText) && facts.overlay === false, { pendingText: facts.pendingText, overlay: facts.overlay });
+      reporter.check('start503-retry-start-not-spinner-no-question', facts.busy === 'false' && retryText.trim().length > 0 && facts.present['assessment-question'] === false && facts.present['assessment-report'] === false, { busy: facts.busy, retryText, question: facts.present['assessment-question'], report: facts.present['assessment-report'] });
+      reporter.check('start503-first-post-count-one', current.state.counts.start === 1, { start: current.state.counts.start });
+      await reporter.route(page, 'start503-error');
+      await reporter.snapshot(page, 'start503-after-503');
+      await reporter.shot(page, '01-start503-error-retry');
+
+      current.state.startError = false;
+      await lib.pointerPress(page, '#assessment-reload');
+      await lib.waitPresent(page, 'assessment-question');
+      await lib.waitIdle(page);
+      facts = await lib.facts(page);
+      reporter.setCounts(current.state.counts);
+      reporter.check('start503-retry-second-post-count-two', current.state.counts.start === 2, { start: current.state.counts.start });
+      reporter.check('start503-retry-question-visible', facts.present['assessment-question'] === true && facts.present['assessment-report'] === false && facts.overlay === false, { question: facts.present['assessment-question'], report: facts.present['assessment-report'], overlay: facts.overlay });
+      await reporter.route(page, 'start503-question');
+      await reporter.snapshot(page, 'start503-retry-question');
+      await reporter.shot(page, '02-start503-retry-question');
+
+      reporter.gap('start503-first-start-idempotency', 'The first POST start returned 503; whether the server created an untracked session or idempotency record is unknown and is not asserted.');
+      reporter.gap('start503-retry-not-readonly', 'The retry is a second POST start (counts 1 then 2); this suite does not claim the retry is read-only.');
+      finishCase(reporter, f, current);
+    } finally {
+      await current.close();
+    }
+  },
+
+  // 2. Actual asess session -> settings -> physical browser back with GET 503:
+  // honest read-failed + reload of the same session, no second POST start. A real
+  // reload click repeats the failure, then a real reload after clearing the flag
+  // recovers the question without an automatic write.
+  'read503-recovery': async ({ reporter, fixture }) => {
+    const current = await startQuestion(fixture);
+    const page = current.page;
+    try {
+      reporter.setCounts(current.state.counts);
+      const sessionId = current.state.activeSessionId;
+      reporter.check('read503-actual-session-started', typeof sessionId === 'string' && sessionId.startsWith('asess_') && current.state.counts.start === 1, { sessionId, start: current.state.counts.start });
+
+      const settingsReached = await openSettings(page);
+      const routeSettings = await reporter.route(page, 'read503-settings');
+      reporter.check('read503-settings-navigation-reached', settingsReached, { route: routeSettings });
+      if (!settingsReached) { finishCase(reporter, f, current); return; }
+      current.state.getError = true;
+      await page.goBack();
+      let backReached = true;
+      try { await lib.waitRoute(page, '#/pages/assessment/assessment', 6000); } catch { backReached = false; }
+      const routeBack = await reporter.route(page, 'read503-back');
+      reporter.check('read503-physical-back-returned', backReached, { route: routeBack });
+      if (!backReached) { finishCase(reporter, f, current); return; }
+      await lib.waitPresent(page, 'assessment-pending');
+      await lib.waitPresent(page, 'assessment-reload');
+      await lib.waitIdle(page);
+      let facts = await lib.facts(page);
+      reporter.setCounts(current.state.counts);
+      reporter.check('read503-honest-read-failed', /无法读取|could not be read/i.test(facts.pendingText) && facts.overlay === false, { pendingText: facts.pendingText, overlay: facts.overlay });
+      reporter.check('read503-same-session-no-start2', current.state.activeSessionId === sessionId && current.state.counts.start === 1, { sessionId: current.state.activeSessionId, start: current.state.counts.start });
+      reporter.check('read503-failure-has-no-question-report', facts.present['assessment-question'] === false && facts.present['assessment-report'] === false, { question: facts.present['assessment-question'], report: facts.present['assessment-report'] });
+      await reporter.route(page, 'read503-failed');
+      await reporter.snapshot(page, 'read503-after-back-503');
+      await reporter.shot(page, '03-read503-error-same-session');
+
+      const getAfterBack = current.state.counts.placementGet;
+      await lib.pointerPress(page, '#assessment-reload');
+      await page.waitForTimeout(350);
+      const getAfterFirstRetry = current.state.counts.placementGet;
+      reporter.check('read503-repeated-get-still-error', getAfterFirstRetry > getAfterBack && current.state.counts.start === 1, { getAfterBack, getAfterFirstRetry, start: current.state.counts.start });
+      await reporter.snapshot(page, 'read503-after-repeated-503');
+
+      current.state.getError = false;
+      await lib.pointerPress(page, '#assessment-reload');
+      await lib.waitPresent(page, 'assessment-question');
+      await lib.waitIdle(page);
+      facts = await lib.facts(page);
+      reporter.setCounts(current.state.counts);
+      reporter.check('read503-real-reload-recovers-question', facts.present['assessment-question'] === true && current.state.activeSessionId === sessionId, { question: facts.present['assessment-question'], sessionId: current.state.activeSessionId });
+      reporter.check('read503-recovery-no-autowrite', current.state.counts.start === 1 && current.state.counts.respond === 0 && current.state.counts.retest === 0 && current.state.counts.ensure === 0, { counts: { ...current.state.counts } });
+      await reporter.route(page, 'read503-recovered');
+      await reporter.snapshot(page, 'read503-recovered-question');
+      await reporter.shot(page, '04-read503-recovered-question');
+      finishCase(reporter, f, current);
+    } finally {
+      await current.close();
+    }
+  },
+
+  // 3. Serve a canonical historical SKIPPED GET after an actual start + reentry.
+  // No fake skip API, no reportId/grade/score, no backend write, no plan ensure.
+  'skipped-read': async ({ reporter, fixture }) => {
+    const current = await startQuestion(fixture);
+    const page = current.page;
+    try {
+      reporter.setCounts(current.state.counts);
+      const sessionId = current.state.activeSessionId;
+      const settingsReached = await openSettings(page);
+      const routeSettings = await reporter.route(page, 'skipped-settings');
+      reporter.check('skipped-settings-navigation-reached', settingsReached, { route: routeSettings });
+      if (!settingsReached) { finishCase(reporter, f, current); return; }
+      current.state.skippedRead = true;
+      await page.goBack();
+      let backReached = true;
+      try { await lib.waitRoute(page, '#/pages/assessment/assessment', 6000); } catch { backReached = false; }
+      const routeBack = await reporter.route(page, 'skipped-back');
+      reporter.check('skipped-back-returned', backReached, { route: routeBack });
+      if (!backReached) { finishCase(reporter, f, current); return; }
+      await lib.waitPresent(page, 'assessment-skipped');
+      await lib.waitIdle(page);
+      const facts = await lib.facts(page);
+      const skippedText = facts.skippedText;
+      const served = current.state.lastSkipped;
+      reporter.setCounts(current.state.counts);
+      reporter.check('skipped-canonical-unverified-ui', facts.present['assessment-skipped'] === true && /水平尚未验证|Level not verified/i.test(skippedText), { skippedText });
+      reporter.check('skipped-no-question-or-assessed-report', facts.present['assessment-question'] === false && facts.present['assessment-report'] === false, { question: facts.present['assessment-question'], report: facts.present['assessment-report'] });
+      reporter.check('skipped-no-invented-level-or-score', !/\bA1\b|\bA2\b|\d+\s*分/.test(skippedText), { skippedText });
+      reporter.check('skipped-get-had-no-report-id', served && served.hasReportId === false, { served });
+      reporter.check('skipped-get-had-no-current-item', served && served.hasCurrentItem === false, { served });
+      reporter.check('skipped-result-kind-and-no-current-item', served && served.status === 'SKIPPED' && served.resultKind === 'SKIPPED' && served.hasCurrentItem === false, { served });
+      reporter.check('skipped-no-backend-write-or-plan-ensure', current.state.counts.start === 1 && current.state.counts.respond === 0 && current.state.counts.retest === 0 && current.state.counts.ensure === 0, { counts: { ...current.state.counts }, sessionId });
+      await reporter.route(page, 'skipped-result');
+      await reporter.snapshot(page, 'skipped-unverified-result');
+      await reporter.shot(page, '05-skipped-unverified-result');
+      reporter.gap('skipped-read-quickstart-contract', 'The canonical quick-start contract is preserved as a GAP. This UI fixture evidence is not real backend business PASS and does not invent a reportId, grade or score.');
+      finishCase(reporter, f, current);
+    } finally {
+      await current.close();
+    }
+  },
+
+  // 4. Actual start -> settings -> return with current IAM principal 401 and
+  // refresh 401. The real guard must land on the normal login screen, with no old
+  // question/report and no assessment write or auth bypass.
+  'restore401': async ({ reporter, fixture }) => {
+    const current = await startQuestion(fixture);
+    const page = current.page;
+    try {
+      reporter.setCounts(current.state.counts);
+      const settingsReached = await openSettings(page);
+      const routeSettings = await reporter.route(page, 'restore401-settings');
+      reporter.check('restore401-settings-navigation-reached', settingsReached, { route: routeSettings });
+      if (!settingsReached) { finishCase(reporter, f, current); return; }
+      current.state.principalStatus = 401;
+      current.state.refreshStatus = 401;
+      await page.evaluate(() => {
+        window.__mb006StatesFlash = { question: 0, report: 0 };
+        const observer = new MutationObserver(() => {
+          if (document.getElementById('assessment-question')) window.__mb006StatesFlash.question += 1;
+          if (document.getElementById('assessment-report')) window.__mb006StatesFlash.report += 1;
+        });
+        observer.observe(document.documentElement, { childList: true, subtree: true });
+      });
+      await page.goBack();
+      let backReached = true;
+      try { await lib.waitRoute(page, '#/pages/login/login', 8000); } catch { backReached = false; }
+      const routeBack = await reporter.route(page, 'restore401-back');
+      reporter.check('restore401-guard-login-navigation', backReached, { route: routeBack });
+      if (!backReached) { finishCase(reporter, f, current); return; }
+      await page.locator('#mobile-login-identifier').waitFor();
+      const facts = await lib.facts(page);
+      reporter.setCounts(current.state.counts);
+      reporter.check('restore401-normal-guard-login', facts.route === '#/pages/login/login' && facts.root === false, { route: facts.route, root: facts.root });
+      reporter.check('restore401-no-old-question-report-skipped', facts.present['assessment-question'] === false && facts.present['assessment-report'] === false && facts.present['assessment-skipped'] === false, { question: facts.present['assessment-question'], report: facts.present['assessment-report'], skipped: facts.present['assessment-skipped'] });
+      reporter.check('restore401-no-assessment-write', current.state.counts.start === 1 && current.state.counts.respond === 0 && current.state.counts.retest === 0 && current.state.counts.ensure === 0, { counts: { ...current.state.counts } });
+      reporter.check('restore401-no-auth-bypass', facts.present['assessment-page'] === false && await page.locator('#mobile-login-identifier').isVisible(), { assessmentRoot: facts.present['assessment-page'], loginVisible: await page.locator('#mobile-login-identifier').isVisible() });
+
+      const flash = await page.evaluate(() => window.__mb006StatesFlash || null);
+      if (flash === null) {
+        reporter.notRun('restore401-transient-question-report-flash', 'A full document navigation discarded the DOM observer, so transient flash is NOT_RUN; the final DOM was asserted free of question/report/skipped.');
+      } else {
+        reporter.check('restore401-no-transient-question-report-flash', flash.question === 0 && flash.report === 0, { flash });
+      }
+
+      const errors = lib.caseErrors(f.report, current.state.id);
+      reporter.check('restore401-only-planned-401-console-path', errors.pageErrors.length === 0 && errors.consoleErrors.length === 0, { pageErrors: errors.pageErrors, consoleErrors: errors.consoleErrors, consoleWarnings: errors.consoleWarnings, excluded: errors.excluded, injected: errors.injected });
+      reporter.check('restore401-refresh-and-principal-were-hit', current.state.counts.refresh > 0 && current.state.counts.principal > 0, { refresh: current.state.counts.refresh, principal: current.state.counts.principal });
+      await reporter.route(page, 'restore401-login');
+      await reporter.snapshot(page, 'restore401-login');
+      await reporter.shot(page, '06-restore401-login');
+      finishCase(reporter, f, current);
+    } finally {
+      await current.close();
+    }
+  },
+};
+
+(async () => {
+  const { code, report } = await lib.execute(config, { fixture: f, cases });
+  console.log(JSON.stringify({ run: report.run, executedBy: report.executedBy, result: report.result, code, cases: report.cases, sourceStable: report.sourceStable, dependenciesStable: report.dependenciesStable, closed: report.closed }, null, 2));
+  process.exitCode = code;
+})().catch((error) => {
+  console.error('SETUP FAILURE: ' + String(error && error.message || error));
+  console.error(error && error.stack || '');
+  process.exitCode = 2;
+});

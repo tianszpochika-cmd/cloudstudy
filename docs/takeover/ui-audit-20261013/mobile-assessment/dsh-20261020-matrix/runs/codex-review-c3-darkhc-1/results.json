@@ -1,0 +1,66 @@
+{
+  "runId": "codex-review-c3-darkhc-1",
+  "label": "Codex independent bounded C3 review",
+  "preparedBy": "DSH",
+  "renderer": "H5 uni-app in Playwright Chromium with fully synthetic API transport; NOT native/device",
+  "createdAt": "2026-10-20T15:04:38.647Z",
+  "updatedAt": "2026-10-20T15:04:45.007Z",
+  "cases": {
+    "zh-CN__high-contrast__390": {
+      "status": "FAILED",
+      "dir": "cases/zh-CN__high-contrast__390",
+      "resultFile": "cases/zh-CN__high-contrast__390/result.json",
+      "partial": false,
+      "summary": {
+        "ok": 108,
+        "review": 0,
+        "fail": 9,
+        "notMeasured": 0
+      },
+      "screenshots": 6,
+      "failedChecks": [
+        "guide:contrast-border",
+        "question:contrast-border",
+        "report:text-outside-box",
+        "report:contrast-border",
+        "retest-confirm:clipping",
+        "retest-confirm:text-outside-box",
+        "retest-confirm:contrast-border",
+        "retest-cancelled:text-outside-box",
+        "retest-cancelled:contrast-border"
+      ],
+      "reviewChecks": []
+    },
+    "en-US__dark__320__text200__short": {
+      "status": "ERROR",
+      "dir": "cases/en-US__dark__320__text200__short",
+      "resultFile": "cases/en-US__dark__320__text200__short/result.json",
+      "partial": false,
+      "summary": {
+        "ok": 14,
+        "review": 0,
+        "fail": 6,
+        "notMeasured": 0
+      },
+      "screenshots": 1,
+      "failedChecks": [
+        "guide:horizontal-overflow",
+        "guide:clipping",
+        "guide:glyph-overflow",
+        "guide:text-outside-box",
+        "guide:word-split",
+        "guide:contrast-border"
+      ],
+      "reviewChecks": []
+    }
+  },
+  "summary": {
+    "measured": 0,
+    "review": 0,
+    "incomplete": 0,
+    "failed": 1,
+    "error": 1,
+    "stopped": 0,
+    "screenshots": 7
+  }
+}

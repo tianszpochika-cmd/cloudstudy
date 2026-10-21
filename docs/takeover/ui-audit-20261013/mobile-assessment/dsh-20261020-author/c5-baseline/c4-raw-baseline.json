@@ -1,0 +1,24 @@
+{
+  "at": "2026-10-20T23:19:32.2662979+08:00",
+  "note": "C4 dirty raw bytes before C5 vue-router guard work; copies are byte-identical",
+  "files": [
+    {
+      "file": "pnpm-lock.yaml",
+      "backup": "pnpm-lock.yaml.c4.raw",
+      "raw": "11f47d8e2bd57334df204c8a6dcbaa81e3b648a8896ca38129b6881ffd70a02a",
+      "bytes": 397574
+    },
+    {
+      "file": "apps\\mobile\\src\\pages\\assessment\\assessment.vue",
+      "backup": "assessment.vue.c4.raw",
+      "raw": "abff80cd1d16e8d688deb9ffdc3a7e0250577f10ef2dcd31ed9a5d6849a07d8c",
+      "bytes": 33125
+    },
+    {
+      "file": "apps\\mobile\\package.json",
+      "backup": "package.json.c4.raw",
+      "raw": "a30b662319a6dd223245bccc0a2ea0ff83866af072fdae1d5356365291568021",
+      "bytes": 1707
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "archive": "pre-static-fix-20261021",
+  "archivedAtUtc": "2026-10-21T00:23:30Z",
+  "reason": "Preserve the pre-fix navigation driver and local fixture raw before the Root-reviewed static fixes (deps-before-launch, exclusive run dir, close assertion, full-reload case).",
+  "files": [
+    {
+      "original": "nav-diagnose.cjs",
+      "archived": "nav-diagnose.pre-fix.cjs",
+      "sha256": "9616336449ef25a5be11c870f11dcc77c756f427ba89718bd14cc06cf7f687f2",
+      "bytes": 18167
+    },
+    {
+      "original": "fixture.nav.cjs",
+      "archived": "fixture.pre-fix.cjs",
+      "sha256": "0bcd9cf657c4b32c83d1d8c2ba84aae2ea97176faf6704763b3c912cf48ddbe6",
+      "bytes": 11618
+    }
+  ],
+  "note": "Archived copies are byte-identical to the pre-fix scripts. The earlier spawn-EPERM launch attempt and its removed run directory remain recorded in PREPARED-CHECKPOINT.md; no failure evidence is claimed absent."
+}

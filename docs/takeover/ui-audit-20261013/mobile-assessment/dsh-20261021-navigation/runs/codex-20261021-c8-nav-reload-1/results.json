@@ -1,0 +1,471 @@
+{
+  "scope": "MB006_C6B_NAV_DIAGNOSTIC",
+  "preparedBy": "DSH author session (prepared, not executed)",
+  "runBy": "Codex independent C8 pinned navigation review",
+  "preparedAt": "2026-10-21",
+  "case": "full-reload-recovery",
+  "run": "codex-20261021-c8-nav-reload-1",
+  "at": "2026-10-21T00:35:39.541Z",
+  "base": "http://127.0.0.1:18183",
+  "expectedPageShaFromEnv": "41e1670146621e532921a8916b2c81ea4954d880b2373c7bcc9945d6576d7e86",
+  "pageHashDefaulted": false,
+  "checks": [
+    {
+      "name": "reload-reaches-assessment",
+      "result": "PASS",
+      "detail": {
+        "via": "question",
+        "hash": "#/pages/assessment/assessment",
+        "stack": {
+          "available": true,
+          "pages": [
+            {
+              "route": "pages/assessment/assessment"
+            }
+          ]
+        },
+        "screens": {
+          "guide": false,
+          "question": true,
+          "report": false,
+          "leaveConfirm": false,
+          "error": null
+        }
+      }
+    },
+    {
+      "name": "reload-reGETs-same-session",
+      "result": "PASS",
+      "detail": {
+        "placementGetBefore": 0,
+        "placementGetAfter": 1,
+        "sessionBefore": "asess_ui_nav_1_1",
+        "sessionAfter": "asess_ui_nav_1_1"
+      }
+    },
+    {
+      "name": "reload-accepted-sequence-still-1",
+      "result": "PASS",
+      "detail": {
+        "progress": "1",
+        "accepted": 1
+      }
+    },
+    {
+      "name": "reload-clears-page-choice",
+      "result": "PASS",
+      "detail": {
+        "selection": [
+          {
+            "id": "assessment-option-A",
+            "pressed": "false",
+            "disabled": false
+          },
+          {
+            "id": "assessment-option-B",
+            "pressed": "false",
+            "disabled": false
+          },
+          {
+            "id": "assessment-option-C",
+            "pressed": "false",
+            "disabled": false
+          },
+          {
+            "id": "assessment-option-D",
+            "pressed": "false",
+            "disabled": false
+          }
+        ],
+        "submitDisabled": true
+      }
+    },
+    {
+      "name": "reload-does-not-start-new-session",
+      "result": "PASS",
+      "detail": {
+        "startBefore": 1,
+        "startAfter": 1
+      }
+    },
+    {
+      "name": "browser-closed-cleanly",
+      "result": "PASS",
+      "detail": {
+        "closed": true,
+        "failure": null
+      }
+    },
+    {
+      "name": "source-and-dependency-hashes-stable",
+      "result": "PASS",
+      "detail": {
+        "before": {
+          "apps/mobile/src/pages/assessment/assessment.vue": "41e1670146621e532921a8916b2c81ea4954d880b2373c7bcc9945d6576d7e86",
+          "packages/i18n/src/mobile-experience.ts": "6ac6800e179de0ba15ab3607918b2f8427d364e19306eaf8f2a146f016247380",
+          "apps/mobile/src/api/learner-content.ts": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6",
+          "apps/mobile/src/stores/learner-content.ts": "95cc92496db996242d91baed3301d76f985e4e3b9134e1e50c2b9ab8d41e4c61",
+          "apps/mobile/src/stores/session.ts": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+          "apps/mobile/src/auth/navigation.ts": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5",
+          "apps/mobile/src/platform/uni-runtime.ts": "fcbeba8626d8364af0ae96db64a05fcff9a3bb2b46a7d8fbcba21507ef609751",
+          "apps/mobile/src/uni.scss": "0bd56842fc5baebd8767e721f2d938986e293d1d87bfc74bb087b3c228f638d7"
+        },
+        "after": {
+          "apps/mobile/src/pages/assessment/assessment.vue": "41e1670146621e532921a8916b2c81ea4954d880b2373c7bcc9945d6576d7e86",
+          "packages/i18n/src/mobile-experience.ts": "6ac6800e179de0ba15ab3607918b2f8427d364e19306eaf8f2a146f016247380",
+          "apps/mobile/src/api/learner-content.ts": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6",
+          "apps/mobile/src/stores/learner-content.ts": "95cc92496db996242d91baed3301d76f985e4e3b9134e1e50c2b9ab8d41e4c61",
+          "apps/mobile/src/stores/session.ts": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+          "apps/mobile/src/auth/navigation.ts": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5",
+          "apps/mobile/src/platform/uni-runtime.ts": "fcbeba8626d8364af0ae96db64a05fcff9a3bb2b46a7d8fbcba21507ef609751",
+          "apps/mobile/src/uni.scss": "0bd56842fc5baebd8767e721f2d938986e293d1d87bfc74bb087b3c228f638d7"
+        },
+        "depsBefore": {
+          "apps/mobile/package.json": "484382c73929055cc4ecd9a83679f8bab72388dd8069f71a056b3bbc595c0078",
+          "pnpm-lock.yaml": "d57a87ca84985549fd53c69b1fe1d59db0b136036f2f7bf640d3b30c0a106624"
+        },
+        "depsAfter": {
+          "apps/mobile/package.json": "484382c73929055cc4ecd9a83679f8bab72388dd8069f71a056b3bbc595c0078",
+          "pnpm-lock.yaml": "d57a87ca84985549fd53c69b1fe1d59db0b136036f2f7bf640d3b30c0a106624"
+        }
+      }
+    },
+    {
+      "name": "no-unexpected-api-route",
+      "result": "PASS",
+      "detail": {
+        "unexpected": [],
+        "rule": "unknown path => 501 + FAIL; no broad 200 fallback"
+      }
+    },
+    {
+      "name": "no-page-errors",
+      "result": "PASS",
+      "detail": {
+        "pageErrors": []
+      }
+    },
+    {
+      "name": "no-console-errors",
+      "result": "PASS",
+      "detail": {
+        "consoleErrors": [],
+        "note": "console warnings are retained separately, not normalized away"
+      }
+    },
+    {
+      "name": "planned-checks-present-and-non-empty",
+      "result": "PASS",
+      "detail": {
+        "planned": [
+          "reload-reaches-assessment",
+          "reload-reGETs-same-session",
+          "reload-accepted-sequence-still-1",
+          "reload-clears-page-choice",
+          "reload-does-not-start-new-session"
+        ],
+        "missing": [],
+        "total": 10
+      }
+    }
+  ],
+  "counts": {
+    "login": 1,
+    "refresh": 1,
+    "logout": 0,
+    "principal": 9,
+    "start": 1,
+    "respond": 1,
+    "retest": 0,
+    "ensure": 0,
+    "GET": 20,
+    "placementGet": 1
+  },
+  "steps": [
+    {
+      "step": "01-before-reload",
+      "at": "2026-10-21T00:35:38.995Z",
+      "url": "http://127.0.0.1:18183/#/pages/assessment/assessment",
+      "hash": "#/pages/assessment/assessment",
+      "stack": {
+        "available": true,
+        "pages": [
+          {
+            "route": "pages/login/login"
+          },
+          {
+            "route": "pages/assessment/assessment"
+          }
+        ]
+      },
+      "busy": "false",
+      "screens": {
+        "guide": false,
+        "question": true,
+        "report": false,
+        "leaveConfirm": false,
+        "error": null
+      },
+      "selection": [
+        {
+          "id": "assessment-option-A",
+          "pressed": "false",
+          "disabled": false
+        },
+        {
+          "id": "assessment-option-B",
+          "pressed": "false",
+          "disabled": false
+        },
+        {
+          "id": "assessment-option-C",
+          "pressed": "false",
+          "disabled": false
+        },
+        {
+          "id": "assessment-option-D",
+          "pressed": "false",
+          "disabled": false
+        }
+      ],
+      "submitDisabled": true,
+      "progress": "1",
+      "counts": {
+        "login": 1,
+        "refresh": 0,
+        "logout": 0,
+        "principal": 4,
+        "start": 1,
+        "respond": 1,
+        "retest": 0,
+        "ensure": 0,
+        "GET": 9,
+        "placementGet": 0
+      },
+      "shot": "01-before-reload.png"
+    },
+    {
+      "step": "02-after-reload",
+      "at": "2026-10-21T00:35:39.474Z",
+      "url": "http://127.0.0.1:18183/#/pages/assessment/assessment",
+      "hash": "#/pages/assessment/assessment",
+      "stack": {
+        "available": true,
+        "pages": [
+          {
+            "route": "pages/assessment/assessment"
+          }
+        ]
+      },
+      "busy": "false",
+      "screens": {
+        "guide": false,
+        "question": true,
+        "report": false,
+        "leaveConfirm": false,
+        "error": null
+      },
+      "selection": [
+        {
+          "id": "assessment-option-A",
+          "pressed": "false",
+          "disabled": false
+        },
+        {
+          "id": "assessment-option-B",
+          "pressed": "false",
+          "disabled": false
+        },
+        {
+          "id": "assessment-option-C",
+          "pressed": "false",
+          "disabled": false
+        },
+        {
+          "id": "assessment-option-D",
+          "pressed": "false",
+          "disabled": false
+        }
+      ],
+      "submitDisabled": true,
+      "progress": "1",
+      "counts": {
+        "login": 1,
+        "refresh": 1,
+        "logout": 0,
+        "principal": 9,
+        "start": 1,
+        "respond": 1,
+        "retest": 0,
+        "ensure": 0,
+        "GET": 20,
+        "placementGet": 1
+      },
+      "shot": "02-after-reload.png"
+    }
+  ],
+  "closed": true,
+  "report": {
+    "scope": "MB006_C6B_NAV_DIAGNOSTIC_SYNTHETIC_TRANSPORT",
+    "requests": [
+      {
+        "id": 1,
+        "method": "POST",
+        "path": "/api/v1/auth/login"
+      },
+      {
+        "id": 1,
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me"
+      },
+      {
+        "id": 1,
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me"
+      },
+      {
+        "id": 1,
+        "method": "GET",
+        "path": "/api/v1/learner/targets"
+      },
+      {
+        "id": 1,
+        "method": "GET",
+        "path": "/api/v1/learner/profile"
+      },
+      {
+        "id": 1,
+        "method": "GET",
+        "path": "/api/v1/learner/targets"
+      },
+      {
+        "id": 1,
+        "method": "GET",
+        "path": "/api/v1/learner/preferences"
+      },
+      {
+        "id": 1,
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me"
+      },
+      {
+        "id": 1,
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me"
+      },
+      {
+        "id": 1,
+        "method": "GET",
+        "path": "/api/v1/learner/targets"
+      },
+      {
+        "id": 1,
+        "method": "POST",
+        "path": "/api/v1/assessment/placement/sessions"
+      },
+      {
+        "id": 1,
+        "method": "POST",
+        "path": "/api/v1/assessment/placement/sessions/asess_ui_nav_1_1/responses"
+      },
+      {
+        "id": 1,
+        "method": "POST",
+        "path": "/api/v1/auth/token/refresh"
+      },
+      {
+        "id": 1,
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me"
+      },
+      {
+        "id": 1,
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me"
+      },
+      {
+        "id": 1,
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me"
+      },
+      {
+        "id": 1,
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me"
+      },
+      {
+        "id": 1,
+        "method": "GET",
+        "path": "/api/v1/learner/targets"
+      },
+      {
+        "id": 1,
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me"
+      },
+      {
+        "id": 1,
+        "method": "GET",
+        "path": "/api/v1/learner/profile"
+      },
+      {
+        "id": 1,
+        "method": "GET",
+        "path": "/api/v1/learner/targets"
+      },
+      {
+        "id": 1,
+        "method": "GET",
+        "path": "/api/v1/learner/preferences"
+      },
+      {
+        "id": 1,
+        "method": "GET",
+        "path": "/api/v1/learner/targets"
+      },
+      {
+        "id": 1,
+        "method": "GET",
+        "path": "/api/v1/assessment/placement/sessions/asess_ui_nav_1_1"
+      }
+    ],
+    "targetReads": [],
+    "unexpected": [],
+    "pageErrors": [],
+    "consoleErrors": [],
+    "consoleWarnings": [],
+    "navigationDiagnostics": []
+  },
+  "navigationDiagnostics": [],
+  "sourceHashesBefore": {
+    "apps/mobile/src/pages/assessment/assessment.vue": "41e1670146621e532921a8916b2c81ea4954d880b2373c7bcc9945d6576d7e86",
+    "packages/i18n/src/mobile-experience.ts": "6ac6800e179de0ba15ab3607918b2f8427d364e19306eaf8f2a146f016247380",
+    "apps/mobile/src/api/learner-content.ts": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6",
+    "apps/mobile/src/stores/learner-content.ts": "95cc92496db996242d91baed3301d76f985e4e3b9134e1e50c2b9ab8d41e4c61",
+    "apps/mobile/src/stores/session.ts": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+    "apps/mobile/src/auth/navigation.ts": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5",
+    "apps/mobile/src/platform/uni-runtime.ts": "fcbeba8626d8364af0ae96db64a05fcff9a3bb2b46a7d8fbcba21507ef609751",
+    "apps/mobile/src/uni.scss": "0bd56842fc5baebd8767e721f2d938986e293d1d87bfc74bb087b3c228f638d7"
+  },
+  "sourceHashesAfter": {
+    "apps/mobile/src/pages/assessment/assessment.vue": "41e1670146621e532921a8916b2c81ea4954d880b2373c7bcc9945d6576d7e86",
+    "packages/i18n/src/mobile-experience.ts": "6ac6800e179de0ba15ab3607918b2f8427d364e19306eaf8f2a146f016247380",
+    "apps/mobile/src/api/learner-content.ts": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6",
+    "apps/mobile/src/stores/learner-content.ts": "95cc92496db996242d91baed3301d76f985e4e3b9134e1e50c2b9ab8d41e4c61",
+    "apps/mobile/src/stores/session.ts": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+    "apps/mobile/src/auth/navigation.ts": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5",
+    "apps/mobile/src/platform/uni-runtime.ts": "fcbeba8626d8364af0ae96db64a05fcff9a3bb2b46a7d8fbcba21507ef609751",
+    "apps/mobile/src/uni.scss": "0bd56842fc5baebd8767e721f2d938986e293d1d87bfc74bb087b3c228f638d7"
+  },
+  "dependenciesBefore": {
+    "apps/mobile/package.json": "484382c73929055cc4ecd9a83679f8bab72388dd8069f71a056b3bbc595c0078",
+    "pnpm-lock.yaml": "d57a87ca84985549fd53c69b1fe1d59db0b136036f2f7bf640d3b30c0a106624"
+  },
+  "dependenciesAfter": {
+    "apps/mobile/package.json": "484382c73929055cc4ecd9a83679f8bab72388dd8069f71a056b3bbc595c0078",
+    "pnpm-lock.yaml": "d57a87ca84985549fd53c69b1fe1d59db0b136036f2f7bf640d3b30c0a106624"
+  },
+  "result": "PASS",
+  "failure": null,
+  "exitCode": 0
+}

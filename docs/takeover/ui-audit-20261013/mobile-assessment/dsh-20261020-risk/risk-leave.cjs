@@ -1,0 +1,171 @@
+// Group 3 — leave confirmation on the current page (settings / back), busy locks,
+// actual route changes, the real re-entry recovery path, and the programmatic
+// back exit. PREPARED ONLY; not run by DSH.
+// Settings/home are only used as real navigation targets. Their reads are the
+// minimal synthetic shapes added in fixture.cjs; their own write features are out
+// of scope and recorded as notRun rather than as passes.
+//
+// Run (Root review environment only):
+//   $env:MB006_CONFIRM_BROWSER='1'
+//   $env:MB006_RISK_RUN='codex-review-leave-1'
+//   node docs/takeover/ui-audit-20261013/mobile-assessment/dsh-20261020-risk/risk-leave.cjs
+'use strict';
+const lib = require('./risk-lib.cjs');
+const f = require('./fixture.cjs');
+
+lib.execute({ group: 'leave', fixture: f }, async ({ reporter }) => {
+  const run = reporter.startCase('L1-leave-confirmation-and-route', { cursor: 'real pointer presses on the page buttons; actual location.hash asserted after every navigation' });
+  let current = await f.fresh({ locale: 'zh-CN', theme: 'light', width: 390, height: 844 });
+  const page = current.page;
+  const names = [];
+  const record = (name, ok, detail) => { reporter.check(name, ok, detail); names.push(name); };
+  // Per-step diagnostics only (route/body/root/counts). No storage, token,
+  // headers or app-state injection; the assertions below are unchanged.
+  const recoveryStep = async (name) => {
+    try {
+      const facts = await lib.facts(page);
+      reporter.diagnostic('L1-recovery-' + name, {
+        route: facts.route,
+        root: facts.root,
+        bodyLen: facts.bodyLen,
+        bodyText: facts.bodyText.slice(0, 2000),
+        present: facts.present,
+        counts: { ...current.state.counts },
+      });
+    } catch (error) {
+      reporter.diagnostic('L1-recovery-' + name, { error: String(error && error.message || error), counts: { ...current.state.counts } });
+    }
+  };
+  try {
+    await lib.waitPresent(page, 'assessment-guide');
+    await lib.waitIdle(page);
+    await lib.pointerPress(page, '#assessment-start', { holdMs: 160 });
+    await lib.waitPresent(page, 'assessment-question');
+    await lib.waitIdle(page);
+    let facts = await lib.facts(page);
+    const routeQuestion = await reporter.route(page, 'L1-question');
+    record('L1-page-identity-question', facts.root === true && routeQuestion === '#/pages/assessment/assessment' && facts.bodyLen > 0 && facts.overlay === false, { route: routeQuestion, bodyLen: facts.bodyLen, overlay: facts.overlay });
+    record('L1-question-ready', facts.options.length === 4 && current.state.counts.start === 1, { options: facts.options.length, start: current.state.counts.start });
+    await lib.pointerPress(page, '#assessment-option-A', { holdMs: 160 });
+    let selected = await lib.facts(page);
+    record('L1-selection-before-leave', selected.options.find(option => option.id === 'assessment-option-A')?.pressed === 'true', { pressed: selected.options.map(option => [option.id, option.pressed]) });
+
+    // settings asks first, zero navigation/write while the dialog is open
+    await lib.pointerPress(page, '#assessment-settings', { holdMs: 160 });
+    await lib.waitPresent(page, 'assessment-leave-confirmation');
+    facts = await lib.facts(page);
+    const routeAfterAsk = await reporter.route(page, 'L1-settings-asked');
+    record('L1-settings-asks-before-leaving', facts.present['assessment-leave-confirmation'] === true && routeAfterAsk === '#/pages/assessment/assessment', { route: routeAfterAsk, dialog: facts.present['assessment-leave-confirmation'] });
+    record('L1-ask-is-zero-write', current.state.counts.start === 1 && current.state.counts.respond === 0 && current.state.counts.retest === 0 && current.state.counts.ensure === 0, { counts: { ...current.state.counts } });
+    record('L1-ask-keeps-selection-and-locks-options', facts.options.find(option => option.id === 'assessment-option-A')?.pressed === 'true' && facts.options.every(option => option.disabled === true), { pressed: facts.options.map(option => [option.id, option.pressed]), disabled: facts.options.map(option => option.disabled) });
+    await reporter.shot(page, 'l1-01-settings-ask');
+
+    await lib.pointerPress(page, '#assessment-leave-cancel', { holdMs: 160 });
+    await lib.waitGone(page, 'assessment-leave-confirmation');
+    facts = await lib.facts(page);
+    const routeAfterCancel = await reporter.route(page, 'L1-settings-cancelled');
+    record('L1-cancel-zero-navigation-zero-write', routeAfterCancel === '#/pages/assessment/assessment' && current.state.counts.start === 1 && current.state.counts.respond === 0, { route: routeAfterCancel, counts: { ...current.state.counts } });
+    record('L1-cancel-keeps-selection-and-unlocks', facts.options.find(option => option.id === 'assessment-option-A')?.pressed === 'true' && facts.options.every(option => option.disabled === false), { pressed: facts.options.map(option => [option.id, option.pressed]), disabled: facts.options.map(option => option.disabled) });
+
+    // back asks the same way and cancel keeps the page
+    await lib.pointerPress(page, '#assessment-back', { holdMs: 0 });
+    await lib.waitPresent(page, 'assessment-leave-confirmation');
+    await lib.pointerPress(page, '#assessment-leave-cancel', { holdMs: 0 });
+    await lib.waitGone(page, 'assessment-leave-confirmation');
+    facts = await lib.facts(page);
+    record('L1-back-asks-and-cancel-stays', facts.route === '#/pages/assessment/assessment' && facts.options.find(option => option.id === 'assessment-option-A')?.pressed === 'true', { route: facts.route, pressed: facts.options.map(option => [option.id, option.pressed]) });
+
+    // confirm settings: actual route change, zero assessment writes
+    await lib.pointerPress(page, '#assessment-settings', { holdMs: 160 });
+    await lib.waitPresent(page, 'assessment-leave-confirmation');
+    await lib.pointerPress(page, '#assessment-leave-confirm', { holdMs: 160 });
+    await lib.waitRoute(page, '#/pages/settings/settings');
+    await page.waitForTimeout(400);
+    const routeSettings = await reporter.route(page, 'L1-settings-confirmed');
+    const settingsFacts = await page.evaluate(() => ({ bodyLen: document.body.innerText.length, overlay: !!document.querySelector('vite-error-overlay'), title: document.title }));
+    record('L1-confirm-settings-actual-route', routeSettings === '#/pages/settings/settings', { route: routeSettings });
+    record('L1-confirm-settings-zero-assessment-write', current.state.counts.respond === 0 && current.state.counts.retest === 0 && current.state.counts.ensure === 0, { counts: { ...current.state.counts } });
+    record('L1-settings-target-nonempty-no-overlay', settingsFacts.bodyLen > 0 && settingsFacts.overlay === false, settingsFacts);
+    await reporter.shot(page, 'l1-02-settings-route');
+
+    // real return path: browser back to the page, re-read the same checkpoint
+    const getBeforeReturn = current.state.counts.placementGet;
+    await page.goBack();
+    let returnWorked = true;
+    try { await lib.waitRoute(page, '#/pages/assessment/assessment', 6000); await lib.waitPresent(page, 'assessment-question', 8000); } catch { returnWorked = false; }
+    const routeReturned = await reporter.route(page, 'L1-returned');
+    if (!returnWorked) {
+      record('L1-return-reads-same-session-no-new-start', false, { route: routeReturned, note: 'browser back did not return to the question page; remaining leave checks skipped' });
+      reporter.notRun('L1-remaining-after-return', 'The real browser-back return path did not land on the question page, so later busy/back/recovery measurements were skipped rather than fabricated.');
+      reporter.endCase(run, 'FAIL', { route: routeReturned, counts: { ...current.state.counts } });
+      return;
+    }
+    await lib.waitIdle(page);
+    const returned = await lib.facts(page);
+    record('L1-return-reads-same-session-no-new-start', current.state.counts.placementGet === getBeforeReturn + 1 && current.state.counts.start === 1, { placementGet: current.state.counts.placementGet, start: current.state.counts.start, route: routeReturned });
+    record('L1-return-question-and-cleared-page-selection', returned.present['assessment-question'] === true && returned.options.every(option => option.pressed === 'false') && returned.submit?.disabled === true, { pressed: returned.options.map(option => option.pressed), submit: returned.submit?.disabled });
+
+    // busy locks the conflicting navigation buttons
+    await lib.pointerPress(page, '#assessment-option-A', { holdMs: 160 });
+    current.state.responseDelay = true;
+    await lib.pointerPress(page, '#assessment-submit', { holdMs: 160 });
+    await page.waitForTimeout(300);
+    const busy = await lib.facts(page);
+    const backDisabled = (await page.locator('#assessment-back').getAttribute('disabled')) !== null;
+    const settingsDisabled = (await page.locator('#assessment-settings').getAttribute('disabled')) !== null;
+    record('L1-busy-disables-back-and-settings', busy.busy === 'true' && busy.submit?.disabled === true && backDisabled === true && settingsDisabled === true, { busy: busy.busy, submitDisabled: busy.submit?.disabled, backDisabled, settingsDisabled });
+    await lib.pointerPress(page, '#assessment-settings', { holdMs: 0 });
+    await page.waitForTimeout(250);
+    const stillNoDialog = await lib.facts(page);
+    record('L1-busy-press-on-settings-has-no-effect', stillNoDialog.present['assessment-leave-confirmation'] === false && stillNoDialog.route === '#/pages/assessment/assessment', { dialog: stillNoDialog.present['assessment-leave-confirmation'], route: stillNoDialog.route });
+    await reporter.shot(page, 'l1-03-busy-locked');
+    current.release('response');
+    await page.waitForFunction(() => document.querySelector('[role=progressbar]')?.getAttribute('aria-valuenow') === '1', null, { timeout: 8000 });
+    await lib.waitIdle(page);
+    record('L1-busy-submit-single-write', current.state.counts.respond === 1, { respond: current.state.counts.respond });
+
+    // back with no selection navigates immediately (programmatic exit), then the
+    // real recovery path is a full reload + synthetic-account login + server re-read.
+    const routeBeforeBack = await reporter.route(page, 'L1-next-question');
+    await lib.pointerPress(page, '#assessment-back', { holdMs: 160 });
+    try { await lib.waitRoute(page, '#/pages/home/home', 6000); } catch { /* recorded as the actual route below */ }
+    const routeHome = await reporter.route(page, 'L1-back-home');
+    record('L1-back-without-selection-exits-to-home', routeHome === '#/pages/home/home' && routeBeforeBack === '#/pages/assessment/assessment', { before: routeBeforeBack, after: routeHome });
+    record('L1-exit-is-zero-write', current.state.counts.respond === 1 && current.state.counts.retest === 0 && current.state.counts.ensure === 0, { counts: { ...current.state.counts } });
+    await reporter.shot(page, 'l1-04-home-after-back');
+
+    const getBeforeReload = current.state.counts.placementGet;
+    await page.goto(`${f.BASE}/#/pages/login/login?theme=light&uiLocale=zh-CN&returnTo=%2Fpages%2Fassessment%2Fassessment`, { waitUntil: 'networkidle' });
+    await recoveryStep('after-goto');
+    await page.waitForFunction(() => location.hash.startsWith('#/pages/assessment/assessment') || !!document.getElementById('mobile-login-identifier'), null, { timeout: 8000 }).catch(() => {});
+    const alreadyOnAssessment = await page.evaluate(() => location.hash.startsWith('#/pages/assessment/assessment'));
+    const loginVisible = alreadyOnAssessment === false && await page.locator('#mobile-login-identifier').isVisible().catch(() => false);
+    await recoveryStep('after-login-probe');
+    if (loginVisible) {
+      await page.locator('#mobile-login-identifier').fill(current.state.subject);
+      await page.locator('#mobile-login-password').fill('SyntheticOnly123');
+      await page.locator('.login-submit').click();
+      await recoveryStep('after-login-submit');
+    }
+    await page.waitForURL(url => url.hash.startsWith('#/pages/assessment/assessment'), { timeout: 15000 }).catch(() => {});
+    await recoveryStep('after-return-wait');
+    let recoveryError = null;
+    try { await lib.waitPresent(page, 'assessment-question', 8000); await lib.waitIdle(page); } catch (error) { recoveryError = error.message; }
+    await recoveryStep('after-recovery-wait');
+    const recovered = await lib.facts(page);
+    record('L1-relogin-recovery-no-new-start', recoveryError === null && current.state.counts.start === 1 && current.state.counts.placementGet > getBeforeReload && recovered.present['assessment-question'] === true, { recoveryError, start: current.state.counts.start, placementGet: current.state.counts.placementGet, accepted: current.projection()?.acceptedSequence, question: recovered.present['assessment-question'] });
+    record('L1-relogin-selection-is-page-only', recovered.options.every(option => option.pressed === 'false') && recovered.submit?.disabled === true, { pressed: recovered.options.map(option => option.pressed), submit: recovered.submit?.disabled });
+    await reporter.shot(page, 'l1-05-recovered-question');
+
+    reporter.notRun('L1-onBackPress-browser-back-exit', 'onBackPress is not reachable from any public page control; the only real H5 trigger is browser back, which unloads the document before a leave dialog can be observed. The same requestLeave("back") path is covered by the real button above. Native/Android back and browser-back interception need Root/native execution.');
+    reporter.notRun('L1-settings-home-own-writes', 'Settings/home only received the minimal synthetic reads they perform on mount. Their own write features, notification preferences and support actions were not exercised.');
+
+    const errors = lib.caseErrors(f.report, current.state.id);
+    record('L1-no-page-or-console-errors', errors.pageErrors.length === 0 && errors.consoleErrors.length === 0, errors);
+    record('L1-no-unexpected-api', f.report.unexpected.length === 0, { unexpected: f.report.unexpected, targetReads: f.report.targetReads });
+    record('L1-exact-counts', current.state.counts.start === 1 && current.state.counts.respond === 1 && current.state.counts.retest === 0, { counts: { ...current.state.counts } });
+    reporter.endCase(run, names.every(name => reporter.report.checks.find(check => check.name === name)?.result === 'PASS') ? 'PASS' : 'FAIL', { counts: { ...current.state.counts }, targetReads: f.report.targetReads });
+  } finally {
+    await current.close();
+  }
+});

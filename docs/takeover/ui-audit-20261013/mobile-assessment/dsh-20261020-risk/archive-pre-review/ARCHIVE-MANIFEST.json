@@ -1,0 +1,22 @@
+[
+  {
+    "file": "risk-lib.cjs",
+    "sha256": "d4f793bae553d4b74afc20362aa3f9c420b5c294c829667f2f58c484a704d537",
+    "bytes": 18401
+  },
+  {
+    "file": "fixture.cjs",
+    "sha256": "acbcc5c63a1d6c857fe9073c22688980ea9515e55cf832da0ad31aef95349e51",
+    "bytes": 12693
+  },
+  {
+    "file": "README.md",
+    "sha256": "2e0096f1239cacd4193ad419e48d6dd8f6f8fb1894547b82645d367c4f2c29ac",
+    "bytes": 10339
+  },
+  {
+    "file": "checkpoint.md",
+    "sha256": "851dea1a3cd9a698907ccf2d3ca4e4faa39454c1ca18cc48f9db4a303cba304a",
+    "bytes": 5605
+  }
+]

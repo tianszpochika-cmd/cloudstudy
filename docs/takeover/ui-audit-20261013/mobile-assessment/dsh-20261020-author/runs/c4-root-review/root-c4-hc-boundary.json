@@ -1,0 +1,750 @@
+{
+  "executor": "Codex independent C4 HC review",
+  "sourceBefore": {
+    "apps/mobile/src/pages/assessment/assessment.vue": "abff80cd1d16e8d688deb9ffdc3a7e0250577f10ef2dcd31ed9a5d6849a07d8c",
+    "packages/i18n/src/mobile-experience.ts": "6ac6800e179de0ba15ab3607918b2f8427d364e19306eaf8f2a146f016247380",
+    "apps/mobile/src/api/learner-content.ts": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6",
+    "apps/mobile/src/stores/learner-content.ts": "95cc92496db996242d91baed3301d76f985e4e3b9134e1e50c2b9ab8d41e4c61",
+    "apps/mobile/src/stores/session.ts": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+    "apps/mobile/src/auth/navigation.ts": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5"
+  },
+  "raw": {
+    "state": "guide",
+    "locale": "zh-CN",
+    "themeRequested": "high-contrast",
+    "textScale": null,
+    "errors": [],
+    "viewport": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1,
+      "scrollWidth": 390,
+      "scrollHeight": 844,
+      "innerWidth": 390
+    },
+    "url": {
+      "origin": "http://127.0.0.1:18183",
+      "pathname": "/",
+      "hash": "#/pages/assessment/assessment"
+    },
+    "overlay": false,
+    "document": {
+      "htmlLang": "zh-CN",
+      "datasetTheme": "high-contrast",
+      "datasetUiLocale": null,
+      "datasetContentLocale": null,
+      "title": "水平测评"
+    },
+    "present": {
+      "guide": true,
+      "question": false,
+      "report": false,
+      "retestConfirm": false,
+      "pending": false
+    },
+    "shell": {
+      "x": 24,
+      "y": 16,
+      "width": 342,
+      "height": 545.58,
+      "top": 16,
+      "right": 366,
+      "bottom": 561.58,
+      "left": 24,
+      "centeredDelta": 0
+    },
+    "root": {
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 844,
+        "top": 0,
+        "right": 390,
+        "bottom": 844,
+        "left": 0
+      },
+      "background": [
+        13,
+        16,
+        24
+      ]
+    },
+    "palette": {
+      "--yx-brand": {
+        "raw": "#c3b5fa",
+        "rgb": [
+          195,
+          181,
+          250
+        ],
+        "alpha": 1
+      },
+      "--yx-brand-soft": {
+        "raw": "#302b49",
+        "rgb": [
+          48,
+          43,
+          73
+        ],
+        "alpha": 1
+      },
+      "--yx-action": {
+        "raw": "#5937d1",
+        "rgb": [
+          89,
+          55,
+          209
+        ],
+        "alpha": 1
+      },
+      "--yx-on-brand": {
+        "raw": "#ffffff",
+        "rgb": [
+          255,
+          255,
+          255
+        ],
+        "alpha": 1
+      },
+      "--yx-text-primary": {
+        "raw": "#ffffff",
+        "rgb": [
+          255,
+          255,
+          255
+        ],
+        "alpha": 1
+      },
+      "--yx-text-secondary": {
+        "raw": "#e2e6f1",
+        "rgb": [
+          226,
+          230,
+          241
+        ],
+        "alpha": 1
+      },
+      "--yx-surface-page": {
+        "raw": "#000000",
+        "rgb": [
+          0,
+          0,
+          0
+        ],
+        "alpha": 1
+      },
+      "--yx-surface-card": {
+        "raw": "#0d1018",
+        "rgb": [
+          13,
+          16,
+          24
+        ],
+        "alpha": 1
+      },
+      "--yx-surface-soft": {
+        "raw": "#282d40",
+        "rgb": [
+          40,
+          45,
+          64
+        ],
+        "alpha": 1
+      },
+      "--yx-border": {
+        "raw": "#e2e6f1",
+        "rgb": [
+          226,
+          230,
+          241
+        ],
+        "alpha": 1
+      },
+      "--yx-focus": {
+        "raw": "#c3b5fa",
+        "rgb": [
+          195,
+          181,
+          250
+        ],
+        "alpha": 1
+      },
+      "--yx-success-soft": {
+        "raw": "#253730",
+        "rgb": [
+          37,
+          55,
+          48
+        ],
+        "alpha": 1
+      },
+      "--yx-danger": {
+        "raw": "#ffb3be",
+        "rgb": [
+          255,
+          179,
+          190
+        ],
+        "alpha": 1
+      }
+    },
+    "h1": {
+      "text": "水平测评",
+      "expected": "英语水平测评",
+      "match": false,
+      "visible": true,
+      "rect": {
+        "x": 24,
+        "y": 100,
+        "width": 342,
+        "height": 39.19,
+        "top": 100,
+        "right": 366,
+        "bottom": 139.19,
+        "left": 24
+      },
+      "role": "heading",
+      "ariaLevel": "1",
+      "fontSize": 28,
+      "hostFontSize": 28,
+      "fontWeight": 650,
+      "color": "rgb(255, 255, 255)"
+    },
+    "controls": {
+      "host": "uni-button",
+      "count": 4,
+      "plainButtonCount": 0,
+      "expectedIds": [
+        "assessment-back",
+        "assessment-settings",
+        "assessment-start",
+        "assessment-home"
+      ],
+      "list": [
+        {
+          "id": "assessment-back",
+          "classes": "assessment-nav-button",
+          "text": "返回",
+          "ariaLabel": null,
+          "ariaPressed": null,
+          "disabled": false,
+          "disabledAttr": false,
+          "ariaDisabled": false,
+          "visible": true,
+          "rect": {
+            "x": 24,
+            "y": 16,
+            "width": 58,
+            "height": 44,
+            "top": 16,
+            "right": 82,
+            "bottom": 60,
+            "left": 24
+          },
+          "fontSize": 16,
+          "fontWeight": 400,
+          "color": "rgb(255, 255, 255)",
+          "background": [
+            0,
+            0,
+            0
+          ],
+          "borderColor": "rgb(255, 255, 255)",
+          "borderWidth": 0,
+          "opacity": 1,
+          "role": "button",
+          "tabIndex": "0"
+        },
+        {
+          "id": "assessment-settings",
+          "classes": "assessment-nav-button assessment-settings",
+          "text": "",
+          "ariaLabel": "设置",
+          "ariaPressed": null,
+          "disabled": false,
+          "disabledAttr": false,
+          "ariaDisabled": false,
+          "visible": true,
+          "rect": {
+            "x": 322,
+            "y": 16,
+            "width": 44,
+            "height": 44,
+            "top": 16,
+            "right": 366,
+            "bottom": 60,
+            "left": 322
+          },
+          "fontSize": 16,
+          "fontWeight": 400,
+          "color": "rgb(255, 255, 255)",
+          "background": [
+            0,
+            0,
+            0
+          ],
+          "borderColor": "rgb(255, 255, 255)",
+          "borderWidth": 0,
+          "opacity": 1,
+          "role": "button",
+          "tabIndex": "0"
+        },
+        {
+          "id": "assessment-start",
+          "classes": "assessment-button assessment-primary",
+          "text": "开始测评",
+          "ariaLabel": null,
+          "ariaPressed": null,
+          "disabled": false,
+          "disabledAttr": false,
+          "ariaDisabled": false,
+          "visible": true,
+          "rect": {
+            "x": 24,
+            "y": 403.19,
+            "width": 342,
+            "height": 50,
+            "top": 403.19,
+            "right": 366,
+            "bottom": 453.19,
+            "left": 24
+          },
+          "fontSize": 16,
+          "fontWeight": 600,
+          "color": "rgb(255, 255, 255)",
+          "background": [
+            89,
+            55,
+            209
+          ],
+          "borderColor": "rgb(226, 230, 241)",
+          "borderWidth": 1,
+          "opacity": 1,
+          "role": "button",
+          "tabIndex": "0"
+        },
+        {
+          "id": "assessment-home",
+          "classes": "assessment-button assessment-secondary",
+          "text": "返回学习首页",
+          "ariaLabel": null,
+          "ariaPressed": null,
+          "disabled": false,
+          "disabledAttr": false,
+          "ariaDisabled": false,
+          "visible": true,
+          "rect": {
+            "x": 24,
+            "y": 465.19,
+            "width": 342,
+            "height": 50,
+            "top": 465.19,
+            "right": 366,
+            "bottom": 515.19,
+            "left": 24
+          },
+          "fontSize": 16,
+          "fontWeight": 600,
+          "color": "rgb(255, 255, 255)",
+          "background": [
+            13,
+            16,
+            24
+          ],
+          "borderColor": "rgb(226, 230, 241)",
+          "borderWidth": 1,
+          "opacity": 1,
+          "role": "button",
+          "tabIndex": "0"
+        }
+      ],
+      "missing": [],
+      "extra": [],
+      "disabled": []
+    },
+    "complete": null,
+    "inputs": {
+      "count": 0,
+      "list": []
+    },
+    "options": {
+      "count": 0,
+      "list": []
+    },
+    "selected": null,
+    "progress": null,
+    "feedback": null,
+    "error": null,
+    "confirmation": null,
+    "typography": {
+      "textElementCount": 10,
+      "sizeViolations": [],
+      "h1FontSize": 28,
+      "sampleCount": 10,
+      "samples": [
+        {
+          "id": "assessment-start",
+          "classes": "assessment-button assessment-primary",
+          "text": "开始测评",
+          "tag": "uni-button",
+          "fontSize": 16,
+          "fontWeight": 600,
+          "large": false,
+          "disabled": false,
+          "color": [
+            255,
+            255,
+            255
+          ],
+          "background": [
+            89,
+            55,
+            209
+          ],
+          "ratio": 7.26,
+          "rect": {
+            "x": 24,
+            "y": 403.19,
+            "width": 342,
+            "height": 50,
+            "top": 403.19,
+            "right": 366,
+            "bottom": 453.19,
+            "left": 24
+          }
+        },
+        {
+          "id": null,
+          "classes": "",
+          "text": "共 10 道题，了解你现在的英语起点。",
+          "tag": "span",
+          "fontSize": 16,
+          "fontWeight": 400,
+          "large": false,
+          "disabled": false,
+          "color": [
+            226,
+            230,
+            241
+          ],
+          "background": [
+            13,
+            16,
+            24
+          ],
+          "ratio": 15.23,
+          "rect": {
+            "x": 24,
+            "y": 164.19,
+            "width": 266.02,
+            "height": 21,
+            "top": 164.19,
+            "right": 290.02,
+            "bottom": 185.19,
+            "left": 24
+          }
+        },
+        {
+          "id": null,
+          "classes": "",
+          "text": "选择你认为正确的答案。",
+          "tag": "span",
+          "fontSize": 16,
+          "fontWeight": 400,
+          "large": false,
+          "disabled": false,
+          "color": [
+            226,
+            230,
+            241
+          ],
+          "background": [
+            13,
+            16,
+            24
+          ],
+          "ratio": 15.23,
+          "rect": {
+            "x": 88,
+            "y": 258.19,
+            "width": 176,
+            "height": 21,
+            "top": 258.19,
+            "right": 264,
+            "bottom": 279.19,
+            "left": 88
+          }
+        },
+        {
+          "id": null,
+          "classes": "",
+          "text": "测评结果以已接收的答案为依据。",
+          "tag": "span",
+          "fontSize": 16,
+          "fontWeight": 400,
+          "large": false,
+          "disabled": false,
+          "color": [
+            226,
+            230,
+            241
+          ],
+          "background": [
+            13,
+            16,
+            24
+          ],
+          "ratio": 15.23,
+          "rect": {
+            "x": 88,
+            "y": 340.19,
+            "width": 240,
+            "height": 21,
+            "top": 340.19,
+            "right": 328,
+            "bottom": 361.19,
+            "left": 88
+          }
+        },
+        {
+          "id": null,
+          "classes": "",
+          "text": "快速开始暂不可用，请先完成测评。",
+          "tag": "span",
+          "fontSize": 14,
+          "fontWeight": 400,
+          "large": false,
+          "disabled": false,
+          "color": [
+            226,
+            230,
+            241
+          ],
+          "background": [
+            13,
+            16,
+            24
+          ],
+          "ratio": 15.23,
+          "rect": {
+            "x": 83,
+            "y": 540.19,
+            "width": 224,
+            "height": 19,
+            "top": 540.19,
+            "right": 307,
+            "bottom": 559.19,
+            "left": 83
+          }
+        },
+        {
+          "id": null,
+          "classes": "",
+          "text": "返回",
+          "tag": "span",
+          "fontSize": 16,
+          "fontWeight": 400,
+          "large": false,
+          "disabled": false,
+          "color": [
+            255,
+            255,
+            255
+          ],
+          "background": [
+            13,
+            16,
+            24
+          ],
+          "ratio": 19.01,
+          "rect": {
+            "x": 50,
+            "y": 27,
+            "width": 32,
+            "height": 21,
+            "top": 27,
+            "right": 82,
+            "bottom": 48,
+            "left": 50
+          }
+        },
+        {
+          "id": null,
+          "classes": "",
+          "text": "水平测评",
+          "tag": "span",
+          "fontSize": 28,
+          "fontWeight": 650,
+          "large": true,
+          "disabled": false,
+          "color": [
+            255,
+            255,
+            255
+          ],
+          "background": [
+            13,
+            16,
+            24
+          ],
+          "ratio": 19.01,
+          "rect": {
+            "x": 24,
+            "y": 101,
+            "width": 112,
+            "height": 37,
+            "top": 101,
+            "right": 136,
+            "bottom": 138,
+            "left": 24
+          }
+        },
+        {
+          "id": null,
+          "classes": "",
+          "text": "按实际水平作答",
+          "tag": "span",
+          "fontSize": 16,
+          "fontWeight": 600,
+          "large": false,
+          "disabled": false,
+          "color": [
+            255,
+            255,
+            255
+          ],
+          "background": [
+            13,
+            16,
+            24
+          ],
+          "ratio": 19.01,
+          "rect": {
+            "x": 88,
+            "y": 228.19,
+            "width": 112,
+            "height": 21,
+            "top": 228.19,
+            "right": 200,
+            "bottom": 249.19,
+            "left": 88
+          }
+        },
+        {
+          "id": null,
+          "classes": "",
+          "text": "完成后查看结果",
+          "tag": "span",
+          "fontSize": 16,
+          "fontWeight": 600,
+          "large": false,
+          "disabled": false,
+          "color": [
+            255,
+            255,
+            255
+          ],
+          "background": [
+            13,
+            16,
+            24
+          ],
+          "ratio": 19.01,
+          "rect": {
+            "x": 88,
+            "y": 310.19,
+            "width": 112,
+            "height": 21,
+            "top": 310.19,
+            "right": 200,
+            "bottom": 331.19,
+            "left": 88
+          }
+        },
+        {
+          "id": "assessment-home",
+          "classes": "assessment-button assessment-secondary",
+          "text": "返回学习首页",
+          "tag": "uni-button",
+          "fontSize": 16,
+          "fontWeight": 600,
+          "large": false,
+          "disabled": false,
+          "color": [
+            255,
+            255,
+            255
+          ],
+          "background": [
+            13,
+            16,
+            24
+          ],
+          "ratio": 19.01,
+          "rect": {
+            "x": 24,
+            "y": 465.19,
+            "width": 342,
+            "height": 50,
+            "top": 465.19,
+            "right": 366,
+            "bottom": 515.19,
+            "left": 24
+          }
+        }
+      ],
+      "minRatio": 7.26
+    },
+    "contrast": {
+      "textViolations": [],
+      "textMeasured": 10,
+      "borderSamples": [
+        {
+          "id": "assessment-start",
+          "border": [
+            226,
+            230,
+            241
+          ],
+          "vsParentBackground": 15.23,
+          "vsOwnBackground": 5.82,
+          "disabled": false
+        },
+        {
+          "id": "assessment-home",
+          "border": [
+            226,
+            230,
+            241
+          ],
+          "vsParentBackground": 15.23,
+          "vsOwnBackground": 15.23,
+          "disabled": false
+        }
+      ],
+      "borderViolations": []
+    },
+    "clipping": [],
+    "offscreen": [],
+    "clipEvidence": [],
+    "textOverflow": [],
+    "textOutside": [],
+    "wordSplits": [],
+    "overflow": {
+      "documentHorizontal": false,
+      "elements": []
+    },
+    "overlaps": [],
+    "report": null
+  },
+  "sourceAfter": {
+    "apps/mobile/src/pages/assessment/assessment.vue": "abff80cd1d16e8d688deb9ffdc3a7e0250577f10ef2dcd31ed9a5d6849a07d8c",
+    "packages/i18n/src/mobile-experience.ts": "6ac6800e179de0ba15ab3607918b2f8427d364e19306eaf8f2a146f016247380",
+    "apps/mobile/src/api/learner-content.ts": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6",
+    "apps/mobile/src/stores/learner-content.ts": "95cc92496db996242d91baed3301d76f985e4e3b9134e1e50c2b9ab8d41e4c61",
+    "apps/mobile/src/stores/session.ts": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+    "apps/mobile/src/auth/navigation.ts": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5"
+  },
+  "closed": true
+}

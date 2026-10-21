@@ -1,0 +1,20 @@
+{
+  "runId": "codex-review-c3-darkhc-1",
+  "label": "Codex independent bounded C3 review",
+  "preparedBy": "DSH",
+  "status": "FINISHED",
+  "finishedAt": "2026-10-20T15:04:45.013Z",
+  "summary": {
+    "measured": 0,
+    "review": 0,
+    "incomplete": 0,
+    "failed": 1,
+    "error": 1,
+    "stopped": 0,
+    "screenshots": 7
+  },
+  "plannedContexts": 2,
+  "plannedScreenshots": 16,
+  "completedScreenshots": 7,
+  "note": "No PASS verdict is produced by this runner; Root reviews raw measurements and screenshots."
+}

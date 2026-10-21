@@ -1,0 +1,835 @@
+{
+  "runId": "codex-20261021-c8-full-1",
+  "label": "Codex independent C8 pinned visual matrix",
+  "preparedBy": "DSH",
+  "renderer": "H5 uni-app in Playwright Chromium with fully synthetic API transport; NOT native/device",
+  "createdAt": "2026-10-21T00:41:21.159Z",
+  "updatedAt": "2026-10-21T00:43:13.434Z",
+  "cases": {
+    "zh-CN__light__320": {
+      "status": "MEASURED",
+      "dir": "cases/zh-CN__light__320",
+      "resultFile": "cases/zh-CN__light__320/result.json",
+      "partial": false,
+      "summary": {
+        "ok": 114,
+        "info": 8,
+        "review": 0,
+        "fail": 0,
+        "notMeasured": 0
+      },
+      "screenshots": 8,
+      "failedChecks": [],
+      "reviewChecks": [],
+      "infoChecks": [
+        "guide:viewport-offscreen",
+        "question:viewport-offscreen",
+        "report:text-outside-box",
+        "report:viewport-offscreen",
+        "retest-confirm:text-outside-box",
+        "retest-confirm:viewport-offscreen",
+        "retest-cancelled:text-outside-box",
+        "retest-cancelled:viewport-offscreen"
+      ],
+      "harnessInvalid": false
+    },
+    "zh-CN__light__390": {
+      "status": "MEASURED",
+      "dir": "cases/zh-CN__light__390",
+      "resultFile": "cases/zh-CN__light__390/result.json",
+      "partial": false,
+      "summary": {
+        "ok": 114,
+        "info": 4,
+        "review": 0,
+        "fail": 0,
+        "notMeasured": 0
+      },
+      "screenshots": 6,
+      "failedChecks": [],
+      "reviewChecks": [],
+      "infoChecks": [
+        "report:text-outside-box",
+        "retest-confirm:text-outside-box",
+        "retest-confirm:viewport-offscreen",
+        "retest-cancelled:text-outside-box"
+      ],
+      "harnessInvalid": false
+    },
+    "zh-CN__light__768": {
+      "status": "MEASURED",
+      "dir": "cases/zh-CN__light__768",
+      "resultFile": "cases/zh-CN__light__768/result.json",
+      "partial": false,
+      "summary": {
+        "ok": 119,
+        "info": 3,
+        "review": 0,
+        "fail": 0,
+        "notMeasured": 0
+      },
+      "screenshots": 6,
+      "failedChecks": [],
+      "reviewChecks": [],
+      "infoChecks": [
+        "report:text-outside-box",
+        "retest-confirm:text-outside-box",
+        "retest-cancelled:text-outside-box"
+      ],
+      "harnessInvalid": false
+    },
+    "zh-CN__light__1280": {
+      "status": "MEASURED",
+      "dir": "cases/zh-CN__light__1280",
+      "resultFile": "cases/zh-CN__light__1280/result.json",
+      "partial": false,
+      "summary": {
+        "ok": 119,
+        "info": 4,
+        "review": 0,
+        "fail": 0,
+        "notMeasured": 0
+      },
+      "screenshots": 6,
+      "failedChecks": [],
+      "reviewChecks": [],
+      "infoChecks": [
+        "report:text-outside-box",
+        "retest-confirm:text-outside-box",
+        "retest-confirm:viewport-offscreen",
+        "retest-cancelled:text-outside-box"
+      ],
+      "harnessInvalid": false
+    },
+    "zh-CN__dark__320": {
+      "status": "MEASURED",
+      "dir": "cases/zh-CN__dark__320",
+      "resultFile": "cases/zh-CN__dark__320/result.json",
+      "partial": false,
+      "summary": {
+        "ok": 114,
+        "info": 8,
+        "review": 0,
+        "fail": 0,
+        "notMeasured": 0
+      },
+      "screenshots": 8,
+      "failedChecks": [],
+      "reviewChecks": [],
+      "infoChecks": [
+        "guide:viewport-offscreen",
+        "question:viewport-offscreen",
+        "report:text-outside-box",
+        "report:viewport-offscreen",
+        "retest-confirm:text-outside-box",
+        "retest-confirm:viewport-offscreen",
+        "retest-cancelled:text-outside-box",
+        "retest-cancelled:viewport-offscreen"
+      ],
+      "harnessInvalid": false
+    },
+    "zh-CN__dark__390": {
+      "status": "MEASURED",
+      "dir": "cases/zh-CN__dark__390",
+      "resultFile": "cases/zh-CN__dark__390/result.json",
+      "partial": false,
+      "summary": {
+        "ok": 114,
+        "info": 4,
+        "review": 0,
+        "fail": 0,
+        "notMeasured": 0
+      },
+      "screenshots": 6,
+      "failedChecks": [],
+      "reviewChecks": [],
+      "infoChecks": [
+        "report:text-outside-box",
+        "retest-confirm:text-outside-box",
+        "retest-confirm:viewport-offscreen",
+        "retest-cancelled:text-outside-box"
+      ],
+      "harnessInvalid": false
+    },
+    "zh-CN__dark__768": {
+      "status": "MEASURED",
+      "dir": "cases/zh-CN__dark__768",
+      "resultFile": "cases/zh-CN__dark__768/result.json",
+      "partial": false,
+      "summary": {
+        "ok": 119,
+        "info": 3,
+        "review": 0,
+        "fail": 0,
+        "notMeasured": 0
+      },
+      "screenshots": 6,
+      "failedChecks": [],
+      "reviewChecks": [],
+      "infoChecks": [
+        "report:text-outside-box",
+        "retest-confirm:text-outside-box",
+        "retest-cancelled:text-outside-box"
+      ],
+      "harnessInvalid": false
+    },
+    "zh-CN__dark__1280": {
+      "status": "MEASURED",
+      "dir": "cases/zh-CN__dark__1280",
+      "resultFile": "cases/zh-CN__dark__1280/result.json",
+      "partial": false,
+      "summary": {
+        "ok": 119,
+        "info": 4,
+        "review": 0,
+        "fail": 0,
+        "notMeasured": 0
+      },
+      "screenshots": 6,
+      "failedChecks": [],
+      "reviewChecks": [],
+      "infoChecks": [
+        "report:text-outside-box",
+        "retest-confirm:text-outside-box",
+        "retest-confirm:viewport-offscreen",
+        "retest-cancelled:text-outside-box"
+      ],
+      "harnessInvalid": false
+    },
+    "zh-CN__high-contrast__320": {
+      "status": "MEASURED",
+      "dir": "cases/zh-CN__high-contrast__320",
+      "resultFile": "cases/zh-CN__high-contrast__320/result.json",
+      "partial": false,
+      "summary": {
+        "ok": 114,
+        "info": 8,
+        "review": 0,
+        "fail": 0,
+        "notMeasured": 0
+      },
+      "screenshots": 8,
+      "failedChecks": [],
+      "reviewChecks": [],
+      "infoChecks": [
+        "guide:viewport-offscreen",
+        "question:viewport-offscreen",
+        "report:text-outside-box",
+        "report:viewport-offscreen",
+        "retest-confirm:text-outside-box",
+        "retest-confirm:viewport-offscreen",
+        "retest-cancelled:text-outside-box",
+        "retest-cancelled:viewport-offscreen"
+      ],
+      "harnessInvalid": false
+    },
+    "zh-CN__high-contrast__390": {
+      "status": "MEASURED",
+      "dir": "cases/zh-CN__high-contrast__390",
+      "resultFile": "cases/zh-CN__high-contrast__390/result.json",
+      "partial": false,
+      "summary": {
+        "ok": 114,
+        "info": 4,
+        "review": 0,
+        "fail": 0,
+        "notMeasured": 0
+      },
+      "screenshots": 6,
+      "failedChecks": [],
+      "reviewChecks": [],
+      "infoChecks": [
+        "report:text-outside-box",
+        "retest-confirm:text-outside-box",
+        "retest-confirm:viewport-offscreen",
+        "retest-cancelled:text-outside-box"
+      ],
+      "harnessInvalid": false
+    },
+    "zh-CN__high-contrast__768": {
+      "status": "MEASURED",
+      "dir": "cases/zh-CN__high-contrast__768",
+      "resultFile": "cases/zh-CN__high-contrast__768/result.json",
+      "partial": false,
+      "summary": {
+        "ok": 119,
+        "info": 3,
+        "review": 0,
+        "fail": 0,
+        "notMeasured": 0
+      },
+      "screenshots": 6,
+      "failedChecks": [],
+      "reviewChecks": [],
+      "infoChecks": [
+        "report:text-outside-box",
+        "retest-confirm:text-outside-box",
+        "retest-cancelled:text-outside-box"
+      ],
+      "harnessInvalid": false
+    },
+    "zh-CN__high-contrast__1280": {
+      "status": "MEASURED",
+      "dir": "cases/zh-CN__high-contrast__1280",
+      "resultFile": "cases/zh-CN__high-contrast__1280/result.json",
+      "partial": false,
+      "summary": {
+        "ok": 119,
+        "info": 4,
+        "review": 0,
+        "fail": 0,
+        "notMeasured": 0
+      },
+      "screenshots": 6,
+      "failedChecks": [],
+      "reviewChecks": [],
+      "infoChecks": [
+        "report:text-outside-box",
+        "retest-confirm:text-outside-box",
+        "retest-confirm:viewport-offscreen",
+        "retest-cancelled:text-outside-box"
+      ],
+      "harnessInvalid": false
+    },
+    "zh-CN__system__320": {
+      "status": "MEASURED",
+      "dir": "cases/zh-CN__system__320",
+      "resultFile": "cases/zh-CN__system__320/result.json",
+      "partial": false,
+      "summary": {
+        "ok": 114,
+        "info": 8,
+        "review": 0,
+        "fail": 0,
+        "notMeasured": 0
+      },
+      "screenshots": 8,
+      "failedChecks": [],
+      "reviewChecks": [],
+      "infoChecks": [
+        "guide:viewport-offscreen",
+        "question:viewport-offscreen",
+        "report:text-outside-box",
+        "report:viewport-offscreen",
+        "retest-confirm:text-outside-box",
+        "retest-confirm:viewport-offscreen",
+        "retest-cancelled:text-outside-box",
+        "retest-cancelled:viewport-offscreen"
+      ],
+      "harnessInvalid": false
+    },
+    "zh-CN__system__390": {
+      "status": "MEASURED",
+      "dir": "cases/zh-CN__system__390",
+      "resultFile": "cases/zh-CN__system__390/result.json",
+      "partial": false,
+      "summary": {
+        "ok": 114,
+        "info": 4,
+        "review": 0,
+        "fail": 0,
+        "notMeasured": 0
+      },
+      "screenshots": 6,
+      "failedChecks": [],
+      "reviewChecks": [],
+      "infoChecks": [
+        "report:text-outside-box",
+        "retest-confirm:text-outside-box",
+        "retest-confirm:viewport-offscreen",
+        "retest-cancelled:text-outside-box"
+      ],
+      "harnessInvalid": false
+    },
+    "zh-CN__system__768": {
+      "status": "MEASURED",
+      "dir": "cases/zh-CN__system__768",
+      "resultFile": "cases/zh-CN__system__768/result.json",
+      "partial": false,
+      "summary": {
+        "ok": 124,
+        "info": 3,
+        "review": 0,
+        "fail": 0,
+        "notMeasured": 0
+      },
+      "screenshots": 7,
+      "failedChecks": [],
+      "reviewChecks": [],
+      "infoChecks": [
+        "report:text-outside-box",
+        "retest-confirm:text-outside-box",
+        "retest-cancelled:text-outside-box"
+      ],
+      "harnessInvalid": false
+    },
+    "zh-CN__system__1280": {
+      "status": "MEASURED",
+      "dir": "cases/zh-CN__system__1280",
+      "resultFile": "cases/zh-CN__system__1280/result.json",
+      "partial": false,
+      "summary": {
+        "ok": 119,
+        "info": 4,
+        "review": 0,
+        "fail": 0,
+        "notMeasured": 0
+      },
+      "screenshots": 6,
+      "failedChecks": [],
+      "reviewChecks": [],
+      "infoChecks": [
+        "report:text-outside-box",
+        "retest-confirm:text-outside-box",
+        "retest-confirm:viewport-offscreen",
+        "retest-cancelled:text-outside-box"
+      ],
+      "harnessInvalid": false
+    },
+    "en-US__light__320": {
+      "status": "MEASURED",
+      "dir": "cases/en-US__light__320",
+      "resultFile": "cases/en-US__light__320/result.json",
+      "partial": false,
+      "summary": {
+        "ok": 114,
+        "info": 8,
+        "review": 0,
+        "fail": 0,
+        "notMeasured": 0
+      },
+      "screenshots": 8,
+      "failedChecks": [],
+      "reviewChecks": [],
+      "infoChecks": [
+        "guide:viewport-offscreen",
+        "question:viewport-offscreen",
+        "report:text-outside-box",
+        "report:viewport-offscreen",
+        "retest-confirm:text-outside-box",
+        "retest-confirm:viewport-offscreen",
+        "retest-cancelled:text-outside-box",
+        "retest-cancelled:viewport-offscreen"
+      ],
+      "harnessInvalid": false
+    },
+    "en-US__light__390": {
+      "status": "MEASURED",
+      "dir": "cases/en-US__light__390",
+      "resultFile": "cases/en-US__light__390/result.json",
+      "partial": false,
+      "summary": {
+        "ok": 114,
+        "info": 4,
+        "review": 0,
+        "fail": 0,
+        "notMeasured": 0
+      },
+      "screenshots": 6,
+      "failedChecks": [],
+      "reviewChecks": [],
+      "infoChecks": [
+        "report:text-outside-box",
+        "retest-confirm:text-outside-box",
+        "retest-confirm:viewport-offscreen",
+        "retest-cancelled:text-outside-box"
+      ],
+      "harnessInvalid": false
+    },
+    "en-US__light__768": {
+      "status": "MEASURED",
+      "dir": "cases/en-US__light__768",
+      "resultFile": "cases/en-US__light__768/result.json",
+      "partial": false,
+      "summary": {
+        "ok": 119,
+        "info": 3,
+        "review": 0,
+        "fail": 0,
+        "notMeasured": 0
+      },
+      "screenshots": 6,
+      "failedChecks": [],
+      "reviewChecks": [],
+      "infoChecks": [
+        "report:text-outside-box",
+        "retest-confirm:text-outside-box",
+        "retest-cancelled:text-outside-box"
+      ],
+      "harnessInvalid": false
+    },
+    "en-US__light__1280": {
+      "status": "MEASURED",
+      "dir": "cases/en-US__light__1280",
+      "resultFile": "cases/en-US__light__1280/result.json",
+      "partial": false,
+      "summary": {
+        "ok": 119,
+        "info": 4,
+        "review": 0,
+        "fail": 0,
+        "notMeasured": 0
+      },
+      "screenshots": 6,
+      "failedChecks": [],
+      "reviewChecks": [],
+      "infoChecks": [
+        "report:text-outside-box",
+        "retest-confirm:text-outside-box",
+        "retest-confirm:viewport-offscreen",
+        "retest-cancelled:text-outside-box"
+      ],
+      "harnessInvalid": false
+    },
+    "en-US__dark__320": {
+      "status": "MEASURED",
+      "dir": "cases/en-US__dark__320",
+      "resultFile": "cases/en-US__dark__320/result.json",
+      "partial": false,
+      "summary": {
+        "ok": 114,
+        "info": 8,
+        "review": 0,
+        "fail": 0,
+        "notMeasured": 0
+      },
+      "screenshots": 8,
+      "failedChecks": [],
+      "reviewChecks": [],
+      "infoChecks": [
+        "guide:viewport-offscreen",
+        "question:viewport-offscreen",
+        "report:text-outside-box",
+        "report:viewport-offscreen",
+        "retest-confirm:text-outside-box",
+        "retest-confirm:viewport-offscreen",
+        "retest-cancelled:text-outside-box",
+        "retest-cancelled:viewport-offscreen"
+      ],
+      "harnessInvalid": false
+    },
+    "en-US__dark__390": {
+      "status": "MEASURED",
+      "dir": "cases/en-US__dark__390",
+      "resultFile": "cases/en-US__dark__390/result.json",
+      "partial": false,
+      "summary": {
+        "ok": 114,
+        "info": 4,
+        "review": 0,
+        "fail": 0,
+        "notMeasured": 0
+      },
+      "screenshots": 6,
+      "failedChecks": [],
+      "reviewChecks": [],
+      "infoChecks": [
+        "report:text-outside-box",
+        "retest-confirm:text-outside-box",
+        "retest-confirm:viewport-offscreen",
+        "retest-cancelled:text-outside-box"
+      ],
+      "harnessInvalid": false
+    },
+    "en-US__dark__768": {
+      "status": "MEASURED",
+      "dir": "cases/en-US__dark__768",
+      "resultFile": "cases/en-US__dark__768/result.json",
+      "partial": false,
+      "summary": {
+        "ok": 119,
+        "info": 3,
+        "review": 0,
+        "fail": 0,
+        "notMeasured": 0
+      },
+      "screenshots": 6,
+      "failedChecks": [],
+      "reviewChecks": [],
+      "infoChecks": [
+        "report:text-outside-box",
+        "retest-confirm:text-outside-box",
+        "retest-cancelled:text-outside-box"
+      ],
+      "harnessInvalid": false
+    },
+    "en-US__dark__1280": {
+      "status": "MEASURED",
+      "dir": "cases/en-US__dark__1280",
+      "resultFile": "cases/en-US__dark__1280/result.json",
+      "partial": false,
+      "summary": {
+        "ok": 119,
+        "info": 4,
+        "review": 0,
+        "fail": 0,
+        "notMeasured": 0
+      },
+      "screenshots": 6,
+      "failedChecks": [],
+      "reviewChecks": [],
+      "infoChecks": [
+        "report:text-outside-box",
+        "retest-confirm:text-outside-box",
+        "retest-confirm:viewport-offscreen",
+        "retest-cancelled:text-outside-box"
+      ],
+      "harnessInvalid": false
+    },
+    "en-US__high-contrast__320": {
+      "status": "MEASURED",
+      "dir": "cases/en-US__high-contrast__320",
+      "resultFile": "cases/en-US__high-contrast__320/result.json",
+      "partial": false,
+      "summary": {
+        "ok": 114,
+        "info": 8,
+        "review": 0,
+        "fail": 0,
+        "notMeasured": 0
+      },
+      "screenshots": 8,
+      "failedChecks": [],
+      "reviewChecks": [],
+      "infoChecks": [
+        "guide:viewport-offscreen",
+        "question:viewport-offscreen",
+        "report:text-outside-box",
+        "report:viewport-offscreen",
+        "retest-confirm:text-outside-box",
+        "retest-confirm:viewport-offscreen",
+        "retest-cancelled:text-outside-box",
+        "retest-cancelled:viewport-offscreen"
+      ],
+      "harnessInvalid": false
+    },
+    "en-US__high-contrast__390": {
+      "status": "MEASURED",
+      "dir": "cases/en-US__high-contrast__390",
+      "resultFile": "cases/en-US__high-contrast__390/result.json",
+      "partial": false,
+      "summary": {
+        "ok": 114,
+        "info": 4,
+        "review": 0,
+        "fail": 0,
+        "notMeasured": 0
+      },
+      "screenshots": 6,
+      "failedChecks": [],
+      "reviewChecks": [],
+      "infoChecks": [
+        "report:text-outside-box",
+        "retest-confirm:text-outside-box",
+        "retest-confirm:viewport-offscreen",
+        "retest-cancelled:text-outside-box"
+      ],
+      "harnessInvalid": false
+    },
+    "en-US__high-contrast__768": {
+      "status": "MEASURED",
+      "dir": "cases/en-US__high-contrast__768",
+      "resultFile": "cases/en-US__high-contrast__768/result.json",
+      "partial": false,
+      "summary": {
+        "ok": 119,
+        "info": 3,
+        "review": 0,
+        "fail": 0,
+        "notMeasured": 0
+      },
+      "screenshots": 6,
+      "failedChecks": [],
+      "reviewChecks": [],
+      "infoChecks": [
+        "report:text-outside-box",
+        "retest-confirm:text-outside-box",
+        "retest-cancelled:text-outside-box"
+      ],
+      "harnessInvalid": false
+    },
+    "en-US__high-contrast__1280": {
+      "status": "MEASURED",
+      "dir": "cases/en-US__high-contrast__1280",
+      "resultFile": "cases/en-US__high-contrast__1280/result.json",
+      "partial": false,
+      "summary": {
+        "ok": 119,
+        "info": 4,
+        "review": 0,
+        "fail": 0,
+        "notMeasured": 0
+      },
+      "screenshots": 6,
+      "failedChecks": [],
+      "reviewChecks": [],
+      "infoChecks": [
+        "report:text-outside-box",
+        "retest-confirm:text-outside-box",
+        "retest-confirm:viewport-offscreen",
+        "retest-cancelled:text-outside-box"
+      ],
+      "harnessInvalid": false
+    },
+    "en-US__system__320": {
+      "status": "MEASURED",
+      "dir": "cases/en-US__system__320",
+      "resultFile": "cases/en-US__system__320/result.json",
+      "partial": false,
+      "summary": {
+        "ok": 114,
+        "info": 8,
+        "review": 0,
+        "fail": 0,
+        "notMeasured": 0
+      },
+      "screenshots": 8,
+      "failedChecks": [],
+      "reviewChecks": [],
+      "infoChecks": [
+        "guide:viewport-offscreen",
+        "question:viewport-offscreen",
+        "report:text-outside-box",
+        "report:viewport-offscreen",
+        "retest-confirm:text-outside-box",
+        "retest-confirm:viewport-offscreen",
+        "retest-cancelled:text-outside-box",
+        "retest-cancelled:viewport-offscreen"
+      ],
+      "harnessInvalid": false
+    },
+    "en-US__system__390": {
+      "status": "MEASURED",
+      "dir": "cases/en-US__system__390",
+      "resultFile": "cases/en-US__system__390/result.json",
+      "partial": false,
+      "summary": {
+        "ok": 114,
+        "info": 4,
+        "review": 0,
+        "fail": 0,
+        "notMeasured": 0
+      },
+      "screenshots": 6,
+      "failedChecks": [],
+      "reviewChecks": [],
+      "infoChecks": [
+        "report:text-outside-box",
+        "retest-confirm:text-outside-box",
+        "retest-confirm:viewport-offscreen",
+        "retest-cancelled:text-outside-box"
+      ],
+      "harnessInvalid": false
+    },
+    "en-US__system__768": {
+      "status": "MEASURED",
+      "dir": "cases/en-US__system__768",
+      "resultFile": "cases/en-US__system__768/result.json",
+      "partial": false,
+      "summary": {
+        "ok": 124,
+        "info": 3,
+        "review": 0,
+        "fail": 0,
+        "notMeasured": 0
+      },
+      "screenshots": 7,
+      "failedChecks": [],
+      "reviewChecks": [],
+      "infoChecks": [
+        "report:text-outside-box",
+        "retest-confirm:text-outside-box",
+        "retest-cancelled:text-outside-box"
+      ],
+      "harnessInvalid": false
+    },
+    "en-US__system__1280": {
+      "status": "MEASURED",
+      "dir": "cases/en-US__system__1280",
+      "resultFile": "cases/en-US__system__1280/result.json",
+      "partial": false,
+      "summary": {
+        "ok": 119,
+        "info": 4,
+        "review": 0,
+        "fail": 0,
+        "notMeasured": 0
+      },
+      "screenshots": 6,
+      "failedChecks": [],
+      "reviewChecks": [],
+      "infoChecks": [
+        "report:text-outside-box",
+        "retest-confirm:text-outside-box",
+        "retest-confirm:viewport-offscreen",
+        "retest-cancelled:text-outside-box"
+      ],
+      "harnessInvalid": false
+    },
+    "en-US__dark__320__text200__short": {
+      "status": "MEASURED",
+      "dir": "cases/en-US__dark__320__text200__short",
+      "resultFile": "cases/en-US__dark__320__text200__short/result.json",
+      "partial": false,
+      "summary": {
+        "ok": 150,
+        "info": 11,
+        "review": 0,
+        "fail": 0,
+        "notMeasured": 0
+      },
+      "screenshots": 10,
+      "failedChecks": [],
+      "reviewChecks": [],
+      "infoChecks": [
+        "guide:viewport-offscreen",
+        "question-selected-C:text-outside-box",
+        "question-selected-C:viewport-offscreen",
+        "question:text-outside-box",
+        "question:viewport-offscreen",
+        "report:text-outside-box",
+        "report:viewport-offscreen",
+        "retest-confirm:text-outside-box",
+        "retest-confirm:viewport-offscreen",
+        "retest-cancelled:text-outside-box",
+        "retest-cancelled:viewport-offscreen"
+      ],
+      "harnessInvalid": false
+    },
+    "zh-CN__light__390__short": {
+      "status": "MEASURED",
+      "dir": "cases/zh-CN__light__390__short",
+      "resultFile": "cases/zh-CN__light__390__short/result.json",
+      "partial": false,
+      "summary": {
+        "ok": 114,
+        "info": 7,
+        "review": 0,
+        "fail": 0,
+        "notMeasured": 0
+      },
+      "screenshots": 6,
+      "failedChecks": [],
+      "reviewChecks": [],
+      "infoChecks": [
+        "question:viewport-offscreen",
+        "report:text-outside-box",
+        "report:viewport-offscreen",
+        "retest-confirm:text-outside-box",
+        "retest-confirm:viewport-offscreen",
+        "retest-cancelled:text-outside-box",
+        "retest-cancelled:viewport-offscreen"
+      ],
+      "harnessInvalid": false
+    }
+  },
+  "summary": {
+    "measured": 34,
+    "review": 0,
+    "incomplete": 0,
+    "failed": 0,
+    "error": 0,
+    "stopped": 0,
+    "screenshots": 226
+  }
+}

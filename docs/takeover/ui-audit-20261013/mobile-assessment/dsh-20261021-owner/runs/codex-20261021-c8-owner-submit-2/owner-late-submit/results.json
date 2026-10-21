@@ -1,0 +1,1721 @@
+{
+  "label": "Owner late-response UI lifecycle (Root review executor)",
+  "preparedBy": "DSH author (test preparation only; DSH launched no browser and executed no case)",
+  "scope": "MB006_OWNER_LIFECYCLE_PREPARED_NOT_RUN",
+  "group": "owner-late-submit",
+  "run": "codex-20261021-c8-owner-submit-2",
+  "executor": "Codex C8 owner late submit final review",
+  "expectedPage": "41e1670146621e532921a8916b2c81ea4954d880b2373c7bcc9945d6576d7e86",
+  "approvedPage": "41e1670146621e532921a8916b2c81ea4954d880b2373c7bcc9945d6576d7e86",
+  "fixture": "synthetic API transport via local fixture.cjs; real uni-app login form, real existing IAM/navigation guard, real UI and real browser history",
+  "native": "NOT_RUN (no native/device capability in this prepared H5 suite)",
+  "realBackend": "NOT_RUN (no real backend, IAM, DB or external network is contacted)",
+  "injection": "Only synthetic API status flags (principalStatus/refreshStatus) and explicit transport holds. No store/session/token/storage/JWT/guard/onShow private hook.",
+  "startedAt": "2026-10-21T01:07:29.034Z",
+  "freezePreparedAt": "2026-10-21T00:56:02Z",
+  "sourceHashesBefore": {
+    "apps/mobile/src/pages/assessment/assessment.vue": "41e1670146621e532921a8916b2c81ea4954d880b2373c7bcc9945d6576d7e86",
+    "packages/i18n/src/mobile-experience.ts": "6ac6800e179de0ba15ab3607918b2f8427d364e19306eaf8f2a146f016247380",
+    "apps/mobile/src/api/learner-content.ts": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6",
+    "apps/mobile/src/stores/learner-content.ts": "95cc92496db996242d91baed3301d76f985e4e3b9134e1e50c2b9ab8d41e4c61",
+    "apps/mobile/src/stores/session.ts": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+    "apps/mobile/src/auth/navigation.ts": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5",
+    "apps/mobile/src/platform/uni-runtime.ts": "fcbeba8626d8364af0ae96db64a05fcff9a3bb2b46a7d8fbcba21507ef609751",
+    "apps/mobile/src/uni.scss": "0bd56842fc5baebd8767e721f2d938986e293d1d87bfc74bb087b3c228f638d7"
+  },
+  "sourceHashesAfter": {
+    "apps/mobile/src/pages/assessment/assessment.vue": "41e1670146621e532921a8916b2c81ea4954d880b2373c7bcc9945d6576d7e86",
+    "packages/i18n/src/mobile-experience.ts": "6ac6800e179de0ba15ab3607918b2f8427d364e19306eaf8f2a146f016247380",
+    "apps/mobile/src/api/learner-content.ts": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6",
+    "apps/mobile/src/stores/learner-content.ts": "95cc92496db996242d91baed3301d76f985e4e3b9134e1e50c2b9ab8d41e4c61",
+    "apps/mobile/src/stores/session.ts": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+    "apps/mobile/src/auth/navigation.ts": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5",
+    "apps/mobile/src/platform/uni-runtime.ts": "fcbeba8626d8364af0ae96db64a05fcff9a3bb2b46a7d8fbcba21507ef609751",
+    "apps/mobile/src/uni.scss": "0bd56842fc5baebd8767e721f2d938986e293d1d87bfc74bb087b3c228f638d7"
+  },
+  "sourceStable": true,
+  "dependenciesBefore": {
+    "apps/mobile/package.json": "484382c73929055cc4ecd9a83679f8bab72388dd8069f71a056b3bbc595c0078",
+    "pnpm-lock.yaml": "d57a87ca84985549fd53c69b1fe1d59db0b136036f2f7bf640d3b30c0a106624"
+  },
+  "dependenciesAfter": {
+    "apps/mobile/package.json": "484382c73929055cc4ecd9a83679f8bab72388dd8069f71a056b3bbc595c0078",
+    "pnpm-lock.yaml": "d57a87ca84985549fd53c69b1fe1d59db0b136036f2f7bf640d3b30c0a106624"
+  },
+  "dependenciesStable": true,
+  "cases": [
+    {
+      "name": "owner-late-submit",
+      "startedAt": "2026-10-21T01:07:30.185Z",
+      "cursor": "real A login/start/select/submit; transport-held response; real browser back; existing guard/IAM revalidation; real B login",
+      "outcome": "PASS",
+      "finishedAt": "2026-10-21T01:07:35.160Z",
+      "counts": {
+        "login": 2,
+        "refresh": 1,
+        "logout": 0,
+        "principal": 12,
+        "start": 1,
+        "respond": 1,
+        "retest": 0,
+        "ensure": 0,
+        "GET": 23,
+        "placementGet": 0
+      },
+      "pending": [],
+      "routes": []
+    }
+  ],
+  "checks": [
+    {
+      "name": "owner-late-submit-a-guide-without-start",
+      "result": "PASS",
+      "detail": {
+        "route": "#/pages/assessment/assessment",
+        "present": {
+          "assessment-page": true,
+          "assessment-guide": true,
+          "assessment-question": false,
+          "assessment-report": false,
+          "assessment-skipped": false,
+          "assessment-pending": false,
+          "assessment-error": false,
+          "assessment-leave-confirmation": false,
+          "assessment-retest-confirmation": false,
+          "assessment-submit": false,
+          "assessment-reload-answer": false,
+          "assessment-start": true,
+          "assessment-title": true,
+          "assessment-option-A": false
+        },
+        "counts": {
+          "login": 1,
+          "refresh": 0,
+          "logout": 0,
+          "principal": 4,
+          "start": 0,
+          "respond": 0,
+          "retest": 0,
+          "ensure": 0,
+          "GET": 9,
+          "placementGet": 0
+        }
+      }
+    },
+    {
+      "name": "owner-late-submit-a-question-four-options",
+      "result": "PASS",
+      "detail": {
+        "route": "#/pages/assessment/assessment",
+        "options": [
+          "assessment-option-A",
+          "assessment-option-B",
+          "assessment-option-C",
+          "assessment-option-D"
+        ],
+        "counts": {
+          "login": 1,
+          "refresh": 0,
+          "logout": 0,
+          "principal": 4,
+          "start": 1,
+          "respond": 0,
+          "retest": 0,
+          "ensure": 0,
+          "GET": 9,
+          "placementGet": 0
+        },
+        "stem": "Choose the phrase that completes the sentence: I ___ every evening."
+      }
+    },
+    {
+      "name": "owner-late-submit-a-submit-held-one-write",
+      "result": "PASS",
+      "detail": {
+        "counts": {
+          "login": 1,
+          "refresh": 0,
+          "logout": 0,
+          "principal": 4,
+          "start": 1,
+          "respond": 1,
+          "retest": 0,
+          "ensure": 0,
+          "GET": 9,
+          "placementGet": 0
+        },
+        "pending": [
+          "response"
+        ],
+        "busy": "true"
+      }
+    },
+    {
+      "name": "owner-late-submit-a-iam-401-armed-without-request",
+      "result": "PASS",
+      "detail": {
+        "counts": {
+          "login": 1,
+          "refresh": 0,
+          "logout": 0,
+          "principal": 4,
+          "start": 1,
+          "respond": 1,
+          "retest": 0,
+          "ensure": 0,
+          "GET": 9,
+          "placementGet": 0
+        },
+        "principalBefore": 4,
+        "refreshBefore": 0,
+        "note": "status flags are visible only to the next synthetic IAM responses"
+      }
+    },
+    {
+      "name": "owner-late-submit-login-reached",
+      "result": "PASS",
+      "detail": {
+        "route": "#/pages/login/login",
+        "loginVisible": true,
+        "present": {
+          "assessment-page": false,
+          "assessment-guide": false,
+          "assessment-question": false,
+          "assessment-report": false,
+          "assessment-skipped": false,
+          "assessment-pending": false,
+          "assessment-error": false,
+          "assessment-leave-confirmation": false,
+          "assessment-retest-confirmation": false,
+          "assessment-submit": false,
+          "assessment-reload-answer": false,
+          "assessment-start": false,
+          "assessment-title": false,
+          "assessment-option-A": false
+        }
+      }
+    },
+    {
+      "name": "owner-late-submit-login-no-old-question-report-error",
+      "result": "PASS",
+      "detail": {
+        "present": {
+          "assessment-page": false,
+          "assessment-guide": false,
+          "assessment-question": false,
+          "assessment-report": false,
+          "assessment-skipped": false,
+          "assessment-pending": false,
+          "assessment-error": false,
+          "assessment-leave-confirmation": false,
+          "assessment-retest-confirmation": false,
+          "assessment-submit": false,
+          "assessment-reload-answer": false,
+          "assessment-start": false,
+          "assessment-title": false,
+          "assessment-option-A": false
+        },
+        "errorText": ""
+      }
+    },
+    {
+      "name": "owner-late-submit-login-a-write-still-one",
+      "result": "PASS",
+      "detail": {
+        "counts": {
+          "login": 1,
+          "refresh": 1,
+          "logout": 0,
+          "principal": 6,
+          "start": 1,
+          "respond": 1,
+          "retest": 0,
+          "ensure": 0,
+          "GET": 11,
+          "placementGet": 0
+        }
+      }
+    },
+    {
+      "name": "owner-late-submit-b-guide-has-no-a-question-report",
+      "result": "PASS",
+      "detail": {
+        "route": "#/pages/assessment/assessment",
+        "present": {
+          "assessment-page": true,
+          "assessment-guide": true,
+          "assessment-question": false,
+          "assessment-report": false,
+          "assessment-skipped": false,
+          "assessment-pending": false,
+          "assessment-error": false,
+          "assessment-leave-confirmation": false,
+          "assessment-retest-confirmation": false,
+          "assessment-submit": false,
+          "assessment-reload-answer": false,
+          "assessment-start": true,
+          "assessment-title": true,
+          "assessment-option-A": false
+        },
+        "errorText": "",
+        "bodyText": "返回\n水平测评\n共 10 道题，了解你现在的英语起点。\n按实际水平作答\n选择你认为正确的答案。\n完成后查看结果\n测评结果以已接收的答案为依据。\n开始测评\n返回学习首页\n快速开始暂不可用，请先完成测评。"
+      }
+    },
+    {
+      "name": "owner-late-submit-b-guide-has-no-a-stem",
+      "result": "PASS",
+      "detail": {
+        "aStem": "Choose the phrase that completes the sentence: I ___ every evening.",
+        "bodyText": "返回\n水平测评\n共 10 道题，了解你现在的英语起点。\n按实际水平作答\n选择你认为正确的答案。\n完成后查看结果\n测评结果以已接收的答案为依据。\n开始测评\n返回学习首页\n快速开始暂不可用，请先完成测评。"
+      }
+    },
+    {
+      "name": "owner-late-submit-b-zero-start-one-a-write",
+      "result": "PASS",
+      "detail": {
+        "counts": {
+          "login": 2,
+          "refresh": 1,
+          "logout": 0,
+          "principal": 12,
+          "start": 1,
+          "respond": 1,
+          "retest": 0,
+          "ensure": 0,
+          "GET": 23,
+          "placementGet": 0
+        },
+        "note": "start=1 is A; B has issued no start"
+      }
+    },
+    {
+      "name": "owner-late-submit-late-receipt-observed",
+      "result": "PASS",
+      "detail": {
+        "receipt": {
+          "id": 1,
+          "method": "POST",
+          "path": "/api/v1/assessment/placement/sessions/asess_ui_owner_1_1/responses",
+          "status": 200,
+          "at": 1792544853952,
+          "atIso": "2026-10-21T01:07:33.952Z",
+          "requestFailed": false
+        },
+        "fulfill": {
+          "id": 1,
+          "method": "POST",
+          "path": "/api/v1/assessment/placement/sessions/asess_ui_owner_1_1/responses",
+          "status": 200,
+          "at": 1792544853950,
+          "atIso": "2026-10-21T01:07:33.950Z",
+          "ok": true
+        },
+        "receiptSeen": true,
+        "released": true,
+        "hold": {
+          "kind": "response",
+          "startedAt": 1792544850512,
+          "releasedAt": 1792544853950,
+          "heldMs": 3438,
+          "pending": false
+        },
+        "requestFailed": false,
+        "oldFulfillErrors": []
+      }
+    },
+    {
+      "name": "owner-late-submit-b-dom-route-focus-not-overwritten",
+      "result": "PASS",
+      "detail": {
+        "route": "#/pages/assessment/assessment",
+        "present": {
+          "assessment-page": true,
+          "assessment-guide": true,
+          "assessment-question": false,
+          "assessment-report": false,
+          "assessment-skipped": false,
+          "assessment-pending": false,
+          "assessment-error": false,
+          "assessment-leave-confirmation": false,
+          "assessment-retest-confirmation": false,
+          "assessment-submit": false,
+          "assessment-reload-answer": false,
+          "assessment-start": true,
+          "assessment-title": true,
+          "assessment-option-A": false
+        },
+        "errorText": "",
+        "bodyText": "返回\n水平测评\n共 10 道题，了解你现在的英语起点。\n按实际水平作答\n选择你认为正确的答案。\n完成后查看结果\n测评结果以已接收的答案为依据。\n开始测评\n返回学习首页\n快速开始暂不可用，请先完成测评。",
+        "active": {
+          "tag": "body",
+          "id": "",
+          "role": null,
+          "focusVisible": false,
+          "disabled": false
+        }
+      }
+    },
+    {
+      "name": "owner-late-submit-no-new-respond-retest-ensure-after-release",
+      "result": "PASS",
+      "detail": {
+        "beforeRelease": {
+          "login": 2,
+          "refresh": 1,
+          "logout": 0,
+          "principal": 12,
+          "start": 1,
+          "respond": 1,
+          "retest": 0,
+          "ensure": 0,
+          "GET": 23,
+          "placementGet": 0
+        },
+        "afterRelease": {
+          "login": 2,
+          "refresh": 1,
+          "logout": 0,
+          "principal": 12,
+          "start": 1,
+          "respond": 1,
+          "retest": 0,
+          "ensure": 0,
+          "GET": 23,
+          "placementGet": 0
+        }
+      }
+    },
+    {
+      "name": "owner-late-submit-b-focus-not-on-old-question-control",
+      "result": "PASS",
+      "detail": {
+        "active": {
+          "tag": "body",
+          "id": "",
+          "role": null,
+          "focusVisible": false,
+          "disabled": false
+        }
+      }
+    },
+    {
+      "name": "owner-late-submit-no-illegal-navigation-after-release",
+      "result": "PASS",
+      "detail": {
+        "route": "#/pages/assessment/assessment",
+        "stable": "#/pages/assessment/assessment"
+      }
+    },
+    {
+      "name": "owner-late-submit-no-pageerror",
+      "result": "PASS",
+      "detail": {
+        "pageErrors": []
+      }
+    },
+    {
+      "name": "owner-late-submit-no-unexcluded-console-error",
+      "result": "PASS",
+      "detail": {
+        "consoleErrors": [],
+        "consoleRaw": 3,
+        "excluded": [
+          {
+            "message": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+            "path": "/api/v1/iam/principal/me",
+            "reason": "matched fixture injection principalStatus GET /api/v1/iam/principal/me -> 401"
+          },
+          {
+            "message": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+            "path": "/api/v1/iam/principal/me",
+            "reason": "matched fixture injection principalStatus GET /api/v1/iam/principal/me -> 401"
+          },
+          {
+            "message": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+            "path": "/api/v1/auth/token/refresh",
+            "reason": "matched fixture injection refreshStatus POST /api/v1/auth/token/refresh -> 401"
+          }
+        ],
+        "note": "only a fixture-injected status on the exact injected path may be excluded"
+      }
+    },
+    {
+      "name": "owner-late-submit-no-unknown-501",
+      "result": "PASS",
+      "detail": {
+        "unexpected": []
+      }
+    },
+    {
+      "name": "owner-late-submit-no-unexpected-dialog",
+      "result": "PASS",
+      "detail": {
+        "dialogues": [],
+        "policy": "dialogs are dismissed, never accepted; alert/confirm/prompt are unexpected here"
+      }
+    },
+    {
+      "name": "owner-late-submit-iam-revalidation-observed",
+      "result": "PASS",
+      "detail": {
+        "principalBefore": 4,
+        "principalAfter": 12,
+        "refreshBefore": 0,
+        "refreshAfter": 1
+      }
+    },
+    {
+      "name": "owner-late-submit-b-login-transport-count",
+      "result": "PASS",
+      "detail": {
+        "counts": {
+          "login": 2,
+          "refresh": 1,
+          "logout": 0,
+          "principal": 12,
+          "start": 1,
+          "respond": 1,
+          "retest": 0,
+          "ensure": 0,
+          "GET": 23,
+          "placementGet": 0
+        },
+        "note": "A initial login + B real login"
+      }
+    },
+    {
+      "name": "owner-late-submit-warnings-recorded-not-waived",
+      "result": "PASS",
+      "detail": {
+        "warnings": []
+      }
+    }
+  ],
+  "notRun": [],
+  "limitations": [
+    {
+      "name": "owner-late-submit-backend-owner-authorization",
+      "reason": "This case checks B UI/DOM/route/focus and write counts only. It does not prove backend owner authorization, real IAM, real DB or native behavior."
+    }
+  ],
+  "setupFailures": [],
+  "screenshots": [
+    "01-a-guide.png",
+    "02-a-question.png",
+    "03-a-selected-a.png",
+    "04-a-submit-held-busy.png",
+    "05-a-iam-401-armed.png",
+    "06-after-real-back.png",
+    "07-a-real-login.png",
+    "08-b-login-landing.png",
+    "09-b-guide-before-release.png",
+    "10-b-after-old-a-response.png"
+  ],
+  "screenshotFailures": [],
+  "snapshots": [
+    {
+      "label": "01-a-guide",
+      "at": "2026-10-21T01:07:30.211Z",
+      "url": "http://127.0.0.1:18183/#/pages/assessment/assessment",
+      "route": "#/pages/assessment/assessment",
+      "origin": "http://127.0.0.1:18183",
+      "title": "水平测评",
+      "root": true,
+      "overlay": false,
+      "bodyLen": 100,
+      "bodyText": "返回\n水平测评\n共 10 道题，了解你现在的英语起点。\n按实际水平作答\n选择你认为正确的答案。\n完成后查看结果\n测评结果以已接收的答案为依据。\n开始测评\n返回学习首页\n快速开始暂不可用，请先完成测评。",
+      "present": {
+        "assessment-page": true,
+        "assessment-guide": true,
+        "assessment-question": false,
+        "assessment-report": false,
+        "assessment-skipped": false,
+        "assessment-pending": false,
+        "assessment-error": false,
+        "assessment-leave-confirmation": false,
+        "assessment-retest-confirmation": false,
+        "assessment-submit": false,
+        "assessment-reload-answer": false,
+        "assessment-start": true,
+        "assessment-title": true,
+        "assessment-option-A": false
+      },
+      "busy": "false",
+      "options": [],
+      "submit": null,
+      "start": {
+        "text": "开始测评",
+        "disabled": false,
+        "ariaDisabled": "false"
+      },
+      "titleText": "水平测评",
+      "errorText": "",
+      "guideText": "共 10 道题，了解你现在的英语起点。\n按实际水平作答\n选择你认为正确的答案。\n完成后查看结果\n测评结果以已接收的答案为依据。\n开始测评\n返回学习首页\n快速开始暂不可用，请先完成测评。",
+      "reportText": "",
+      "questionText": "",
+      "valuenow": null,
+      "valuemax": null,
+      "valuetext": null,
+      "stem": null,
+      "active": {
+        "tag": "body",
+        "id": "",
+        "role": null,
+        "focusVisible": false,
+        "disabled": false
+      },
+      "scrollY": 0,
+      "counts": {
+        "login": 1,
+        "refresh": 0,
+        "logout": 0,
+        "principal": 4,
+        "start": 0,
+        "respond": 0,
+        "retest": 0,
+        "ensure": 0,
+        "GET": 9,
+        "placementGet": 0
+      },
+      "pending": []
+    },
+    {
+      "label": "02-a-question",
+      "at": "2026-10-21T01:07:30.328Z",
+      "url": "http://127.0.0.1:18183/#/pages/assessment/assessment",
+      "route": "#/pages/assessment/assessment",
+      "origin": "http://127.0.0.1:18183",
+      "title": "水平测评",
+      "root": true,
+      "overlay": false,
+      "bodyLen": 179,
+      "bodyText": "返回\n水平测评\n第 1 题，共 10 题\n已完成 0 题\nChoose the phrase that completes the sentence: I ___ every evening.\nA\nread a book\nB\nreads a book\nC\nreading a book\nD\nhas read a book\n提交答案\n未提交的选择仅保留在此页。",
+      "present": {
+        "assessment-page": true,
+        "assessment-guide": false,
+        "assessment-question": true,
+        "assessment-report": false,
+        "assessment-skipped": false,
+        "assessment-pending": false,
+        "assessment-error": false,
+        "assessment-leave-confirmation": false,
+        "assessment-retest-confirmation": false,
+        "assessment-submit": true,
+        "assessment-reload-answer": false,
+        "assessment-start": false,
+        "assessment-title": true,
+        "assessment-option-A": true
+      },
+      "busy": "false",
+      "options": [
+        {
+          "id": "assessment-option-A",
+          "pressed": "false",
+          "disabled": false,
+          "text": "A\nread a book"
+        },
+        {
+          "id": "assessment-option-B",
+          "pressed": "false",
+          "disabled": false,
+          "text": "B\nreads a book"
+        },
+        {
+          "id": "assessment-option-C",
+          "pressed": "false",
+          "disabled": false,
+          "text": "C\nreading a book"
+        },
+        {
+          "id": "assessment-option-D",
+          "pressed": "false",
+          "disabled": false,
+          "text": "D\nhas read a book"
+        }
+      ],
+      "submit": {
+        "text": "提交答案",
+        "disabled": true,
+        "ariaDisabled": "true"
+      },
+      "start": null,
+      "titleText": "水平测评",
+      "errorText": "",
+      "guideText": "",
+      "reportText": "",
+      "questionText": "第 1 题，共 10 题\n已完成 0 题\nChoose the phrase that completes the sentence: I ___ every evening.\nA\nread a book\nB\nreads a book\nC\nreading a book\nD\nhas read a book\n提交答案\n未提交的选择仅保留在此页。",
+      "valuenow": "0",
+      "valuemax": "10",
+      "valuetext": "已完成 0 题，共 10 题",
+      "stem": "Choose the phrase that completes the sentence: I ___ every evening.",
+      "active": {
+        "tag": "body",
+        "id": "",
+        "role": null,
+        "focusVisible": false,
+        "disabled": false
+      },
+      "scrollY": 0,
+      "counts": {
+        "login": 1,
+        "refresh": 0,
+        "logout": 0,
+        "principal": 4,
+        "start": 1,
+        "respond": 0,
+        "retest": 0,
+        "ensure": 0,
+        "GET": 9,
+        "placementGet": 0
+      },
+      "pending": []
+    },
+    {
+      "label": "03-a-selected-a",
+      "at": "2026-10-21T01:07:30.409Z",
+      "url": "http://127.0.0.1:18183/#/pages/assessment/assessment",
+      "route": "#/pages/assessment/assessment",
+      "origin": "http://127.0.0.1:18183",
+      "title": "水平测评",
+      "root": true,
+      "overlay": false,
+      "bodyLen": 182,
+      "bodyText": "返回\n水平测评\n第 1 题，共 10 题\n已完成 0 题\nChoose the phrase that completes the sentence: I ___ every evening.\nA\nread a book\n已选\nB\nreads a book\nC\nreading a book\nD\nhas read a book\n提交答案\n未提交的选择仅保留在此页。",
+      "present": {
+        "assessment-page": true,
+        "assessment-guide": false,
+        "assessment-question": true,
+        "assessment-report": false,
+        "assessment-skipped": false,
+        "assessment-pending": false,
+        "assessment-error": false,
+        "assessment-leave-confirmation": false,
+        "assessment-retest-confirmation": false,
+        "assessment-submit": true,
+        "assessment-reload-answer": false,
+        "assessment-start": false,
+        "assessment-title": true,
+        "assessment-option-A": true
+      },
+      "busy": "false",
+      "options": [
+        {
+          "id": "assessment-option-A",
+          "pressed": "true",
+          "disabled": false,
+          "text": "A\nread a book\n已选"
+        },
+        {
+          "id": "assessment-option-B",
+          "pressed": "false",
+          "disabled": false,
+          "text": "B\nreads a book"
+        },
+        {
+          "id": "assessment-option-C",
+          "pressed": "false",
+          "disabled": false,
+          "text": "C\nreading a book"
+        },
+        {
+          "id": "assessment-option-D",
+          "pressed": "false",
+          "disabled": false,
+          "text": "D\nhas read a book"
+        }
+      ],
+      "submit": {
+        "text": "提交答案",
+        "disabled": false,
+        "ariaDisabled": "false"
+      },
+      "start": null,
+      "titleText": "水平测评",
+      "errorText": "",
+      "guideText": "",
+      "reportText": "",
+      "questionText": "第 1 题，共 10 题\n已完成 0 题\nChoose the phrase that completes the sentence: I ___ every evening.\nA\nread a book\n已选\nB\nreads a book\nC\nreading a book\nD\nhas read a book\n提交答案\n未提交的选择仅保留在此页。",
+      "valuenow": "0",
+      "valuemax": "10",
+      "valuetext": "已完成 0 题，共 10 题",
+      "stem": "Choose the phrase that completes the sentence: I ___ every evening.",
+      "active": {
+        "tag": "uni-button",
+        "id": "assessment-option-A",
+        "role": "button",
+        "focusVisible": false,
+        "disabled": false
+      },
+      "scrollY": 0,
+      "counts": {
+        "login": 1,
+        "refresh": 0,
+        "logout": 0,
+        "principal": 4,
+        "start": 1,
+        "respond": 0,
+        "retest": 0,
+        "ensure": 0,
+        "GET": 9,
+        "placementGet": 0
+      },
+      "pending": []
+    },
+    {
+      "label": "04-a-submit-held-busy",
+      "at": "2026-10-21T01:07:30.579Z",
+      "url": "http://127.0.0.1:18183/#/pages/assessment/assessment",
+      "route": "#/pages/assessment/assessment",
+      "origin": "http://127.0.0.1:18183",
+      "title": "水平测评",
+      "root": true,
+      "overlay": false,
+      "bodyLen": 185,
+      "bodyText": "返回\n水平测评\n第 1 题，共 10 题\n已完成 0 题\nChoose the phrase that completes the sentence: I ___ every evening.\nA\nread a book\n已选\nB\nreads a book\nC\nreading a book\nD\nhas read a book\n正在记录答案…\n未提交的选择仅保留在此页。",
+      "present": {
+        "assessment-page": true,
+        "assessment-guide": false,
+        "assessment-question": true,
+        "assessment-report": false,
+        "assessment-skipped": false,
+        "assessment-pending": false,
+        "assessment-error": false,
+        "assessment-leave-confirmation": false,
+        "assessment-retest-confirmation": false,
+        "assessment-submit": true,
+        "assessment-reload-answer": false,
+        "assessment-start": false,
+        "assessment-title": true,
+        "assessment-option-A": true
+      },
+      "busy": "true",
+      "options": [
+        {
+          "id": "assessment-option-A",
+          "pressed": "true",
+          "disabled": true,
+          "text": "A\nread a book\n已选"
+        },
+        {
+          "id": "assessment-option-B",
+          "pressed": "false",
+          "disabled": true,
+          "text": "B\nreads a book"
+        },
+        {
+          "id": "assessment-option-C",
+          "pressed": "false",
+          "disabled": true,
+          "text": "C\nreading a book"
+        },
+        {
+          "id": "assessment-option-D",
+          "pressed": "false",
+          "disabled": true,
+          "text": "D\nhas read a book"
+        }
+      ],
+      "submit": {
+        "text": "正在记录答案…",
+        "disabled": true,
+        "ariaDisabled": "true"
+      },
+      "start": null,
+      "titleText": "水平测评",
+      "errorText": "",
+      "guideText": "",
+      "reportText": "",
+      "questionText": "第 1 题，共 10 题\n已完成 0 题\nChoose the phrase that completes the sentence: I ___ every evening.\nA\nread a book\n已选\nB\nreads a book\nC\nreading a book\nD\nhas read a book\n正在记录答案…\n未提交的选择仅保留在此页。",
+      "valuenow": "0",
+      "valuemax": "10",
+      "valuetext": "已完成 0 题，共 10 题",
+      "stem": "Choose the phrase that completes the sentence: I ___ every evening.",
+      "active": {
+        "tag": "uni-button",
+        "id": "assessment-submit",
+        "role": "button",
+        "focusVisible": false,
+        "disabled": true
+      },
+      "scrollY": 0,
+      "counts": {
+        "login": 1,
+        "refresh": 0,
+        "logout": 0,
+        "principal": 4,
+        "start": 1,
+        "respond": 1,
+        "retest": 0,
+        "ensure": 0,
+        "GET": 9,
+        "placementGet": 0
+      },
+      "pending": [
+        "response"
+      ]
+    },
+    {
+      "label": "05-a-iam-401-armed",
+      "at": "2026-10-21T01:07:30.608Z",
+      "url": "http://127.0.0.1:18183/#/pages/assessment/assessment",
+      "route": "#/pages/assessment/assessment",
+      "origin": "http://127.0.0.1:18183",
+      "title": "水平测评",
+      "root": true,
+      "overlay": false,
+      "bodyLen": 185,
+      "bodyText": "返回\n水平测评\n第 1 题，共 10 题\n已完成 0 题\nChoose the phrase that completes the sentence: I ___ every evening.\nA\nread a book\n已选\nB\nreads a book\nC\nreading a book\nD\nhas read a book\n正在记录答案…\n未提交的选择仅保留在此页。",
+      "present": {
+        "assessment-page": true,
+        "assessment-guide": false,
+        "assessment-question": true,
+        "assessment-report": false,
+        "assessment-skipped": false,
+        "assessment-pending": false,
+        "assessment-error": false,
+        "assessment-leave-confirmation": false,
+        "assessment-retest-confirmation": false,
+        "assessment-submit": true,
+        "assessment-reload-answer": false,
+        "assessment-start": false,
+        "assessment-title": true,
+        "assessment-option-A": true
+      },
+      "busy": "true",
+      "options": [
+        {
+          "id": "assessment-option-A",
+          "pressed": "true",
+          "disabled": true,
+          "text": "A\nread a book\n已选"
+        },
+        {
+          "id": "assessment-option-B",
+          "pressed": "false",
+          "disabled": true,
+          "text": "B\nreads a book"
+        },
+        {
+          "id": "assessment-option-C",
+          "pressed": "false",
+          "disabled": true,
+          "text": "C\nreading a book"
+        },
+        {
+          "id": "assessment-option-D",
+          "pressed": "false",
+          "disabled": true,
+          "text": "D\nhas read a book"
+        }
+      ],
+      "submit": {
+        "text": "正在记录答案…",
+        "disabled": true,
+        "ariaDisabled": "true"
+      },
+      "start": null,
+      "titleText": "水平测评",
+      "errorText": "",
+      "guideText": "",
+      "reportText": "",
+      "questionText": "第 1 题，共 10 题\n已完成 0 题\nChoose the phrase that completes the sentence: I ___ every evening.\nA\nread a book\n已选\nB\nreads a book\nC\nreading a book\nD\nhas read a book\n正在记录答案…\n未提交的选择仅保留在此页。",
+      "valuenow": "0",
+      "valuemax": "10",
+      "valuetext": "已完成 0 题，共 10 题",
+      "stem": "Choose the phrase that completes the sentence: I ___ every evening.",
+      "active": {
+        "tag": "uni-button",
+        "id": "assessment-submit",
+        "role": "button",
+        "focusVisible": false,
+        "disabled": true
+      },
+      "scrollY": 0,
+      "counts": {
+        "login": 1,
+        "refresh": 0,
+        "logout": 0,
+        "principal": 4,
+        "start": 1,
+        "respond": 1,
+        "retest": 0,
+        "ensure": 0,
+        "GET": 9,
+        "placementGet": 0
+      },
+      "pending": [
+        "response"
+      ]
+    },
+    {
+      "label": "06-after-real-back",
+      "at": "2026-10-21T01:07:31.704Z",
+      "url": "http://127.0.0.1:18183/#/pages/login/login?returnTo=%2Fpages%2Fonboarding%2Fonboarding",
+      "route": "#/pages/login/login",
+      "origin": "http://127.0.0.1:18183",
+      "title": "登录",
+      "root": false,
+      "overlay": false,
+      "bodyLen": 0,
+      "bodyText": "",
+      "present": {
+        "assessment-page": false,
+        "assessment-guide": false,
+        "assessment-question": false,
+        "assessment-report": false,
+        "assessment-skipped": false,
+        "assessment-pending": false,
+        "assessment-error": false,
+        "assessment-leave-confirmation": false,
+        "assessment-retest-confirmation": false,
+        "assessment-submit": false,
+        "assessment-reload-answer": false,
+        "assessment-start": false,
+        "assessment-title": false,
+        "assessment-option-A": false
+      },
+      "busy": null,
+      "options": [],
+      "submit": null,
+      "start": null,
+      "titleText": "",
+      "errorText": "",
+      "guideText": "",
+      "reportText": "",
+      "questionText": "",
+      "valuenow": null,
+      "valuemax": null,
+      "valuetext": null,
+      "stem": null,
+      "active": {
+        "tag": "body",
+        "id": "",
+        "role": null,
+        "focusVisible": false,
+        "disabled": false
+      },
+      "scrollY": 0,
+      "counts": {
+        "login": 1,
+        "refresh": 1,
+        "logout": 0,
+        "principal": 6,
+        "start": 1,
+        "respond": 1,
+        "retest": 0,
+        "ensure": 0,
+        "GET": 11,
+        "placementGet": 0
+      },
+      "pending": [
+        "response"
+      ]
+    },
+    {
+      "label": "07-a-real-login",
+      "at": "2026-10-21T01:07:31.734Z",
+      "url": "http://127.0.0.1:18183/#/pages/login/login?returnTo=%2Fpages%2Fonboarding%2Fonboarding",
+      "route": "#/pages/login/login",
+      "origin": "http://127.0.0.1:18183",
+      "title": "登录",
+      "root": false,
+      "overlay": false,
+      "bodyLen": 0,
+      "bodyText": "",
+      "present": {
+        "assessment-page": false,
+        "assessment-guide": false,
+        "assessment-question": false,
+        "assessment-report": false,
+        "assessment-skipped": false,
+        "assessment-pending": false,
+        "assessment-error": false,
+        "assessment-leave-confirmation": false,
+        "assessment-retest-confirmation": false,
+        "assessment-submit": false,
+        "assessment-reload-answer": false,
+        "assessment-start": false,
+        "assessment-title": false,
+        "assessment-option-A": false
+      },
+      "busy": null,
+      "options": [],
+      "submit": null,
+      "start": null,
+      "titleText": "",
+      "errorText": "",
+      "guideText": "",
+      "reportText": "",
+      "questionText": "",
+      "valuenow": null,
+      "valuemax": null,
+      "valuetext": null,
+      "stem": null,
+      "active": {
+        "tag": "body",
+        "id": "",
+        "role": null,
+        "focusVisible": false,
+        "disabled": false
+      },
+      "scrollY": 0,
+      "counts": {
+        "login": 1,
+        "refresh": 1,
+        "logout": 0,
+        "principal": 6,
+        "start": 1,
+        "respond": 1,
+        "retest": 0,
+        "ensure": 0,
+        "GET": 11,
+        "placementGet": 0
+      },
+      "pending": [
+        "response"
+      ]
+    },
+    {
+      "label": "08-b-login-landing",
+      "at": "2026-10-21T01:07:31.876Z",
+      "url": "http://127.0.0.1:18183/#/pages/assessment/assessment",
+      "route": "#/pages/assessment/assessment",
+      "origin": "http://127.0.0.1:18183",
+      "title": "水平测评",
+      "root": true,
+      "overlay": false,
+      "bodyLen": 22,
+      "bodyText": "返回\n水平测评\n正在准备测评…\n返回学习首页",
+      "present": {
+        "assessment-page": true,
+        "assessment-guide": false,
+        "assessment-question": false,
+        "assessment-report": false,
+        "assessment-skipped": false,
+        "assessment-pending": true,
+        "assessment-error": false,
+        "assessment-leave-confirmation": false,
+        "assessment-retest-confirmation": false,
+        "assessment-submit": false,
+        "assessment-reload-answer": false,
+        "assessment-start": false,
+        "assessment-title": true,
+        "assessment-option-A": false
+      },
+      "busy": "true",
+      "options": [],
+      "submit": null,
+      "start": null,
+      "titleText": "水平测评",
+      "errorText": "",
+      "guideText": "",
+      "reportText": "",
+      "questionText": "",
+      "valuenow": null,
+      "valuemax": null,
+      "valuetext": null,
+      "stem": null,
+      "active": {
+        "tag": "body",
+        "id": "",
+        "role": null,
+        "focusVisible": false,
+        "disabled": false
+      },
+      "scrollY": 0,
+      "counts": {
+        "login": 2,
+        "refresh": 1,
+        "logout": 0,
+        "principal": 12,
+        "start": 1,
+        "respond": 1,
+        "retest": 0,
+        "ensure": 0,
+        "GET": 22,
+        "placementGet": 0
+      },
+      "pending": [
+        "response"
+      ]
+    },
+    {
+      "label": "09-b-guide-before-release",
+      "at": "2026-10-21T01:07:33.916Z",
+      "url": "http://127.0.0.1:18183/#/pages/assessment/assessment",
+      "route": "#/pages/assessment/assessment",
+      "origin": "http://127.0.0.1:18183",
+      "title": "水平测评",
+      "root": true,
+      "overlay": false,
+      "bodyLen": 100,
+      "bodyText": "返回\n水平测评\n共 10 道题，了解你现在的英语起点。\n按实际水平作答\n选择你认为正确的答案。\n完成后查看结果\n测评结果以已接收的答案为依据。\n开始测评\n返回学习首页\n快速开始暂不可用，请先完成测评。",
+      "present": {
+        "assessment-page": true,
+        "assessment-guide": true,
+        "assessment-question": false,
+        "assessment-report": false,
+        "assessment-skipped": false,
+        "assessment-pending": false,
+        "assessment-error": false,
+        "assessment-leave-confirmation": false,
+        "assessment-retest-confirmation": false,
+        "assessment-submit": false,
+        "assessment-reload-answer": false,
+        "assessment-start": true,
+        "assessment-title": true,
+        "assessment-option-A": false
+      },
+      "busy": "false",
+      "options": [],
+      "submit": null,
+      "start": {
+        "text": "开始测评",
+        "disabled": false,
+        "ariaDisabled": "false"
+      },
+      "titleText": "水平测评",
+      "errorText": "",
+      "guideText": "共 10 道题，了解你现在的英语起点。\n按实际水平作答\n选择你认为正确的答案。\n完成后查看结果\n测评结果以已接收的答案为依据。\n开始测评\n返回学习首页\n快速开始暂不可用，请先完成测评。",
+      "reportText": "",
+      "questionText": "",
+      "valuenow": null,
+      "valuemax": null,
+      "valuetext": null,
+      "stem": null,
+      "active": {
+        "tag": "body",
+        "id": "",
+        "role": null,
+        "focusVisible": false,
+        "disabled": false
+      },
+      "scrollY": 0,
+      "counts": {
+        "login": 2,
+        "refresh": 1,
+        "logout": 0,
+        "principal": 12,
+        "start": 1,
+        "respond": 1,
+        "retest": 0,
+        "ensure": 0,
+        "GET": 23,
+        "placementGet": 0
+      },
+      "pending": [
+        "response"
+      ]
+    },
+    {
+      "label": "10-b-after-old-a-response",
+      "at": "2026-10-21T01:07:34.318Z",
+      "url": "http://127.0.0.1:18183/#/pages/assessment/assessment",
+      "route": "#/pages/assessment/assessment",
+      "origin": "http://127.0.0.1:18183",
+      "title": "水平测评",
+      "root": true,
+      "overlay": false,
+      "bodyLen": 100,
+      "bodyText": "返回\n水平测评\n共 10 道题，了解你现在的英语起点。\n按实际水平作答\n选择你认为正确的答案。\n完成后查看结果\n测评结果以已接收的答案为依据。\n开始测评\n返回学习首页\n快速开始暂不可用，请先完成测评。",
+      "present": {
+        "assessment-page": true,
+        "assessment-guide": true,
+        "assessment-question": false,
+        "assessment-report": false,
+        "assessment-skipped": false,
+        "assessment-pending": false,
+        "assessment-error": false,
+        "assessment-leave-confirmation": false,
+        "assessment-retest-confirmation": false,
+        "assessment-submit": false,
+        "assessment-reload-answer": false,
+        "assessment-start": true,
+        "assessment-title": true,
+        "assessment-option-A": false
+      },
+      "busy": "false",
+      "options": [],
+      "submit": null,
+      "start": {
+        "text": "开始测评",
+        "disabled": false,
+        "ariaDisabled": "false"
+      },
+      "titleText": "水平测评",
+      "errorText": "",
+      "guideText": "共 10 道题，了解你现在的英语起点。\n按实际水平作答\n选择你认为正确的答案。\n完成后查看结果\n测评结果以已接收的答案为依据。\n开始测评\n返回学习首页\n快速开始暂不可用，请先完成测评。",
+      "reportText": "",
+      "questionText": "",
+      "valuenow": null,
+      "valuemax": null,
+      "valuetext": null,
+      "stem": null,
+      "active": {
+        "tag": "body",
+        "id": "",
+        "role": null,
+        "focusVisible": false,
+        "disabled": false
+      },
+      "scrollY": 0,
+      "counts": {
+        "login": 2,
+        "refresh": 1,
+        "logout": 0,
+        "principal": 12,
+        "start": 1,
+        "respond": 1,
+        "retest": 0,
+        "ensure": 0,
+        "GET": 23,
+        "placementGet": 0
+      },
+      "pending": []
+    }
+  ],
+  "routes": [],
+  "consoleWarnings": [],
+  "warningsStatus": "NONE",
+  "dialogues": [
+    {
+      "case": "owner-late-submit",
+      "events": []
+    }
+  ],
+  "transport": [
+    {
+      "case": "owner-late-submit",
+      "fixtureId": 1,
+      "counts": {
+        "login": 2,
+        "refresh": 1,
+        "logout": 0,
+        "principal": 12,
+        "start": 1,
+        "respond": 1,
+        "retest": 0,
+        "ensure": 0,
+        "GET": 23,
+        "placementGet": 0
+      },
+      "pending": [],
+      "injectedFailures": [
+        {
+          "id": 1,
+          "method": "GET",
+          "path": "/api/v1/iam/principal/me",
+          "status": 401,
+          "injection": "principalStatus"
+        },
+        {
+          "id": 1,
+          "method": "GET",
+          "path": "/api/v1/iam/principal/me",
+          "status": 401,
+          "injection": "principalStatus"
+        },
+        {
+          "id": 1,
+          "method": "POST",
+          "path": "/api/v1/auth/token/refresh",
+          "status": 401,
+          "injection": "refreshStatus"
+        }
+      ],
+      "pageErrors": [],
+      "consoleErrors": [],
+      "consoleWarnings": [],
+      "excluded": [
+        {
+          "message": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+          "path": "/api/v1/iam/principal/me",
+          "reason": "matched fixture injection principalStatus GET /api/v1/iam/principal/me -> 401"
+        },
+        {
+          "message": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+          "path": "/api/v1/iam/principal/me",
+          "reason": "matched fixture injection principalStatus GET /api/v1/iam/principal/me -> 401"
+        },
+        {
+          "message": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+          "path": "/api/v1/auth/token/refresh",
+          "reason": "matched fixture injection refreshStatus POST /api/v1/auth/token/refresh -> 401"
+        }
+      ],
+      "unknown": [],
+      "dialogues": [],
+      "fulfillErrors": [],
+      "fulfillResults": [
+        {
+          "id": 1,
+          "method": "POST",
+          "path": "/api/v1/auth/login",
+          "status": 200,
+          "at": 1792544850132,
+          "atIso": "2026-10-21T01:07:30.132Z",
+          "ok": true
+        },
+        {
+          "id": 1,
+          "method": "GET",
+          "path": "/api/v1/iam/principal/me",
+          "status": 200,
+          "at": 1792544850141,
+          "atIso": "2026-10-21T01:07:30.141Z",
+          "ok": true
+        },
+        {
+          "id": 1,
+          "method": "GET",
+          "path": "/api/v1/iam/principal/me",
+          "status": 200,
+          "at": 1792544850144,
+          "atIso": "2026-10-21T01:07:30.144Z",
+          "ok": true
+        },
+        {
+          "id": 1,
+          "method": "GET",
+          "path": "/api/v1/learner/targets",
+          "status": 200,
+          "at": 1792544850147,
+          "atIso": "2026-10-21T01:07:30.147Z",
+          "ok": true
+        },
+        {
+          "id": 1,
+          "method": "GET",
+          "path": "/api/v1/learner/profile",
+          "status": 200,
+          "at": 1792544850152,
+          "atIso": "2026-10-21T01:07:30.152Z",
+          "ok": true
+        },
+        {
+          "id": 1,
+          "method": "GET",
+          "path": "/api/v1/learner/targets",
+          "status": 200,
+          "at": 1792544850152,
+          "atIso": "2026-10-21T01:07:30.152Z",
+          "ok": true
+        },
+        {
+          "id": 1,
+          "method": "GET",
+          "path": "/api/v1/learner/preferences",
+          "status": 200,
+          "at": 1792544850152,
+          "atIso": "2026-10-21T01:07:30.152Z",
+          "ok": true
+        },
+        {
+          "id": 1,
+          "method": "GET",
+          "path": "/api/v1/iam/principal/me",
+          "status": 200,
+          "at": 1792544850181,
+          "atIso": "2026-10-21T01:07:30.181Z",
+          "ok": true
+        },
+        {
+          "id": 1,
+          "method": "GET",
+          "path": "/api/v1/iam/principal/me",
+          "status": 200,
+          "at": 1792544850188,
+          "atIso": "2026-10-21T01:07:30.188Z",
+          "ok": true
+        },
+        {
+          "id": 1,
+          "method": "GET",
+          "path": "/api/v1/learner/targets",
+          "status": 200,
+          "at": 1792544850198,
+          "atIso": "2026-10-21T01:07:30.198Z",
+          "ok": true
+        },
+        {
+          "id": 1,
+          "method": "POST",
+          "path": "/api/v1/assessment/placement/sessions",
+          "status": 200,
+          "at": 1792544850293,
+          "atIso": "2026-10-21T01:07:30.293Z",
+          "ok": true
+        },
+        {
+          "id": 1,
+          "method": "GET",
+          "path": "/api/v1/iam/principal/me",
+          "status": 401,
+          "at": 1792544850643,
+          "atIso": "2026-10-21T01:07:30.643Z",
+          "ok": true
+        },
+        {
+          "id": 1,
+          "method": "GET",
+          "path": "/api/v1/iam/principal/me",
+          "status": 401,
+          "at": 1792544850646,
+          "atIso": "2026-10-21T01:07:30.646Z",
+          "ok": true
+        },
+        {
+          "id": 1,
+          "method": "POST",
+          "path": "/api/v1/auth/token/refresh",
+          "status": 401,
+          "at": 1792544850650,
+          "atIso": "2026-10-21T01:07:30.650Z",
+          "ok": true
+        },
+        {
+          "id": 1,
+          "method": "POST",
+          "path": "/api/v1/auth/login",
+          "status": 200,
+          "at": 1792544851831,
+          "atIso": "2026-10-21T01:07:31.831Z",
+          "ok": true
+        },
+        {
+          "id": 1,
+          "method": "GET",
+          "path": "/api/v1/iam/principal/me",
+          "status": 200,
+          "at": 1792544851841,
+          "atIso": "2026-10-21T01:07:31.841Z",
+          "ok": true
+        },
+        {
+          "id": 1,
+          "method": "GET",
+          "path": "/api/v1/iam/principal/me",
+          "status": 200,
+          "at": 1792544851846,
+          "atIso": "2026-10-21T01:07:31.846Z",
+          "ok": true
+        },
+        {
+          "id": 1,
+          "method": "GET",
+          "path": "/api/v1/iam/principal/me",
+          "status": 200,
+          "at": 1792544851847,
+          "atIso": "2026-10-21T01:07:31.847Z",
+          "ok": true
+        },
+        {
+          "id": 1,
+          "method": "GET",
+          "path": "/api/v1/learner/targets",
+          "status": 200,
+          "at": 1792544851850,
+          "atIso": "2026-10-21T01:07:31.850Z",
+          "ok": true
+        },
+        {
+          "id": 1,
+          "method": "GET",
+          "path": "/api/v1/iam/principal/me",
+          "status": 200,
+          "at": 1792544851851,
+          "atIso": "2026-10-21T01:07:31.851Z",
+          "ok": true
+        },
+        {
+          "id": 1,
+          "method": "GET",
+          "path": "/api/v1/learner/profile",
+          "status": 200,
+          "at": 1792544851855,
+          "atIso": "2026-10-21T01:07:31.855Z",
+          "ok": true
+        },
+        {
+          "id": 1,
+          "method": "GET",
+          "path": "/api/v1/learner/targets",
+          "status": 200,
+          "at": 1792544851855,
+          "atIso": "2026-10-21T01:07:31.855Z",
+          "ok": true
+        },
+        {
+          "id": 1,
+          "method": "GET",
+          "path": "/api/v1/learner/preferences",
+          "status": 200,
+          "at": 1792544851856,
+          "atIso": "2026-10-21T01:07:31.856Z",
+          "ok": true
+        },
+        {
+          "id": 1,
+          "method": "GET",
+          "path": "/api/v1/learner/targets",
+          "status": 200,
+          "at": 1792544851857,
+          "atIso": "2026-10-21T01:07:31.857Z",
+          "ok": true
+        },
+        {
+          "id": 1,
+          "method": "GET",
+          "path": "/api/v1/iam/principal/me",
+          "status": 200,
+          "at": 1792544851868,
+          "atIso": "2026-10-21T01:07:31.868Z",
+          "ok": true
+        },
+        {
+          "id": 1,
+          "method": "GET",
+          "path": "/api/v1/iam/principal/me",
+          "status": 200,
+          "at": 1792544851872,
+          "atIso": "2026-10-21T01:07:31.872Z",
+          "ok": true
+        },
+        {
+          "id": 1,
+          "method": "GET",
+          "path": "/api/v1/learner/targets",
+          "status": 200,
+          "at": 1792544851877,
+          "atIso": "2026-10-21T01:07:31.877Z",
+          "ok": true
+        },
+        {
+          "id": 1,
+          "method": "POST",
+          "path": "/api/v1/assessment/placement/sessions/asess_ui_owner_1_1/responses",
+          "status": 200,
+          "at": 1792544853950,
+          "atIso": "2026-10-21T01:07:33.950Z",
+          "ok": true
+        }
+      ],
+      "httpResponses": [
+        {
+          "id": 1,
+          "method": "POST",
+          "path": "/api/v1/assessment/placement/sessions",
+          "status": 200,
+          "at": 1792544850312,
+          "atIso": "2026-10-21T01:07:30.312Z",
+          "requestFailed": false
+        },
+        {
+          "id": 1,
+          "method": "POST",
+          "path": "/api/v1/assessment/placement/sessions/asess_ui_owner_1_1/responses",
+          "status": 200,
+          "at": 1792544853952,
+          "atIso": "2026-10-21T01:07:33.952Z",
+          "requestFailed": false
+        }
+      ]
+    }
+  ],
+  "closed": true,
+  "failure": null,
+  "result": "PASS_EXECUTED_CHECKS",
+  "completion": "NOT_THE_WHOLE_PAGE",
+  "summary": {
+    "cases": 1,
+    "checks": 22,
+    "passed": 22,
+    "failed": 0,
+    "notRun": 0,
+    "setupFailures": 0,
+    "screenshots": 10,
+    "screenshotFailures": 0,
+    "warnings": 0,
+    "result": "PASS_EXECUTED_CHECKS"
+  },
+  "backTraversal": {
+    "promise": {
+      "state": "resolved",
+      "response": false
+    },
+    "sawRevalidation": true,
+    "stableRoute": "#/pages/login/login",
+    "counts": {
+      "login": 1,
+      "refresh": 1,
+      "logout": 0,
+      "principal": 6,
+      "start": 1,
+      "respond": 1,
+      "retest": 0,
+      "ensure": 0,
+      "GET": 11,
+      "placementGet": 0
+    },
+    "pending": [
+      "response"
+    ]
+  },
+  "latePacket": {
+    "oldResponsePath": "/api/v1/assessment/placement/sessions/asess_ui_owner_1_1/responses",
+    "beforeReceipt": 0,
+    "beforeFulfill": 0,
+    "receiptSeen": true,
+    "receipts": [
+      {
+        "id": 1,
+        "method": "POST",
+        "path": "/api/v1/assessment/placement/sessions/asess_ui_owner_1_1/responses",
+        "status": 200,
+        "at": 1792544853952,
+        "atIso": "2026-10-21T01:07:33.952Z",
+        "requestFailed": false
+      }
+    ],
+    "fulfills": [
+      {
+        "id": 1,
+        "method": "POST",
+        "path": "/api/v1/assessment/placement/sessions/asess_ui_owner_1_1/responses",
+        "status": 200,
+        "at": 1792544853950,
+        "atIso": "2026-10-21T01:07:33.950Z",
+        "ok": true
+      }
+    ],
+    "receipt": {
+      "id": 1,
+      "method": "POST",
+      "path": "/api/v1/assessment/placement/sessions/asess_ui_owner_1_1/responses",
+      "status": 200,
+      "at": 1792544853952,
+      "atIso": "2026-10-21T01:07:33.952Z",
+      "requestFailed": false
+    },
+    "fulfill": {
+      "id": 1,
+      "method": "POST",
+      "path": "/api/v1/assessment/placement/sessions/asess_ui_owner_1_1/responses",
+      "status": 200,
+      "at": 1792544853950,
+      "atIso": "2026-10-21T01:07:33.950Z",
+      "ok": true
+    },
+    "requestFailed": false,
+    "hold": {
+      "kind": "response",
+      "startedAt": 1792544850512,
+      "releasedAt": 1792544853950,
+      "heldMs": 3438,
+      "pending": false
+    },
+    "fulfillErrors": [],
+    "oldFulfillErrors": [],
+    "received": true
+  }
+}

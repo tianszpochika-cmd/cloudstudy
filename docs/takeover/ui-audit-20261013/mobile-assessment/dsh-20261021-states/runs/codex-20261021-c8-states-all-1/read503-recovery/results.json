@@ -1,0 +1,999 @@
+{
+  "scope": "MB006_STATES_PREPARED_NOT_RUN",
+  "caseId": "read503-recovery",
+  "run": "codex-20261021-c8-states-all-1",
+  "executedBy": "Codex C8 final states with target warning evidence",
+  "preparedBy": "DSH bounded STATES test preparation; DSH did not launch a browser",
+  "gate": {
+    "expectedPage": "41e1670146621e532921a8916b2c81ea4954d880b2373c7bcc9945d6576d7e86",
+    "actual": {
+      "sources": {
+        "apps/mobile/src/pages/assessment/assessment.vue": "41e1670146621e532921a8916b2c81ea4954d880b2373c7bcc9945d6576d7e86",
+        "packages/i18n/src/mobile-experience.ts": "6ac6800e179de0ba15ab3607918b2f8427d364e19306eaf8f2a146f016247380",
+        "apps/mobile/src/api/learner-content.ts": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6",
+        "apps/mobile/src/stores/learner-content.ts": "95cc92496db996242d91baed3301d76f985e4e3b9134e1e50c2b9ab8d41e4c61",
+        "apps/mobile/src/stores/session.ts": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+        "apps/mobile/src/auth/navigation.ts": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5"
+      },
+      "dependencies": {
+        "apps/mobile/package.json": "484382c73929055cc4ecd9a83679f8bab72388dd8069f71a056b3bbc595c0078",
+        "pnpm-lock.yaml": "d57a87ca84985549fd53c69b1fe1d59db0b136036f2f7bf640d3b30c0a106624"
+      }
+    }
+  },
+  "startedAt": "2026-10-21T00:43:21.939Z",
+  "checks": [
+    {
+      "name": "read503-actual-session-started",
+      "result": "PASS",
+      "detail": {
+        "sessionId": "asess_ui_risk_2_1",
+        "start": 1
+      }
+    },
+    {
+      "name": "read503-settings-navigation-reached",
+      "result": "PASS",
+      "detail": {
+        "route": "#/pages/settings/settings"
+      }
+    },
+    {
+      "name": "read503-physical-back-returned",
+      "result": "PASS",
+      "detail": {
+        "route": "#/pages/assessment/assessment"
+      }
+    },
+    {
+      "name": "read503-honest-read-failed",
+      "result": "PASS",
+      "detail": {
+        "pendingText": "测评暂时无法读取，请重试。\n重新读取\n返回学习首页",
+        "overlay": false
+      }
+    },
+    {
+      "name": "read503-same-session-no-start2",
+      "result": "PASS",
+      "detail": {
+        "sessionId": "asess_ui_risk_2_1",
+        "start": 1
+      }
+    },
+    {
+      "name": "read503-failure-has-no-question-report",
+      "result": "PASS",
+      "detail": {
+        "question": false,
+        "report": false
+      }
+    },
+    {
+      "name": "read503-repeated-get-still-error",
+      "result": "PASS",
+      "detail": {
+        "getAfterBack": 1,
+        "getAfterFirstRetry": 2,
+        "start": 1
+      }
+    },
+    {
+      "name": "read503-real-reload-recovers-question",
+      "result": "PASS",
+      "detail": {
+        "question": true,
+        "sessionId": "asess_ui_risk_2_1"
+      }
+    },
+    {
+      "name": "read503-recovery-no-autowrite",
+      "result": "PASS",
+      "detail": {
+        "counts": {
+          "login": 1,
+          "refresh": 0,
+          "logout": 0,
+          "principal": 9,
+          "start": 1,
+          "respond": 0,
+          "retest": 0,
+          "ensure": 0,
+          "GET": 24,
+          "placementGet": 3
+        }
+      }
+    },
+    {
+      "name": "read503-recovery-no-unexpected-api",
+      "result": "PASS",
+      "detail": {
+        "unexpected": []
+      }
+    },
+    {
+      "name": "read503-recovery-no-page-or-uninjected-console-errors",
+      "result": "PASS",
+      "detail": {
+        "pageErrors": [],
+        "consoleErrors": [],
+        "excluded": [
+          {
+            "message": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+            "path": "/api/v1/assessment/placement/sessions/asess_ui_risk_2_1",
+            "reason": "matched planned injection getError GET /api/v1/assessment/placement/sessions/asess_ui_risk_2_1 -> 503"
+          },
+          {
+            "message": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+            "path": "/api/v1/assessment/placement/sessions/asess_ui_risk_2_1",
+            "reason": "matched planned injection getError GET /api/v1/assessment/placement/sessions/asess_ui_risk_2_1 -> 503"
+          }
+        ],
+        "consoleWarnings": [
+          {
+            "id": 2,
+            "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+            "path": null,
+            "pathname": "/",
+            "route": "#/pages/assessment/assessment",
+            "stage": "assessment"
+          },
+          {
+            "id": 2,
+            "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+            "path": null,
+            "pathname": "/",
+            "route": "#/pages/assessment/assessment",
+            "stage": "assessment"
+          },
+          {
+            "id": 2,
+            "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+            "path": null,
+            "pathname": "/",
+            "route": "#/pages/assessment/assessment",
+            "stage": "assessment"
+          },
+          {
+            "id": 2,
+            "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+            "path": null,
+            "pathname": "/",
+            "route": "#/pages/assessment/assessment",
+            "stage": "assessment"
+          },
+          {
+            "id": 2,
+            "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+            "path": null,
+            "pathname": "/",
+            "route": "#/pages/assessment/assessment",
+            "stage": "assessment"
+          },
+          {
+            "id": 2,
+            "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+            "path": null,
+            "pathname": "/",
+            "route": "#/pages/assessment/assessment",
+            "stage": "assessment"
+          },
+          {
+            "id": 2,
+            "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+            "path": null,
+            "pathname": "/",
+            "route": "#/pages/assessment/assessment",
+            "stage": "assessment"
+          },
+          {
+            "id": 2,
+            "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+            "path": null,
+            "pathname": "/",
+            "route": "#/pages/assessment/assessment",
+            "stage": "assessment"
+          },
+          {
+            "id": 2,
+            "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+            "path": null,
+            "pathname": "/",
+            "route": "#/pages/assessment/assessment",
+            "stage": "assessment"
+          },
+          {
+            "id": 2,
+            "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+            "path": null,
+            "pathname": "/",
+            "route": "#/pages/assessment/assessment",
+            "stage": "assessment"
+          },
+          {
+            "id": 2,
+            "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+            "path": null,
+            "pathname": "/",
+            "route": "#/pages/assessment/assessment",
+            "stage": "assessment"
+          },
+          {
+            "id": 2,
+            "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+            "path": null,
+            "pathname": "/",
+            "route": "#/pages/assessment/assessment",
+            "stage": "assessment"
+          }
+        ]
+      }
+    },
+    {
+      "name": "read503-recovery-no-console-warnings",
+      "result": "FAIL",
+      "detail": {
+        "warnings": [
+          {
+            "id": 2,
+            "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+            "path": null,
+            "pathname": "/",
+            "route": "#/pages/assessment/assessment",
+            "stage": "assessment"
+          },
+          {
+            "id": 2,
+            "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+            "path": null,
+            "pathname": "/",
+            "route": "#/pages/assessment/assessment",
+            "stage": "assessment"
+          },
+          {
+            "id": 2,
+            "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+            "path": null,
+            "pathname": "/",
+            "route": "#/pages/assessment/assessment",
+            "stage": "assessment"
+          },
+          {
+            "id": 2,
+            "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+            "path": null,
+            "pathname": "/",
+            "route": "#/pages/assessment/assessment",
+            "stage": "assessment"
+          },
+          {
+            "id": 2,
+            "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+            "path": null,
+            "pathname": "/",
+            "route": "#/pages/assessment/assessment",
+            "stage": "assessment"
+          },
+          {
+            "id": 2,
+            "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+            "path": null,
+            "pathname": "/",
+            "route": "#/pages/assessment/assessment",
+            "stage": "assessment"
+          },
+          {
+            "id": 2,
+            "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+            "path": null,
+            "pathname": "/",
+            "route": "#/pages/assessment/assessment",
+            "stage": "assessment"
+          },
+          {
+            "id": 2,
+            "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+            "path": null,
+            "pathname": "/",
+            "route": "#/pages/assessment/assessment",
+            "stage": "assessment"
+          },
+          {
+            "id": 2,
+            "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+            "path": null,
+            "pathname": "/",
+            "route": "#/pages/assessment/assessment",
+            "stage": "assessment"
+          },
+          {
+            "id": 2,
+            "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+            "path": null,
+            "pathname": "/",
+            "route": "#/pages/assessment/assessment",
+            "stage": "assessment"
+          },
+          {
+            "id": 2,
+            "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+            "path": null,
+            "pathname": "/",
+            "route": "#/pages/assessment/assessment",
+            "stage": "assessment"
+          },
+          {
+            "id": 2,
+            "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+            "path": null,
+            "pathname": "/",
+            "route": "#/pages/assessment/assessment",
+            "stage": "assessment"
+          }
+        ]
+      }
+    },
+    {
+      "name": "read503-recovery-no-unhandled-rejection-or-object-window-error",
+      "result": "PASS",
+      "detail": {
+        "unhandledRejections": [],
+        "windowErrors": []
+      }
+    }
+  ],
+  "notRun": [],
+  "gaps": [],
+  "dom": [
+    {
+      "name": "read503-after-back-503",
+      "at": "2026-10-21T00:43:22.998Z",
+      "route": "#/pages/assessment/assessment",
+      "root": true,
+      "busy": "false",
+      "bodyLen": 33,
+      "present": {
+        "assessment-page": true,
+        "assessment-guide": false,
+        "assessment-question": false,
+        "assessment-report": false,
+        "assessment-skipped": false,
+        "assessment-pending": true,
+        "assessment-leave-confirmation": false,
+        "assessment-error": false,
+        "assessment-submit": false,
+        "assessment-reload": true,
+        "assessment-reload-answer": false,
+        "assessment-title": true
+      },
+      "options": [],
+      "counts": {
+        "login": 1,
+        "refresh": 0,
+        "logout": 0,
+        "principal": 8,
+        "start": 1,
+        "respond": 0,
+        "retest": 0,
+        "ensure": 0,
+        "GET": 16,
+        "placementGet": 1
+      }
+    },
+    {
+      "name": "read503-after-repeated-503",
+      "at": "2026-10-21T00:43:23.433Z",
+      "route": "#/pages/assessment/assessment",
+      "root": true,
+      "busy": "false",
+      "bodyLen": 33,
+      "present": {
+        "assessment-page": true,
+        "assessment-guide": false,
+        "assessment-question": false,
+        "assessment-report": false,
+        "assessment-skipped": false,
+        "assessment-pending": true,
+        "assessment-leave-confirmation": false,
+        "assessment-error": false,
+        "assessment-submit": false,
+        "assessment-reload": true,
+        "assessment-reload-answer": false,
+        "assessment-title": true
+      },
+      "options": [],
+      "counts": {
+        "login": 1,
+        "refresh": 0,
+        "logout": 0,
+        "principal": 8,
+        "start": 1,
+        "respond": 0,
+        "retest": 0,
+        "ensure": 0,
+        "GET": 16,
+        "placementGet": 1
+      }
+    },
+    {
+      "name": "read503-recovered-question",
+      "at": "2026-10-21T00:43:23.517Z",
+      "route": "#/pages/assessment/assessment",
+      "root": true,
+      "busy": "false",
+      "bodyLen": 179,
+      "present": {
+        "assessment-page": true,
+        "assessment-guide": false,
+        "assessment-question": true,
+        "assessment-report": false,
+        "assessment-skipped": false,
+        "assessment-pending": false,
+        "assessment-leave-confirmation": false,
+        "assessment-error": false,
+        "assessment-submit": true,
+        "assessment-reload": false,
+        "assessment-reload-answer": false,
+        "assessment-title": true
+      },
+      "options": [
+        {
+          "id": "assessment-option-A",
+          "pressed": "false",
+          "disabled": false
+        },
+        {
+          "id": "assessment-option-B",
+          "pressed": "false",
+          "disabled": false
+        },
+        {
+          "id": "assessment-option-C",
+          "pressed": "false",
+          "disabled": false
+        },
+        {
+          "id": "assessment-option-D",
+          "pressed": "false",
+          "disabled": false
+        }
+      ],
+      "counts": {
+        "login": 1,
+        "refresh": 0,
+        "logout": 0,
+        "principal": 9,
+        "start": 1,
+        "respond": 0,
+        "retest": 0,
+        "ensure": 0,
+        "GET": 24,
+        "placementGet": 3
+      }
+    }
+  ],
+  "routes": [
+    {
+      "label": "read503-settings",
+      "route": "#/pages/settings/settings"
+    },
+    {
+      "label": "read503-back",
+      "route": "#/pages/assessment/assessment"
+    },
+    {
+      "label": "read503-failed",
+      "route": "#/pages/assessment/assessment"
+    },
+    {
+      "label": "read503-recovered",
+      "route": "#/pages/assessment/assessment"
+    }
+  ],
+  "screenshots": [
+    "03-read503-error-same-session.png",
+    "04-read503-recovered-question.png"
+  ],
+  "counts": {
+    "login": 1,
+    "refresh": 0,
+    "logout": 0,
+    "principal": 9,
+    "start": 1,
+    "respond": 0,
+    "retest": 0,
+    "ensure": 0,
+    "GET": 24,
+    "placementGet": 3
+  },
+  "requests": [
+    {
+      "id": 2,
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "https://127.0.0.1:18087",
+      "method": "POST",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "id": 2,
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "id": 2,
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "id": 2,
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/learner/targets"
+    },
+    {
+      "id": 2,
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/learner/profile"
+    },
+    {
+      "id": 2,
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/learner/targets"
+    },
+    {
+      "id": 2,
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/learner/preferences"
+    },
+    {
+      "id": 2,
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "id": 2,
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "id": 2,
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/learner/targets"
+    },
+    {
+      "id": 2,
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "POST",
+      "path": "/api/v1/assessment/placement/sessions"
+    },
+    {
+      "id": 2,
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "id": 2,
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "id": 2,
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/learner/targets"
+    },
+    {
+      "id": 2,
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "id": 2,
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/assessment/placement/sessions/asess_ui_risk_2_1"
+    },
+    {
+      "id": 2,
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "id": 2,
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/learner/targets"
+    },
+    {
+      "id": 2,
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "id": 2,
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/notifications/preferences"
+    },
+    {
+      "id": 2,
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/support/tickets"
+    },
+    {
+      "id": 2,
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/learner/profile"
+    },
+    {
+      "id": 2,
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/learner/targets"
+    },
+    {
+      "id": 2,
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/learner/preferences"
+    },
+    {
+      "id": 2,
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/assessment/placement/sessions/asess_ui_risk_2_1"
+    },
+    {
+      "id": 2,
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/assessment/placement/sessions/asess_ui_risk_2_1"
+    }
+  ],
+  "targetReads": [
+    {
+      "id": 2,
+      "method": "GET",
+      "path": "/api/v1/notifications/preferences",
+      "page": "settings"
+    },
+    {
+      "id": 2,
+      "method": "GET",
+      "path": "/api/v1/support/tickets",
+      "page": "settings-support"
+    }
+  ],
+  "unexpected": [],
+  "injectedFailures": [
+    {
+      "id": 2,
+      "method": "GET",
+      "path": "/api/v1/assessment/placement/sessions/asess_ui_risk_2_1",
+      "status": 503,
+      "injection": "getError"
+    },
+    {
+      "id": 2,
+      "method": "GET",
+      "path": "/api/v1/assessment/placement/sessions/asess_ui_risk_2_1",
+      "status": 503,
+      "injection": "getError"
+    }
+  ],
+  "pageErrors": [],
+  "consoleErrors": [
+    {
+      "id": 2,
+      "message": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+      "path": "/api/v1/assessment/placement/sessions/asess_ui_risk_2_1",
+      "pathname": "/",
+      "route": "#/pages/assessment/assessment",
+      "stage": "assessment"
+    },
+    {
+      "id": 2,
+      "message": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+      "path": "/api/v1/assessment/placement/sessions/asess_ui_risk_2_1",
+      "pathname": "/",
+      "route": "#/pages/assessment/assessment",
+      "stage": "assessment"
+    }
+  ],
+  "consoleWarnings": [
+    {
+      "id": 2,
+      "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+      "path": null,
+      "pathname": "/",
+      "route": "#/pages/assessment/assessment",
+      "stage": "assessment"
+    },
+    {
+      "id": 2,
+      "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+      "path": null,
+      "pathname": "/",
+      "route": "#/pages/assessment/assessment",
+      "stage": "assessment"
+    },
+    {
+      "id": 2,
+      "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+      "path": null,
+      "pathname": "/",
+      "route": "#/pages/assessment/assessment",
+      "stage": "assessment"
+    },
+    {
+      "id": 2,
+      "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+      "path": null,
+      "pathname": "/",
+      "route": "#/pages/assessment/assessment",
+      "stage": "assessment"
+    },
+    {
+      "id": 2,
+      "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+      "path": null,
+      "pathname": "/",
+      "route": "#/pages/assessment/assessment",
+      "stage": "assessment"
+    },
+    {
+      "id": 2,
+      "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+      "path": null,
+      "pathname": "/",
+      "route": "#/pages/assessment/assessment",
+      "stage": "assessment"
+    },
+    {
+      "id": 2,
+      "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+      "path": null,
+      "pathname": "/",
+      "route": "#/pages/assessment/assessment",
+      "stage": "assessment"
+    },
+    {
+      "id": 2,
+      "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+      "path": null,
+      "pathname": "/",
+      "route": "#/pages/assessment/assessment",
+      "stage": "assessment"
+    },
+    {
+      "id": 2,
+      "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+      "path": null,
+      "pathname": "/",
+      "route": "#/pages/assessment/assessment",
+      "stage": "assessment"
+    },
+    {
+      "id": 2,
+      "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+      "path": null,
+      "pathname": "/",
+      "route": "#/pages/assessment/assessment",
+      "stage": "assessment"
+    },
+    {
+      "id": 2,
+      "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+      "path": null,
+      "pathname": "/",
+      "route": "#/pages/assessment/assessment",
+      "stage": "assessment"
+    },
+    {
+      "id": 2,
+      "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+      "path": null,
+      "pathname": "/",
+      "route": "#/pages/assessment/assessment",
+      "stage": "assessment"
+    }
+  ],
+  "skippedReads": [],
+  "unhandledRejections": [],
+  "windowErrors": [],
+  "setupFailure": null,
+  "result": "FAIL",
+  "summary": {
+    "checks": 13,
+    "passed": 12,
+    "failed": 1,
+    "notRun": 0,
+    "gaps": 0,
+    "result": "FAIL"
+  },
+  "transportAudit": {
+    "unknownApi": [],
+    "pageErrors": [],
+    "consoleErrors": [],
+    "consoleWarnings": [
+      {
+        "id": 2,
+        "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+        "path": null,
+        "pathname": "/",
+        "route": "#/pages/assessment/assessment",
+        "stage": "assessment"
+      },
+      {
+        "id": 2,
+        "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+        "path": null,
+        "pathname": "/",
+        "route": "#/pages/assessment/assessment",
+        "stage": "assessment"
+      },
+      {
+        "id": 2,
+        "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+        "path": null,
+        "pathname": "/",
+        "route": "#/pages/assessment/assessment",
+        "stage": "assessment"
+      },
+      {
+        "id": 2,
+        "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+        "path": null,
+        "pathname": "/",
+        "route": "#/pages/assessment/assessment",
+        "stage": "assessment"
+      },
+      {
+        "id": 2,
+        "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+        "path": null,
+        "pathname": "/",
+        "route": "#/pages/assessment/assessment",
+        "stage": "assessment"
+      },
+      {
+        "id": 2,
+        "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+        "path": null,
+        "pathname": "/",
+        "route": "#/pages/assessment/assessment",
+        "stage": "assessment"
+      },
+      {
+        "id": 2,
+        "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+        "path": null,
+        "pathname": "/",
+        "route": "#/pages/assessment/assessment",
+        "stage": "assessment"
+      },
+      {
+        "id": 2,
+        "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+        "path": null,
+        "pathname": "/",
+        "route": "#/pages/assessment/assessment",
+        "stage": "assessment"
+      },
+      {
+        "id": 2,
+        "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+        "path": null,
+        "pathname": "/",
+        "route": "#/pages/assessment/assessment",
+        "stage": "assessment"
+      },
+      {
+        "id": 2,
+        "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+        "path": null,
+        "pathname": "/",
+        "route": "#/pages/assessment/assessment",
+        "stage": "assessment"
+      },
+      {
+        "id": 2,
+        "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+        "path": null,
+        "pathname": "/",
+        "route": "#/pages/assessment/assessment",
+        "stage": "assessment"
+      },
+      {
+        "id": 2,
+        "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+        "path": null,
+        "pathname": "/",
+        "route": "#/pages/assessment/assessment",
+        "stage": "assessment"
+      }
+    ],
+    "unhandledRejections": [],
+    "windowErrors": [],
+    "excluded": [
+      {
+        "message": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+        "path": "/api/v1/assessment/placement/sessions/asess_ui_risk_2_1",
+        "reason": "matched planned injection getError GET /api/v1/assessment/placement/sessions/asess_ui_risk_2_1 -> 503"
+      },
+      {
+        "message": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+        "path": "/api/v1/assessment/placement/sessions/asess_ui_risk_2_1",
+        "reason": "matched planned injection getError GET /api/v1/assessment/placement/sessions/asess_ui_risk_2_1 -> 503"
+      }
+    ],
+    "warningsStatus": "RECORDED_NAMED"
+  },
+  "finishedAt": "2026-10-21T00:43:23.577Z"
+}

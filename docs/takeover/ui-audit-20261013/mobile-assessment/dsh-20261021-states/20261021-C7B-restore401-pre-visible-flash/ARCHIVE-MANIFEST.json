@@ -1,0 +1,25 @@
+{
+  "archive": "20261021-C7B-restore401-pre-visible-flash",
+  "archivedAtUtc": "2026-10-21T00:23:01Z",
+  "reason": "Preserve current driver/fixture/helper before restore401 visibility/Object-error evidence expansion",
+  "files": [
+    {
+      "original": "states-verify.cjs",
+      "archived": "states-verify.cjs.c7b.raw",
+      "sha256": "8dedbb973fd4d8d986eb2acfe95b689543bbff0c8a3736d3e8fdafbb3fbea275",
+      "bytes": 17153
+    },
+    {
+      "original": "fixture.cjs",
+      "archived": "fixture.cjs.c7b.raw",
+      "sha256": "ac5c55df75815a0cbfe52f4d459ffec2225f573a58528dd15dd4066fa5015caa",
+      "bytes": 15517
+    },
+    {
+      "original": "states-lib.cjs",
+      "archived": "states-lib.cjs.c7b.raw",
+      "sha256": "26a7f7ba5784ea9090b6373095e8b21597471afd70f5149d16023e9449f25572",
+      "bytes": 19454
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+[
+  {
+    "file": "apps/mobile/src/pages/assessment/assessment.vue",
+    "abs": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\apps\\mobile\\src\\pages\\assessment\\assessment.vue",
+    "bytes": 31603,
+    "rawSha256": "d1b501e33b313679bd5c90dd8fcda8e9a5a6b790856a444b01e915523827366a",
+    "lfSha256": "d1b501e33b313679bd5c90dd8fcda8e9a5a6b790856a444b01e915523827366a",
+    "lastWriteTime": "2026-10-15T20:34:59.069Z"
+  },
+  {
+    "file": "packages/i18n/src/mobile-experience.ts",
+    "abs": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\packages\\i18n\\src\\mobile-experience.ts",
+    "bytes": 32682,
+    "rawSha256": "44e4c857868f8be2bac17f7da86f43c9ea0d03eaaadd3a3f154414d02f129c64",
+    "lfSha256": "d620bdd85e3d2cbe699de80ffc6085f11a160b29dba5ce682a93dacd6b1f6d02",
+    "lastWriteTime": "2026-10-15T20:40:39.994Z"
+  }
+]

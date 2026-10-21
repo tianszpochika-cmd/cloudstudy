@@ -1,0 +1,460 @@
+{
+  "executor": "Codex independent C4 selected-C review",
+  "sourceBefore": {
+    "apps/mobile/src/pages/assessment/assessment.vue": "abff80cd1d16e8d688deb9ffdc3a7e0250577f10ef2dcd31ed9a5d6849a07d8c",
+    "packages/i18n/src/mobile-experience.ts": "6ac6800e179de0ba15ab3607918b2f8427d364e19306eaf8f2a146f016247380",
+    "apps/mobile/src/api/learner-content.ts": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6",
+    "apps/mobile/src/stores/learner-content.ts": "95cc92496db996242d91baed3301d76f985e4e3b9134e1e50c2b9ab8d41e4c61",
+    "apps/mobile/src/stores/session.ts": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+    "apps/mobile/src/auth/navigation.ts": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5"
+  },
+  "facts": {
+    "route": "#/pages/assessment/assessment",
+    "title": "Level check",
+    "viewport": {
+      "width": 320,
+      "height": 568
+    },
+    "textScale": "CSS computed font sizes multiplied by 2 on #assessment-page subtree; not browser/native zoom",
+    "h1": {
+      "text": "Level check",
+      "fontSize": "56px"
+    },
+    "overflow": false,
+    "overlay": false,
+    "words": [
+      {
+        "id": "assessment-title",
+        "word": "Level",
+        "rects": [
+          {
+            "x": 20,
+            "y": 122,
+            "width": 135,
+            "height": 74
+          }
+        ],
+        "lineCount": 1,
+        "split": false
+      },
+      {
+        "id": "assessment-title",
+        "word": "check",
+        "rects": [
+          {
+            "x": 20,
+            "y": 200,
+            "width": 149,
+            "height": 74
+          }
+        ],
+        "lineCount": 1,
+        "split": false
+      },
+      {
+        "id": "assessment-back",
+        "word": "Back",
+        "rects": [
+          {
+            "x": 46,
+            "y": 26,
+            "width": 65,
+            "height": 43
+          }
+        ],
+        "lineCount": 1,
+        "split": false
+      },
+      {
+        "id": "assessment-option-A",
+        "word": "A",
+        "rects": [
+          {
+            "x": 41,
+            "y": 772,
+            "width": 21,
+            "height": 43
+          }
+        ],
+        "lineCount": 1,
+        "split": false
+      },
+      {
+        "id": "assessment-option-A",
+        "word": "read",
+        "rects": [
+          {
+            "x": 79,
+            "y": 772,
+            "width": 63,
+            "height": 43
+          }
+        ],
+        "lineCount": 1,
+        "split": false
+      },
+      {
+        "id": "assessment-option-A",
+        "word": "a",
+        "rects": [
+          {
+            "x": 151,
+            "y": 772,
+            "width": 16,
+            "height": 43
+          }
+        ],
+        "lineCount": 1,
+        "split": false
+      },
+      {
+        "id": "assessment-option-A",
+        "word": "book",
+        "rects": [
+          {
+            "x": 176,
+            "y": 772,
+            "width": 72,
+            "height": 43
+          }
+        ],
+        "lineCount": 1,
+        "split": false
+      },
+      {
+        "id": "assessment-option-B",
+        "word": "B",
+        "rects": [
+          {
+            "x": 42,
+            "y": 858,
+            "width": 18,
+            "height": 43
+          }
+        ],
+        "lineCount": 1,
+        "split": false
+      },
+      {
+        "id": "assessment-option-B",
+        "word": "reads",
+        "rects": [
+          {
+            "x": 79,
+            "y": 858,
+            "width": 77,
+            "height": 43
+          }
+        ],
+        "lineCount": 1,
+        "split": false
+      },
+      {
+        "id": "assessment-option-B",
+        "word": "a",
+        "rects": [
+          {
+            "x": 164,
+            "y": 858,
+            "width": 16,
+            "height": 43
+          }
+        ],
+        "lineCount": 1,
+        "split": false
+      },
+      {
+        "id": "assessment-option-B",
+        "word": "book",
+        "rects": [
+          {
+            "x": 189,
+            "y": 858,
+            "width": 72,
+            "height": 43
+          }
+        ],
+        "lineCount": 1,
+        "split": false
+      },
+      {
+        "id": "assessment-option-C",
+        "word": "C",
+        "rects": [
+          {
+            "x": 41,
+            "y": 968,
+            "width": 20,
+            "height": 43
+          }
+        ],
+        "lineCount": 1,
+        "split": false
+      },
+      {
+        "id": "assessment-option-C",
+        "word": "reading",
+        "rects": [
+          {
+            "x": 79,
+            "y": 944,
+            "width": 108,
+            "height": 43
+          }
+        ],
+        "lineCount": 1,
+        "split": false
+      },
+      {
+        "id": "assessment-option-C",
+        "word": "a",
+        "rects": [
+          {
+            "x": 195,
+            "y": 944,
+            "width": 16,
+            "height": 43
+          }
+        ],
+        "lineCount": 1,
+        "split": false
+      },
+      {
+        "id": "assessment-option-C",
+        "word": "book",
+        "rects": [
+          {
+            "x": 79,
+            "y": 992,
+            "width": 72,
+            "height": 43
+          }
+        ],
+        "lineCount": 1,
+        "split": false
+      },
+      {
+        "id": "assessment-option-C",
+        "word": "Selected",
+        "rects": [
+          {
+            "x": 99,
+            "y": 1052,
+            "width": 107,
+            "height": 37
+          }
+        ],
+        "lineCount": 1,
+        "split": false
+      },
+      {
+        "id": "assessment-option-D",
+        "word": "D",
+        "rects": [
+          {
+            "x": 40,
+            "y": 1156,
+            "width": 22,
+            "height": 43
+          }
+        ],
+        "lineCount": 1,
+        "split": false
+      },
+      {
+        "id": "assessment-option-D",
+        "word": "has",
+        "rects": [
+          {
+            "x": 79,
+            "y": 1132,
+            "width": 48,
+            "height": 43
+          }
+        ],
+        "lineCount": 1,
+        "split": false
+      },
+      {
+        "id": "assessment-option-D",
+        "word": "read",
+        "rects": [
+          {
+            "x": 136,
+            "y": 1132,
+            "width": 63,
+            "height": 43
+          }
+        ],
+        "lineCount": 1,
+        "split": false
+      },
+      {
+        "id": "assessment-option-D",
+        "word": "a",
+        "rects": [
+          {
+            "x": 207,
+            "y": 1132,
+            "width": 16,
+            "height": 43
+          }
+        ],
+        "lineCount": 1,
+        "split": false
+      },
+      {
+        "id": "assessment-option-D",
+        "word": "book",
+        "rects": [
+          {
+            "x": 79,
+            "y": 1180,
+            "width": 72,
+            "height": 43
+          }
+        ],
+        "lineCount": 1,
+        "split": false
+      },
+      {
+        "id": "assessment-submit",
+        "word": "Submit",
+        "rects": [
+          {
+            "x": 53,
+            "y": 1286,
+            "width": 104,
+            "height": 43
+          }
+        ],
+        "lineCount": 1,
+        "split": false
+      },
+      {
+        "id": "assessment-submit",
+        "word": "answer",
+        "rects": [
+          {
+            "x": 165,
+            "y": 1286,
+            "width": 102,
+            "height": 43
+          }
+        ],
+        "lineCount": 1,
+        "split": false
+      }
+    ],
+    "splitWords": [],
+    "progress": {
+      "label": "Answer progress",
+      "valuemin": "0",
+      "valuemax": "10",
+      "valuenow": "0",
+      "valuetext": "Completed 0 of 10"
+    },
+    "metaText": "Question 1 of 10\nCompleted 0",
+    "receivedText": null,
+    "options": [
+      {
+        "id": "assessment-option-A",
+        "pressed": "false",
+        "disabled": false,
+        "text": "A\nread a book",
+        "height": 74
+      },
+      {
+        "id": "assessment-option-B",
+        "pressed": "false",
+        "disabled": false,
+        "text": "B\nreads a book",
+        "height": 74
+      },
+      {
+        "id": "assessment-option-C",
+        "pressed": "true",
+        "disabled": false,
+        "text": "C\nreading a book\nSelected",
+        "height": 176
+      },
+      {
+        "id": "assessment-option-D",
+        "pressed": "false",
+        "disabled": false,
+        "text": "D\nhas read a book",
+        "height": 122
+      }
+    ],
+    "buttons": [
+      {
+        "id": "assessment-back",
+        "text": "Back",
+        "disabled": false,
+        "width": 91,
+        "height": 64,
+        "font": "32px"
+      },
+      {
+        "id": "assessment-settings",
+        "text": "",
+        "disabled": false,
+        "width": 44,
+        "height": 44,
+        "font": "32px"
+      },
+      {
+        "id": "assessment-option-A",
+        "text": "A\nread a book",
+        "disabled": false,
+        "width": 280,
+        "height": 74,
+        "font": "32px"
+      },
+      {
+        "id": "assessment-option-B",
+        "text": "B\nreads a book",
+        "disabled": false,
+        "width": 280,
+        "height": 74,
+        "font": "32px"
+      },
+      {
+        "id": "assessment-option-C",
+        "text": "C\nreading a book\nSelected",
+        "disabled": false,
+        "width": 280,
+        "height": 176,
+        "font": "32px"
+      },
+      {
+        "id": "assessment-option-D",
+        "text": "D\nhas read a book",
+        "disabled": false,
+        "width": 280,
+        "height": 122,
+        "font": "32px"
+      },
+      {
+        "id": "assessment-submit",
+        "text": "Submit answer",
+        "disabled": false,
+        "width": 280,
+        "height": 74,
+        "font": "32px"
+      }
+    ],
+    "bodyText": "Back\nLevel check\nQuestion 1 of 10\nCompleted 0\nChoose the phrase that completes the sentence: I ___ every evening.\nA\nread a book\nB\nreads a book\nC\nreading a book\nSelected\nD\nhas read a book\nSubmit answer\nUnsubmitted choices stay on this page only.",
+    "rawKey": false,
+    "hanInEnBody": false
+  },
+  "sourceAfter": {
+    "apps/mobile/src/pages/assessment/assessment.vue": "abff80cd1d16e8d688deb9ffdc3a7e0250577f10ef2dcd31ed9a5d6849a07d8c",
+    "packages/i18n/src/mobile-experience.ts": "6ac6800e179de0ba15ab3607918b2f8427d364e19306eaf8f2a146f016247380",
+    "apps/mobile/src/api/learner-content.ts": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6",
+    "apps/mobile/src/stores/learner-content.ts": "95cc92496db996242d91baed3301d76f985e4e3b9134e1e50c2b9ab8d41e4c61",
+    "apps/mobile/src/stores/session.ts": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+    "apps/mobile/src/auth/navigation.ts": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5"
+  },
+  "closed": true
+}

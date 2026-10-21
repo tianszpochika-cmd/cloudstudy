@@ -1,0 +1,32 @@
+{
+  "archive": "pre-c8-acceptance-20261021",
+  "archivedAtUtc": "2026-10-21T00:37:33Z",
+  "reason": "Preserve pre-C8-acceptance navigation driver/fixture/docs raw before DOM-gated home/today acceptance, exact [assessment-nav-guard] JSON capture, and settings-baseline.",
+  "files": [
+    {
+      "original": "scripts/nav-diagnose.cjs",
+      "archived": "nav-diagnose.pre-c8.cjs",
+      "sha256": "7a15f194850eaa3d013bcc9d9df0ccc0198a9f5848d0bf6a9381c878fe8c681f",
+      "bytes": 22222
+    },
+    {
+      "original": "scripts/fixture.nav.cjs",
+      "archived": "fixture.pre-c8.cjs",
+      "sha256": "0a178ed83c2b45cd0dabcf5e4e07510d7d7d6a7c6b27c9cd5215bd962d0dd707",
+      "bytes": 13659
+    },
+    {
+      "original": "README.md",
+      "archived": "README.pre-c8.md",
+      "sha256": "321787ef8f3f7c7eddfa36e0d04933bc147ecd1ac846c972530dc582c606515b",
+      "bytes": 9857
+    },
+    {
+      "original": "PREPARED-CHECKPOINT.md",
+      "archived": "PREPARED-CHECKPOINT.pre-c8.md",
+      "sha256": "3ad7084c1c10d82accc6678c4d4eb07c9b130900e9734bdc5c6e91189d91f960",
+      "bytes": 5114
+    }
+  ],
+  "note": "Old C7b/C8 FAIL runs in runs/ are preserved untouched; this archive is additive only."
+}

@@ -1,0 +1,137 @@
+[
+  {
+    "path": "runs/codex-review-busy-1/busy-retest/b1-01-report-plan-notice.png",
+    "sha256": "753fe1e60f087c46520c9186be3b2040de94662eb22970b41acccedd617a6905",
+    "bytes": 27497
+  },
+  {
+    "path": "runs/codex-review-busy-1/busy-retest/b1-02-retest-503-old-report.png",
+    "sha256": "9c59f9f69885af14759f6f05031e87ae7071c7b0c313dd9b04ae5cad68559ece",
+    "bytes": 39293
+  },
+  {
+    "path": "runs/codex-review-busy-1/busy-retest/b1-03-retest-new-session.png",
+    "sha256": "a770e86211b6440de916e5988a1a984c071ca5a82b10e83d0b40d4772b8b2d96",
+    "bytes": 27616
+  },
+  {
+    "path": "runs/codex-review-busy-1/busy-retest/b2-01-held-double-press.png",
+    "sha256": "b152be9b790a87a455112ec16f9e4adb9083b8fd9e2c64c6e90dd8bddaca1982",
+    "bytes": 28914
+  },
+  {
+    "path": "runs/codex-review-busy-1/busy-retest/b3-01-readback-failure.png",
+    "sha256": "bffe1e47438ddfe9588f5eeb67ee317a39cac495556ec6f691f021f394648fd2",
+    "bytes": 13224
+  },
+  {
+    "path": "runs/codex-review-busy-1/busy-retest/b3-02-readback-recovered.png",
+    "sha256": "541fc305386d7f118a290ee1e316d60ef1a40ce5d5feb09449fb24f60aa4169a",
+    "bytes": 28612
+  },
+  {
+    "path": "runs/codex-review-busy-1/busy-retest/manifest.json",
+    "sha256": "2585e7957496d22e1d23f45f073b54ddc918087674627be61207ea4e3bd51c0a",
+    "bytes": 7033
+  },
+  {
+    "path": "runs/codex-review-busy-1/busy-retest/results.json",
+    "sha256": "82f24bbb50b139fb61c01cb21a78e47a7d2d7cf9010a1fa13501b717caeb7803",
+    "bytes": 16305
+  },
+  {
+    "path": "runs/codex-review-kbd-1/keyboard/k1-01-guide.png",
+    "sha256": "ada0eb87260e5d403776f5e805a608402b3025d876d7f8df6ec22f307f4a5327",
+    "bytes": 25307
+  },
+  {
+    "path": "runs/codex-review-kbd-1/keyboard/k1-02-enter-selected.png",
+    "sha256": "ed3f890471c34aec7a800bf40bef777316c176e4a8d49d6154237936f6669da3",
+    "bytes": 29501
+  },
+  {
+    "path": "runs/codex-review-kbd-1/keyboard/k1-03-busy-submit.png",
+    "sha256": "82b0a5f1938454b5a9ec86ad591d6f12ec69d79c8f57162cf85f37dd1c1b5538",
+    "bytes": 28904
+  },
+  {
+    "path": "runs/codex-review-kbd-1/keyboard/k1-04-next-question.png",
+    "sha256": "ae80eca308e451b1a1f86204eda536ad0bfc3a16e170792971c34abb84ac275c",
+    "bytes": 30064
+  },
+  {
+    "path": "runs/codex-review-kbd-1/keyboard/manifest.json",
+    "sha256": "37a9d0443aab50cba0d1d5e79e590ce4d549f43db699aeda3135085af7eaf924",
+    "bytes": 5527
+  },
+  {
+    "path": "runs/codex-review-kbd-1/keyboard/results.json",
+    "sha256": "3f6ae84ea34c50683099e8ade8503032205c6924aad2e150d742405aa8b7047c",
+    "bytes": 22527
+  },
+  {
+    "path": "runs/codex-review-leave-1/leave/l1-01-settings-ask.png",
+    "sha256": "fe4def985a0fc849ad9f8a976a7398db574972a81c1c04f80c4d605677b887db",
+    "bytes": 37794
+  },
+  {
+    "path": "runs/codex-review-leave-1/leave/l1-02-settings-route.png",
+    "sha256": "598b4940aace389e8641e96a5f229a9014f510c3187d7041d23f4240d36bc213",
+    "bytes": 129257
+  },
+  {
+    "path": "runs/codex-review-leave-1/leave/l1-03-busy-locked.png",
+    "sha256": "eedf7fbc26a5152ade0423de37b777bbb13f11cb5c7a0175be7d974102effc3f",
+    "bytes": 28905
+  },
+  {
+    "path": "runs/codex-review-leave-1/leave/l1-04-home-after-back.png",
+    "sha256": "6bbcb329a5394718a47878a3a88bb29dcdba76279e32fce8926cfdb592783dce",
+    "bytes": 19847
+  },
+  {
+    "path": "runs/codex-review-leave-1/leave/l1-05-recovered-question.png",
+    "sha256": "ada0eb87260e5d403776f5e805a608402b3025d876d7f8df6ec22f307f4a5327",
+    "bytes": 25307
+  },
+  {
+    "path": "runs/codex-review-leave-1/leave/manifest.json",
+    "sha256": "b3662983ba68a15de287b49b133ae063a8ac5313a1d38d493d6f240ae1a6557b",
+    "bytes": 6913
+  },
+  {
+    "path": "runs/codex-review-leave-1/leave/results.json",
+    "sha256": "23fefe253d07c8ab93b233d1a62256088e12f5951dbd214a4eeee2da40ea665a",
+    "bytes": 13708
+  },
+  {
+    "path": "runs/codex-review-pointer-1/pointer/manifest.json",
+    "sha256": "0a848287f8798d8ebd153b71ca85b7bcbb5dd943cc87d328dbb0dbac6195bc41",
+    "bytes": 5951
+  },
+  {
+    "path": "runs/codex-review-pointer-1/pointer/p1-01-guide.png",
+    "sha256": "ada0eb87260e5d403776f5e805a608402b3025d876d7f8df6ec22f307f4a5327",
+    "bytes": 25307
+  },
+  {
+    "path": "runs/codex-review-pointer-1/pointer/p1-02-submit-busy.png",
+    "sha256": "3280ed799bec30b62810c0cee7ead48d0ab378dc2f74c51bf90d8c24bcb0bf57",
+    "bytes": 28913
+  },
+  {
+    "path": "runs/codex-review-pointer-1/pointer/p1-03-readback-same-question.png",
+    "sha256": "3146805e7aa2d62d2eb31d473228db8fcbc48395b7fc6ec04fed6b4dcc8c081d",
+    "bytes": 31051
+  },
+  {
+    "path": "runs/codex-review-pointer-1/pointer/p2-01-touch-submit-held.png",
+    "sha256": "b152be9b790a87a455112ec16f9e4adb9083b8fd9e2c64c6e90dd8bddaca1982",
+    "bytes": 28914
+  },
+  {
+    "path": "runs/codex-review-pointer-1/pointer/results.json",
+    "sha256": "9e766e477b6d93a5926f7c7e6a9e4528c25c3d793bbdd670b71030eb731ae798",
+    "bytes": 14373
+  }
+]

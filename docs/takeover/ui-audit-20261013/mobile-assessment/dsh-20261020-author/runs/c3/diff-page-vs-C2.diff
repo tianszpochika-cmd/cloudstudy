@@ -1,0 +1,31 @@
+diff --git a/docs/takeover/ui-audit-20261013/mobile-assessment/dsh-20261020-author/baseline/assessment.vue.raw b/apps/mobile/src/pages/assessment/assessment.vue
+index 144d42f6..02ee1535 100644
+--- a/docs/takeover/ui-audit-20261013/mobile-assessment/dsh-20261020-author/baseline/assessment.vue.raw
++++ b/apps/mobile/src/pages/assessment/assessment.vue
+@@ -51,6 +51,7 @@ const reloadLabel = computed(() => mobileT(store.placement.sessionId?.startsWith
+ const accepted = computed(() => Math.min(totalSteps.value, Math.max(0, Number.isFinite(store.placement.acceptedSequence) ? store.placement.acceptedSequence : 0)))
+ const progressPercent = computed(() => totalSteps.value > 0 ? accepted.value / totalSteps.value * 100 : 0)
+ const progressText = computed(() => copy('received', { count: number(accepted.value), total: number(totalSteps.value) }))
++const completedText = computed(() => copy('completedCount', { count: number(accepted.value) }))
+ const questionText = computed(() => copy('questionCount', { current: number(question.value?.stepIndex ?? 0), total: number(totalSteps.value) }))
+ const feedbackText = computed(() => store.placement.reconciledWithoutReceipt ? '' : store.placement.responseOutcome === 'FULL' ? mobileT('assessment.correct') : store.placement.responseOutcome === 'ZERO' ? mobileT('assessment.incorrect') : '')
+ const heldCheckpoint = computed(() => Boolean(store.placement.sessionId?.startsWith('asess_') && !question.value && !report.value && !['loading', 'idle', 'offline', 'error', 'forbidden'].includes(store.placementStatus)))
+@@ -302,9 +303,8 @@ onShow(() => { active = true; void enterPage() })
+       </view>
+ 
+       <view v-else-if="question" id="assessment-question" class="assessment-question">
+-        <view class="assessment-question-meta"><text>{{ questionText }}</text><text>{{ number(accepted) }}/{{ number(totalSteps) }}</text></view>
++        <view class="assessment-question-meta"><text>{{ questionText }}</text><text>{{ completedText }}</text></view>
+         <view class="assessment-progress" role="progressbar" :aria-label="mobileT('assessment.progress')" :aria-valuemin="0" :aria-valuemax="totalSteps" :aria-valuenow="accepted" :aria-valuetext="progressText"><view class="assessment-progress-value" :style="{ width: `${progressPercent}%` }" /></view>
+-        <text class="assessment-received">{{ progressText }}</text>
+         <text class="assessment-stem" role="heading" aria-level="2">{{ question.stemText }}</text>
+         <text v-if="feedbackText" class="assessment-feedback" role="status">{{ feedbackText }}</text>
+         <view class="assessment-options" role="group" :aria-label="mobileT('assessment.answers')">
+@@ -348,7 +348,6 @@ onShow(() => { active = true; void enterPage() })
+ .assessment-question-meta { display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 8px 16px; color: var(--yx-text-secondary); font-size: 14px; }
+ .assessment-progress { height: 4px; margin-top: 12px; overflow: hidden; border-radius: 4px; background: var(--yx-border); }
+ .assessment-progress-value { height: 100%; max-width: 100%; border-radius: inherit; background: var(--yx-brand); }
+-.assessment-received { display: block; margin-top: 8px; color: var(--yx-text-secondary); font-size: 14px; line-height: 1.5; }
+ .assessment-stem { display: block; margin: 28px 0 20px; font-size: 20px; font-weight: 600; line-height: 1.5; overflow-wrap: anywhere; }
+ .assessment-options { display: grid; gap: 12px; }
+ .assessment-page .assessment-option { box-sizing: border-box; display: flex; width: 100%; min-width: 0; min-height: 60px; align-items: center; gap: 12px; margin: 0; padding: 12px 14px; border: 1px solid var(--yx-text-secondary); border-radius: 8px; background: var(--yx-surface-card); color: var(--yx-text-primary); font-family: inherit; font-size: 16px; font-weight: 400; line-height: 1.5; text-align: left; white-space: normal; overflow-wrap: anywhere; }

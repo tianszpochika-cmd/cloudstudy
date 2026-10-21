@@ -1,0 +1,433 @@
+// Prepared helpers for the independent MB006 risk suite. No browser is launched here.
+// Measurement only: real keyboard, real mouse, CDP touch, DOM facts. It never reads
+// cookies/storage/headers/bodies, never calls fetch itself, and never writes app state.
+'use strict';
+const fs = require('node:fs');
+const path = require('node:path');
+const crypto = require('node:crypto');
+
+const ROOT = path.resolve(__dirname, '../../../../..');
+const FREEZE_FILE = path.join(__dirname, 'source-freeze.json');
+const RUN_NAME_RE = /^[a-z0-9][a-z0-9-]{0,63}$/i;
+const EXECUTOR_RE = /^[A-Za-z0-9][A-Za-z0-9 ._-]{0,79}$/;
+
+function refuse(message) {
+  console.error('REFUSED: ' + message + ' Nothing was started.');
+  process.exit(2);
+}
+
+function sha256(rel) {
+  return crypto.createHash('sha256').update(fs.readFileSync(path.resolve(ROOT, rel))).digest('hex');
+}
+
+function verifyDependencies(freeze) {
+  const expected = freeze.dependencies || {};
+  const actual = {};
+  const drift = [];
+  for (const file of Object.keys(expected)) actual[file] = sha256(file);
+  for (const [file, want] of Object.entries(expected)) {
+    if (actual[file] !== want) drift.push({ file, expected: want, actual: actual[file] });
+  }
+  // Never auto-allow a freeze file that silently drops or narrows the dependency guard.
+  if (!freeze.dependencies || Object.keys(expected).length < 2) {
+    drift.push({ file: '<dependencies>', expected: 'apps/mobile/package.json + pnpm-lock.yaml', actual: 'missing-or-incomplete' });
+  }
+  return { ok: drift.length === 0, actual, drift };
+}
+
+function verifyFreeze() {
+  const freeze = JSON.parse(fs.readFileSync(FREEZE_FILE, 'utf8'));
+  const actual = {};
+  const drift = [];
+  for (const file of Object.keys(freeze.sources)) actual[file] = sha256(file);
+  for (const [file, expected] of Object.entries(freeze.sources)) {
+    if (actual[file] !== expected) drift.push({ file, expected, actual: actual[file] });
+  }
+  const dependencies = verifyDependencies(freeze);
+  return {
+    ok: drift.length === 0 && dependencies.ok,
+    preparedAt: freeze.preparedAt,
+    actual,
+    drift,
+    dependencies: dependencies.actual,
+    dependencyDrift: dependencies.drift,
+  };
+}
+
+function defaultRunId() {
+  return 'risk-' + new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+}
+
+function runIdentity(env) {
+  if (env.MB006_CONFIRM_BROWSER !== '1') {
+    refuse('set MB006_CONFIRM_BROWSER=1 to run the prepared risk suite in the Root review environment.');
+  }
+  const run = (env.MB006_RISK_RUN || '').trim() || defaultRunId();
+  if (!RUN_NAME_RE.test(run)) refuse('MB006_RISK_RUN must match /^[a-z0-9][a-z0-9-]{0,63}$/i.');
+  const executor = (env.MB006_RISK_EXECUTOR || '').trim() || 'codex-review';
+  if (!EXECUTOR_RE.test(executor)) refuse('MB006_RISK_EXECUTOR must be 1-80 characters from [A-Za-z0-9 ._-].');
+  return { run, executor };
+}
+
+function prepareDir(group, run) {
+  const runs = path.resolve(__dirname, 'runs');
+  const dir = path.resolve(runs, run, group);
+  const rel = path.relative(runs, dir);
+  if (!rel || path.isAbsolute(rel) || rel.split(path.sep).length !== 2) refuse('run directory resolved outside runs/: ' + dir);
+  if (fs.existsSync(dir)) refuse('run directory already exists and is never overwritten: ' + dir);
+  fs.mkdirSync(dir, { recursive: true });
+  return dir;
+}
+
+function createReporter({ dir, group, run, executor, sourceHashesBefore, freezePreparedAt }) {
+  const report = {
+    label: 'Codex review',
+    preparedBy: 'DSH (independent risk-test author; this suite was not executed by DSH and no browser was launched by DSH)',
+    scope: 'MB006_RISK_SUITE_PREPARED_NOT_RUN',
+    group,
+    run,
+    executor,
+    fixture: 'synthetic API transport via fixture.cjs; real uni-app login and guard',
+    native: 'NOT_RUN (no native/device capability in this prepared suite)',
+    realBackend: 'NOT_RUN (no real backend, IAM, DB or network is contacted)',
+    startedAt: new Date().toISOString(),
+    freezePreparedAt,
+    sourceHashesBefore,
+    sourceHashesAfter: null,
+    sourceStable: null,
+    dependenciesBefore: null,
+    dependenciesAfter: null,
+    dependenciesStable: null,
+    cases: [],
+    checks: [],
+    notRun: [],
+    screenshots: [],
+    routes: [],
+    closed: false,
+    failure: null,
+    result: 'NOT_RUN',
+  };
+  function write() {
+    report.summary = {
+      cases: report.cases.length,
+      checks: report.checks.length,
+      passed: report.checks.filter(c => c.result === 'PASS').length,
+      failed: report.checks.filter(c => c.result === 'FAIL').length,
+      notRun: report.notRun.length,
+      result: report.result,
+    };
+    fs.writeFileSync(path.join(dir, 'results.json'), JSON.stringify(report, null, 2));
+  }
+  function check(name, ok, detail) {
+    report.checks.push({ name, result: ok ? 'PASS' : 'FAIL', ...(detail === undefined ? {} : { detail }) });
+    write();
+    return ok;
+  }
+  function notRun(name, reason) { report.notRun.push({ name, reason }); write(); }
+  function startCase(name, extra) {
+    const item = { name, startedAt: new Date().toISOString(), ...(extra || {}) };
+    report.cases.push(item);
+    write();
+    return item;
+  }
+  function endCase(item, outcome, details) {
+    Object.assign(item, { outcome, finishedAt: new Date().toISOString(), ...(details || {}) });
+    write();
+  }
+  async function shot(page, name) {
+    const file = path.join(dir, name + '.png');
+    await page.screenshot({ path: file, fullPage: true });
+    report.screenshots.push(name + '.png');
+    write();
+    return file;
+  }
+  async function route(page, label) {
+    const value = await page.evaluate(() => location.hash.split('?')[0]);
+    report.routes.push({ label, route: value });
+    write();
+    return value;
+  }
+  function diagnostic(name, detail) {
+    report.diagnostics = report.diagnostics || [];
+    report.diagnostics.push({ name, at: new Date().toISOString(), ...(detail || {}) });
+    write();
+  }
+  function fail(error) {
+    report.failure = { message: String(error && error.message || error), stack: error && error.stack };
+  }
+  function finish() {
+    const failed = report.checks.filter(c => c.result === 'FAIL').length;
+    report.result = failed > 0 || report.failure ? 'FAIL' : 'PASS_EXECUTED_CHECKS';
+    report.completion = 'NOT_THE_WHOLE_PAGE';
+    if (report.checks.length === 0 && !report.failure) {
+      report.result = 'FAIL';
+      report.failure = { message: 'No executed checks were recorded; an empty run is not a pass.' };
+    }
+    if (report.notRun.length > 0) report.caveat = 'Executed checks only. notRun entries are untested branches, not passes.';
+    write();
+    const manifest = {
+      label: report.label,
+      preparedBy: report.preparedBy,
+      group,
+      run,
+      executor,
+      result: report.result,
+      completion: report.completion,
+      sourceHashesBefore: report.sourceHashesBefore,
+      sourceHashesAfter: report.sourceHashesAfter,
+      sourceStable: report.sourceStable,
+      dependenciesBefore: report.dependenciesBefore,
+      dependenciesAfter: report.dependenciesAfter,
+      dependenciesStable: report.dependenciesStable,
+      diagnostics: report.diagnostics || [],
+      checks: report.checks.map(c => ({ name: c.name, result: c.result })),
+      notRun: report.notRun,
+      fallbacks: report.fallbacks || [],
+      failure: report.failure,
+      routes: report.routes,
+      screenshots: report.screenshots,
+      cases: report.cases.map(c => ({ name: c.name, outcome: c.outcome, setup: c.setup })),
+      fixture: report.fixture,
+      native: report.native,
+      realBackend: report.realBackend,
+      transport: report.transport,
+      closed: report.closed,
+    };
+    fs.writeFileSync(path.join(dir, 'manifest.json'), JSON.stringify(manifest, null, 2));
+    return report;
+  }
+  write();
+  return { report, write, check, notRun, startCase, endCase, shot, route, diagnostic, fail, finish, dir };
+}
+
+// ── DOM facts (read-only) ────────────────────────────────────────────────────
+async function facts(page) {
+  return page.evaluate(() => {
+    const root = document.getElementById('assessment-page');
+    const rectOf = (el) => { const r = el.getBoundingClientRect(); return { x: +r.x.toFixed(2), y: +r.y.toFixed(2), width: +r.width.toFixed(2), height: +r.height.toFixed(2) }; };
+    const styleOf = (el) => { const s = getComputedStyle(el); return { transform: s.transform, outlineStyle: s.outlineStyle, outlineWidth: s.outlineWidth, outlineColor: s.outlineColor, boxShadow: s.boxShadow.slice(0, 100) }; };
+    const active = document.activeElement;
+    const ids = ['assessment-page', 'assessment-guide', 'assessment-question', 'assessment-report', 'assessment-skipped', 'assessment-pending', 'assessment-leave-confirmation', 'assessment-retest-confirmation', 'assessment-error', 'assessment-submit', 'assessment-reload-answer', 'assessment-title'];
+    const btn = (el) => el ? { text: (el.innerText || '').trim(), disabled: el.hasAttribute('disabled'), ariaDisabled: el.getAttribute('aria-disabled'), rect: rectOf(el) } : null;
+    return {
+      url: location.href,
+      route: location.hash.split('?')[0],
+      title: document.title,
+      root: !!root,
+      bodyLen: root ? root.innerText.length : 0,
+      bodyText: root ? root.innerText : '',
+      overlay: !!document.querySelector('vite-error-overlay'),
+      present: Object.fromEntries(ids.map(id => [id, !!document.getElementById(id)])),
+      busy: root ? root.getAttribute('aria-busy') : null,
+      options: root ? [...root.querySelectorAll('.assessment-option')].map(el => ({ id: el.id, pressed: el.getAttribute('aria-pressed'), disabled: el.hasAttribute('disabled'), text: (el.innerText || '').trim(), rect: rectOf(el), style: styleOf(el) })) : [],
+      submit: btn(document.getElementById('assessment-submit')),
+      reload: btn(document.getElementById('assessment-reload-answer')),
+      titleText: (document.getElementById('assessment-title')?.textContent || '').trim(),
+      errorText: (document.getElementById('assessment-error')?.innerText || '').trim(),
+      active: active ? { tag: active.tagName.toLowerCase(), id: active.id || '', role: active.getAttribute('role'), disabled: active.hasAttribute('disabled'), focusVisible: active.matches(':focus-visible'), ...styleOf(active), rect: rectOf(active) } : null,
+      scrollY: Math.round(scrollY),
+      focusables: root ? [...root.querySelectorAll('[tabindex],button,uni-button,a[href],input,textarea,select')].map(el => ({ id: el.id || '', tag: el.tagName.toLowerCase(), tabindex: el.getAttribute('tabindex'), disabled: el.hasAttribute('disabled'), rect: rectOf(el) })) : [],
+    };
+  });
+}
+
+async function waitIdle(page, timeout = 8000) {
+  await page.waitForFunction(() => document.getElementById('assessment-page')?.getAttribute('aria-busy') === 'false', null, { timeout });
+}
+async function waitPresent(page, id, timeout = 8000) {
+  await page.waitForFunction((value) => !!document.getElementById(value), id, { timeout });
+}
+async function waitGone(page, id, timeout = 8000) {
+  await page.waitForFunction((value) => !document.getElementById(value), id, { timeout });
+}
+async function waitRoute(page, prefix, timeout = 10000) {
+  await page.waitForFunction((value) => location.hash.startsWith(value), prefix, { timeout });
+}
+
+// Presses Tab (or Shift+Tab) for real until the wanted id is focused, or the walk
+// budget is spent. Returns the observed order so a missing/looping focus target is
+// recorded as a fact, not assumed.
+async function focusById(page, id, { maxTabs = 24, reverse = false } = {}) {
+  const seen = [];
+  for (let step = 0; step < maxTabs; step++) {
+    await page.keyboard.press(reverse ? 'Shift+Tab' : 'Tab');
+    const active = await page.evaluate(() => ({ id: document.activeElement?.id || '', tag: document.activeElement?.tagName.toLowerCase() || '', disabled: !!document.activeElement?.hasAttribute?.('disabled') }));
+    seen.push(active);
+    if (active.id === id) return { found: true, steps: step + 1, seen };
+    const body = await page.evaluate(() => document.activeElement === document.body);
+    if (body) break;
+  }
+  return { found: false, steps: seen.length, seen };
+}
+
+async function focusWalk(page, steps = 12, { reverse = false } = {}) {
+  const order = [];
+  for (let step = 0; step < steps; step++) {
+    await page.keyboard.press(reverse ? 'Shift+Tab' : 'Tab');
+    order.push(await page.evaluate(() => {
+      const el = document.activeElement;
+      if (!el || el === document.body) return { id: '', tag: 'body', visible: false };
+      const s = getComputedStyle(el);
+      return {
+        id: el.id || '',
+        tag: el.tagName.toLowerCase(),
+        disabled: el.hasAttribute('disabled'),
+        focusVisible: el.matches(':focus-visible'),
+        outlineStyle: s.outlineStyle,
+        outlineWidth: s.outlineWidth,
+        boxShadow: s.boxShadow === 'none' ? 'none' : 'present',
+      };
+    }));
+  }
+  return order;
+}
+
+// Real 0ms/160ms pointer press at the element's own center. The returned
+// oldCenterInside/translateY facts are how the 1px :active shift is measured.
+async function pointerPress(page, selector, { holdMs = 0, release = 'same' } = {}) {
+  const locator = page.locator(selector).first();
+  await locator.waitFor({ state: 'visible' });
+  await locator.scrollIntoViewIfNeeded();
+  const box = await locator.boundingBox();
+  if (!box) throw new Error('no bounding box for ' + selector);
+  const cx = box.x + box.width / 2, cy = box.y + box.height / 2;
+  const before = await locator.evaluate(el => {
+    const r = el.getBoundingClientRect();
+    return { x: +r.x.toFixed(2), y: +r.y.toFixed(2), width: +r.width.toFixed(2), height: +r.height.toFixed(2), transform: getComputedStyle(el).transform };
+  });
+  await page.mouse.move(cx, cy);
+  await page.mouse.down();
+  if (holdMs > 0) await page.waitForTimeout(holdMs);
+  const during = await locator.evaluate(el => {
+    const r = el.getBoundingClientRect();
+    return { x: +r.x.toFixed(2), y: +r.y.toFixed(2), width: +r.width.toFixed(2), height: +r.height.toFixed(2), transform: getComputedStyle(el).transform };
+  });
+  const translateY = +(during.y - before.y).toFixed(2);
+  const oldCenterInside = cx >= during.x && cx <= during.x + during.width && cy >= during.y && cy <= during.y + during.height;
+  if (release === 'same') await page.mouse.up();
+  return { box, cx, cy, before, during, translateY, oldCenterInside };
+}
+
+// Press, drag well outside the element, release there. Chrome only synthesizes a
+// click when down and up share a target; the assertion is the observed no-op.
+async function dragAway(page, selector) {
+  const locator = page.locator(selector).first();
+  await locator.scrollIntoViewIfNeeded();
+  const box = await locator.boundingBox();
+  const cx = box.x + box.width / 2, cy = box.y + box.height / 2;
+  await page.mouse.move(cx, cy);
+  await page.mouse.down();
+  await page.mouse.move(Math.max(1, box.x - 80), Math.max(1, box.y - 40), { steps: 4 });
+  await page.waitForTimeout(30);
+  await page.mouse.up();
+  return { from: { x: cx, y: cy }, to: { x: Math.max(1, box.x - 80), y: Math.max(1, box.y - 40) } };
+}
+
+// CDP-native touch tap/cancel at the element center. Requires context hasTouch:true.
+async function touchAt(page, selector, mode) {
+  const cdp = await page.context().newCDPSession(page);
+  try {
+    await cdp.send('Emulation.setTouchEmulationEnabled', { enabled: true, maxTouchPoints: 1 }).catch(() => {});
+    const box = await page.locator(selector).first().boundingBox();
+    if (!box) throw new Error('no bounding box for ' + selector);
+    const x = box.x + box.width / 2, y = box.y + box.height / 2;
+    await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x, y, id: 1, radiusX: 2, radiusY: 2, force: 1 }] });
+    await page.waitForTimeout(40);
+    if (mode === 'cancel') await cdp.send('Input.dispatchTouchEvent', { type: 'touchCancel', touchPoints: [] });
+    else await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+    return { x, y };
+  } finally {
+    await cdp.detach().catch(() => {});
+  }
+}
+
+function caseErrors(fixtureReport, id) {
+  const pageErrors = fixtureReport.pageErrors.filter(item => item.id === id);
+  const injected = (fixtureReport.injectedFailures || []).filter(item => item.id === id);
+  const rawConsole = fixtureReport.consoleErrors.filter(item => item.id === id);
+  const kept = [];
+  const excluded = [];
+  for (const item of rawConsole) {
+    const message = item.message || '';
+    // Strict, evidence-bound exclusion: the browser resource-failure line must
+    // name a status that this very case deliberately injected, on exactly the
+    // resource path that injection recorded. Unknown 501, unexpected 401/403,
+    // net::ERR_* and any other resource failure stay in `consoleErrors`.
+    const resourceFailure = /^Failed to load resource/i.test(message.trim());
+    const hit = resourceFailure
+      ? injected.find(entry => item.path && entry.path === item.path && new RegExp(`status of\\s+${entry.status}\\b`).test(message))
+      : null;
+    if (hit) excluded.push({ message, path: item.path, reason: 'matched fixture injection ' + hit.injection + ' ' + hit.method + ' ' + hit.path + ' -> ' + hit.status });
+    else kept.push(item);
+  }
+  return { pageErrors, consoleErrors: kept, consoleRaw: rawConsole.length, consoleExcluded: excluded.length, excluded, injected };
+}
+
+async function blurActive(page) {
+  await page.evaluate(() => { const el = document.activeElement; if (el && typeof el.blur === 'function') el.blur(); });
+}
+
+function same(a, b) { return JSON.stringify(a) === JSON.stringify(b); }
+
+// One entry point: guards, 8-source freeze, per-group run dir, guaranteed close,
+// source re-hash after, FAIL=>non-zero exit.
+async function execute({ group, fixture }, main) {
+  const { run, executor } = runIdentity(process.env);
+  const freezeCheck = verifyFreeze();
+  if (!freezeCheck.ok) {
+    refuse('frozen source drift before start: ' + JSON.stringify(freezeCheck.drift));
+  }
+  const dir = prepareDir(group, run);
+  const sourceHashesBefore = freezeCheck.actual;
+  const dependenciesBefore = freezeCheck.dependencies;
+  const reporter = createReporter({ dir, group, run, executor, sourceHashesBefore, freezePreparedAt: freezeCheck.preparedAt });
+  reporter.report.dependenciesBefore = dependenciesBefore;
+  reporter.write();
+  const fixtureSources = Object.fromEntries(fixture.sources.map(file => [file, sourceHashesBefore[file]]));
+  try {
+    fixture.freeze(fixtureSources);
+    await fixture.init();
+    await main({ reporter, dir, fixture, sourceHashesBefore });
+  } catch (error) {
+    reporter.fail(error);
+  } finally {
+    try {
+      await fixture.close();
+      reporter.report.closed = true;
+    } catch (closeError) {
+      reporter.report.closed = false;
+      reporter.fail(closeError);
+    } finally {
+      const after = {};
+      for (const file of Object.keys(sourceHashesBefore)) after[file] = sha256(file);
+      reporter.report.sourceHashesAfter = after;
+      reporter.report.sourceStable = same(sourceHashesBefore, after);
+      if (reporter.report.sourceStable !== true) {
+        reporter.check('source-stable-during-run', false, { sourceHashesAfter: after });
+      }
+      const dependenciesAfter = {};
+      for (const file of Object.keys(dependenciesBefore)) dependenciesAfter[file] = sha256(file);
+      reporter.report.dependenciesAfter = dependenciesAfter;
+      reporter.report.dependenciesStable = same(dependenciesBefore, dependenciesAfter);
+      if (reporter.report.dependenciesStable !== true) {
+        reporter.check('dependencies-stable-during-run', false, { dependenciesAfter });
+      }
+      reporter.check('fixture-closed-all-contexts', reporter.report.closed === true, { closed: reporter.report.closed });
+      reporter.check('executed-check-count-nonzero', reporter.report.checks.length > 0, { checks: reporter.report.checks.length });
+      reporter.report.transport = {
+        requests: fixture.report.requests.length,
+        unexpected: fixture.report.unexpected,
+        targetReads: fixture.report.targetReads,
+        injectedFailures: fixture.report.injectedFailures,
+        pageErrors: fixture.report.pageErrors.length,
+        consoleErrors: fixture.report.consoleErrors.length,
+      };
+      const report = reporter.finish();
+      process.exitCode = report.result === 'PASS_EXECUTED_CHECKS' ? 0 : 1;
+      console.log(JSON.stringify({ group, run, executor, label: report.label, result: report.result, summary: report.summary, notRun: report.notRun, failure: report.failure }, null, 2));
+    }
+  }
+}
+
+const lib = { ROOT, refuse, sha256, verifyFreeze, runIdentity, prepareDir, createReporter, execute, facts, waitIdle, waitPresent, waitGone, waitRoute, focusById, focusWalk, pointerPress, dragAway, touchAt, caseErrors, blurActive, same };
+module.exports = lib;

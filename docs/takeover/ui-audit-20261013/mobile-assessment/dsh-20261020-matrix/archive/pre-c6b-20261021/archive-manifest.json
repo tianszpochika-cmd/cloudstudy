@@ -1,0 +1,36 @@
+{
+  "archivedAt": "2026-10-21T08:08:40.2510383+08:00",
+  "note": "Pre-C6b C5c guard/helper/metadata archive; no product/browser/Git.",
+  "files": [
+    {
+      "file": "coverage.cjs",
+      "sha256": "2823bfc2c99d96dbd8d4b4796e3b76ee16d27a7649ac318c72f3ff04bbdea249",
+      "bytes": 7566
+    },
+    {
+      "file": "matrix.cjs",
+      "sha256": "a300896379f16ca1148c0157a9bcf38d7f7cef7fedc06dfbcba018e7e87786dc",
+      "bytes": 53063
+    },
+    {
+      "file": "measure.cjs",
+      "sha256": "d337a0bbe0e9291a1ca3a731bbd6478d7fdadabf4bd143a795b255ae67dfc73d",
+      "bytes": 33063
+    },
+    {
+      "file": "PREP-20261021-C5C.md",
+      "sha256": "3132a71033d61f0a0b7827ec2e2d2835a41820d3ee4a3d603a771e535e954936",
+      "bytes": 2684
+    },
+    {
+      "file": "checkpoint.md",
+      "sha256": "deb07d4065b4c05e0c42ad5a358eaea9c1806e3b5dac257d7e1e1eb143a422ad",
+      "bytes": 9457
+    },
+    {
+      "file": "README.md",
+      "sha256": "be964513adfcfa39c7ec3ba428a4a94d3e9d2ee3040db0ec6e9038fa46d615fa",
+      "bytes": 17594
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "sha256": "7beeef36e84828b13df82f936f49a5df692485fce2a7b7041ae789befdeab43a",
+  "note": "Pre-edit fixture before exporting the existing closure releaseAll() on the item helper; drivers unchanged, no rerun.",
+  "bytes": 17352,
+  "createdAt": "2026-10-21T01:05:01.3941085Z",
+  "file": "fixture.cjs"
+}

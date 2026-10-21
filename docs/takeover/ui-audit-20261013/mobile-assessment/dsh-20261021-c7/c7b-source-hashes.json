@@ -1,0 +1,23 @@
+{
+  "at": "2026-10-21T08:17:56.0759255+08:00",
+  "note": "C7b static-review corrections; C7 and C6b raw preserved",
+  "c7": {
+    "page": "92e7e11090c046985e5e1a4cb83a8e5249e479f022efd69aea42774125b3937b"
+  },
+  "c6b": {
+    "page": "ac8fb8d2831f4d5f1f20091e09abef7cc6a1314021545ecbbb84a31d11f157fd"
+  },
+  "c7b": {
+    "page": {
+      "raw": "37bad477e4239061972941c42b24468db5994b8afb89feb61f720fbe168c07e5",
+      "lf": "37bad477e4239061972941c42b24468db5994b8afb89feb61f720fbe168c07e5",
+      "bytes": 42425
+    },
+    "four": {
+      "page": "37bad477e4239061972941c42b24468db5994b8afb89feb61f720fbe168c07e5",
+      "i18n": "6ac6800e179de0ba15ab3607918b2f8427d364e19306eaf8f2a146f016247380",
+      "package": "484382c73929055cc4ecd9a83679f8bab72388dd8069f71a056b3bbc595c0078",
+      "lock": "d57a87ca84985549fd53c69b1fe1d59db0b136036f2f7bf640d3b30c0a106624"
+    }
+  }
+}

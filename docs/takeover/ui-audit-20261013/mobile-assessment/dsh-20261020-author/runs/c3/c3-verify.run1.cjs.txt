@@ -1,0 +1,281 @@
+// C3 browser suite — PREPARED FOR ROOT REVIEW, NOT RUN BY THE DSH AUTHOR SESSION.
+// Frozen C3:
+//   apps/mobile/src/pages/assessment/assessment.vue  86620ed0dbc2cb25afb4bbae35734a345b9e8066afa806684f99ccb678a5312d
+//   packages/i18n/src/mobile-experience.ts           6ac6800e179de0ba15ab3607918b2f8427d364e19306eaf8f2a146f016247380
+//
+// Covers:
+//   A. progress simplification semantics (one visible completed count, 4px track,
+//      aria-valuenow/valuemax/valuetext/label bound to acceptedSequence, not stepIndex,
+//      first question completed=0, new question clears this page's selection)
+//   B. the 8 original H5 smoke checks (same guarded synthetic transport fixture)
+//   C. en-US dark 320x568 CSS text 200% guide/question/result H1 DOMRange word-split
+//
+// Requires the Root-managed dev server on http://127.0.0.1:18183 and Playwright Chromium.
+// Run only where browser processes are allowed:
+//   $env:MB006_CONFIRM_BROWSER='1'; node docs/takeover/ui-audit-20261013/mobile-assessment/dsh-20261020-author/scripts/c3-verify.cjs
+// Without MB006_CONFIRM_BROWSER=1 this exits 2 before importing/launching a browser.
+const path = require('node:path');
+
+if (process.env.MB006_CONFIRM_BROWSER !== '1') {
+  console.error('REFUSED: set MB006_CONFIRM_BROWSER=1 to launch the prepared browser suite. Nothing was started.');
+  process.exit(2);
+}
+
+const f = require('./fixture.cjs');
+const { scale, collect } = require('./dom-lib.cjs');
+const fs = require('node:fs');
+const assert = require('node:assert/strict');
+
+const OUT = path.resolve(__dirname, '..', 'runs', 'c3');
+fs.mkdirSync(OUT, { recursive: true });
+const PAGE = 'apps/mobile/src/pages/assessment/assessment.vue';
+const I18N = 'packages/i18n/src/mobile-experience.ts';
+const C3_PAGE = '86620ed0dbc2cb25afb4bbae35734a345b9e8066afa806684f99ccb678a5312d';
+const C3_I18N = '6ac6800e179de0ba15ab3607918b2f8427d364e19306eaf8f2a146f016247380';
+
+const report = {
+  at: new Date().toISOString(),
+  scope: 'MB006_C3_H5_SYNTHETIC_PROGRESS_SMOKE_TEXT200_PREPARED',
+  label: 'C3 (page 86620ed0 / i18n 6ac6800e)',
+  preparedBy: 'DSH author session; not executed by the author',
+  sourceHashesBefore: f.hashes(),
+  checks: [],
+  states: [],
+  screenshots: [],
+  textScale: 'CSS text scaling only (2x computed font-size); browser zoom and native scaling are NOT_RUN',
+};
+let current;
+const save = () => fs.writeFileSync(path.join(OUT, 'results.json'), JSON.stringify({ ...report, transport: f.report }, null, 2));
+function check(name, result, detail) { report.checks.push({ name, result, ...(detail ? { detail } : {}) }); save(); }
+async function shot(name) {
+  await current.page.evaluate(() => scrollTo(0, 0));
+  const file = path.join(OUT, name + '.png');
+  await current.page.screenshot({ path: file, fullPage: true });
+  report.screenshots.push(name + '.png');
+  return file;
+}
+async function progressFacts() {
+  return current.page.evaluate(() => {
+    const root = document.getElementById('assessment-page');
+    const meta = root.querySelector('.assessment-question-meta');
+    const track = root.querySelector('.assessment-progress');
+    const value = root.querySelector('.assessment-progress-value');
+    const bar = root.querySelector('[role=progressbar]');
+    const received = root.querySelector('.assessment-received');
+    const text = root.innerText;
+    return {
+      metaChildren: meta ? [...meta.children].map((c) => c.textContent.trim()) : [],
+      metaText: meta ? meta.innerText : null,
+      receivedElementCount: received ? 1 : 0,
+      bodyHasOldRatio: /(^|\s)0\s*\/\s*10(\s|$)/.test(text),
+      bodyHasReceivedWording: /已接收/.test(text),
+      trackWidth: track ? Math.round(track.getBoundingClientRect().width * 100) / 100 : null,
+      valueWidth: value ? Math.round(value.getBoundingClientRect().width * 100) / 100 : null,
+      bar: bar ? {
+        label: bar.getAttribute('aria-label'), valuemin: bar.getAttribute('aria-valuemin'),
+        valuemax: bar.getAttribute('aria-valuemax'), valuenow: bar.getAttribute('aria-valuenow'),
+        valuetext: bar.getAttribute('aria-valuetext'),
+      } : null,
+      optionHeights: [...root.querySelectorAll('.assessment-option')].map((n) => Math.round(n.getBoundingClientRect().height)),
+      optionPressed: [...root.querySelectorAll('.assessment-option')].map((n) => n.getAttribute('aria-pressed')),
+      submitDisabled: root.querySelector('#assessment-submit')?.hasAttribute('disabled') ?? null,
+      bodyText: text,
+    };
+  });
+}
+
+(async () => {
+  try {
+    assert.equal(report.sourceHashesBefore[PAGE], C3_PAGE, 'page hash is not the frozen C3 candidate');
+    assert.equal(report.sourceHashesBefore[I18N], C3_I18N, 'i18n hash is not the frozen C3 candidate');
+    f.freeze(report.sourceHashesBefore);
+    save();
+    await f.init();
+
+    // ── A. progress semantics, zh-CN light 390 ──────────────────────────────
+    current = await f.fresh({ locale: 'zh-CN', theme: 'light', width: 390, height: 844 });
+    await current.page.locator('#assessment-guide').waitFor();
+    await current.page.locator('#assessment-page[aria-busy=false]').waitFor();
+    check('normal-login-guard-guide-zero-start', current.state.counts.start === 0 ? 'PASS' : 'FAIL', { start: current.state.counts.start });
+    await current.page.locator('#assessment-start').click();
+    await current.page.locator('#assessment-question').waitFor();
+    await current.page.locator('#assessment-page[aria-busy=false]').waitFor();
+    let pf = await progressFacts();
+    await shot('01-progress-first-zh-light-390');
+    report.states.push({ name: '01-progress-first', facts: pf, counts: { ...current.state.counts } });
+    check('first-question-meta-one-line', pf.metaChildren[0] === '第 1 题，共 10 题' && pf.metaChildren[1] === '已完成 0 题' ? 'PASS' : 'FAIL', pf.metaChildren);
+    check('duplicate-progress-removed', pf.receivedElementCount === 0 && !pf.bodyHasOldRatio && !pf.bodyHasReceivedWording ? 'PASS' : 'FAIL', { receivedElementCount: pf.receivedElementCount, bodyHasOldRatio: pf.bodyHasOldRatio, bodyHasReceivedWording: pf.bodyHasReceivedWording });
+    check('progress-aria-first-question-zero', pf.bar?.label === '答题进度' && pf.bar?.valuemin === '0' && pf.bar?.valuemax === '10' && pf.bar?.valuenow === '0' && pf.bar?.valuetext === '已完成 0 题，共 10 题' ? 'PASS' : 'FAIL', pf.bar);
+    check('progress-track-empty-at-zero', pf.trackWidth > 0 && pf.valueWidth === 0 ? 'PASS' : 'FAIL', { trackWidth: pf.trackWidth, valueWidth: pf.valueWidth });
+    check('option-target-at-least-44', pf.optionHeights.every((h) => h >= 44) ? 'PASS' : 'FAIL', pf.optionHeights);
+
+    await current.page.locator('#assessment-option-A').click();
+    check('option-A-selected-readable-and-pressed', await current.page.locator('#assessment-option-A').getAttribute('aria-pressed') === 'true' && /已选/.test(await current.page.locator('#assessment-option-A').innerText()) ? 'PASS' : 'FAIL');
+    await current.page.locator('#assessment-submit').click();
+    await current.page.waitForFunction(() => document.querySelector('[role=progressbar]')?.getAttribute('aria-valuenow') === '1' && document.getElementById('assessment-page')?.getAttribute('aria-busy') === 'false');
+    pf = await progressFacts();
+    await shot('02-progress-second-zh-light-390');
+    report.states.push({ name: '02-progress-second', facts: pf, counts: { ...current.state.counts } });
+    const ratio = pf.trackWidth ? pf.valueWidth / pf.trackWidth : -1;
+    check('second-question-completed-count', pf.metaChildren[0] === '第 2 题，共 10 题' && pf.metaChildren[1] === '已完成 1 题' ? 'PASS' : 'FAIL', pf.metaChildren);
+    check('aria-tracks-accepted-not-step', pf.bar?.valuenow === '1' && pf.bar?.valuetext === '已完成 1 题，共 10 题' && Math.abs(ratio - 0.1) <= 0.03 ? 'PASS' : 'FAIL', { bar: pf.bar, ratio });
+    check('new-question-clears-selection', pf.optionPressed.every((p) => p === 'false') && pf.submitDisabled === true ? 'PASS' : 'FAIL', { pressed: pf.optionPressed, submitDisabled: pf.submitDisabled });
+    await current.close();
+
+    // ── B. original 8 H5 smoke, zh-CN light 390 ─────────────────────────────
+    current = await f.fresh();
+    const p = current.page;
+    await p.locator('#assessment-guide').waitFor();
+    await p.locator('#assessment-page[aria-busy=false]').waitFor();
+    await shot('10-guide-zh-light-390');
+
+    await p.locator('#assessment-start').click();
+    await p.locator('#assessment-question').waitFor();
+    await p.locator('#assessment-page[aria-busy=false]').waitFor();
+    await p.locator('#assessment-option-A').click();
+    assert.equal(await p.locator('#assessment-option-A').getAttribute('aria-pressed'), 'true');
+    assert.match(await p.locator('#assessment-option-A').innerText(), /已选/);
+    await shot('11-selected-zh-light-390');
+    check('smoke-2-option-A-selected-readable-and-pressed', 'PASS');
+
+    current.state.responseError = true;
+    await p.locator('#assessment-submit').click();
+    await p.locator('#assessment-error').waitFor();
+    await p.locator('#assessment-page[aria-busy=false]').waitFor();
+    assert.equal(await p.locator('#assessment-option-A').getAttribute('aria-pressed'), 'true');
+    assert.equal(current.state.counts.respond, 1);
+    await shot('12-submit503-retained-choice');
+    check('smoke-3-response503-preserves-A-with-visible-error', 'PASS');
+
+    current.state.responseError = false;
+    const getBefore = current.state.counts.placementGet;
+    await p.locator('#assessment-reload-answer').click();
+    await p.locator('#assessment-submit').waitFor();
+    await p.locator('#assessment-page[aria-busy=false]').waitFor();
+    assert.equal(await p.locator('#assessment-option-A').getAttribute('aria-pressed'), 'true');
+    assert.equal(await p.locator('[role=progressbar]').getAttribute('aria-valuenow'), '0');
+    assert.equal(current.state.counts.placementGet, getBefore + 1);
+    assert.equal(current.state.counts.start, 1);
+    await shot('13-readback-same-question-retained-choice');
+    check('smoke-4-same-session-GET-preserves-choice-no-new-start', 'PASS');
+
+    for (let n = 1; n <= 10; n++) {
+      if (n > 1) await p.locator('#assessment-option-A').click();
+      await p.locator('#assessment-submit').click();
+      if (n < 10) {
+        await p.getByText(`第 ${n + 1} 题，共 10 题`, { exact: true }).waitFor();
+        await p.locator('#assessment-page[aria-busy=false]').waitFor();
+      } else {
+        await p.locator('#assessment-report').waitFor();
+        await p.locator('#assessment-page[aria-busy=false]').waitFor();
+      }
+    }
+    assert.equal(current.state.counts.start, 1);
+    assert.equal(current.state.counts.respond, 11);
+    assert.equal(current.state.counts.ensure, 1);
+    assert.match(await p.locator('#assessment-report').innerText(), /A2/);
+    await shot('14-assessed-after-ten-real-submits');
+    check('smoke-5-ten-successful-submits-assessed-one-ensure', 'PASS', { ...current.state.counts });
+
+    await p.locator('#assessment-retest').click();
+    await p.locator('#assessment-retest-confirmation').waitFor();
+    assert.equal(current.state.counts.retest, 0);
+    await shot('15-retest-confirm-zero-write');
+    await p.locator('#assessment-retest-cancel').click();
+    assert.equal(await p.locator('#assessment-retest-confirmation').count(), 0);
+    assert.equal(current.state.counts.retest, 0);
+    check('smoke-6-ask-and-cancel-retest-zero-write', 'PASS');
+
+    await p.locator('#assessment-retest').click();
+    await p.locator('#assessment-retest-confirmation').waitFor();
+    current.state.retestError = true;
+    await p.locator('#assessment-retest-confirm').click();
+    await p.locator('#assessment-error').waitFor();
+    await p.locator('#assessment-page[aria-busy=false]').waitFor();
+    assert.equal(current.state.counts.retest, 1);
+    assert.equal(await p.locator('#assessment-report').count(), 1);
+    assert.match(await p.locator('#assessment-report').innerText(), /A2/);
+    assert.match(await p.locator('#assessment-error').innerText(), /重测没有开出新题/);
+    await shot('16-retest503-old-report-visible');
+    await p.locator('#assessment-retest-cancel').click();
+    assert.equal(current.state.counts.retest, 1);
+    check('smoke-7-retest503-error-keeps-old-report-cancel-unlocks', 'PASS');
+    await current.close();
+
+    current = await f.fresh({ locale: 'en-US', theme: 'dark', width: 390, height: 844 });
+    await current.page.locator('#assessment-guide').waitFor();
+    await current.page.locator('#assessment-page[aria-busy=false]').waitFor();
+    await shot('17-guide-en-dark-390');
+    const enFacts = await collect(current.page);
+    assert.equal(await current.page.evaluate(async () => (await import('/src/platform/v2-foundation.ts')).mobileI18n.locale), 'en-US');
+    assert.equal(enFacts.rawKey, false);
+    assert.equal(enFacts.hanInEnBody, false);
+    check('smoke-8-en-dark-guide-no-Chinese-body-or-raw-keys', 'PASS');
+    await current.close();
+
+    // ── C. 200% three states, en-US dark 320x568 ────────────────────────────
+    current = await f.fresh({ locale: 'en-US', theme: 'dark', width: 320, height: 568 });
+    await current.page.locator('#assessment-guide').waitFor();
+    await current.page.locator('#assessment-page[aria-busy=false]').waitFor();
+    await scale(current.page, 2);
+    let facts = await collect(current.page);
+    let h1Split = facts.splitWords.filter((w) => w.id === 'assessment-title');
+    await shot('20-guide-css200-en-dark-320');
+    report.states.push({ name: '20-guide-css200', facts, result: h1Split.length === 0 && !facts.overflow ? 'PASS' : 'FAIL' });
+    check('text200-guide-h1-readable', h1Split.length === 0 && !facts.overflow ? 'PASS' : 'FAIL', { h1Split: h1Split.map((w) => w.word), overflow: facts.overflow, heading: facts.h1 });
+    await scale(current.page, 0);
+
+    await current.page.locator('#assessment-start').click();
+    await current.page.locator('#assessment-question').waitFor();
+    await current.page.locator('#assessment-page[aria-busy=false]').waitFor();
+    await current.page.locator('#assessment-option-A').click();
+    await scale(current.page, 2);
+    facts = await collect(current.page);
+    h1Split = facts.splitWords.filter((w) => w.id === 'assessment-title');
+    await shot('21-question-css200-en-dark-320');
+    report.states.push({ name: '21-question-css200', facts, result: h1Split.length === 0 && !facts.overflow ? 'PASS' : 'FAIL' });
+    check('text200-question-h1-readable', h1Split.length === 0 && !facts.overflow ? 'PASS' : 'FAIL', { h1Split: h1Split.map((w) => w.word), overflow: facts.overflow, heading: facts.h1 });
+    await scale(current.page, 0);
+
+    for (let n = 1; n <= 10; n++) {
+      if (n > 1) await current.page.locator('#assessment-option-A').click();
+      await current.page.locator('#assessment-submit').click();
+      if (n < 10) {
+        await current.page.waitForFunction((expected) => {
+          const bar = document.querySelector('[role=progressbar]');
+          const root = document.getElementById('assessment-page');
+          return !!bar && bar.getAttribute('aria-valuenow') === String(expected) && root?.getAttribute('aria-busy') === 'false';
+        }, n);
+      } else {
+        await current.page.locator('#assessment-report').waitFor();
+        await current.page.locator('#assessment-page[aria-busy=false]').waitFor();
+      }
+    }
+    await scale(current.page, 2);
+    facts = await collect(current.page);
+    h1Split = facts.splitWords.filter((w) => w.id === 'assessment-title');
+    await shot('22-result-css200-en-dark-320');
+    report.states.push({ name: '22-result-css200', facts, result: h1Split.length === 0 && !facts.overflow ? 'PASS' : 'FAIL' });
+    check('text200-result-h1-readable', h1Split.length === 0 && !facts.overflow ? 'PASS' : 'FAIL', { h1Split: h1Split.map((w) => w.word), overflow: facts.overflow, heading: facts.h1 });
+    check('text200-result-heading-is-Your-result', (await current.page.locator('#assessment-title').innerText()).trim() === 'Your result' ? 'PASS' : 'FAIL');
+    await scale(current.page, 0);
+    await current.page.screenshot({ path: path.join(OUT, '23-result-100-en-dark-320.png'), fullPage: true });
+    report.screenshots.push('23-result-100-en-dark-320.png');
+
+    check('no-unexpected-api', f.report.unexpected.length === 0 ? 'PASS' : 'FAIL', { unexpected: f.report.unexpected });
+    check('no-page-errors', f.report.pageErrors.length === 0 ? 'PASS' : 'FAIL', { pageErrors: f.report.pageErrors });
+    report.result = report.checks.every((c) => c.result === 'PASS') ? 'PASS' : 'FAIL';
+    report.completed = true;
+  } catch (error) {
+    report.failure = { message: error.message, stack: error.stack };
+    report.result = 'FAIL';
+    process.exitCode = 1;
+  } finally {
+    await f.close();
+    report.closed = true;
+    report.sourceHashesAfter = f.hashes();
+    report.sourceStable = JSON.stringify(report.sourceHashesBefore) === JSON.stringify(report.sourceHashesAfter);
+    save();
+  }
+  console.log(JSON.stringify({ result: report.result, checks: report.checks, states: report.states.map((s) => ({ name: s.name, result: s.result, heading: s.facts?.h1?.text })) }, null, 2));
+})();

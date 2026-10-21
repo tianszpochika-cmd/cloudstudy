@@ -1,0 +1,1811 @@
+{
+  "runId": "codex-20261021-c5c-full-1",
+  "group": "all",
+  "caseIds": [],
+  "states": [
+    "guide",
+    "question",
+    "report",
+    "retest-confirm",
+    "retest-cancelled"
+  ],
+  "shots": {
+    "guide": "01-guide.png",
+    "question": "02-question-selected.png",
+    "report": "03-report.png",
+    "retest-confirm": "05-retest-confirmation.png",
+    "retest-cancelled": "06-retest-cancelled.png"
+  },
+  "reportFull": "04-report-fullpage.png",
+  "selectionProbeShot": "02c-question-selected-C.png",
+  "contexts": [
+    {
+      "index": 1,
+      "id": "zh-CN__light__320",
+      "locale": "zh-CN",
+      "theme": "light",
+      "width": 320,
+      "height": 568,
+      "colorScheme": "light",
+      "textScale": null,
+      "short": false,
+      "systemLiveSwitch": false,
+      "groups": [
+        "compact"
+      ],
+      "controlIds": {
+        "guide": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-start",
+          "assessment-home"
+        ],
+        "question": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-option-A",
+          "assessment-option-B",
+          "assessment-option-C",
+          "assessment-option-D",
+          "assessment-submit"
+        ],
+        "report": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest"
+        ],
+        "retest-confirm": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest",
+          "assessment-retest-cancel",
+          "assessment-retest-confirm"
+        ],
+        "retest-cancelled": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest"
+        ]
+      }
+    },
+    {
+      "index": 2,
+      "id": "zh-CN__light__390",
+      "locale": "zh-CN",
+      "theme": "light",
+      "width": 390,
+      "height": 844,
+      "colorScheme": "light",
+      "textScale": null,
+      "short": false,
+      "systemLiveSwitch": false,
+      "groups": [
+        "compact"
+      ],
+      "controlIds": {
+        "guide": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-start",
+          "assessment-home"
+        ],
+        "question": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-option-A",
+          "assessment-option-B",
+          "assessment-option-C",
+          "assessment-option-D",
+          "assessment-submit"
+        ],
+        "report": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest"
+        ],
+        "retest-confirm": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest",
+          "assessment-retest-cancel",
+          "assessment-retest-confirm"
+        ],
+        "retest-cancelled": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest"
+        ]
+      }
+    },
+    {
+      "index": 3,
+      "id": "zh-CN__light__768",
+      "locale": "zh-CN",
+      "theme": "light",
+      "width": 768,
+      "height": 1024,
+      "colorScheme": "light",
+      "textScale": null,
+      "short": false,
+      "systemLiveSwitch": false,
+      "groups": [
+        "wide"
+      ],
+      "controlIds": {
+        "guide": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-start",
+          "assessment-home"
+        ],
+        "question": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-option-A",
+          "assessment-option-B",
+          "assessment-option-C",
+          "assessment-option-D",
+          "assessment-submit"
+        ],
+        "report": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest"
+        ],
+        "retest-confirm": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest",
+          "assessment-retest-cancel",
+          "assessment-retest-confirm"
+        ],
+        "retest-cancelled": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest"
+        ]
+      }
+    },
+    {
+      "index": 4,
+      "id": "zh-CN__light__1280",
+      "locale": "zh-CN",
+      "theme": "light",
+      "width": 1280,
+      "height": 900,
+      "colorScheme": "light",
+      "textScale": null,
+      "short": false,
+      "systemLiveSwitch": false,
+      "groups": [
+        "wide"
+      ],
+      "controlIds": {
+        "guide": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-start",
+          "assessment-home"
+        ],
+        "question": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-option-A",
+          "assessment-option-B",
+          "assessment-option-C",
+          "assessment-option-D",
+          "assessment-submit"
+        ],
+        "report": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest"
+        ],
+        "retest-confirm": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest",
+          "assessment-retest-cancel",
+          "assessment-retest-confirm"
+        ],
+        "retest-cancelled": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest"
+        ]
+      }
+    },
+    {
+      "index": 5,
+      "id": "zh-CN__dark__320",
+      "locale": "zh-CN",
+      "theme": "dark",
+      "width": 320,
+      "height": 568,
+      "colorScheme": "light",
+      "textScale": null,
+      "short": false,
+      "systemLiveSwitch": false,
+      "groups": [
+        "compact"
+      ],
+      "controlIds": {
+        "guide": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-start",
+          "assessment-home"
+        ],
+        "question": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-option-A",
+          "assessment-option-B",
+          "assessment-option-C",
+          "assessment-option-D",
+          "assessment-submit"
+        ],
+        "report": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest"
+        ],
+        "retest-confirm": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest",
+          "assessment-retest-cancel",
+          "assessment-retest-confirm"
+        ],
+        "retest-cancelled": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest"
+        ]
+      }
+    },
+    {
+      "index": 6,
+      "id": "zh-CN__dark__390",
+      "locale": "zh-CN",
+      "theme": "dark",
+      "width": 390,
+      "height": 844,
+      "colorScheme": "light",
+      "textScale": null,
+      "short": false,
+      "systemLiveSwitch": false,
+      "groups": [
+        "compact"
+      ],
+      "controlIds": {
+        "guide": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-start",
+          "assessment-home"
+        ],
+        "question": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-option-A",
+          "assessment-option-B",
+          "assessment-option-C",
+          "assessment-option-D",
+          "assessment-submit"
+        ],
+        "report": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest"
+        ],
+        "retest-confirm": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest",
+          "assessment-retest-cancel",
+          "assessment-retest-confirm"
+        ],
+        "retest-cancelled": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest"
+        ]
+      }
+    },
+    {
+      "index": 7,
+      "id": "zh-CN__dark__768",
+      "locale": "zh-CN",
+      "theme": "dark",
+      "width": 768,
+      "height": 1024,
+      "colorScheme": "light",
+      "textScale": null,
+      "short": false,
+      "systemLiveSwitch": false,
+      "groups": [
+        "wide"
+      ],
+      "controlIds": {
+        "guide": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-start",
+          "assessment-home"
+        ],
+        "question": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-option-A",
+          "assessment-option-B",
+          "assessment-option-C",
+          "assessment-option-D",
+          "assessment-submit"
+        ],
+        "report": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest"
+        ],
+        "retest-confirm": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest",
+          "assessment-retest-cancel",
+          "assessment-retest-confirm"
+        ],
+        "retest-cancelled": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest"
+        ]
+      }
+    },
+    {
+      "index": 8,
+      "id": "zh-CN__dark__1280",
+      "locale": "zh-CN",
+      "theme": "dark",
+      "width": 1280,
+      "height": 900,
+      "colorScheme": "light",
+      "textScale": null,
+      "short": false,
+      "systemLiveSwitch": false,
+      "groups": [
+        "wide"
+      ],
+      "controlIds": {
+        "guide": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-start",
+          "assessment-home"
+        ],
+        "question": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-option-A",
+          "assessment-option-B",
+          "assessment-option-C",
+          "assessment-option-D",
+          "assessment-submit"
+        ],
+        "report": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest"
+        ],
+        "retest-confirm": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest",
+          "assessment-retest-cancel",
+          "assessment-retest-confirm"
+        ],
+        "retest-cancelled": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest"
+        ]
+      }
+    },
+    {
+      "index": 9,
+      "id": "zh-CN__high-contrast__320",
+      "locale": "zh-CN",
+      "theme": "high-contrast",
+      "width": 320,
+      "height": 568,
+      "colorScheme": "light",
+      "textScale": null,
+      "short": false,
+      "systemLiveSwitch": false,
+      "groups": [
+        "compact",
+        "theme"
+      ],
+      "controlIds": {
+        "guide": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-start",
+          "assessment-home"
+        ],
+        "question": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-option-A",
+          "assessment-option-B",
+          "assessment-option-C",
+          "assessment-option-D",
+          "assessment-submit"
+        ],
+        "report": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest"
+        ],
+        "retest-confirm": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest",
+          "assessment-retest-cancel",
+          "assessment-retest-confirm"
+        ],
+        "retest-cancelled": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest"
+        ]
+      }
+    },
+    {
+      "index": 10,
+      "id": "zh-CN__high-contrast__390",
+      "locale": "zh-CN",
+      "theme": "high-contrast",
+      "width": 390,
+      "height": 844,
+      "colorScheme": "light",
+      "textScale": null,
+      "short": false,
+      "systemLiveSwitch": false,
+      "groups": [
+        "compact",
+        "theme"
+      ],
+      "controlIds": {
+        "guide": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-start",
+          "assessment-home"
+        ],
+        "question": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-option-A",
+          "assessment-option-B",
+          "assessment-option-C",
+          "assessment-option-D",
+          "assessment-submit"
+        ],
+        "report": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest"
+        ],
+        "retest-confirm": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest",
+          "assessment-retest-cancel",
+          "assessment-retest-confirm"
+        ],
+        "retest-cancelled": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest"
+        ]
+      }
+    },
+    {
+      "index": 11,
+      "id": "zh-CN__high-contrast__768",
+      "locale": "zh-CN",
+      "theme": "high-contrast",
+      "width": 768,
+      "height": 1024,
+      "colorScheme": "light",
+      "textScale": null,
+      "short": false,
+      "systemLiveSwitch": false,
+      "groups": [
+        "wide",
+        "theme"
+      ],
+      "controlIds": {
+        "guide": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-start",
+          "assessment-home"
+        ],
+        "question": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-option-A",
+          "assessment-option-B",
+          "assessment-option-C",
+          "assessment-option-D",
+          "assessment-submit"
+        ],
+        "report": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest"
+        ],
+        "retest-confirm": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest",
+          "assessment-retest-cancel",
+          "assessment-retest-confirm"
+        ],
+        "retest-cancelled": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest"
+        ]
+      }
+    },
+    {
+      "index": 12,
+      "id": "zh-CN__high-contrast__1280",
+      "locale": "zh-CN",
+      "theme": "high-contrast",
+      "width": 1280,
+      "height": 900,
+      "colorScheme": "light",
+      "textScale": null,
+      "short": false,
+      "systemLiveSwitch": false,
+      "groups": [
+        "wide",
+        "theme"
+      ],
+      "controlIds": {
+        "guide": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-start",
+          "assessment-home"
+        ],
+        "question": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-option-A",
+          "assessment-option-B",
+          "assessment-option-C",
+          "assessment-option-D",
+          "assessment-submit"
+        ],
+        "report": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest"
+        ],
+        "retest-confirm": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest",
+          "assessment-retest-cancel",
+          "assessment-retest-confirm"
+        ],
+        "retest-cancelled": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest"
+        ]
+      }
+    },
+    {
+      "index": 13,
+      "id": "zh-CN__system__320",
+      "locale": "zh-CN",
+      "theme": "system",
+      "width": 320,
+      "height": 568,
+      "colorScheme": "light",
+      "textScale": null,
+      "short": false,
+      "systemLiveSwitch": false,
+      "groups": [
+        "compact",
+        "theme"
+      ],
+      "controlIds": {
+        "guide": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-start",
+          "assessment-home"
+        ],
+        "question": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-option-A",
+          "assessment-option-B",
+          "assessment-option-C",
+          "assessment-option-D",
+          "assessment-submit"
+        ],
+        "report": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest"
+        ],
+        "retest-confirm": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest",
+          "assessment-retest-cancel",
+          "assessment-retest-confirm"
+        ],
+        "retest-cancelled": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest"
+        ]
+      }
+    },
+    {
+      "index": 14,
+      "id": "zh-CN__system__390",
+      "locale": "zh-CN",
+      "theme": "system",
+      "width": 390,
+      "height": 844,
+      "colorScheme": "dark",
+      "textScale": null,
+      "short": false,
+      "systemLiveSwitch": false,
+      "groups": [
+        "compact",
+        "theme"
+      ],
+      "controlIds": {
+        "guide": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-start",
+          "assessment-home"
+        ],
+        "question": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-option-A",
+          "assessment-option-B",
+          "assessment-option-C",
+          "assessment-option-D",
+          "assessment-submit"
+        ],
+        "report": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest"
+        ],
+        "retest-confirm": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest",
+          "assessment-retest-cancel",
+          "assessment-retest-confirm"
+        ],
+        "retest-cancelled": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest"
+        ]
+      }
+    },
+    {
+      "index": 15,
+      "id": "zh-CN__system__768",
+      "locale": "zh-CN",
+      "theme": "system",
+      "width": 768,
+      "height": 1024,
+      "colorScheme": "light",
+      "textScale": null,
+      "short": false,
+      "systemLiveSwitch": true,
+      "groups": [
+        "wide",
+        "theme"
+      ],
+      "controlIds": {
+        "guide": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-start",
+          "assessment-home"
+        ],
+        "question": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-option-A",
+          "assessment-option-B",
+          "assessment-option-C",
+          "assessment-option-D",
+          "assessment-submit"
+        ],
+        "report": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest"
+        ],
+        "retest-confirm": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest",
+          "assessment-retest-cancel",
+          "assessment-retest-confirm"
+        ],
+        "retest-cancelled": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest"
+        ]
+      }
+    },
+    {
+      "index": 16,
+      "id": "zh-CN__system__1280",
+      "locale": "zh-CN",
+      "theme": "system",
+      "width": 1280,
+      "height": 900,
+      "colorScheme": "light",
+      "textScale": null,
+      "short": false,
+      "systemLiveSwitch": false,
+      "groups": [
+        "wide",
+        "theme"
+      ],
+      "controlIds": {
+        "guide": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-start",
+          "assessment-home"
+        ],
+        "question": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-option-A",
+          "assessment-option-B",
+          "assessment-option-C",
+          "assessment-option-D",
+          "assessment-submit"
+        ],
+        "report": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest"
+        ],
+        "retest-confirm": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest",
+          "assessment-retest-cancel",
+          "assessment-retest-confirm"
+        ],
+        "retest-cancelled": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest"
+        ]
+      }
+    },
+    {
+      "index": 17,
+      "id": "en-US__light__320",
+      "locale": "en-US",
+      "theme": "light",
+      "width": 320,
+      "height": 568,
+      "colorScheme": "light",
+      "textScale": null,
+      "short": false,
+      "systemLiveSwitch": false,
+      "groups": [
+        "compact"
+      ],
+      "controlIds": {
+        "guide": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-start",
+          "assessment-home"
+        ],
+        "question": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-option-A",
+          "assessment-option-B",
+          "assessment-option-C",
+          "assessment-option-D",
+          "assessment-submit"
+        ],
+        "report": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest"
+        ],
+        "retest-confirm": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest",
+          "assessment-retest-cancel",
+          "assessment-retest-confirm"
+        ],
+        "retest-cancelled": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest"
+        ]
+      }
+    },
+    {
+      "index": 18,
+      "id": "en-US__light__390",
+      "locale": "en-US",
+      "theme": "light",
+      "width": 390,
+      "height": 844,
+      "colorScheme": "light",
+      "textScale": null,
+      "short": false,
+      "systemLiveSwitch": false,
+      "groups": [
+        "compact"
+      ],
+      "controlIds": {
+        "guide": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-start",
+          "assessment-home"
+        ],
+        "question": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-option-A",
+          "assessment-option-B",
+          "assessment-option-C",
+          "assessment-option-D",
+          "assessment-submit"
+        ],
+        "report": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest"
+        ],
+        "retest-confirm": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest",
+          "assessment-retest-cancel",
+          "assessment-retest-confirm"
+        ],
+        "retest-cancelled": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest"
+        ]
+      }
+    },
+    {
+      "index": 19,
+      "id": "en-US__light__768",
+      "locale": "en-US",
+      "theme": "light",
+      "width": 768,
+      "height": 1024,
+      "colorScheme": "light",
+      "textScale": null,
+      "short": false,
+      "systemLiveSwitch": false,
+      "groups": [
+        "wide"
+      ],
+      "controlIds": {
+        "guide": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-start",
+          "assessment-home"
+        ],
+        "question": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-option-A",
+          "assessment-option-B",
+          "assessment-option-C",
+          "assessment-option-D",
+          "assessment-submit"
+        ],
+        "report": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest"
+        ],
+        "retest-confirm": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest",
+          "assessment-retest-cancel",
+          "assessment-retest-confirm"
+        ],
+        "retest-cancelled": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest"
+        ]
+      }
+    },
+    {
+      "index": 20,
+      "id": "en-US__light__1280",
+      "locale": "en-US",
+      "theme": "light",
+      "width": 1280,
+      "height": 900,
+      "colorScheme": "light",
+      "textScale": null,
+      "short": false,
+      "systemLiveSwitch": false,
+      "groups": [
+        "wide"
+      ],
+      "controlIds": {
+        "guide": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-start",
+          "assessment-home"
+        ],
+        "question": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-option-A",
+          "assessment-option-B",
+          "assessment-option-C",
+          "assessment-option-D",
+          "assessment-submit"
+        ],
+        "report": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest"
+        ],
+        "retest-confirm": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest",
+          "assessment-retest-cancel",
+          "assessment-retest-confirm"
+        ],
+        "retest-cancelled": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest"
+        ]
+      }
+    },
+    {
+      "index": 21,
+      "id": "en-US__dark__320",
+      "locale": "en-US",
+      "theme": "dark",
+      "width": 320,
+      "height": 568,
+      "colorScheme": "light",
+      "textScale": null,
+      "short": false,
+      "systemLiveSwitch": false,
+      "groups": [
+        "compact"
+      ],
+      "controlIds": {
+        "guide": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-start",
+          "assessment-home"
+        ],
+        "question": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-option-A",
+          "assessment-option-B",
+          "assessment-option-C",
+          "assessment-option-D",
+          "assessment-submit"
+        ],
+        "report": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest"
+        ],
+        "retest-confirm": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest",
+          "assessment-retest-cancel",
+          "assessment-retest-confirm"
+        ],
+        "retest-cancelled": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest"
+        ]
+      }
+    },
+    {
+      "index": 22,
+      "id": "en-US__dark__390",
+      "locale": "en-US",
+      "theme": "dark",
+      "width": 390,
+      "height": 844,
+      "colorScheme": "light",
+      "textScale": null,
+      "short": false,
+      "systemLiveSwitch": false,
+      "groups": [
+        "compact"
+      ],
+      "controlIds": {
+        "guide": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-start",
+          "assessment-home"
+        ],
+        "question": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-option-A",
+          "assessment-option-B",
+          "assessment-option-C",
+          "assessment-option-D",
+          "assessment-submit"
+        ],
+        "report": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest"
+        ],
+        "retest-confirm": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest",
+          "assessment-retest-cancel",
+          "assessment-retest-confirm"
+        ],
+        "retest-cancelled": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest"
+        ]
+      }
+    },
+    {
+      "index": 23,
+      "id": "en-US__dark__768",
+      "locale": "en-US",
+      "theme": "dark",
+      "width": 768,
+      "height": 1024,
+      "colorScheme": "light",
+      "textScale": null,
+      "short": false,
+      "systemLiveSwitch": false,
+      "groups": [
+        "wide"
+      ],
+      "controlIds": {
+        "guide": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-start",
+          "assessment-home"
+        ],
+        "question": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-option-A",
+          "assessment-option-B",
+          "assessment-option-C",
+          "assessment-option-D",
+          "assessment-submit"
+        ],
+        "report": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest"
+        ],
+        "retest-confirm": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest",
+          "assessment-retest-cancel",
+          "assessment-retest-confirm"
+        ],
+        "retest-cancelled": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest"
+        ]
+      }
+    },
+    {
+      "index": 24,
+      "id": "en-US__dark__1280",
+      "locale": "en-US",
+      "theme": "dark",
+      "width": 1280,
+      "height": 900,
+      "colorScheme": "light",
+      "textScale": null,
+      "short": false,
+      "systemLiveSwitch": false,
+      "groups": [
+        "wide"
+      ],
+      "controlIds": {
+        "guide": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-start",
+          "assessment-home"
+        ],
+        "question": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-option-A",
+          "assessment-option-B",
+          "assessment-option-C",
+          "assessment-option-D",
+          "assessment-submit"
+        ],
+        "report": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest"
+        ],
+        "retest-confirm": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest",
+          "assessment-retest-cancel",
+          "assessment-retest-confirm"
+        ],
+        "retest-cancelled": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest"
+        ]
+      }
+    },
+    {
+      "index": 25,
+      "id": "en-US__high-contrast__320",
+      "locale": "en-US",
+      "theme": "high-contrast",
+      "width": 320,
+      "height": 568,
+      "colorScheme": "light",
+      "textScale": null,
+      "short": false,
+      "systemLiveSwitch": false,
+      "groups": [
+        "compact",
+        "theme"
+      ],
+      "controlIds": {
+        "guide": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-start",
+          "assessment-home"
+        ],
+        "question": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-option-A",
+          "assessment-option-B",
+          "assessment-option-C",
+          "assessment-option-D",
+          "assessment-submit"
+        ],
+        "report": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest"
+        ],
+        "retest-confirm": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest",
+          "assessment-retest-cancel",
+          "assessment-retest-confirm"
+        ],
+        "retest-cancelled": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest"
+        ]
+      }
+    },
+    {
+      "index": 26,
+      "id": "en-US__high-contrast__390",
+      "locale": "en-US",
+      "theme": "high-contrast",
+      "width": 390,
+      "height": 844,
+      "colorScheme": "light",
+      "textScale": null,
+      "short": false,
+      "systemLiveSwitch": false,
+      "groups": [
+        "compact",
+        "theme"
+      ],
+      "controlIds": {
+        "guide": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-start",
+          "assessment-home"
+        ],
+        "question": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-option-A",
+          "assessment-option-B",
+          "assessment-option-C",
+          "assessment-option-D",
+          "assessment-submit"
+        ],
+        "report": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest"
+        ],
+        "retest-confirm": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest",
+          "assessment-retest-cancel",
+          "assessment-retest-confirm"
+        ],
+        "retest-cancelled": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest"
+        ]
+      }
+    },
+    {
+      "index": 27,
+      "id": "en-US__high-contrast__768",
+      "locale": "en-US",
+      "theme": "high-contrast",
+      "width": 768,
+      "height": 1024,
+      "colorScheme": "light",
+      "textScale": null,
+      "short": false,
+      "systemLiveSwitch": false,
+      "groups": [
+        "wide",
+        "theme"
+      ],
+      "controlIds": {
+        "guide": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-start",
+          "assessment-home"
+        ],
+        "question": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-option-A",
+          "assessment-option-B",
+          "assessment-option-C",
+          "assessment-option-D",
+          "assessment-submit"
+        ],
+        "report": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest"
+        ],
+        "retest-confirm": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest",
+          "assessment-retest-cancel",
+          "assessment-retest-confirm"
+        ],
+        "retest-cancelled": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest"
+        ]
+      }
+    },
+    {
+      "index": 28,
+      "id": "en-US__high-contrast__1280",
+      "locale": "en-US",
+      "theme": "high-contrast",
+      "width": 1280,
+      "height": 900,
+      "colorScheme": "light",
+      "textScale": null,
+      "short": false,
+      "systemLiveSwitch": false,
+      "groups": [
+        "wide",
+        "theme"
+      ],
+      "controlIds": {
+        "guide": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-start",
+          "assessment-home"
+        ],
+        "question": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-option-A",
+          "assessment-option-B",
+          "assessment-option-C",
+          "assessment-option-D",
+          "assessment-submit"
+        ],
+        "report": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest"
+        ],
+        "retest-confirm": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest",
+          "assessment-retest-cancel",
+          "assessment-retest-confirm"
+        ],
+        "retest-cancelled": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest"
+        ]
+      }
+    },
+    {
+      "index": 29,
+      "id": "en-US__system__320",
+      "locale": "en-US",
+      "theme": "system",
+      "width": 320,
+      "height": 568,
+      "colorScheme": "light",
+      "textScale": null,
+      "short": false,
+      "systemLiveSwitch": false,
+      "groups": [
+        "compact",
+        "theme"
+      ],
+      "controlIds": {
+        "guide": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-start",
+          "assessment-home"
+        ],
+        "question": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-option-A",
+          "assessment-option-B",
+          "assessment-option-C",
+          "assessment-option-D",
+          "assessment-submit"
+        ],
+        "report": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest"
+        ],
+        "retest-confirm": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest",
+          "assessment-retest-cancel",
+          "assessment-retest-confirm"
+        ],
+        "retest-cancelled": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest"
+        ]
+      }
+    },
+    {
+      "index": 30,
+      "id": "en-US__system__390",
+      "locale": "en-US",
+      "theme": "system",
+      "width": 390,
+      "height": 844,
+      "colorScheme": "dark",
+      "textScale": null,
+      "short": false,
+      "systemLiveSwitch": false,
+      "groups": [
+        "compact",
+        "theme"
+      ],
+      "controlIds": {
+        "guide": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-start",
+          "assessment-home"
+        ],
+        "question": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-option-A",
+          "assessment-option-B",
+          "assessment-option-C",
+          "assessment-option-D",
+          "assessment-submit"
+        ],
+        "report": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest"
+        ],
+        "retest-confirm": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest",
+          "assessment-retest-cancel",
+          "assessment-retest-confirm"
+        ],
+        "retest-cancelled": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest"
+        ]
+      }
+    },
+    {
+      "index": 31,
+      "id": "en-US__system__768",
+      "locale": "en-US",
+      "theme": "system",
+      "width": 768,
+      "height": 1024,
+      "colorScheme": "light",
+      "textScale": null,
+      "short": false,
+      "systemLiveSwitch": true,
+      "groups": [
+        "wide",
+        "theme"
+      ],
+      "controlIds": {
+        "guide": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-start",
+          "assessment-home"
+        ],
+        "question": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-option-A",
+          "assessment-option-B",
+          "assessment-option-C",
+          "assessment-option-D",
+          "assessment-submit"
+        ],
+        "report": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest"
+        ],
+        "retest-confirm": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest",
+          "assessment-retest-cancel",
+          "assessment-retest-confirm"
+        ],
+        "retest-cancelled": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest"
+        ]
+      }
+    },
+    {
+      "index": 32,
+      "id": "en-US__system__1280",
+      "locale": "en-US",
+      "theme": "system",
+      "width": 1280,
+      "height": 900,
+      "colorScheme": "light",
+      "textScale": null,
+      "short": false,
+      "systemLiveSwitch": false,
+      "groups": [
+        "wide",
+        "theme"
+      ],
+      "controlIds": {
+        "guide": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-start",
+          "assessment-home"
+        ],
+        "question": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-option-A",
+          "assessment-option-B",
+          "assessment-option-C",
+          "assessment-option-D",
+          "assessment-submit"
+        ],
+        "report": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest"
+        ],
+        "retest-confirm": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest",
+          "assessment-retest-cancel",
+          "assessment-retest-confirm"
+        ],
+        "retest-cancelled": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest"
+        ]
+      }
+    },
+    {
+      "index": 33,
+      "id": "en-US__dark__320__text200__short",
+      "locale": "en-US",
+      "theme": "dark",
+      "width": 320,
+      "height": 568,
+      "colorScheme": "light",
+      "textScale": 200,
+      "short": true,
+      "systemLiveSwitch": false,
+      "extra": "text200+short",
+      "selectionProbe": "C",
+      "groups": [
+        "compact"
+      ],
+      "controlIds": {
+        "guide": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-start",
+          "assessment-home"
+        ],
+        "question": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-option-A",
+          "assessment-option-B",
+          "assessment-option-C",
+          "assessment-option-D",
+          "assessment-submit"
+        ],
+        "report": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest"
+        ],
+        "retest-confirm": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest",
+          "assessment-retest-cancel",
+          "assessment-retest-confirm"
+        ],
+        "retest-cancelled": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest"
+        ]
+      }
+    },
+    {
+      "index": 34,
+      "id": "zh-CN__light__390__short",
+      "locale": "zh-CN",
+      "theme": "light",
+      "width": 390,
+      "height": 640,
+      "colorScheme": "light",
+      "textScale": null,
+      "short": true,
+      "systemLiveSwitch": false,
+      "extra": "short",
+      "groups": [
+        "compact"
+      ],
+      "controlIds": {
+        "guide": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-start",
+          "assessment-home"
+        ],
+        "question": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-option-A",
+          "assessment-option-B",
+          "assessment-option-C",
+          "assessment-option-D",
+          "assessment-submit"
+        ],
+        "report": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest"
+        ],
+        "retest-confirm": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest",
+          "assessment-retest-cancel",
+          "assessment-retest-confirm"
+        ],
+        "retest-cancelled": [
+          "assessment-back",
+          "assessment-settings",
+          "assessment-today",
+          "assessment-retest"
+        ]
+      }
+    }
+  ],
+  "screenshotsPlanned": 226
+}

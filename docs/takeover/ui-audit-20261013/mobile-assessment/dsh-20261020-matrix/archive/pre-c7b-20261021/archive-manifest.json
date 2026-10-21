@@ -1,0 +1,16 @@
+{
+  "archivedAt": "2026-10-21T08:19:43.5040377+08:00",
+  "note": "Pre-C7b C6b guard/version metadata archive; no product/browser/Git.",
+  "files": [
+    {
+      "file": "coverage.cjs",
+      "sha256": "7a98e4625dbb633779f563a2007a11da1994cafd63d53f1306062eb77c87cbcd",
+      "bytes": 7566
+    },
+    {
+      "file": "PREP-C6B.md",
+      "sha256": "a8b94284f97ca89699ab38d0c0dced9f0ed56b0551f71a79f10ddd4cc1170d3a",
+      "bytes": 2158
+    }
+  ]
+}

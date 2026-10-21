@@ -1,0 +1,13 @@
+{
+  "archive": "20261021-C6B-guard-archive",
+  "archivedAtUtc": "2026-10-21T00:20:14Z",
+  "reason": "Preserve current C6b guard bytes before C7b metadata/page update",
+  "files": [
+    {
+      "original": "source-freeze.json",
+      "archived": "source-freeze.json.c6b.raw",
+      "sha256": "d97949cfe80d94f53eb2b6032f49f2a333d1abd68b34355238b9035315882576",
+      "bytes": 3892
+    }
+  ]
+}

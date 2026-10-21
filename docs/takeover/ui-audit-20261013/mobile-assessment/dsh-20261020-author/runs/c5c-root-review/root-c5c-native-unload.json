@@ -1,0 +1,291 @@
+{
+  "executor": "Codex independent C5c native unload review",
+  "sourceBefore": {
+    "apps/mobile/src/pages/assessment/assessment.vue": "719cc0cef407b492544b1bff39537324b0672126df287bf7d5644a25b6fe81c1",
+    "packages/i18n/src/mobile-experience.ts": "6ac6800e179de0ba15ab3607918b2f8427d364e19306eaf8f2a146f016247380",
+    "apps/mobile/src/api/learner-content.ts": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6",
+    "apps/mobile/src/stores/learner-content.ts": "95cc92496db996242d91baed3301d76f985e4e3b9134e1e50c2b9ab8d41e4c61",
+    "apps/mobile/src/stores/session.ts": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+    "apps/mobile/src/auth/navigation.ts": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5"
+  },
+  "cases": [
+    {
+      "mode": "dismiss",
+      "dialogs": [
+        {
+          "type": "beforeunload",
+          "action": "dismiss"
+        }
+      ],
+      "afterSecond": {
+        "url": "http://127.0.0.1:18183/#/pages/login/login?theme=light&uiLocale=zh-CN&returnTo=%2Fpages%2Fassessment%2Fassessment",
+        "root": 1,
+        "prompt": 1,
+        "selected": "true"
+      },
+      "afterCancel": {
+        "url": "http://127.0.0.1:18183/#/pages/assessment/assessment",
+        "selected": "true"
+      },
+      "counts": {
+        "login": 1,
+        "refresh": 0,
+        "logout": 0,
+        "principal": 6,
+        "start": 1,
+        "respond": 0,
+        "retest": 0,
+        "ensure": 0,
+        "GET": 12,
+        "placementGet": 0
+      }
+    },
+    {
+      "mode": "accept",
+      "dialogs": [
+        {
+          "type": "beforeunload",
+          "action": "accept"
+        }
+      ],
+      "afterSecond": {
+        "url": "about:blank",
+        "root": 0,
+        "prompt": 0,
+        "selected": null
+      },
+      "counts": {
+        "login": 1,
+        "refresh": 0,
+        "logout": 0,
+        "principal": 4,
+        "start": 1,
+        "respond": 0,
+        "retest": 0,
+        "ensure": 0,
+        "GET": 9,
+        "placementGet": 0
+      }
+    }
+  ],
+  "closed": true,
+  "sourceAfter": {
+    "apps/mobile/src/pages/assessment/assessment.vue": "719cc0cef407b492544b1bff39537324b0672126df287bf7d5644a25b6fe81c1",
+    "packages/i18n/src/mobile-experience.ts": "6ac6800e179de0ba15ab3607918b2f8427d364e19306eaf8f2a146f016247380",
+    "apps/mobile/src/api/learner-content.ts": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6",
+    "apps/mobile/src/stores/learner-content.ts": "95cc92496db996242d91baed3301d76f985e4e3b9134e1e50c2b9ab8d41e4c61",
+    "apps/mobile/src/stores/session.ts": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+    "apps/mobile/src/auth/navigation.ts": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5"
+  },
+  "transport": {
+    "scope": "MB006_PREPARED_SYNTHETIC_TRANSPORT_NOT_RUN",
+    "browser": "Browser plugin not available; existing Playwright Chromium fallback",
+    "requests": [
+      {
+        "id": 1,
+        "locale": "zh-CN",
+        "theme": "light",
+        "origin": "https://127.0.0.1:18087",
+        "method": "POST",
+        "path": "/api/v1/auth/login"
+      },
+      {
+        "id": 1,
+        "locale": "zh-CN",
+        "theme": "light",
+        "origin": "http://127.0.0.1:18070",
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me"
+      },
+      {
+        "id": 1,
+        "locale": "zh-CN",
+        "theme": "light",
+        "origin": "http://127.0.0.1:18070",
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me"
+      },
+      {
+        "id": 1,
+        "locale": "zh-CN",
+        "theme": "light",
+        "origin": "http://127.0.0.1:18070",
+        "method": "GET",
+        "path": "/api/v1/learner/targets"
+      },
+      {
+        "id": 1,
+        "locale": "zh-CN",
+        "theme": "light",
+        "origin": "http://127.0.0.1:18070",
+        "method": "GET",
+        "path": "/api/v1/learner/profile"
+      },
+      {
+        "id": 1,
+        "locale": "zh-CN",
+        "theme": "light",
+        "origin": "http://127.0.0.1:18070",
+        "method": "GET",
+        "path": "/api/v1/learner/targets"
+      },
+      {
+        "id": 1,
+        "locale": "zh-CN",
+        "theme": "light",
+        "origin": "http://127.0.0.1:18070",
+        "method": "GET",
+        "path": "/api/v1/learner/preferences"
+      },
+      {
+        "id": 1,
+        "locale": "zh-CN",
+        "theme": "light",
+        "origin": "http://127.0.0.1:18070",
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me"
+      },
+      {
+        "id": 1,
+        "locale": "zh-CN",
+        "theme": "light",
+        "origin": "http://127.0.0.1:18070",
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me"
+      },
+      {
+        "id": 1,
+        "locale": "zh-CN",
+        "theme": "light",
+        "origin": "http://127.0.0.1:18070",
+        "method": "GET",
+        "path": "/api/v1/learner/targets"
+      },
+      {
+        "id": 1,
+        "locale": "zh-CN",
+        "theme": "light",
+        "origin": "http://127.0.0.1:18070",
+        "method": "POST",
+        "path": "/api/v1/assessment/placement/sessions"
+      },
+      {
+        "id": 1,
+        "locale": "zh-CN",
+        "theme": "light",
+        "origin": "http://127.0.0.1:18070",
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me"
+      },
+      {
+        "id": 1,
+        "locale": "zh-CN",
+        "theme": "light",
+        "origin": "http://127.0.0.1:18070",
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me"
+      },
+      {
+        "id": 1,
+        "locale": "zh-CN",
+        "theme": "light",
+        "origin": "http://127.0.0.1:18070",
+        "method": "GET",
+        "path": "/api/v1/learner/targets"
+      },
+      {
+        "id": 2,
+        "locale": "zh-CN",
+        "theme": "light",
+        "origin": "https://127.0.0.1:18087",
+        "method": "POST",
+        "path": "/api/v1/auth/login"
+      },
+      {
+        "id": 2,
+        "locale": "zh-CN",
+        "theme": "light",
+        "origin": "http://127.0.0.1:18070",
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me"
+      },
+      {
+        "id": 2,
+        "locale": "zh-CN",
+        "theme": "light",
+        "origin": "http://127.0.0.1:18070",
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me"
+      },
+      {
+        "id": 2,
+        "locale": "zh-CN",
+        "theme": "light",
+        "origin": "http://127.0.0.1:18070",
+        "method": "GET",
+        "path": "/api/v1/learner/targets"
+      },
+      {
+        "id": 2,
+        "locale": "zh-CN",
+        "theme": "light",
+        "origin": "http://127.0.0.1:18070",
+        "method": "GET",
+        "path": "/api/v1/learner/profile"
+      },
+      {
+        "id": 2,
+        "locale": "zh-CN",
+        "theme": "light",
+        "origin": "http://127.0.0.1:18070",
+        "method": "GET",
+        "path": "/api/v1/learner/targets"
+      },
+      {
+        "id": 2,
+        "locale": "zh-CN",
+        "theme": "light",
+        "origin": "http://127.0.0.1:18070",
+        "method": "GET",
+        "path": "/api/v1/learner/preferences"
+      },
+      {
+        "id": 2,
+        "locale": "zh-CN",
+        "theme": "light",
+        "origin": "http://127.0.0.1:18070",
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me"
+      },
+      {
+        "id": 2,
+        "locale": "zh-CN",
+        "theme": "light",
+        "origin": "http://127.0.0.1:18070",
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me"
+      },
+      {
+        "id": 2,
+        "locale": "zh-CN",
+        "theme": "light",
+        "origin": "http://127.0.0.1:18070",
+        "method": "GET",
+        "path": "/api/v1/learner/targets"
+      },
+      {
+        "id": 2,
+        "locale": "zh-CN",
+        "theme": "light",
+        "origin": "http://127.0.0.1:18070",
+        "method": "POST",
+        "path": "/api/v1/assessment/placement/sessions"
+      }
+    ],
+    "targetReads": [],
+    "unexpected": [],
+    "injectedFailures": [],
+    "pageErrors": [],
+    "consoleErrors": []
+  }
+}

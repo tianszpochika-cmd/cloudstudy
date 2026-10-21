@@ -1,0 +1,591 @@
+{
+  "scope": "MB006_STATES_PREPARED_NOT_RUN",
+  "caseId": "skipped-read",
+  "run": "codex-20261021-c7b-states-1",
+  "executedBy": "Codex independent C7b states review",
+  "preparedBy": "DSH bounded STATES test preparation; DSH did not launch a browser",
+  "gate": {
+    "expectedPage": "37bad477e4239061972941c42b24468db5994b8afb89feb61f720fbe168c07e5",
+    "actual": {
+      "sources": {
+        "apps/mobile/src/pages/assessment/assessment.vue": "37bad477e4239061972941c42b24468db5994b8afb89feb61f720fbe168c07e5",
+        "packages/i18n/src/mobile-experience.ts": "6ac6800e179de0ba15ab3607918b2f8427d364e19306eaf8f2a146f016247380",
+        "apps/mobile/src/api/learner-content.ts": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6",
+        "apps/mobile/src/stores/learner-content.ts": "95cc92496db996242d91baed3301d76f985e4e3b9134e1e50c2b9ab8d41e4c61",
+        "apps/mobile/src/stores/session.ts": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+        "apps/mobile/src/auth/navigation.ts": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5"
+      },
+      "dependencies": {
+        "apps/mobile/package.json": "484382c73929055cc4ecd9a83679f8bab72388dd8069f71a056b3bbc595c0078",
+        "pnpm-lock.yaml": "d57a87ca84985549fd53c69b1fe1d59db0b136036f2f7bf640d3b30c0a106624"
+      }
+    }
+  },
+  "startedAt": "2026-10-21T00:19:43.336Z",
+  "checks": [
+    {
+      "name": "skipped-settings-navigation-reached",
+      "result": "PASS",
+      "detail": {
+        "route": "#/pages/settings/settings"
+      }
+    },
+    {
+      "name": "skipped-back-returned",
+      "result": "PASS",
+      "detail": {
+        "route": "#/pages/assessment/assessment"
+      }
+    },
+    {
+      "name": "skipped-canonical-unverified-ui",
+      "result": "PASS",
+      "detail": {
+        "skippedText": "已跳过测评\n水平尚未验证\n这次跳过不是正式测评分数。\n自选起点，水平尚未验证。\n查看今日状态"
+      }
+    },
+    {
+      "name": "skipped-no-question-or-assessed-report",
+      "result": "PASS",
+      "detail": {
+        "question": false,
+        "report": false
+      }
+    },
+    {
+      "name": "skipped-no-invented-level-or-score",
+      "result": "PASS",
+      "detail": {
+        "skippedText": "已跳过测评\n水平尚未验证\n这次跳过不是正式测评分数。\n自选起点，水平尚未验证。\n查看今日状态"
+      }
+    },
+    {
+      "name": "skipped-get-had-no-report-id",
+      "result": "PASS",
+      "detail": {
+        "served": {
+          "sessionId": "asess_ui_risk_3_1",
+          "status": "SKIPPED",
+          "resultKind": "SKIPPED",
+          "hasCurrentItem": false,
+          "hasReportId": false
+        }
+      }
+    },
+    {
+      "name": "skipped-get-had-no-current-item",
+      "result": "PASS",
+      "detail": {
+        "served": {
+          "sessionId": "asess_ui_risk_3_1",
+          "status": "SKIPPED",
+          "resultKind": "SKIPPED",
+          "hasCurrentItem": false,
+          "hasReportId": false
+        }
+      }
+    },
+    {
+      "name": "skipped-result-kind-and-no-current-item",
+      "result": "PASS",
+      "detail": {
+        "served": {
+          "sessionId": "asess_ui_risk_3_1",
+          "status": "SKIPPED",
+          "resultKind": "SKIPPED",
+          "hasCurrentItem": false,
+          "hasReportId": false
+        }
+      }
+    },
+    {
+      "name": "skipped-no-backend-write-or-plan-ensure",
+      "result": "PASS",
+      "detail": {
+        "counts": {
+          "login": 1,
+          "refresh": 0,
+          "logout": 0,
+          "principal": 8,
+          "start": 1,
+          "respond": 0,
+          "retest": 0,
+          "ensure": 0,
+          "GET": 16,
+          "placementGet": 1
+        },
+        "sessionId": "asess_ui_risk_3_1"
+      }
+    },
+    {
+      "name": "skipped-read-no-unexpected-api",
+      "result": "PASS",
+      "detail": {
+        "unexpected": []
+      }
+    },
+    {
+      "name": "skipped-read-no-page-or-uninjected-console-errors",
+      "result": "PASS",
+      "detail": {
+        "pageErrors": [],
+        "consoleErrors": [],
+        "excluded": [],
+        "consoleWarnings": [
+          {
+            "id": 3,
+            "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+            "path": null
+          },
+          {
+            "id": 3,
+            "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+            "path": null
+          },
+          {
+            "id": 3,
+            "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+            "path": null
+          },
+          {
+            "id": 3,
+            "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+            "path": null
+          },
+          {
+            "id": 3,
+            "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+            "path": null
+          },
+          {
+            "id": 3,
+            "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+            "path": null
+          },
+          {
+            "id": 3,
+            "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+            "path": null
+          },
+          {
+            "id": 3,
+            "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+            "path": null
+          },
+          {
+            "id": 3,
+            "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+            "path": null
+          }
+        ]
+      }
+    }
+  ],
+  "notRun": [],
+  "gaps": [
+    {
+      "name": "skipped-read-quickstart-contract",
+      "detail": "The canonical quick-start contract is preserved as a GAP. This UI fixture evidence is not real backend business PASS and does not invent a reportId, grade or score."
+    }
+  ],
+  "dom": [
+    {
+      "name": "skipped-unverified-result",
+      "at": "2026-10-21T00:19:44.516Z",
+      "route": "#/pages/assessment/assessment",
+      "root": true,
+      "busy": "false",
+      "bodyLen": 54,
+      "present": {
+        "assessment-page": true,
+        "assessment-guide": false,
+        "assessment-question": false,
+        "assessment-report": false,
+        "assessment-skipped": true,
+        "assessment-pending": false,
+        "assessment-leave-confirmation": false,
+        "assessment-error": false,
+        "assessment-submit": false,
+        "assessment-reload": false,
+        "assessment-reload-answer": false,
+        "assessment-title": true
+      },
+      "options": [],
+      "counts": {
+        "login": 1,
+        "refresh": 0,
+        "logout": 0,
+        "principal": 8,
+        "start": 1,
+        "respond": 0,
+        "retest": 0,
+        "ensure": 0,
+        "GET": 16,
+        "placementGet": 1
+      }
+    }
+  ],
+  "routes": [
+    {
+      "label": "skipped-settings",
+      "route": "#/pages/settings/settings"
+    },
+    {
+      "label": "skipped-back",
+      "route": "#/pages/assessment/assessment"
+    },
+    {
+      "label": "skipped-result",
+      "route": "#/pages/assessment/assessment"
+    }
+  ],
+  "screenshots": [
+    "05-skipped-unverified-result.png"
+  ],
+  "counts": {
+    "login": 1,
+    "refresh": 0,
+    "logout": 0,
+    "principal": 9,
+    "start": 1,
+    "respond": 0,
+    "retest": 0,
+    "ensure": 0,
+    "GET": 22,
+    "placementGet": 1
+  },
+  "requests": [
+    {
+      "id": 3,
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "https://127.0.0.1:18087",
+      "method": "POST",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "id": 3,
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "id": 3,
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "id": 3,
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/learner/targets"
+    },
+    {
+      "id": 3,
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/learner/profile"
+    },
+    {
+      "id": 3,
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/learner/targets"
+    },
+    {
+      "id": 3,
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/learner/preferences"
+    },
+    {
+      "id": 3,
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "id": 3,
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "id": 3,
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/learner/targets"
+    },
+    {
+      "id": 3,
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "POST",
+      "path": "/api/v1/assessment/placement/sessions"
+    },
+    {
+      "id": 3,
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "id": 3,
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "id": 3,
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/learner/targets"
+    },
+    {
+      "id": 3,
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "id": 3,
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/assessment/placement/sessions/asess_ui_risk_3_1"
+    },
+    {
+      "id": 3,
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "id": 3,
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/learner/targets"
+    },
+    {
+      "id": 3,
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "id": 3,
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/notifications/preferences"
+    },
+    {
+      "id": 3,
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/support/tickets"
+    },
+    {
+      "id": 3,
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/learner/profile"
+    },
+    {
+      "id": 3,
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/learner/targets"
+    },
+    {
+      "id": 3,
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/learner/preferences"
+    }
+  ],
+  "targetReads": [
+    {
+      "id": 3,
+      "method": "GET",
+      "path": "/api/v1/notifications/preferences",
+      "page": "settings"
+    },
+    {
+      "id": 3,
+      "method": "GET",
+      "path": "/api/v1/support/tickets",
+      "page": "settings-support"
+    }
+  ],
+  "unexpected": [],
+  "injectedFailures": [],
+  "pageErrors": [],
+  "consoleErrors": [],
+  "consoleWarnings": [
+    {
+      "id": 3,
+      "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+      "path": null
+    },
+    {
+      "id": 3,
+      "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+      "path": null
+    },
+    {
+      "id": 3,
+      "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+      "path": null
+    },
+    {
+      "id": 3,
+      "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+      "path": null
+    },
+    {
+      "id": 3,
+      "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+      "path": null
+    },
+    {
+      "id": 3,
+      "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+      "path": null
+    },
+    {
+      "id": 3,
+      "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+      "path": null
+    },
+    {
+      "id": 3,
+      "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+      "path": null
+    },
+    {
+      "id": 3,
+      "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+      "path": null
+    }
+  ],
+  "skippedReads": [
+    {
+      "id": 3,
+      "sessionId": "asess_ui_risk_3_1",
+      "status": "SKIPPED",
+      "resultKind": "SKIPPED",
+      "hasCurrentItem": false,
+      "hasReportId": false
+    }
+  ],
+  "setupFailure": null,
+  "result": "PASS",
+  "summary": {
+    "checks": 11,
+    "passed": 11,
+    "failed": 0,
+    "notRun": 0,
+    "gaps": 1,
+    "result": "PASS"
+  },
+  "transportAudit": {
+    "unknownApi": [],
+    "pageErrors": [],
+    "consoleErrors": [],
+    "consoleWarnings": [
+      {
+        "id": 3,
+        "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+        "path": null
+      },
+      {
+        "id": 3,
+        "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+        "path": null
+      },
+      {
+        "id": 3,
+        "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+        "path": null
+      },
+      {
+        "id": 3,
+        "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+        "path": null
+      },
+      {
+        "id": 3,
+        "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+        "path": null
+      },
+      {
+        "id": 3,
+        "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+        "path": null
+      },
+      {
+        "id": 3,
+        "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+        "path": null
+      },
+      {
+        "id": 3,
+        "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+        "path": null
+      },
+      {
+        "id": 3,
+        "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+        "path": null
+      }
+    ],
+    "excluded": [],
+    "warningsStatus": "RECORDED_NAMED"
+  },
+  "finishedAt": "2026-10-21T00:19:44.603Z"
+}

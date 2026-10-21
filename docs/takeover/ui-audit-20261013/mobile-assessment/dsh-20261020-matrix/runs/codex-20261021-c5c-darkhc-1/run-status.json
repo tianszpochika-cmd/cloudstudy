@@ -1,0 +1,25 @@
+{
+  "runId": "codex-20261021-c5c-darkhc-1",
+  "label": "Codex independent C5c bounded review 20261021",
+  "preparedBy": "DSH",
+  "status": "FINISHED",
+  "group": "case-id",
+  "caseIds": [
+    "en-US__dark__320__text200__short",
+    "zh-CN__high-contrast__390"
+  ],
+  "finishedAt": "2026-10-20T23:51:54.194Z",
+  "summary": {
+    "measured": 1,
+    "review": 0,
+    "incomplete": 0,
+    "failed": 1,
+    "error": 0,
+    "stopped": 0,
+    "screenshots": 16
+  },
+  "plannedContexts": 2,
+  "plannedScreenshots": 16,
+  "completedScreenshots": 16,
+  "note": "No PASS verdict is produced by this runner; Root reviews raw measurements and screenshots."
+}

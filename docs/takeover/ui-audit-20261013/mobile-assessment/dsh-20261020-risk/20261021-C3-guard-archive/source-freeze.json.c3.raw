@@ -1,0 +1,17 @@
+{
+  "scope": "MB006_MOBILE_ASSESSMENT_RISK_FREEZE",
+  "preparedAt": "2026-10-20T14:35:51Z",
+  "branch": "dev-redesign",
+  "headAtPreparation": "687af1017b8ae93da4f8c247ba12ed974898bb22",
+  "note": "Hashes measured 2026-10-20T14:35:51Z on the DSH workstation with Get-FileHash -Algorithm SHA256 (lowercased). The suite refuses to start if any of these 8 files differs at Root review time; review the drift instead of updating this file.",
+  "sources": {
+    "apps/mobile/src/pages/assessment/assessment.vue": "86620ed0dbc2cb25afb4bbae35734a345b9e8066afa806684f99ccb678a5312d",
+    "packages/i18n/src/mobile-experience.ts": "6ac6800e179de0ba15ab3607918b2f8427d364e19306eaf8f2a146f016247380",
+    "apps/mobile/src/api/learner-content.ts": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6",
+    "apps/mobile/src/stores/learner-content.ts": "95cc92496db996242d91baed3301d76f985e4e3b9134e1e50c2b9ab8d41e4c61",
+    "apps/mobile/src/stores/session.ts": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+    "apps/mobile/src/auth/navigation.ts": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5",
+    "apps/mobile/src/platform/uni-runtime.ts": "fcbeba8626d8364af0ae96db64a05fcff9a3bb2b46a7d8fbcba21507ef609751",
+    "apps/mobile/src/uni.scss": "0bd56842fc5baebd8767e721f2d938986e293d1d87bfc74bb087b3c228f638d7"
+  }
+}

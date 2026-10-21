@@ -1,0 +1,356 @@
+{
+  "audit": "MB006_LIFECYCLE_HELPER_SHAPE_IMPORT_ONLY",
+  "result": "FAIL",
+  "checks": [
+    {
+      "name": "fixture-exports-required-helpers",
+      "result": "PASS",
+      "detail": {
+        "missing": []
+      }
+    },
+    {
+      "name": "fixture-item-block-found",
+      "result": "PASS",
+      "detail": {
+        "itemKeys": [
+          "page",
+          "p",
+          "context",
+          "state",
+          "projection",
+          "release",
+          "hold",
+          "pending",
+          "login",
+          "close"
+        ]
+      }
+    },
+    {
+      "name": "fixture-item-has-page",
+      "result": "PASS",
+      "detail": {
+        "itemKeys": [
+          "page",
+          "p",
+          "context",
+          "state",
+          "projection",
+          "release",
+          "hold",
+          "pending",
+          "login",
+          "close"
+        ]
+      }
+    },
+    {
+      "name": "fixture-item-has-state",
+      "result": "PASS",
+      "detail": {
+        "itemKeys": [
+          "page",
+          "p",
+          "context",
+          "state",
+          "projection",
+          "release",
+          "hold",
+          "pending",
+          "login",
+          "close"
+        ]
+      }
+    },
+    {
+      "name": "fixture-item-has-projection",
+      "result": "PASS",
+      "detail": {
+        "itemKeys": [
+          "page",
+          "p",
+          "context",
+          "state",
+          "projection",
+          "release",
+          "hold",
+          "pending",
+          "login",
+          "close"
+        ]
+      }
+    },
+    {
+      "name": "fixture-item-has-release",
+      "result": "PASS",
+      "detail": {
+        "itemKeys": [
+          "page",
+          "p",
+          "context",
+          "state",
+          "projection",
+          "release",
+          "hold",
+          "pending",
+          "login",
+          "close"
+        ]
+      }
+    },
+    {
+      "name": "fixture-item-has-hold",
+      "result": "PASS",
+      "detail": {
+        "itemKeys": [
+          "page",
+          "p",
+          "context",
+          "state",
+          "projection",
+          "release",
+          "hold",
+          "pending",
+          "login",
+          "close"
+        ]
+      }
+    },
+    {
+      "name": "fixture-item-has-pending",
+      "result": "PASS",
+      "detail": {
+        "itemKeys": [
+          "page",
+          "p",
+          "context",
+          "state",
+          "projection",
+          "release",
+          "hold",
+          "pending",
+          "login",
+          "close"
+        ]
+      }
+    },
+    {
+      "name": "fixture-item-has-login",
+      "result": "PASS",
+      "detail": {
+        "itemKeys": [
+          "page",
+          "p",
+          "context",
+          "state",
+          "projection",
+          "release",
+          "hold",
+          "pending",
+          "login",
+          "close"
+        ]
+      }
+    },
+    {
+      "name": "fixture-item-has-close",
+      "result": "PASS",
+      "detail": {
+        "itemKeys": [
+          "page",
+          "p",
+          "context",
+          "state",
+          "projection",
+          "release",
+          "hold",
+          "pending",
+          "login",
+          "close"
+        ]
+      }
+    },
+    {
+      "name": "driver-item-calls-nonempty",
+      "result": "PASS",
+      "detail": {
+        "uniqueCalls": [
+          "pending",
+          "projection",
+          "release",
+          "close",
+          "login"
+        ]
+      }
+    },
+    {
+      "name": "driver-call-exists-on-item-pending",
+      "result": "PASS",
+      "detail": {
+        "call": "pending",
+        "itemKeys": [
+          "page",
+          "p",
+          "context",
+          "state",
+          "projection",
+          "release",
+          "hold",
+          "pending",
+          "login",
+          "close"
+        ]
+      }
+    },
+    {
+      "name": "driver-call-exists-on-item-projection",
+      "result": "PASS",
+      "detail": {
+        "call": "projection",
+        "itemKeys": [
+          "page",
+          "p",
+          "context",
+          "state",
+          "projection",
+          "release",
+          "hold",
+          "pending",
+          "login",
+          "close"
+        ]
+      }
+    },
+    {
+      "name": "driver-call-exists-on-item-release",
+      "result": "PASS",
+      "detail": {
+        "call": "release",
+        "itemKeys": [
+          "page",
+          "p",
+          "context",
+          "state",
+          "projection",
+          "release",
+          "hold",
+          "pending",
+          "login",
+          "close"
+        ]
+      }
+    },
+    {
+      "name": "driver-call-exists-on-item-close",
+      "result": "PASS",
+      "detail": {
+        "call": "close",
+        "itemKeys": [
+          "page",
+          "p",
+          "context",
+          "state",
+          "projection",
+          "release",
+          "hold",
+          "pending",
+          "login",
+          "close"
+        ]
+      }
+    },
+    {
+      "name": "driver-call-exists-on-item-login",
+      "result": "PASS",
+      "detail": {
+        "call": "login",
+        "itemKeys": [
+          "page",
+          "p",
+          "context",
+          "state",
+          "projection",
+          "release",
+          "hold",
+          "pending",
+          "login",
+          "close"
+        ]
+      }
+    },
+    {
+      "name": "no-state-pending-misuse",
+      "result": "PASS",
+      "detail": {
+        "matches": 0
+      }
+    },
+    {
+      "name": "driver-uses-item-pending",
+      "result": "PASS"
+    },
+    {
+      "name": "source-freeze-8-and-matching",
+      "result": "FAIL",
+      "detail": {
+        "ok": false,
+        "files": [
+          "apps/mobile/src/pages/assessment/assessment.vue",
+          "packages/i18n/src/mobile-experience.ts",
+          "apps/mobile/src/api/learner-content.ts",
+          "apps/mobile/src/stores/learner-content.ts",
+          "apps/mobile/src/stores/session.ts",
+          "apps/mobile/src/auth/navigation.ts",
+          "apps/mobile/src/platform/uni-runtime.ts",
+          "apps/mobile/src/uni.scss"
+        ],
+        "drift": [
+          {
+            "file": "apps/mobile/src/pages/assessment/assessment.vue",
+            "expected": "86620ed0dbc2cb25afb4bbae35734a345b9e8066afa806684f99ccb678a5312d",
+            "actual": "abff80cd1d16e8d688deb9ffdc3a7e0250577f10ef2dcd31ed9a5d6849a07d8c"
+          }
+        ]
+      }
+    },
+    {
+      "name": "lib-execute-assigns-outcome-and-returns",
+      "result": "PASS"
+    },
+    {
+      "name": "driver-aggregates-explicit-exit",
+      "result": "PASS"
+    },
+    {
+      "name": "driver-catches-runner-error",
+      "result": "PASS"
+    }
+  ],
+  "failed": [
+    {
+      "name": "source-freeze-8-and-matching",
+      "result": "FAIL",
+      "detail": {
+        "ok": false,
+        "files": [
+          "apps/mobile/src/pages/assessment/assessment.vue",
+          "packages/i18n/src/mobile-experience.ts",
+          "apps/mobile/src/api/learner-content.ts",
+          "apps/mobile/src/stores/learner-content.ts",
+          "apps/mobile/src/stores/session.ts",
+          "apps/mobile/src/auth/navigation.ts",
+          "apps/mobile/src/platform/uni-runtime.ts",
+          "apps/mobile/src/uni.scss"
+        ],
+        "drift": [
+          {
+            "file": "apps/mobile/src/pages/assessment/assessment.vue",
+            "expected": "86620ed0dbc2cb25afb4bbae35734a345b9e8066afa806684f99ccb678a5312d",
+            "actual": "abff80cd1d16e8d688deb9ffdc3a7e0250577f10ef2dcd31ed9a5d6849a07d8c"
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "runId": "codex-20261021-c8-full-1",
+  "preparedBy": "DSH",
+  "executionLabel": "Codex independent C8 pinned visual matrix",
+  "group": "all",
+  "caseIds": [],
+  "startedAt": "2026-10-21T00:41:20.853Z",
+  "updatedAt": "2026-10-21T00:41:20.853Z",
+  "renderer": "H5 uni-app in Playwright Chromium with fully synthetic API transport; NOT native/device",
+  "base": "http://127.0.0.1:18183",
+  "pageSha256": "41e1670146621e532921a8916b2c81ea4954d880b2373c7bcc9945d6576d7e86",
+  "i18nSha256": "6ac6800e179de0ba15ab3607918b2f8427d364e19306eaf8f2a146f016247380",
+  "supportingSha256": {
+    "apps/mobile/package.json": "484382c73929055cc4ecd9a83679f8bab72388dd8069f71a056b3bbc595c0078",
+    "pnpm-lock.yaml": "d57a87ca84985549fd53c69b1fe1d59db0b136036f2f7bf640d3b30c0a106624",
+    "packages/design-tokens/src/mobile.ts": "5b3aac642d103e998ae723c6af1c72fd3d47c7929a609d47aee1e003ad2281d9",
+    "packages/design-tokens/src/official-site.ts": "9d6af42d7ff255154d579729105c46fe15e2e4792ac64a4eab591108a7d03d62"
+  },
+  "expectedPageSha256": "41e1670146621e532921a8916b2c81ea4954d880b2373c7bcc9945d6576d7e86",
+  "expectedI18nSha256": "6ac6800e179de0ba15ab3607918b2f8427d364e19306eaf8f2a146f016247380",
+  "expectedSupportingSha256": {
+    "apps/mobile/package.json": "484382c73929055cc4ecd9a83679f8bab72388dd8069f71a056b3bbc595c0078",
+    "pnpm-lock.yaml": "d57a87ca84985549fd53c69b1fe1d59db0b136036f2f7bf640d3b30c0a106624",
+    "packages/design-tokens/src/mobile.ts": "5b3aac642d103e998ae723c6af1c72fd3d47c7929a609d47aee1e003ad2281d9",
+    "packages/design-tokens/src/official-site.ts": "9d6af42d7ff255154d579729105c46fe15e2e4792ac64a4eab591108a7d03d62"
+  },
+  "node": "v20.19.5",
+  "playwrightVersion": "1.63.0",
+  "browserVersion": "153.0.8010.12",
+  "plannedContexts": 34,
+  "plannedScreenshots": 226,
+  "policy": "Synthetic API only; unknown API=501; non-API resources only 18183; no cookies/storage/body/header/token reads; no store/identity injection; no PASS prefill."
+}

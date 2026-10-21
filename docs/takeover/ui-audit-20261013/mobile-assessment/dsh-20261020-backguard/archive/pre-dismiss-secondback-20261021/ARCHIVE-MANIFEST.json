@@ -1,0 +1,12 @@
+{
+  "archivedAt": "2026-10-20T23:58:45Z",
+  "reason": "preserve script before fixing repeat-back to expect no native event on first SPA pop and capture native dismiss on second back",
+  "files": [
+    {
+      "file": "run.cjs",
+      "sha256": "d0efc37c6b9895e1ffa7c9c0c2347d719b3ef7a20beb22321de8a9b1737e273b",
+      "bytes": 59861
+    }
+  ],
+  "oldEvidence": "existing runs and earlier archives untouched"
+}

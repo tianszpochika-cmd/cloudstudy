@@ -1,0 +1,428 @@
+// TEST PREPARATION ONLY. Importing this module never starts a browser.
+// Local copy/trim of dsh-20261020-risk/risk-lib.cjs for the bounded STATES suite.
+// Differences are deliberate and documented in README.md:
+//   - gate uses MB006_STATES_EXPECTED_PAGE_SHA (no C5c default, no auto-accept);
+//   - stable i18n/API/store/session/nav and mobile package/lock are fixed;
+//   - run/case names are unique and `--case` selects one of four cases;
+//   - every case gets its own results.json and final DOM/count/routes/PNG capture;
+//   - console errors AND warnings are kept; planned non-2xx metadata is exact;
+//   - exit 0 only for non-empty executed PASS, 1 measured FAIL, 2 setup/refusal.
+'use strict';
+const fs = require('node:fs');
+const path = require('node:path');
+const crypto = require('node:crypto');
+
+const ROOT = path.resolve(__dirname, '../../../../..');
+const RUNS = path.join(__dirname, 'runs');
+const PAGE = 'apps/mobile/src/pages/assessment/assessment.vue';
+const CASE_IDS = ['start503-retry', 'read503-recovery', 'skipped-read', 'restore401'];
+const RUN_RE = /^[a-z0-9][a-z0-9-]{0,63}$/i;
+const EXECUTOR_RE = /^[A-Za-z0-9][A-Za-z0-9 ._-]{0,79}$/;
+
+// These support hashes are the approved C5c-era values. The page is NOT defaulted:
+// Root must pass the reviewed page hash through MB006_STATES_EXPECTED_PAGE_SHA.
+const SOURCE_EXPECTED = {
+  'packages/i18n/src/mobile-experience.ts': '6ac6800e179de0ba15ab3607918b2f8427d364e19306eaf8f2a146f016247380',
+  'apps/mobile/src/api/learner-content.ts': '43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6',
+  'apps/mobile/src/stores/learner-content.ts': '95cc92496db996242d91baed3301d76f985e4e3b9134e1e50c2b9ab8d41e4c61',
+  'apps/mobile/src/stores/session.ts': 'd944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931',
+  'apps/mobile/src/auth/navigation.ts': '7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5',
+};
+const DEP_EXPECTED = {
+  'apps/mobile/package.json': '484382c73929055cc4ecd9a83679f8bab72388dd8069f71a056b3bbc595c0078',
+  'pnpm-lock.yaml': 'd57a87ca84985549fd53c69b1fe1d59db0b136036f2f7bf640d3b30c0a106624',
+};
+
+function refuse(message) {
+  console.error('REFUSED: ' + message + ' Nothing was started.');
+  process.exit(2);
+}
+
+function sha256(rel) {
+  return crypto.createHash('sha256').update(fs.readFileSync(path.resolve(ROOT, rel))).digest('hex');
+}
+
+function snapshotHashes() {
+  const sources = { [PAGE]: sha256(PAGE) };
+  for (const file of Object.keys(SOURCE_EXPECTED)) sources[file] = sha256(file);
+  const dependencies = {};
+  for (const file of Object.keys(DEP_EXPECTED)) dependencies[file] = sha256(file);
+  return { sources, dependencies };
+}
+
+function verifyGate(expectedPage) {
+  const actual = snapshotHashes();
+  const mismatches = [];
+  if (!/^[a-f0-9]{64}$/i.test(expectedPage || '')) {
+    return { ok: false, reason: 'MB006_STATES_EXPECTED_PAGE_SHA must be exactly 64 hex characters', actual };
+  }
+  if (actual.sources[PAGE] !== expectedPage.toLowerCase()) {
+    mismatches.push({ file: PAGE, expected: expectedPage.toLowerCase(), actual: actual.sources[PAGE] });
+  }
+  for (const [file, want] of Object.entries(SOURCE_EXPECTED)) {
+    if (actual.sources[file] !== want) mismatches.push({ file, expected: want, actual: actual.sources[file] });
+  }
+  for (const [file, want] of Object.entries(DEP_EXPECTED)) {
+    if (actual.dependencies[file] !== want) mismatches.push({ file, expected: want, actual: actual.dependencies[file] });
+  }
+  return { ok: mismatches.length === 0, expectedPage: expectedPage.toLowerCase(), actual, mismatches };
+}
+
+function parseCase(argv) {
+  let value = null;
+  for (let i = 0; i < argv.length; i++) {
+    if (argv[i] === '--case') {
+      if (!argv[i + 1] || argv[i + 1].startsWith('--')) refuse('--case requires a case id or "all".');
+      if (value !== null) refuse('--case may be supplied only once.');
+      value = argv[i + 1];
+      i++;
+    } else if (argv[i].startsWith('--case=')) {
+      if (value !== null) refuse('--case may be supplied only once.');
+      value = argv[i].slice('--case='.length);
+    } else {
+      refuse('only --case <start503-retry|read503-recovery|skipped-read|restore401|all> is supported.');
+    }
+  }
+  if (value === null || value === 'all') return CASE_IDS.slice();
+  if (!CASE_IDS.includes(value)) refuse('unknown --case ' + JSON.stringify(value) + '; allowed: ' + CASE_IDS.join(', ') + ' or all.');
+  return [value];
+}
+
+function runIdentity(env) {
+  if (env.MB006_CONFIRM_BROWSER !== '1') refuse('set MB006_CONFIRM_BROWSER=1 to run the prepared STATES suite in the Root review environment.');
+  const run = (env.MB006_STATES_RUN || '').trim() || 'states-' + new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+  if (!RUN_RE.test(run)) refuse('MB006_STATES_RUN must match /^[a-z0-9][a-z0-9-]{0,63}$/i.');
+  const executor = (env.MB006_STATES_EXECUTOR || '').trim() || 'root-review';
+  if (!EXECUTOR_RE.test(executor)) refuse('MB006_STATES_EXECUTOR must be 1-80 characters from [A-Za-z0-9 ._-].');
+  return { run, executor };
+}
+
+function preflight() {
+  const expectedPage = (process.env.MB006_STATES_EXPECTED_PAGE_SHA || '').trim();
+  const gate = verifyGate(expectedPage);
+  if (!gate.ok) {
+    console.error('REFUSED: source gate mismatch or missing expected page hash. Nothing was started.');
+    console.error(JSON.stringify({ reason: gate.reason || null, expectedPage: gate.expectedPage || null, mismatches: gate.mismatches || [], actual: gate.actual }, null, 2));
+    process.exit(2);
+  }
+  const selected = parseCase(process.argv.slice(2));
+  const { run, executor } = runIdentity(process.env);
+  const runDir = path.join(RUNS, run);
+  if (fs.existsSync(runDir)) refuse('run directory already exists and is never overwritten: ' + runDir);
+  for (const id of selected) {
+    const dir = path.join(runDir, id);
+    if (fs.existsSync(dir)) refuse('case directory already exists and is never overwritten: ' + dir);
+  }
+  return { run, executor, selected, gate, runDir };
+}
+
+function prepareRun(run) {
+  const dir = path.join(RUNS, run);
+  if (fs.existsSync(dir)) refuse('run directory already exists and is never overwritten: ' + dir);
+  fs.mkdirSync(dir, { recursive: true });
+  return dir;
+}
+
+function prepareCase(run, id) {
+  const dir = path.join(RUNS, run, id);
+  if (fs.existsSync(dir)) refuse('case directory already exists and is never overwritten: ' + dir);
+  fs.mkdirSync(dir, { recursive: true });
+  return dir;
+}
+
+function same(a, b) { return JSON.stringify(a) === JSON.stringify(b); }
+
+function createReporter({ dir, run, caseId, executor, gate }) {
+  const report = {
+    scope: 'MB006_STATES_PREPARED_NOT_RUN',
+    caseId,
+    run,
+    executedBy: executor,
+    preparedBy: 'DSH bounded STATES test preparation; DSH did not launch a browser',
+    gate: { expectedPage: gate.expectedPage, actual: gate.actual },
+    startedAt: new Date().toISOString(),
+    checks: [],
+    notRun: [],
+    gaps: [],
+    dom: [],
+    routes: [],
+    screenshots: [],
+    counts: null,
+    requests: [],
+    targetReads: [],
+    unexpected: [],
+    injectedFailures: [],
+    pageErrors: [],
+    consoleErrors: [],
+    consoleWarnings: [],
+    skippedReads: [],
+    setupFailure: null,
+    result: 'NOT_RUN',
+  };
+  function write() {
+    report.summary = {
+      checks: report.checks.length,
+      passed: report.checks.filter((c) => c.result === 'PASS').length,
+      failed: report.checks.filter((c) => c.result !== 'PASS').length,
+      notRun: report.notRun.length,
+      gaps: report.gaps.length,
+      result: report.result,
+    };
+    fs.writeFileSync(path.join(dir, 'results.json'), JSON.stringify(report, null, 2));
+  }
+  function check(name, ok, detail) {
+    report.checks.push({ name, result: ok ? 'PASS' : 'FAIL', ...(detail === undefined ? {} : { detail }) });
+    write();
+    return ok;
+  }
+  function notRun(name, reason) { report.notRun.push({ name, reason }); write(); }
+  function gap(name, detail) { report.gaps.push({ name, detail: String(detail || '') }); write(); }
+  function setCounts(counts) { report.counts = { ...counts }; write(); }
+  async function route(page, label) {
+    const value = await page.evaluate(() => location.hash.split('?')[0]);
+    report.routes.push({ label, route: value });
+    write();
+    return value;
+  }
+  async function snapshot(page, name) {
+    const domFacts = await facts(page);
+    report.dom.push({
+      name,
+      at: new Date().toISOString(),
+      route: domFacts.route,
+      root: domFacts.root,
+      busy: domFacts.busy,
+      bodyLen: domFacts.bodyLen,
+      present: domFacts.present,
+      options: domFacts.options.map((o) => ({ id: o.id, pressed: o.pressed, disabled: o.disabled })),
+      counts: report.counts ? { ...report.counts } : null,
+    });
+    write();
+    return domFacts;
+  }
+  async function shot(page, name) {
+    const file = path.join(dir, name + '.png');
+    await page.screenshot({ path: file, fullPage: true });
+    report.screenshots.push(name + '.png');
+    write();
+    return file;
+  }
+  function attachFixture(fixtureReport, fixtureId, counts) {
+    report.counts = { ...counts };
+    report.requests = fixtureReport.requests.filter((x) => x.id === fixtureId);
+    report.targetReads = fixtureReport.targetReads.filter((x) => x.id === fixtureId);
+    report.unexpected = fixtureReport.unexpected.filter((x) => x.id === fixtureId);
+    report.injectedFailures = fixtureReport.injectedFailures.filter((x) => x.id === fixtureId);
+    report.pageErrors = fixtureReport.pageErrors.filter((x) => x.id === fixtureId);
+    report.consoleErrors = fixtureReport.consoleErrors.filter((x) => x.id === fixtureId);
+    report.consoleWarnings = (fixtureReport.consoleWarnings || []).filter((x) => x.id === fixtureId);
+    report.skippedReads = (fixtureReport.skippedReads || []).filter((x) => x.id === fixtureId);
+    write();
+  }
+  function auditTransport(fixtureReport, fixtureId, label) {
+    const unknown = fixtureReport.unexpected.filter((x) => x.id === fixtureId);
+    const errors = caseErrors(fixtureReport, fixtureId);
+    report.transportAudit = {
+      unknownApi: unknown,
+      pageErrors: errors.pageErrors,
+      consoleErrors: errors.consoleErrors,
+      consoleWarnings: errors.consoleWarnings,
+      excluded: errors.excluded,
+      warningsStatus: errors.consoleWarnings.length > 0 ? 'RECORDED_NAMED' : 'NONE',
+    };
+    write();
+    check(label + '-no-unexpected-api', unknown.length === 0, { unexpected: unknown });
+    check(label + '-no-page-or-uninjected-console-errors', errors.pageErrors.length === 0 && errors.consoleErrors.length === 0, { pageErrors: errors.pageErrors, consoleErrors: errors.consoleErrors, excluded: errors.excluded, consoleWarnings: errors.consoleWarnings });
+    return errors;
+  }
+  function setup(error) {
+    report.setupFailure = { message: String(error && error.message || error), stack: error && error.stack };
+    write();
+  }
+  function finish() {
+    const failed = report.checks.filter((c) => c.result !== 'PASS').length;
+    report.result = report.setupFailure ? 'SETUP_INCOMPLETE' : report.checks.length === 0 ? 'SETUP_INCOMPLETE' : failed > 0 ? 'FAIL' : 'PASS';
+    report.finishedAt = new Date().toISOString();
+    write();
+    return report;
+  }
+  write();
+  return { report, write, check, notRun, gap, setCounts, route, snapshot, shot, attachFixture, auditTransport, setup, finish, dir };
+}
+
+// ── read-only DOM facts (kept from risk-lib, no storage/session/header reads) ──
+async function facts(page) {
+  return page.evaluate(() => {
+    const root = document.getElementById('assessment-page');
+    const ids = ['assessment-page', 'assessment-guide', 'assessment-question', 'assessment-report', 'assessment-skipped', 'assessment-pending', 'assessment-leave-confirmation', 'assessment-error', 'assessment-submit', 'assessment-reload', 'assessment-reload-answer', 'assessment-title'];
+    const active = document.activeElement;
+    const btn = (el) => el ? { text: (el.innerText || '').trim(), disabled: el.hasAttribute('disabled') } : null;
+    return {
+      url: location.href,
+      route: location.hash.split('?')[0],
+      title: document.title,
+      root: !!root,
+      bodyLen: document.body.innerText.length,
+      bodyText: document.body.innerText,
+      overlay: !!document.querySelector('vite-error-overlay'),
+      present: Object.fromEntries(ids.map((id) => [id, !!document.getElementById(id)])),
+      busy: root ? root.getAttribute('aria-busy') : null,
+      options: root ? [...root.querySelectorAll('.assessment-option')].map((el) => ({ id: el.id, pressed: el.getAttribute('aria-pressed'), disabled: el.hasAttribute('disabled'), text: (el.innerText || '').trim() })) : [],
+      submit: btn(document.getElementById('assessment-submit')),
+      reload: btn(document.getElementById('assessment-reload')),
+      titleText: (document.getElementById('assessment-title')?.textContent || '').trim(),
+      errorText: (document.getElementById('assessment-error')?.innerText || '').trim(),
+      pendingText: (document.getElementById('assessment-pending')?.innerText || '').trim(),
+      skippedText: (document.getElementById('assessment-skipped')?.innerText || '').trim(),
+      active: active ? { tag: active.tagName.toLowerCase(), id: active.id || '' } : null,
+    };
+  });
+}
+
+async function waitIdle(page, timeout = 8000) {
+  await page.waitForFunction(() => document.getElementById('assessment-page')?.getAttribute('aria-busy') === 'false', null, { timeout });
+}
+async function waitPresent(page, id, timeout = 8000) {
+  await page.waitForFunction((value) => !!document.getElementById(value), id, { timeout });
+}
+async function waitGone(page, id, timeout = 8000) {
+  await page.waitForFunction((value) => !document.getElementById(value), id, { timeout });
+}
+async function waitRoute(page, prefix, timeout = 10000) {
+  await page.waitForFunction((value) => location.hash.startsWith(value), prefix, { timeout });
+}
+
+async function pointerPress(page, selector, { holdMs = 0 } = {}) {
+  const locator = page.locator(selector).first();
+  await locator.waitFor({ state: 'visible' });
+  await locator.scrollIntoViewIfNeeded();
+  const box = await locator.boundingBox();
+  if (!box) throw new Error('no bounding box for ' + selector);
+  const cx = box.x + box.width / 2, cy = box.y + box.height / 2;
+  await page.mouse.move(cx, cy);
+  await page.mouse.down();
+  if (holdMs > 0) await page.waitForTimeout(holdMs);
+  await page.mouse.up();
+}
+
+function caseErrors(fixtureReport, id) {
+  const pageErrors = fixtureReport.pageErrors.filter((item) => item.id === id);
+  const injected = (fixtureReport.injectedFailures || []).filter((item) => item.id === id);
+  const rawConsole = fixtureReport.consoleErrors.filter((item) => item.id === id);
+  const kept = [];
+  const excluded = [];
+  for (const item of rawConsole) {
+    const message = item.message || '';
+    // Strict, evidence-bound exclusion: only a resource-failure line naming a
+    // status this case deliberately injected on the same path is excluded.
+    const resourceFailure = /^Failed to load resource/i.test(message.trim());
+    const hit = resourceFailure ? injected.find((entry) => item.path && entry.path === item.path && new RegExp(`status of\\s+${entry.status}\\b`).test(message)) : null;
+    if (hit) excluded.push({ message, path: item.path, reason: 'matched planned injection ' + hit.injection + ' ' + hit.method + ' ' + hit.path + ' -> ' + hit.status });
+    else kept.push(item);
+  }
+  return {
+    pageErrors,
+    consoleErrors: kept,
+    consoleWarnings: (fixtureReport.consoleWarnings || []).filter((item) => item.id === id),
+    consoleRaw: rawConsole.length,
+    consoleExcluded: excluded.length,
+    excluded,
+    injected,
+  };
+}
+
+function classifyRun({ measuredFail, setup, totalChecks }) {
+  if (measuredFail) return { result: 'FAIL', code: 1 };
+  if (setup) return { result: 'SETUP_INCOMPLETE', code: 2 };
+  if (totalChecks > 0) return { result: 'PASS_EXECUTED_CHECKS', code: 0 };
+  return { result: 'SETUP_INCOMPLETE', code: 2 };
+}
+
+async function execute(config, { fixture, cases }) {
+  const { run, executor, selected, gate } = config;
+  const runDir = prepareRun(run);
+  const runReport = {
+    scope: 'MB006_STATES_PREPARED_NOT_RUN',
+    run,
+    executedBy: executor,
+    expectedPage: gate.expectedPage,
+    selected,
+    startedAt: new Date().toISOString(),
+    sourceHashesBefore: gate.actual.sources,
+    dependenciesBefore: gate.actual.dependencies,
+    sourceHashesAfter: null,
+    dependenciesAfter: null,
+    sourceStable: null,
+    dependenciesStable: null,
+    cases: [],
+    closed: false,
+    failure: null,
+    result: 'NOT_RUN',
+  };
+  let setup = false;
+  let measuredFail = false;
+  let totalChecks = 0;
+  let finalCode = 2;
+  try {
+    fixture.freeze(fixture.hashes());
+    await fixture.init();
+    for (const id of selected) {
+      const dir = prepareCase(run, id);
+      const reporter = createReporter({ dir, run, caseId: id, executor, gate });
+      try {
+        await cases[id]({ reporter, fixture, lib: module.exports });
+        const report = reporter.finish();
+        totalChecks += report.checks.length;
+        if (report.result === 'FAIL') measuredFail = true;
+        else if (report.result !== 'PASS') setup = true;
+        runReport.cases.push({ case: id, result: report.result, checks: report.checks.length, dir: path.relative(RUNS, dir) });
+      } catch (error) {
+        setup = true;
+        reporter.setup(error);
+        const report = reporter.finish();
+        runReport.cases.push({ case: id, result: report.result, checks: report.checks.length, dir: path.relative(RUNS, dir), setup: String(error && error.message || error) });
+      }
+    }
+  } catch (error) {
+    setup = true;
+    runReport.failure = { message: String(error && error.message || error), stack: error && error.stack };
+  } finally {
+    try {
+      await fixture.close();
+      runReport.closed = true;
+    } catch (closeError) {
+      runReport.closed = false;
+      runReport.failure = { ...(runReport.failure || {}), closeMessage: String(closeError && closeError.message || closeError) };
+      setup = true;
+    }
+    const after = snapshotHashes();
+    runReport.sourceHashesAfter = after.sources;
+    runReport.dependenciesAfter = after.dependencies;
+    runReport.sourceStable = same(gate.actual.sources, after.sources);
+    runReport.dependenciesStable = same(gate.actual.dependencies, after.dependencies);
+    if (runReport.sourceStable !== true || runReport.dependenciesStable !== true) {
+      setup = true;
+      runReport.drift = {
+        sourceStable: runReport.sourceStable,
+        dependenciesStable: runReport.dependenciesStable,
+        sourceHashesAfter: after.sources,
+        dependenciesAfter: after.dependencies,
+      };
+    }
+    const classification = classifyRun({ measuredFail, setup, totalChecks });
+    runReport.result = classification.result;
+    runReport.measuredFail = measuredFail;
+    runReport.setupIncomplete = setup;
+    finalCode = classification.code;
+    runReport.finishedAt = new Date().toISOString();
+    fs.writeFileSync(path.join(runDir, 'run.json'), JSON.stringify(runReport, null, 2));
+  }
+  return { code: finalCode, report: runReport };
+}
+
+module.exports = {
+  ROOT, RUNS, PAGE, CASE_IDS, SOURCE_EXPECTED, DEP_EXPECTED,
+  sha256, snapshotHashes, verifyGate, parseCase, runIdentity, preflight,
+  createReporter, facts, waitIdle, waitPresent, waitGone, waitRoute, pointerPress,
+  caseErrors, classifyRun, execute, same,
+};

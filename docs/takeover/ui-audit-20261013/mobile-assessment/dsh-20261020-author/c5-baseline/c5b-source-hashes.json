@@ -1,0 +1,29 @@
+{
+  "at": "2026-10-20T23:26:47.4756991+08:00",
+  "note": "C5b corrected candidate after Root static review; first C5 raw files preserved untouched",
+  "firstC5": {
+    "page": "1e4e729c322b2d54c25812e91968cb5dc8ace803dc410019571a548943354204",
+    "package": "484382c73929055cc4ecd9a83679f8bab72388dd8069f71a056b3bbc595c0078",
+    "lock": "d57a87ca84985549fd53c69b1fe1d59db0b136036f2f7bf640d3b30c0a106624"
+  },
+  "c5b": {
+    "page": {
+      "raw": "24281df07efb4a8553cfb605eab8d22eb3e16f83076805b141818021948c529a",
+      "lf": "24281df07efb4a8553cfb605eab8d22eb3e16f83076805b141818021948c529a",
+      "bytes": 36084
+    },
+    "package": {
+      "raw": "484382c73929055cc4ecd9a83679f8bab72388dd8069f71a056b3bbc595c0078",
+      "bytes": 1734
+    },
+    "lock": {
+      "raw": "d57a87ca84985549fd53c69b1fe1d59db0b136036f2f7bf640d3b30c0a106624",
+      "bytes": 397670
+    },
+    "vueRouter": {
+      "direct": "4.4.4",
+      "uniH5": "4.4.4",
+      "link": "Global\\C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\node_modules\\.pnpm\\vue-router@4.4.4_vue@3.5.41_typescript@5.9.3_\\node_modules\\vue-router"
+    }
+  }
+}

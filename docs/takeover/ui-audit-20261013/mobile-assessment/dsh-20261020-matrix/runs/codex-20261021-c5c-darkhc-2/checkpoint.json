@@ -1,0 +1,24 @@
+{
+  "runId": "codex-20261021-c5c-darkhc-2",
+  "label": "Codex independent C5c bounded review corrected extractor",
+  "preparedBy": "DSH",
+  "status": "FINISHED",
+  "group": "case-id",
+  "caseIds": [
+    "en-US__dark__320__text200__short",
+    "zh-CN__high-contrast__390"
+  ],
+  "startedAt": "2026-10-20T23:55:41.531Z",
+  "updatedAt": "2026-10-20T23:55:48.759Z",
+  "completed": [
+    "zh-CN__high-contrast__390",
+    "en-US__dark__320__text200__short"
+  ],
+  "pending": [],
+  "lastCaseId": "en-US__dark__320__text200__short",
+  "screenshots": 16,
+  "plannedScreenshots": 16,
+  "note": "Resume skips any case with a written result; re-test a failed case with a NEW --run-id.",
+  "lastStatus": "MEASURED",
+  "stopReason": null
+}

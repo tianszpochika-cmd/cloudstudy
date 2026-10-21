@@ -1,0 +1,53 @@
+{
+  "at": "2026-10-20T14:26:12.420Z",
+  "scope": "MB006_C3_SERVED_MOBILE_EXPERIENCE_MODULE_READ_ONLY",
+  "base": "http://127.0.0.1:18183",
+  "steps": [
+    {
+      "name": "experience-ts",
+      "url": "http://127.0.0.1:18183/src/platform/experience.ts",
+      "status": 200,
+      "contentType": "text/javascript",
+      "bytes": 14246,
+      "sha256": "3880d36a68cdbdc35c6515767d7784fc7f4c2f3b6163071a22e94491f6a82c2f"
+    },
+    {
+      "name": "mobile-experience-module",
+      "url": "http://127.0.0.1:18183/node_modules/@englishflow/i18n/src/mobile-experience.ts?v=78288a10",
+      "status": 200,
+      "contentType": "text/javascript",
+      "bytes": 90205,
+      "sha256": "81de3f9271161eca579e6b8717b6329fffecd5b33aa413ebcf1c5ad435699a48"
+    }
+  ],
+  "importSpecifiers": [
+    "/node_modules/@englishflow/i18n/src/mobile-experience.ts?v=78288a10"
+  ],
+  "followedImportUrl": "http://127.0.0.1:18183/node_modules/@englishflow/i18n/src/mobile-experience.ts?v=78288a10",
+  "served": {
+    "facts": {
+      "completedCount": false,
+      "newZhCompletedCount": false,
+      "oldZhReceived": true,
+      "newZhProgress": false,
+      "oldZhProgress": true,
+      "newEnCompleted": false,
+      "oldEnReceived": true
+    }
+  },
+  "local": {
+    "path": "packages/i18n/src/mobile-experience.ts",
+    "bytes": 32760,
+    "sha256": "6ac6800e179de0ba15ab3607918b2f8427d364e19306eaf8f2a146f016247380",
+    "facts": {
+      "completedCount": true,
+      "newZhCompletedCount": true,
+      "oldZhReceived": false,
+      "newZhProgress": true,
+      "oldZhProgress": false,
+      "newEnCompleted": true,
+      "oldEnReceived": false
+    }
+  },
+  "verdict": "FILE_NEW_SERVED_OLD"
+}

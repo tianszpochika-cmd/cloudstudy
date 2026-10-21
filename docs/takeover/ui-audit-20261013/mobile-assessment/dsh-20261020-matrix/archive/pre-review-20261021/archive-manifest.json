@@ -1,0 +1,42 @@
+{
+  "archivedAt": "2026-10-20T22:57:58.5351073+08:00",
+  "note": "Pre-review bytes archived before the 2026-10-21 review correction; no browser/product/Git writes.",
+  "files": [
+    {
+      "source": "scripts/matrix.cjs",
+      "archive": "scripts/matrix.cjs",
+      "sha256": "08bc59f64d443da5962a769a31b7aace18bd37bd45fc9a7b252c3d5550ecfb9e",
+      "bytes": 39835
+    },
+    {
+      "source": "scripts/measure.cjs",
+      "archive": "scripts/measure.cjs",
+      "sha256": "3c705d4afe832929840c72f67c97d030cf068bb0637555a12d1eab074e05144b",
+      "bytes": 23962
+    },
+    {
+      "source": "scripts/coverage.cjs",
+      "archive": "scripts/coverage.cjs",
+      "sha256": "a30fd749d56803690706ec2a9f0f6e945d57cfe3b68fe6d5567b894b73ef1d7c",
+      "bytes": 7045
+    },
+    {
+      "source": "scripts/README.md",
+      "archive": "scripts/README.md",
+      "sha256": "f029962256c90875e940fff7c9f5d97c5801041d697a6c28c86b2c069f353330",
+      "bytes": 3621
+    },
+    {
+      "source": "README.md",
+      "archive": "README.md",
+      "sha256": "58a05db1878c5b1d5a599e3771f78b61810fc7ba2ebe9f62fa0ed6fb515e4eab",
+      "bytes": 12303
+    },
+    {
+      "source": "checkpoint.md",
+      "archive": "checkpoint.md",
+      "sha256": "c830122e869ddf23cde9d181350a984ec97d8ea59ac335d2cf9bc583ecebc860",
+      "bytes": 4420
+    }
+  ]
+}

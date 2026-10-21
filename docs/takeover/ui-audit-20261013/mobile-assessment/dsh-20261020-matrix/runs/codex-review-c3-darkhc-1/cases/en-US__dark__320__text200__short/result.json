@@ -1,0 +1,5300 @@
+{
+  "caseId": "en-US__dark__320__text200__short",
+  "config": {
+    "id": "en-US__dark__320__text200__short",
+    "locale": "en-US",
+    "theme": "dark",
+    "width": 320,
+    "height": 568,
+    "colorScheme": "light",
+    "textScale": 200,
+    "short": true,
+    "systemLiveSwitch": false,
+    "extra": "text200+short",
+    "selectionProbe": "C",
+    "groups": [
+      "compact"
+    ]
+  },
+  "status": "ERROR",
+  "startedAt": "2026-10-20T15:04:42.092Z",
+  "finishedAt": "2026-10-20T15:04:45.003Z",
+  "preparedBy": "DSH",
+  "executionLabel": "Codex independent bounded C3 review",
+  "sourceFrozenAt": "2026-10-20T15:04:38.375Z",
+  "pageSha256": "86620ed0dbc2cb25afb4bbae35734a345b9e8066afa806684f99ccb678a5312d",
+  "i18nSha256": "6ac6800e179de0ba15ab3607918b2f8427d364e19306eaf8f2a146f016247380",
+  "supportingSha256": {
+    "packages/design-tokens/src/mobile.ts": "5b3aac642d103e998ae723c6af1c72fd3d47c7929a609d47aee1e003ad2281d9",
+    "packages/design-tokens/src/official-site.ts": "9d6af42d7ff255154d579729105c46fe15e2e4792ac64a4eab591108a7d03d62"
+  },
+  "states": {
+    "guide": {
+      "raw": {
+        "state": "guide",
+        "locale": "en-US",
+        "themeRequested": "dark",
+        "textScale": 200,
+        "errors": [],
+        "viewport": {
+          "width": 320,
+          "height": 568,
+          "dpr": 1,
+          "scrollWidth": 11597,
+          "scrollHeight": 1168024,
+          "innerWidth": 320
+        },
+        "url": {
+          "origin": "http://127.0.0.1:18183",
+          "pathname": "/",
+          "hash": "#/pages/assessment/assessment"
+        },
+        "overlay": false,
+        "document": {
+          "htmlLang": "en-US",
+          "datasetTheme": "dark",
+          "datasetUiLocale": null,
+          "datasetContentLocale": null,
+          "title": "Level check"
+        },
+        "present": {
+          "guide": true,
+          "question": false,
+          "report": false,
+          "retestConfirm": false,
+          "pending": false
+        },
+        "shell": {
+          "x": 20,
+          "y": 16,
+          "width": 280,
+          "height": 1167968,
+          "top": 16,
+          "right": 300,
+          "bottom": 1167984,
+          "left": 20,
+          "centeredDelta": 0
+        },
+        "root": {
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 320,
+            "height": 1168024,
+            "top": 0,
+            "right": 320,
+            "bottom": 1168024,
+            "left": 0
+          },
+          "background": [
+            34,
+            38,
+            56
+          ]
+        },
+        "palette": {
+          "--yx-brand": {
+            "raw": "#c3b5fa",
+            "rgb": [
+              195,
+              181,
+              250
+            ],
+            "alpha": 1
+          },
+          "--yx-brand-soft": {
+            "raw": "#302b49",
+            "rgb": [
+              48,
+              43,
+              73
+            ],
+            "alpha": 1
+          },
+          "--yx-action": {
+            "raw": "#5937d1",
+            "rgb": [
+              89,
+              55,
+              209
+            ],
+            "alpha": 1
+          },
+          "--yx-on-brand": {
+            "raw": "#ffffff",
+            "rgb": [
+              255,
+              255,
+              255
+            ],
+            "alpha": 1
+          },
+          "--yx-text-primary": {
+            "raw": "#f4f6ff",
+            "rgb": [
+              244,
+              246,
+              255
+            ],
+            "alpha": 1
+          },
+          "--yx-text-secondary": {
+            "raw": "#b2b7cd",
+            "rgb": [
+              178,
+              183,
+              205
+            ],
+            "alpha": 1
+          },
+          "--yx-surface-page": {
+            "raw": "#161925",
+            "rgb": [
+              22,
+              25,
+              37
+            ],
+            "alpha": 1
+          },
+          "--yx-surface-card": {
+            "raw": "#222638",
+            "rgb": [
+              34,
+              38,
+              56
+            ],
+            "alpha": 1
+          },
+          "--yx-surface-soft": {
+            "raw": "#282d40",
+            "rgb": [
+              40,
+              45,
+              64
+            ],
+            "alpha": 1
+          },
+          "--yx-border": {
+            "raw": "#363b50",
+            "rgb": [
+              54,
+              59,
+              80
+            ],
+            "alpha": 1
+          },
+          "--yx-focus": {
+            "raw": "#c3b5fa",
+            "rgb": [
+              195,
+              181,
+              250
+            ],
+            "alpha": 1
+          },
+          "--yx-success-soft": {
+            "raw": "#253730",
+            "rgb": [
+              37,
+              55,
+              48
+            ],
+            "alpha": 1
+          },
+          "--yx-danger": {
+            "raw": "#ffb3be",
+            "rgb": [
+              255,
+              179,
+              190
+            ],
+            "alpha": 1
+          }
+        },
+        "h1": {
+          "text": "Level check",
+          "expected": "Level check",
+          "match": true,
+          "visible": true,
+          "rect": {
+            "x": 20,
+            "y": 4872,
+            "width": 280,
+            "height": 78400,
+            "top": 4872,
+            "right": 300,
+            "bottom": 83272,
+            "left": 20
+          },
+          "role": "heading",
+          "ariaLevel": "1",
+          "fontSize": 5600,
+          "hostFontSize": 28,
+          "fontWeight": 650,
+          "color": "rgb(244, 246, 255)"
+        },
+        "controls": {
+          "host": "uni-button",
+          "count": 4,
+          "plainButtonCount": 0,
+          "expectedIds": [
+            "assessment-back",
+            "assessment-settings",
+            "assessment-start",
+            "assessment-home"
+          ],
+          "list": [
+            {
+              "id": "assessment-back",
+              "classes": "assessment-nav-button",
+              "text": "Back",
+              "ariaLabel": null,
+              "ariaPressed": null,
+              "disabled": false,
+              "disabledAttr": false,
+              "ariaDisabled": false,
+              "visible": true,
+              "rect": {
+                "x": 20,
+                "y": 16,
+                "width": 220,
+                "height": 4816,
+                "top": 16,
+                "right": 240,
+                "bottom": 4832,
+                "left": 20
+              },
+              "fontSize": 16,
+              "fontWeight": 400,
+              "color": "rgb(244, 246, 255)",
+              "background": [
+                0,
+                0,
+                0
+              ],
+              "borderColor": "rgb(244, 246, 255)",
+              "borderWidth": 0,
+              "opacity": 1,
+              "role": "button",
+              "tabIndex": "0"
+            },
+            {
+              "id": "assessment-settings",
+              "classes": "assessment-nav-button assessment-settings",
+              "text": "",
+              "ariaLabel": "Settings",
+              "ariaPressed": null,
+              "disabled": false,
+              "disabledAttr": false,
+              "ariaDisabled": false,
+              "visible": true,
+              "rect": {
+                "x": 256,
+                "y": 2402,
+                "width": 44,
+                "height": 44,
+                "top": 2402,
+                "right": 300,
+                "bottom": 2446,
+                "left": 256
+              },
+              "fontSize": 16,
+              "fontWeight": 400,
+              "color": "rgb(244, 246, 255)",
+              "background": [
+                0,
+                0,
+                0
+              ],
+              "borderColor": "rgb(244, 246, 255)",
+              "borderWidth": 0,
+              "opacity": 1,
+              "role": "button",
+              "tabIndex": "0"
+            },
+            {
+              "id": "assessment-start",
+              "classes": "assessment-button assessment-primary",
+              "text": "Start assessment",
+              "ariaLabel": null,
+              "ariaPressed": null,
+              "disabled": false,
+              "disabledAttr": false,
+              "ariaDisabled": false,
+              "visible": true,
+              "rect": {
+                "x": 20,
+                "y": 755416,
+                "width": 280,
+                "height": 52826,
+                "top": 755416,
+                "right": 300,
+                "bottom": 808242,
+                "left": 20
+              },
+              "fontSize": 3200,
+              "fontWeight": 600,
+              "color": "rgb(255, 255, 255)",
+              "background": [
+                89,
+                55,
+                209
+              ],
+              "borderColor": "rgb(89, 55, 209)",
+              "borderWidth": 1,
+              "opacity": 1,
+              "role": "button",
+              "tabIndex": "0"
+            },
+            {
+              "id": "assessment-home",
+              "classes": "assessment-button assessment-secondary",
+              "text": "Return to learning home",
+              "ariaLabel": null,
+              "ariaPressed": null,
+              "disabled": false,
+              "disabledAttr": false,
+              "ariaDisabled": false,
+              "visible": true,
+              "rect": {
+                "x": 20,
+                "y": 808254,
+                "width": 280,
+                "height": 86426,
+                "top": 808254,
+                "right": 300,
+                "bottom": 894680,
+                "left": 20
+              },
+              "fontSize": 3200,
+              "fontWeight": 600,
+              "color": "rgb(244, 246, 255)",
+              "background": [
+                34,
+                38,
+                56
+              ],
+              "borderColor": "rgb(178, 183, 205)",
+              "borderWidth": 1,
+              "opacity": 1,
+              "role": "button",
+              "tabIndex": "0"
+            }
+          ],
+          "missing": [],
+          "extra": [],
+          "disabled": []
+        },
+        "complete": null,
+        "inputs": {
+          "count": 0,
+          "list": []
+        },
+        "options": {
+          "count": 0,
+          "list": []
+        },
+        "selected": null,
+        "progress": null,
+        "feedback": null,
+        "error": null,
+        "confirmation": null,
+        "typography": {
+          "textElementCount": 10,
+          "sizeViolations": [],
+          "h1FontSize": 5600,
+          "sampleCount": 10,
+          "samples": [
+            {
+              "id": "assessment-start",
+              "classes": "assessment-button assessment-primary",
+              "text": "Start assessment",
+              "tag": "uni-button",
+              "fontSize": 3200,
+              "fontWeight": 600,
+              "large": true,
+              "disabled": false,
+              "color": [
+                255,
+                255,
+                255
+              ],
+              "background": [
+                89,
+                55,
+                209
+              ],
+              "ratio": 7.26,
+              "rect": {
+                "x": 20,
+                "y": 755416,
+                "width": 280,
+                "height": 52826,
+                "top": 755416,
+                "right": 300,
+                "bottom": 808242,
+                "left": 20
+              }
+            },
+            {
+              "id": null,
+              "classes": "",
+              "text": "Answer 10 questions to understand your current English start",
+              "tag": "span",
+              "fontSize": 3200,
+              "fontWeight": 400,
+              "large": true,
+              "disabled": false,
+              "color": [
+                178,
+                183,
+                205
+              ],
+              "background": [
+                34,
+                38,
+                56
+              ],
+              "ratio": 7.52,
+              "rect": {
+                "x": 20,
+                "y": 83568,
+                "width": 2312.5,
+                "height": 292256,
+                "top": 83568,
+                "right": 2332.5,
+                "bottom": 375824,
+                "left": 20
+              }
+            },
+            {
+              "id": null,
+              "classes": "",
+              "text": "Choose the answer you think is right.",
+              "tag": "span",
+              "fontSize": 3200,
+              "fontWeight": 400,
+              "large": true,
+              "disabled": false,
+              "color": [
+                178,
+                183,
+                205
+              ],
+              "background": [
+                34,
+                38,
+                56
+              ],
+              "ratio": 7.52,
+              "rect": {
+                "x": 84,
+                "y": 400414,
+                "width": 2312.5,
+                "height": 148256,
+                "top": 400414,
+                "right": 2396.5,
+                "bottom": 548670,
+                "left": 84
+              }
+            },
+            {
+              "id": null,
+              "classes": "",
+              "text": "Your result is based on the answers received.",
+              "tag": "span",
+              "fontSize": 3200,
+              "fontWeight": 400,
+              "large": true,
+              "disabled": false,
+              "color": [
+                178,
+                183,
+                205
+              ],
+              "background": [
+                34,
+                38,
+                56
+              ],
+              "ratio": 7.52,
+              "rect": {
+                "x": 84,
+                "y": 573248,
+                "width": 2312.5,
+                "height": 181856,
+                "top": 573248,
+                "right": 2396.5,
+                "bottom": 755104,
+                "left": 84
+              }
+            },
+            {
+              "id": null,
+              "classes": "",
+              "text": "Quick start is currently unavailable. Please complete the as",
+              "tag": "span",
+              "fontSize": 2800,
+              "fontWeight": 400,
+              "large": true,
+              "disabled": false,
+              "color": [
+                178,
+                183,
+                205
+              ],
+              "background": [
+                34,
+                38,
+                56
+              ],
+              "ratio": 7.52,
+              "rect": {
+                "x": 20,
+                "y": 895082,
+                "width": 2411.72,
+                "height": 272524,
+                "top": 895082,
+                "right": 2431.72,
+                "bottom": 1167606,
+                "left": 20
+              }
+            },
+            {
+              "id": null,
+              "classes": "",
+              "text": "Back",
+              "tag": "span",
+              "fontSize": 3200,
+              "fontWeight": 400,
+              "large": true,
+              "disabled": false,
+              "color": [
+                244,
+                246,
+                255
+              ],
+              "background": [
+                34,
+                38,
+                56
+              ],
+              "ratio": 13.89,
+              "rect": {
+                "x": -3122.62,
+                "y": 296,
+                "width": 6531.25,
+                "height": 4256,
+                "top": 296,
+                "right": 3408.63,
+                "bottom": 4552,
+                "left": -3122.62
+              }
+            },
+            {
+              "id": null,
+              "classes": "",
+              "text": "Level check",
+              "tag": "span",
+              "fontSize": 5600,
+              "fontWeight": 650,
+              "large": true,
+              "disabled": false,
+              "color": [
+                244,
+                246,
+                255
+              ],
+              "background": [
+                34,
+                38,
+                56
+              ],
+              "ratio": 13.89,
+              "rect": {
+                "x": 20,
+                "y": 5068,
+                "width": 3371.48,
+                "height": 78008,
+                "top": 5068,
+                "right": 3391.48,
+                "bottom": 83076,
+                "left": 20
+              }
+            },
+            {
+              "id": null,
+              "classes": "",
+              "text": "Answer at your current level",
+              "tag": "span",
+              "fontSize": 3200,
+              "fontWeight": 600,
+              "large": true,
+              "disabled": false,
+              "color": [
+                244,
+                246,
+                255
+              ],
+              "background": [
+                34,
+                38,
+                56
+              ],
+              "ratio": 13.89,
+              "rect": {
+                "x": 84,
+                "y": 376408,
+                "width": 10684.38,
+                "height": 23456,
+                "top": 376408,
+                "right": 10768.38,
+                "bottom": 399864,
+                "left": 84
+              }
+            },
+            {
+              "id": null,
+              "classes": "",
+              "text": "View your result when finished",
+              "tag": "span",
+              "fontSize": 3200,
+              "fontWeight": 600,
+              "large": true,
+              "disabled": false,
+              "color": [
+                244,
+                246,
+                255
+              ],
+              "background": [
+                34,
+                38,
+                56
+              ],
+              "ratio": 13.89,
+              "rect": {
+                "x": 84,
+                "y": 549242,
+                "width": 11512.5,
+                "height": 23456,
+                "top": 549242,
+                "right": 11596.5,
+                "bottom": 572698,
+                "left": 84
+              }
+            },
+            {
+              "id": "assessment-home",
+              "classes": "assessment-button assessment-secondary",
+              "text": "Return to learning home",
+              "tag": "uni-button",
+              "fontSize": 3200,
+              "fontWeight": 600,
+              "large": true,
+              "disabled": false,
+              "color": [
+                244,
+                246,
+                255
+              ],
+              "background": [
+                34,
+                38,
+                56
+              ],
+              "ratio": 13.89,
+              "rect": {
+                "x": 20,
+                "y": 808254,
+                "width": 280,
+                "height": 86426,
+                "top": 808254,
+                "right": 300,
+                "bottom": 894680,
+                "left": 20
+              }
+            }
+          ],
+          "minRatio": 7.26
+        },
+        "contrast": {
+          "textViolations": [],
+          "textMeasured": 10,
+          "borderSamples": [
+            {
+              "id": "assessment-start",
+              "border": [
+                89,
+                55,
+                209
+              ],
+              "vsParentBackground": 2.06,
+              "vsOwnBackground": 1,
+              "disabled": false
+            },
+            {
+              "id": "assessment-home",
+              "border": [
+                178,
+                183,
+                205
+              ],
+              "vsParentBackground": 7.52,
+              "vsOwnBackground": 7.52,
+              "disabled": false
+            }
+          ],
+          "borderViolations": [
+            {
+              "id": "assessment-start",
+              "border": [
+                89,
+                55,
+                209
+              ],
+              "vsParentBackground": 2.06,
+              "vsOwnBackground": 1,
+              "disabled": false
+            }
+          ]
+        },
+        "clipping": [
+          {
+            "id": null,
+            "classes": "",
+            "text": "Back",
+            "tag": "span",
+            "fontSize": 3200,
+            "fontWeight": 400,
+            "large": true,
+            "disabled": false,
+            "color": [
+              244,
+              246,
+              255
+            ],
+            "background": [
+              34,
+              38,
+              56
+            ],
+            "ratio": 13.89,
+            "rect": {
+              "x": -3122.62,
+              "y": 296,
+              "width": 6531.25,
+              "height": 4256,
+              "top": 296,
+              "right": 3408.63,
+              "bottom": 4552,
+              "left": -3122.62
+            },
+            "clippedBy": {
+              "id": "assessment-back",
+              "classes": "assessment-nav-button",
+              "rect": {
+                "x": 20,
+                "y": 16,
+                "width": 220,
+                "height": 4816,
+                "top": 16,
+                "right": 240,
+                "bottom": 4832,
+                "left": 20
+              }
+            }
+          },
+          {
+            "id": null,
+            "classes": "",
+            "text": "Level check",
+            "tag": "span",
+            "fontSize": 5600,
+            "fontWeight": 650,
+            "large": true,
+            "disabled": false,
+            "color": [
+              244,
+              246,
+              255
+            ],
+            "background": [
+              34,
+              38,
+              56
+            ],
+            "ratio": 13.89,
+            "rect": {
+              "x": 20,
+              "y": 5068,
+              "width": 3371.48,
+              "height": 78008,
+              "top": 5068,
+              "right": 3391.48,
+              "bottom": 83076,
+              "left": 20
+            },
+            "clippedBy": {
+              "id": null,
+              "classes": "",
+              "rect": {
+                "x": 0,
+                "y": 0,
+                "width": 320,
+                "height": 568,
+                "top": 0,
+                "right": 320,
+                "bottom": 568,
+                "left": 0
+              }
+            }
+          },
+          {
+            "id": null,
+            "classes": "",
+            "text": "Answer 10 questions to understand your current English start",
+            "tag": "span",
+            "fontSize": 3200,
+            "fontWeight": 400,
+            "large": true,
+            "disabled": false,
+            "color": [
+              178,
+              183,
+              205
+            ],
+            "background": [
+              34,
+              38,
+              56
+            ],
+            "ratio": 7.52,
+            "rect": {
+              "x": 20,
+              "y": 83568,
+              "width": 2312.5,
+              "height": 292256,
+              "top": 83568,
+              "right": 2332.5,
+              "bottom": 375824,
+              "left": 20
+            },
+            "clippedBy": {
+              "id": null,
+              "classes": "",
+              "rect": {
+                "x": 0,
+                "y": 0,
+                "width": 320,
+                "height": 568,
+                "top": 0,
+                "right": 320,
+                "bottom": 568,
+                "left": 0
+              }
+            }
+          },
+          {
+            "id": null,
+            "classes": "",
+            "text": "Answer at your current level",
+            "tag": "span",
+            "fontSize": 3200,
+            "fontWeight": 600,
+            "large": true,
+            "disabled": false,
+            "color": [
+              244,
+              246,
+              255
+            ],
+            "background": [
+              34,
+              38,
+              56
+            ],
+            "ratio": 13.89,
+            "rect": {
+              "x": 84,
+              "y": 376408,
+              "width": 10684.38,
+              "height": 23456,
+              "top": 376408,
+              "right": 10768.38,
+              "bottom": 399864,
+              "left": 84
+            },
+            "clippedBy": {
+              "id": null,
+              "classes": "",
+              "rect": {
+                "x": 0,
+                "y": 0,
+                "width": 320,
+                "height": 568,
+                "top": 0,
+                "right": 320,
+                "bottom": 568,
+                "left": 0
+              }
+            }
+          },
+          {
+            "id": null,
+            "classes": "",
+            "text": "Choose the answer you think is right.",
+            "tag": "span",
+            "fontSize": 3200,
+            "fontWeight": 400,
+            "large": true,
+            "disabled": false,
+            "color": [
+              178,
+              183,
+              205
+            ],
+            "background": [
+              34,
+              38,
+              56
+            ],
+            "ratio": 7.52,
+            "rect": {
+              "x": 84,
+              "y": 400414,
+              "width": 2312.5,
+              "height": 148256,
+              "top": 400414,
+              "right": 2396.5,
+              "bottom": 548670,
+              "left": 84
+            },
+            "clippedBy": {
+              "id": null,
+              "classes": "",
+              "rect": {
+                "x": 0,
+                "y": 0,
+                "width": 320,
+                "height": 568,
+                "top": 0,
+                "right": 320,
+                "bottom": 568,
+                "left": 0
+              }
+            }
+          },
+          {
+            "id": null,
+            "classes": "",
+            "text": "View your result when finished",
+            "tag": "span",
+            "fontSize": 3200,
+            "fontWeight": 600,
+            "large": true,
+            "disabled": false,
+            "color": [
+              244,
+              246,
+              255
+            ],
+            "background": [
+              34,
+              38,
+              56
+            ],
+            "ratio": 13.89,
+            "rect": {
+              "x": 84,
+              "y": 549242,
+              "width": 11512.5,
+              "height": 23456,
+              "top": 549242,
+              "right": 11596.5,
+              "bottom": 572698,
+              "left": 84
+            },
+            "clippedBy": {
+              "id": null,
+              "classes": "",
+              "rect": {
+                "x": 0,
+                "y": 0,
+                "width": 320,
+                "height": 568,
+                "top": 0,
+                "right": 320,
+                "bottom": 568,
+                "left": 0
+              }
+            }
+          },
+          {
+            "id": null,
+            "classes": "",
+            "text": "Your result is based on the answers received.",
+            "tag": "span",
+            "fontSize": 3200,
+            "fontWeight": 400,
+            "large": true,
+            "disabled": false,
+            "color": [
+              178,
+              183,
+              205
+            ],
+            "background": [
+              34,
+              38,
+              56
+            ],
+            "ratio": 7.52,
+            "rect": {
+              "x": 84,
+              "y": 573248,
+              "width": 2312.5,
+              "height": 181856,
+              "top": 573248,
+              "right": 2396.5,
+              "bottom": 755104,
+              "left": 84
+            },
+            "clippedBy": {
+              "id": null,
+              "classes": "",
+              "rect": {
+                "x": 0,
+                "y": 0,
+                "width": 320,
+                "height": 568,
+                "top": 0,
+                "right": 320,
+                "bottom": 568,
+                "left": 0
+              }
+            }
+          },
+          {
+            "id": "assessment-start",
+            "classes": "assessment-button assessment-primary",
+            "text": "Start assessment",
+            "tag": "uni-button",
+            "fontSize": 3200,
+            "fontWeight": 600,
+            "large": true,
+            "disabled": false,
+            "color": [
+              255,
+              255,
+              255
+            ],
+            "background": [
+              89,
+              55,
+              209
+            ],
+            "ratio": 7.26,
+            "rect": {
+              "x": 20,
+              "y": 755416,
+              "width": 280,
+              "height": 52826,
+              "top": 755416,
+              "right": 300,
+              "bottom": 808242,
+              "left": 20
+            },
+            "clippedBy": {
+              "id": null,
+              "classes": "",
+              "rect": {
+                "x": 0,
+                "y": 0,
+                "width": 320,
+                "height": 568,
+                "top": 0,
+                "right": 320,
+                "bottom": 568,
+                "left": 0
+              }
+            }
+          },
+          {
+            "id": "assessment-home",
+            "classes": "assessment-button assessment-secondary",
+            "text": "Return to learning home",
+            "tag": "uni-button",
+            "fontSize": 3200,
+            "fontWeight": 600,
+            "large": true,
+            "disabled": false,
+            "color": [
+              244,
+              246,
+              255
+            ],
+            "background": [
+              34,
+              38,
+              56
+            ],
+            "ratio": 13.89,
+            "rect": {
+              "x": 20,
+              "y": 808254,
+              "width": 280,
+              "height": 86426,
+              "top": 808254,
+              "right": 300,
+              "bottom": 894680,
+              "left": 20
+            },
+            "clippedBy": {
+              "id": null,
+              "classes": "",
+              "rect": {
+                "x": 0,
+                "y": 0,
+                "width": 320,
+                "height": 568,
+                "top": 0,
+                "right": 320,
+                "bottom": 568,
+                "left": 0
+              }
+            }
+          },
+          {
+            "id": null,
+            "classes": "",
+            "text": "Quick start is currently unavailable. Please complete the as",
+            "tag": "span",
+            "fontSize": 2800,
+            "fontWeight": 400,
+            "large": true,
+            "disabled": false,
+            "color": [
+              178,
+              183,
+              205
+            ],
+            "background": [
+              34,
+              38,
+              56
+            ],
+            "ratio": 7.52,
+            "rect": {
+              "x": 20,
+              "y": 895082,
+              "width": 2411.72,
+              "height": 272524,
+              "top": 895082,
+              "right": 2431.72,
+              "bottom": 1167606,
+              "left": 20
+            },
+            "clippedBy": {
+              "id": null,
+              "classes": "",
+              "rect": {
+                "x": 0,
+                "y": 0,
+                "width": 320,
+                "height": 568,
+                "top": 0,
+                "right": 320,
+                "bottom": 568,
+                "left": 0
+              }
+            }
+          }
+        ],
+        "textOverflow": [
+          {
+            "id": "assessment-start",
+            "token": "Start",
+            "tokenRect": {
+              "left": -1243.12,
+              "right": 1563.13,
+              "top": 755701,
+              "bottom": 759957
+            },
+            "elementRect": {
+              "x": 20,
+              "y": 755416,
+              "width": 280,
+              "height": 52826,
+              "top": 755416,
+              "right": 300,
+              "bottom": 808242,
+              "left": 20
+            }
+          },
+          {
+            "id": "assessment-start",
+            "token": "assessment",
+            "tokenRect": {
+              "left": -675.16,
+              "right": 995.16,
+              "top": 770101,
+              "bottom": 774357
+            },
+            "elementRect": {
+              "x": 20,
+              "y": 755416,
+              "width": 280,
+              "height": 52826,
+              "top": 755416,
+              "right": 300,
+              "bottom": 808242,
+              "left": 20
+            }
+          },
+          {
+            "id": "assessment-home",
+            "token": "Return",
+            "tokenRect": {
+              "left": -836.09,
+              "right": 1156.09,
+              "top": 808539,
+              "bottom": 812795
+            },
+            "elementRect": {
+              "x": 20,
+              "y": 808254,
+              "width": 280,
+              "height": 86426,
+              "top": 808254,
+              "right": 300,
+              "bottom": 894680,
+              "left": 20
+            }
+          },
+          {
+            "id": "assessment-home",
+            "token": "to",
+            "tokenRect": {
+              "left": -418.12,
+              "right": 738.13,
+              "top": 837339,
+              "bottom": 841595
+            },
+            "elementRect": {
+              "x": 20,
+              "y": 808254,
+              "width": 280,
+              "height": 86426,
+              "top": 808254,
+              "right": 300,
+              "bottom": 894680,
+              "left": 20
+            }
+          },
+          {
+            "id": "assessment-home",
+            "token": "learning",
+            "tokenRect": {
+              "left": -1107.97,
+              "right": 1427.97,
+              "top": 846939,
+              "bottom": 851195
+            },
+            "elementRect": {
+              "x": 20,
+              "y": 808254,
+              "width": 280,
+              "height": 86426,
+              "top": 808254,
+              "right": 300,
+              "bottom": 894680,
+              "left": 20
+            }
+          },
+          {
+            "id": "assessment-home",
+            "token": "home",
+            "tokenRect": {
+              "left": -771.25,
+              "right": 1091.25,
+              "top": 875739,
+              "bottom": 879995
+            },
+            "elementRect": {
+              "x": 20,
+              "y": 808254,
+              "width": 280,
+              "height": 86426,
+              "top": 808254,
+              "right": 300,
+              "bottom": 894680,
+              "left": 20
+            }
+          }
+        ],
+        "textOutside": [
+          {
+            "id": null,
+            "classes": "",
+            "text": "Back",
+            "tag": "span",
+            "fontSize": 3200,
+            "fontWeight": 400,
+            "large": true,
+            "disabled": false,
+            "color": [
+              244,
+              246,
+              255
+            ],
+            "background": [
+              34,
+              38,
+              56
+            ],
+            "ratio": 13.89,
+            "rect": {
+              "x": -3122.62,
+              "y": 296,
+              "width": 6531.25,
+              "height": 4256,
+              "top": 296,
+              "right": 3408.63,
+              "bottom": 4552,
+              "left": -3122.62
+            },
+            "ancestor": {
+              "id": null,
+              "classes": "assessment-navigation",
+              "rect": {
+                "x": 20,
+                "y": 16,
+                "width": 280,
+                "height": 4816,
+                "top": 16,
+                "right": 300,
+                "bottom": 4832,
+                "left": 20
+              }
+            }
+          },
+          {
+            "id": null,
+            "classes": "",
+            "text": "Level check",
+            "tag": "span",
+            "fontSize": 5600,
+            "fontWeight": 650,
+            "large": true,
+            "disabled": false,
+            "color": [
+              244,
+              246,
+              255
+            ],
+            "background": [
+              34,
+              38,
+              56
+            ],
+            "ratio": 13.89,
+            "rect": {
+              "x": 20,
+              "y": 5068,
+              "width": 3371.48,
+              "height": 78008,
+              "top": 5068,
+              "right": 3391.48,
+              "bottom": 83076,
+              "left": 20
+            },
+            "ancestor": {
+              "id": "assessment-title",
+              "classes": "assessment-title",
+              "rect": {
+                "x": 20,
+                "y": 4872,
+                "width": 280,
+                "height": 78400,
+                "top": 4872,
+                "right": 300,
+                "bottom": 83272,
+                "left": 20
+              }
+            }
+          },
+          {
+            "id": null,
+            "classes": "",
+            "text": "Answer 10 questions to understand your current English start",
+            "tag": "span",
+            "fontSize": 3200,
+            "fontWeight": 400,
+            "large": true,
+            "disabled": false,
+            "color": [
+              178,
+              183,
+              205
+            ],
+            "background": [
+              34,
+              38,
+              56
+            ],
+            "ratio": 7.52,
+            "rect": {
+              "x": 20,
+              "y": 83568,
+              "width": 2312.5,
+              "height": 292256,
+              "top": 83568,
+              "right": 2332.5,
+              "bottom": 375824,
+              "left": 20
+            },
+            "ancestor": {
+              "id": null,
+              "classes": "assessment-description",
+              "rect": {
+                "x": 20,
+                "y": 83296,
+                "width": 280,
+                "height": 292800,
+                "top": 83296,
+                "right": 300,
+                "bottom": 376096,
+                "left": 20
+              }
+            }
+          },
+          {
+            "id": null,
+            "classes": "",
+            "text": "Answer at your current level",
+            "tag": "span",
+            "fontSize": 3200,
+            "fontWeight": 600,
+            "large": true,
+            "disabled": false,
+            "color": [
+              244,
+              246,
+              255
+            ],
+            "background": [
+              34,
+              38,
+              56
+            ],
+            "ratio": 13.89,
+            "rect": {
+              "x": 84,
+              "y": 376408,
+              "width": 10684.38,
+              "height": 23456,
+              "top": 376408,
+              "right": 10768.38,
+              "bottom": 399864,
+              "left": 84
+            },
+            "ancestor": {
+              "id": null,
+              "classes": "assessment-point-title",
+              "rect": {
+                "x": 84,
+                "y": 376136,
+                "width": 216,
+                "height": 24000,
+                "top": 376136,
+                "right": 300,
+                "bottom": 400136,
+                "left": 84
+              }
+            }
+          },
+          {
+            "id": null,
+            "classes": "",
+            "text": "Choose the answer you think is right.",
+            "tag": "span",
+            "fontSize": 3200,
+            "fontWeight": 400,
+            "large": true,
+            "disabled": false,
+            "color": [
+              178,
+              183,
+              205
+            ],
+            "background": [
+              34,
+              38,
+              56
+            ],
+            "ratio": 7.52,
+            "rect": {
+              "x": 84,
+              "y": 400414,
+              "width": 2312.5,
+              "height": 148256,
+              "top": 400414,
+              "right": 2396.5,
+              "bottom": 548670,
+              "left": 84
+            },
+            "ancestor": {
+              "id": null,
+              "classes": "assessment-description",
+              "rect": {
+                "x": 84,
+                "y": 400142,
+                "width": 216,
+                "height": 148800,
+                "top": 400142,
+                "right": 300,
+                "bottom": 548942,
+                "left": 84
+              }
+            }
+          },
+          {
+            "id": null,
+            "classes": "",
+            "text": "View your result when finished",
+            "tag": "span",
+            "fontSize": 3200,
+            "fontWeight": 600,
+            "large": true,
+            "disabled": false,
+            "color": [
+              244,
+              246,
+              255
+            ],
+            "background": [
+              34,
+              38,
+              56
+            ],
+            "ratio": 13.89,
+            "rect": {
+              "x": 84,
+              "y": 549242,
+              "width": 11512.5,
+              "height": 23456,
+              "top": 549242,
+              "right": 11596.5,
+              "bottom": 572698,
+              "left": 84
+            },
+            "ancestor": {
+              "id": null,
+              "classes": "assessment-point-title",
+              "rect": {
+                "x": 84,
+                "y": 548970,
+                "width": 216,
+                "height": 24000,
+                "top": 548970,
+                "right": 300,
+                "bottom": 572970,
+                "left": 84
+              }
+            }
+          },
+          {
+            "id": null,
+            "classes": "",
+            "text": "Your result is based on the answers received.",
+            "tag": "span",
+            "fontSize": 3200,
+            "fontWeight": 400,
+            "large": true,
+            "disabled": false,
+            "color": [
+              178,
+              183,
+              205
+            ],
+            "background": [
+              34,
+              38,
+              56
+            ],
+            "ratio": 7.52,
+            "rect": {
+              "x": 84,
+              "y": 573248,
+              "width": 2312.5,
+              "height": 181856,
+              "top": 573248,
+              "right": 2396.5,
+              "bottom": 755104,
+              "left": 84
+            },
+            "ancestor": {
+              "id": null,
+              "classes": "assessment-description",
+              "rect": {
+                "x": 84,
+                "y": 572976,
+                "width": 216,
+                "height": 182400,
+                "top": 572976,
+                "right": 300,
+                "bottom": 755376,
+                "left": 84
+              }
+            }
+          },
+          {
+            "id": null,
+            "classes": "",
+            "text": "Quick start is currently unavailable. Please complete the as",
+            "tag": "span",
+            "fontSize": 2800,
+            "fontWeight": 400,
+            "large": true,
+            "disabled": false,
+            "color": [
+              178,
+              183,
+              205
+            ],
+            "background": [
+              34,
+              38,
+              56
+            ],
+            "ratio": 7.52,
+            "rect": {
+              "x": 20,
+              "y": 895082,
+              "width": 2411.72,
+              "height": 272524,
+              "top": 895082,
+              "right": 2431.72,
+              "bottom": 1167606,
+              "left": 20
+            },
+            "ancestor": {
+              "id": null,
+              "classes": "assessment-note",
+              "rect": {
+                "x": 20,
+                "y": 894704,
+                "width": 280,
+                "height": 273280,
+                "top": 894704,
+                "right": 300,
+                "bottom": 1167984,
+                "left": 20
+              }
+            }
+          }
+        ],
+        "wordSplits": [
+          {
+            "id": null,
+            "classes": "",
+            "token": "Level",
+            "lines": 5
+          },
+          {
+            "id": null,
+            "classes": "",
+            "token": "check",
+            "lines": 5
+          },
+          {
+            "id": null,
+            "classes": "",
+            "token": "Answer",
+            "lines": 6
+          },
+          {
+            "id": null,
+            "classes": "",
+            "token": "10",
+            "lines": 2
+          },
+          {
+            "id": null,
+            "classes": "",
+            "token": "questions",
+            "lines": 9
+          },
+          {
+            "id": null,
+            "classes": "",
+            "token": "to",
+            "lines": 2
+          },
+          {
+            "id": null,
+            "classes": "",
+            "token": "understand",
+            "lines": 10
+          },
+          {
+            "id": null,
+            "classes": "",
+            "token": "your",
+            "lines": 4
+          },
+          {
+            "id": null,
+            "classes": "",
+            "token": "current",
+            "lines": 7
+          },
+          {
+            "id": null,
+            "classes": "",
+            "token": "English",
+            "lines": 7
+          },
+          {
+            "id": null,
+            "classes": "",
+            "token": "starting",
+            "lines": 8
+          },
+          {
+            "id": null,
+            "classes": "",
+            "token": "point",
+            "lines": 5
+          },
+          {
+            "id": null,
+            "classes": "",
+            "token": "Choose",
+            "lines": 6
+          },
+          {
+            "id": null,
+            "classes": "",
+            "token": "the",
+            "lines": 3
+          },
+          {
+            "id": null,
+            "classes": "",
+            "token": "answer",
+            "lines": 6
+          },
+          {
+            "id": null,
+            "classes": "",
+            "token": "you",
+            "lines": 3
+          },
+          {
+            "id": null,
+            "classes": "",
+            "token": "think",
+            "lines": 5
+          },
+          {
+            "id": null,
+            "classes": "",
+            "token": "is",
+            "lines": 2
+          },
+          {
+            "id": null,
+            "classes": "",
+            "token": "right",
+            "lines": 5
+          },
+          {
+            "id": null,
+            "classes": "",
+            "token": "Your",
+            "lines": 4
+          },
+          {
+            "id": null,
+            "classes": "",
+            "token": "result",
+            "lines": 6
+          },
+          {
+            "id": null,
+            "classes": "",
+            "token": "is",
+            "lines": 2
+          },
+          {
+            "id": null,
+            "classes": "",
+            "token": "based",
+            "lines": 5
+          },
+          {
+            "id": null,
+            "classes": "",
+            "token": "on",
+            "lines": 2
+          },
+          {
+            "id": null,
+            "classes": "",
+            "token": "the",
+            "lines": 3
+          },
+          {
+            "id": null,
+            "classes": "",
+            "token": "answers",
+            "lines": 7
+          },
+          {
+            "id": null,
+            "classes": "",
+            "token": "received",
+            "lines": 8
+          },
+          {
+            "id": "assessment-start",
+            "classes": "assessment-button assessment-primary",
+            "token": "Start",
+            "lines": 3
+          },
+          {
+            "id": "assessment-start",
+            "classes": "assessment-button assessment-primary",
+            "token": "assessment",
+            "lines": 8
+          },
+          {
+            "id": "assessment-home",
+            "classes": "assessment-button assessment-secondary",
+            "token": "Return",
+            "lines": 6
+          },
+          {
+            "id": "assessment-home",
+            "classes": "assessment-button assessment-secondary",
+            "token": "to",
+            "lines": 2
+          },
+          {
+            "id": "assessment-home",
+            "classes": "assessment-button assessment-secondary",
+            "token": "learning",
+            "lines": 6
+          },
+          {
+            "id": "assessment-home",
+            "classes": "assessment-button assessment-secondary",
+            "token": "home",
+            "lines": 4
+          },
+          {
+            "id": null,
+            "classes": "",
+            "token": "Quick",
+            "lines": 5
+          },
+          {
+            "id": null,
+            "classes": "",
+            "token": "start",
+            "lines": 5
+          },
+          {
+            "id": null,
+            "classes": "",
+            "token": "is",
+            "lines": 2
+          },
+          {
+            "id": null,
+            "classes": "",
+            "token": "currently",
+            "lines": 9
+          },
+          {
+            "id": null,
+            "classes": "",
+            "token": "unavailable",
+            "lines": 11
+          },
+          {
+            "id": null,
+            "classes": "",
+            "token": "Please",
+            "lines": 6
+          },
+          {
+            "id": null,
+            "classes": "",
+            "token": "complete",
+            "lines": 8
+          },
+          {
+            "id": null,
+            "classes": "",
+            "token": "the",
+            "lines": 3
+          },
+          {
+            "id": null,
+            "classes": "",
+            "token": "assessment",
+            "lines": 10
+          }
+        ],
+        "overflow": {
+          "documentHorizontal": true,
+          "elements": [
+            {
+              "id": null,
+              "classes": "app-icon",
+              "rect": {
+                "x": -3148.62,
+                "y": 2413,
+                "width": 22,
+                "height": 22,
+                "top": 2413,
+                "right": -3126.62,
+                "bottom": 2435,
+                "left": -3148.62
+              }
+            },
+            {
+              "id": null,
+              "classes": "",
+              "rect": {
+                "x": -3148.62,
+                "y": 2413,
+                "width": 22,
+                "height": 22,
+                "top": 2413,
+                "right": -3126.62,
+                "bottom": 2435,
+                "left": -3148.62
+              }
+            },
+            {
+              "id": null,
+              "classes": "",
+              "rect": {
+                "x": -3140.37,
+                "y": 2418.5,
+                "width": 5.5,
+                "height": 11,
+                "top": 2418.5,
+                "right": -3134.87,
+                "bottom": 2429.5,
+                "left": -3140.37
+              }
+            },
+            {
+              "id": null,
+              "classes": "",
+              "rect": {
+                "x": -3122.62,
+                "y": 24,
+                "width": 6531.25,
+                "height": 4800,
+                "top": 24,
+                "right": 3408.63,
+                "bottom": 4824,
+                "left": -3122.62
+              }
+            },
+            {
+              "id": null,
+              "classes": "",
+              "rect": {
+                "x": -3122.62,
+                "y": 296,
+                "width": 6531.25,
+                "height": 4256,
+                "top": 296,
+                "right": 3408.63,
+                "bottom": 4552,
+                "left": -3122.62
+              }
+            },
+            {
+              "id": null,
+              "classes": "",
+              "rect": {
+                "x": 20,
+                "y": 5068,
+                "width": 3371.48,
+                "height": 78008,
+                "top": 5068,
+                "right": 3391.48,
+                "bottom": 83076,
+                "left": 20
+              }
+            },
+            {
+              "id": null,
+              "classes": "",
+              "rect": {
+                "x": 20,
+                "y": 83568,
+                "width": 2312.5,
+                "height": 292256,
+                "top": 83568,
+                "right": 2332.5,
+                "bottom": 375824,
+                "left": 20
+              }
+            },
+            {
+              "id": null,
+              "classes": "",
+              "rect": {
+                "x": 84,
+                "y": 376408,
+                "width": 10684.38,
+                "height": 23456,
+                "top": 376408,
+                "right": 10768.38,
+                "bottom": 399864,
+                "left": 84
+              }
+            },
+            {
+              "id": null,
+              "classes": "",
+              "rect": {
+                "x": 84,
+                "y": 400414,
+                "width": 2312.5,
+                "height": 148256,
+                "top": 400414,
+                "right": 2396.5,
+                "bottom": 548670,
+                "left": 84
+              }
+            },
+            {
+              "id": null,
+              "classes": "",
+              "rect": {
+                "x": 84,
+                "y": 549242,
+                "width": 11512.5,
+                "height": 23456,
+                "top": 549242,
+                "right": 11596.5,
+                "bottom": 572698,
+                "left": 84
+              }
+            },
+            {
+              "id": null,
+              "classes": "",
+              "rect": {
+                "x": 84,
+                "y": 573248,
+                "width": 2312.5,
+                "height": 181856,
+                "top": 573248,
+                "right": 2396.5,
+                "bottom": 755104,
+                "left": 84
+              }
+            },
+            {
+              "id": null,
+              "classes": "",
+              "rect": {
+                "x": 20,
+                "y": 895082,
+                "width": 2411.72,
+                "height": 272524,
+                "top": 895082,
+                "right": 2431.72,
+                "bottom": 1167606,
+                "left": 20
+              }
+            }
+          ]
+        },
+        "overlaps": [],
+        "report": null
+      },
+      "checks": [
+        {
+          "id": "collector",
+          "status": "ok",
+          "detail": {
+            "errors": []
+          }
+        },
+        {
+          "id": "route",
+          "status": "ok",
+          "detail": {
+            "origin": "http://127.0.0.1:18183",
+            "pathname": "/",
+            "hash": "#/pages/assessment/assessment"
+          }
+        },
+        {
+          "id": "dev-overlay",
+          "status": "ok",
+          "detail": {
+            "overlay": false
+          }
+        },
+        {
+          "id": "locale",
+          "status": "ok",
+          "detail": {
+            "actual": "en-US",
+            "expected": "en-US",
+            "datasetUiLocale": null
+          }
+        },
+        {
+          "id": "resolved-theme",
+          "status": "ok",
+          "detail": {
+            "actual": "dark",
+            "expected": "dark",
+            "requested": "dark",
+            "colorScheme": "light"
+          }
+        },
+        {
+          "id": "theme-palette",
+          "status": "ok",
+          "detail": {
+            "resolved": "dark",
+            "mismatches": []
+          }
+        },
+        {
+          "id": "h1",
+          "status": "ok",
+          "detail": {
+            "text": "Level check",
+            "expected": "Level check",
+            "match": true,
+            "visible": true,
+            "rect": {
+              "x": 20,
+              "y": 4872,
+              "width": 280,
+              "height": 78400,
+              "top": 4872,
+              "right": 300,
+              "bottom": 83272,
+              "left": 20
+            },
+            "role": "heading",
+            "ariaLevel": "1",
+            "fontSize": 5600,
+            "hostFontSize": 28,
+            "fontWeight": 650,
+            "color": "rgb(244, 246, 255)"
+          }
+        },
+        {
+          "id": "controls-exact",
+          "status": "ok",
+          "detail": {
+            "host": "uni-button",
+            "count": 4,
+            "expected": 4,
+            "missing": [],
+            "extra": [],
+            "plainButtonCount": 0
+          }
+        },
+        {
+          "id": "controls-target-size",
+          "status": "ok",
+          "detail": {
+            "violations": []
+          }
+        },
+        {
+          "id": "copy-locale",
+          "status": "ok",
+          "detail": []
+        },
+        {
+          "id": "body-typography",
+          "status": "ok",
+          "detail": {
+            "sampleCount": 10,
+            "violations": []
+          }
+        },
+        {
+          "id": "horizontal-overflow",
+          "status": "fail",
+          "detail": {
+            "documentHorizontal": true,
+            "elements": [
+              {
+                "id": null,
+                "classes": "app-icon",
+                "rect": {
+                  "x": -3148.62,
+                  "y": 2413,
+                  "width": 22,
+                  "height": 22,
+                  "top": 2413,
+                  "right": -3126.62,
+                  "bottom": 2435,
+                  "left": -3148.62
+                }
+              },
+              {
+                "id": null,
+                "classes": "",
+                "rect": {
+                  "x": -3148.62,
+                  "y": 2413,
+                  "width": 22,
+                  "height": 22,
+                  "top": 2413,
+                  "right": -3126.62,
+                  "bottom": 2435,
+                  "left": -3148.62
+                }
+              },
+              {
+                "id": null,
+                "classes": "",
+                "rect": {
+                  "x": -3140.37,
+                  "y": 2418.5,
+                  "width": 5.5,
+                  "height": 11,
+                  "top": 2418.5,
+                  "right": -3134.87,
+                  "bottom": 2429.5,
+                  "left": -3140.37
+                }
+              },
+              {
+                "id": null,
+                "classes": "",
+                "rect": {
+                  "x": -3122.62,
+                  "y": 24,
+                  "width": 6531.25,
+                  "height": 4800,
+                  "top": 24,
+                  "right": 3408.63,
+                  "bottom": 4824,
+                  "left": -3122.62
+                }
+              },
+              {
+                "id": null,
+                "classes": "",
+                "rect": {
+                  "x": -3122.62,
+                  "y": 296,
+                  "width": 6531.25,
+                  "height": 4256,
+                  "top": 296,
+                  "right": 3408.63,
+                  "bottom": 4552,
+                  "left": -3122.62
+                }
+              },
+              {
+                "id": null,
+                "classes": "",
+                "rect": {
+                  "x": 20,
+                  "y": 5068,
+                  "width": 3371.48,
+                  "height": 78008,
+                  "top": 5068,
+                  "right": 3391.48,
+                  "bottom": 83076,
+                  "left": 20
+                }
+              },
+              {
+                "id": null,
+                "classes": "",
+                "rect": {
+                  "x": 20,
+                  "y": 83568,
+                  "width": 2312.5,
+                  "height": 292256,
+                  "top": 83568,
+                  "right": 2332.5,
+                  "bottom": 375824,
+                  "left": 20
+                }
+              },
+              {
+                "id": null,
+                "classes": "",
+                "rect": {
+                  "x": 84,
+                  "y": 376408,
+                  "width": 10684.38,
+                  "height": 23456,
+                  "top": 376408,
+                  "right": 10768.38,
+                  "bottom": 399864,
+                  "left": 84
+                }
+              },
+              {
+                "id": null,
+                "classes": "",
+                "rect": {
+                  "x": 84,
+                  "y": 400414,
+                  "width": 2312.5,
+                  "height": 148256,
+                  "top": 400414,
+                  "right": 2396.5,
+                  "bottom": 548670,
+                  "left": 84
+                }
+              },
+              {
+                "id": null,
+                "classes": "",
+                "rect": {
+                  "x": 84,
+                  "y": 549242,
+                  "width": 11512.5,
+                  "height": 23456,
+                  "top": 549242,
+                  "right": 11596.5,
+                  "bottom": 572698,
+                  "left": 84
+                }
+              },
+              {
+                "id": null,
+                "classes": "",
+                "rect": {
+                  "x": 84,
+                  "y": 573248,
+                  "width": 2312.5,
+                  "height": 181856,
+                  "top": 573248,
+                  "right": 2396.5,
+                  "bottom": 755104,
+                  "left": 84
+                }
+              },
+              {
+                "id": null,
+                "classes": "",
+                "rect": {
+                  "x": 20,
+                  "y": 895082,
+                  "width": 2411.72,
+                  "height": 272524,
+                  "top": 895082,
+                  "right": 2431.72,
+                  "bottom": 1167606,
+                  "left": 20
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "clipping",
+          "status": "fail",
+          "detail": [
+            {
+              "id": null,
+              "classes": "",
+              "text": "Back",
+              "tag": "span",
+              "fontSize": 3200,
+              "fontWeight": 400,
+              "large": true,
+              "disabled": false,
+              "color": [
+                244,
+                246,
+                255
+              ],
+              "background": [
+                34,
+                38,
+                56
+              ],
+              "ratio": 13.89,
+              "rect": {
+                "x": -3122.62,
+                "y": 296,
+                "width": 6531.25,
+                "height": 4256,
+                "top": 296,
+                "right": 3408.63,
+                "bottom": 4552,
+                "left": -3122.62
+              },
+              "clippedBy": {
+                "id": "assessment-back",
+                "classes": "assessment-nav-button",
+                "rect": {
+                  "x": 20,
+                  "y": 16,
+                  "width": 220,
+                  "height": 4816,
+                  "top": 16,
+                  "right": 240,
+                  "bottom": 4832,
+                  "left": 20
+                }
+              }
+            },
+            {
+              "id": null,
+              "classes": "",
+              "text": "Level check",
+              "tag": "span",
+              "fontSize": 5600,
+              "fontWeight": 650,
+              "large": true,
+              "disabled": false,
+              "color": [
+                244,
+                246,
+                255
+              ],
+              "background": [
+                34,
+                38,
+                56
+              ],
+              "ratio": 13.89,
+              "rect": {
+                "x": 20,
+                "y": 5068,
+                "width": 3371.48,
+                "height": 78008,
+                "top": 5068,
+                "right": 3391.48,
+                "bottom": 83076,
+                "left": 20
+              },
+              "clippedBy": {
+                "id": null,
+                "classes": "",
+                "rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 320,
+                  "height": 568,
+                  "top": 0,
+                  "right": 320,
+                  "bottom": 568,
+                  "left": 0
+                }
+              }
+            },
+            {
+              "id": null,
+              "classes": "",
+              "text": "Answer 10 questions to understand your current English start",
+              "tag": "span",
+              "fontSize": 3200,
+              "fontWeight": 400,
+              "large": true,
+              "disabled": false,
+              "color": [
+                178,
+                183,
+                205
+              ],
+              "background": [
+                34,
+                38,
+                56
+              ],
+              "ratio": 7.52,
+              "rect": {
+                "x": 20,
+                "y": 83568,
+                "width": 2312.5,
+                "height": 292256,
+                "top": 83568,
+                "right": 2332.5,
+                "bottom": 375824,
+                "left": 20
+              },
+              "clippedBy": {
+                "id": null,
+                "classes": "",
+                "rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 320,
+                  "height": 568,
+                  "top": 0,
+                  "right": 320,
+                  "bottom": 568,
+                  "left": 0
+                }
+              }
+            },
+            {
+              "id": null,
+              "classes": "",
+              "text": "Answer at your current level",
+              "tag": "span",
+              "fontSize": 3200,
+              "fontWeight": 600,
+              "large": true,
+              "disabled": false,
+              "color": [
+                244,
+                246,
+                255
+              ],
+              "background": [
+                34,
+                38,
+                56
+              ],
+              "ratio": 13.89,
+              "rect": {
+                "x": 84,
+                "y": 376408,
+                "width": 10684.38,
+                "height": 23456,
+                "top": 376408,
+                "right": 10768.38,
+                "bottom": 399864,
+                "left": 84
+              },
+              "clippedBy": {
+                "id": null,
+                "classes": "",
+                "rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 320,
+                  "height": 568,
+                  "top": 0,
+                  "right": 320,
+                  "bottom": 568,
+                  "left": 0
+                }
+              }
+            },
+            {
+              "id": null,
+              "classes": "",
+              "text": "Choose the answer you think is right.",
+              "tag": "span",
+              "fontSize": 3200,
+              "fontWeight": 400,
+              "large": true,
+              "disabled": false,
+              "color": [
+                178,
+                183,
+                205
+              ],
+              "background": [
+                34,
+                38,
+                56
+              ],
+              "ratio": 7.52,
+              "rect": {
+                "x": 84,
+                "y": 400414,
+                "width": 2312.5,
+                "height": 148256,
+                "top": 400414,
+                "right": 2396.5,
+                "bottom": 548670,
+                "left": 84
+              },
+              "clippedBy": {
+                "id": null,
+                "classes": "",
+                "rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 320,
+                  "height": 568,
+                  "top": 0,
+                  "right": 320,
+                  "bottom": 568,
+                  "left": 0
+                }
+              }
+            },
+            {
+              "id": null,
+              "classes": "",
+              "text": "View your result when finished",
+              "tag": "span",
+              "fontSize": 3200,
+              "fontWeight": 600,
+              "large": true,
+              "disabled": false,
+              "color": [
+                244,
+                246,
+                255
+              ],
+              "background": [
+                34,
+                38,
+                56
+              ],
+              "ratio": 13.89,
+              "rect": {
+                "x": 84,
+                "y": 549242,
+                "width": 11512.5,
+                "height": 23456,
+                "top": 549242,
+                "right": 11596.5,
+                "bottom": 572698,
+                "left": 84
+              },
+              "clippedBy": {
+                "id": null,
+                "classes": "",
+                "rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 320,
+                  "height": 568,
+                  "top": 0,
+                  "right": 320,
+                  "bottom": 568,
+                  "left": 0
+                }
+              }
+            },
+            {
+              "id": null,
+              "classes": "",
+              "text": "Your result is based on the answers received.",
+              "tag": "span",
+              "fontSize": 3200,
+              "fontWeight": 400,
+              "large": true,
+              "disabled": false,
+              "color": [
+                178,
+                183,
+                205
+              ],
+              "background": [
+                34,
+                38,
+                56
+              ],
+              "ratio": 7.52,
+              "rect": {
+                "x": 84,
+                "y": 573248,
+                "width": 2312.5,
+                "height": 181856,
+                "top": 573248,
+                "right": 2396.5,
+                "bottom": 755104,
+                "left": 84
+              },
+              "clippedBy": {
+                "id": null,
+                "classes": "",
+                "rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 320,
+                  "height": 568,
+                  "top": 0,
+                  "right": 320,
+                  "bottom": 568,
+                  "left": 0
+                }
+              }
+            },
+            {
+              "id": "assessment-start",
+              "classes": "assessment-button assessment-primary",
+              "text": "Start assessment",
+              "tag": "uni-button",
+              "fontSize": 3200,
+              "fontWeight": 600,
+              "large": true,
+              "disabled": false,
+              "color": [
+                255,
+                255,
+                255
+              ],
+              "background": [
+                89,
+                55,
+                209
+              ],
+              "ratio": 7.26,
+              "rect": {
+                "x": 20,
+                "y": 755416,
+                "width": 280,
+                "height": 52826,
+                "top": 755416,
+                "right": 300,
+                "bottom": 808242,
+                "left": 20
+              },
+              "clippedBy": {
+                "id": null,
+                "classes": "",
+                "rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 320,
+                  "height": 568,
+                  "top": 0,
+                  "right": 320,
+                  "bottom": 568,
+                  "left": 0
+                }
+              }
+            },
+            {
+              "id": "assessment-home",
+              "classes": "assessment-button assessment-secondary",
+              "text": "Return to learning home",
+              "tag": "uni-button",
+              "fontSize": 3200,
+              "fontWeight": 600,
+              "large": true,
+              "disabled": false,
+              "color": [
+                244,
+                246,
+                255
+              ],
+              "background": [
+                34,
+                38,
+                56
+              ],
+              "ratio": 13.89,
+              "rect": {
+                "x": 20,
+                "y": 808254,
+                "width": 280,
+                "height": 86426,
+                "top": 808254,
+                "right": 300,
+                "bottom": 894680,
+                "left": 20
+              },
+              "clippedBy": {
+                "id": null,
+                "classes": "",
+                "rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 320,
+                  "height": 568,
+                  "top": 0,
+                  "right": 320,
+                  "bottom": 568,
+                  "left": 0
+                }
+              }
+            },
+            {
+              "id": null,
+              "classes": "",
+              "text": "Quick start is currently unavailable. Please complete the as",
+              "tag": "span",
+              "fontSize": 2800,
+              "fontWeight": 400,
+              "large": true,
+              "disabled": false,
+              "color": [
+                178,
+                183,
+                205
+              ],
+              "background": [
+                34,
+                38,
+                56
+              ],
+              "ratio": 7.52,
+              "rect": {
+                "x": 20,
+                "y": 895082,
+                "width": 2411.72,
+                "height": 272524,
+                "top": 895082,
+                "right": 2431.72,
+                "bottom": 1167606,
+                "left": 20
+              },
+              "clippedBy": {
+                "id": null,
+                "classes": "",
+                "rect": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 320,
+                  "height": 568,
+                  "top": 0,
+                  "right": 320,
+                  "bottom": 568,
+                  "left": 0
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "glyph-overflow",
+          "status": "fail",
+          "detail": [
+            {
+              "id": "assessment-start",
+              "token": "Start",
+              "tokenRect": {
+                "left": -1243.12,
+                "right": 1563.13,
+                "top": 755701,
+                "bottom": 759957
+              },
+              "elementRect": {
+                "x": 20,
+                "y": 755416,
+                "width": 280,
+                "height": 52826,
+                "top": 755416,
+                "right": 300,
+                "bottom": 808242,
+                "left": 20
+              }
+            },
+            {
+              "id": "assessment-start",
+              "token": "assessment",
+              "tokenRect": {
+                "left": -675.16,
+                "right": 995.16,
+                "top": 770101,
+                "bottom": 774357
+              },
+              "elementRect": {
+                "x": 20,
+                "y": 755416,
+                "width": 280,
+                "height": 52826,
+                "top": 755416,
+                "right": 300,
+                "bottom": 808242,
+                "left": 20
+              }
+            },
+            {
+              "id": "assessment-home",
+              "token": "Return",
+              "tokenRect": {
+                "left": -836.09,
+                "right": 1156.09,
+                "top": 808539,
+                "bottom": 812795
+              },
+              "elementRect": {
+                "x": 20,
+                "y": 808254,
+                "width": 280,
+                "height": 86426,
+                "top": 808254,
+                "right": 300,
+                "bottom": 894680,
+                "left": 20
+              }
+            },
+            {
+              "id": "assessment-home",
+              "token": "to",
+              "tokenRect": {
+                "left": -418.12,
+                "right": 738.13,
+                "top": 837339,
+                "bottom": 841595
+              },
+              "elementRect": {
+                "x": 20,
+                "y": 808254,
+                "width": 280,
+                "height": 86426,
+                "top": 808254,
+                "right": 300,
+                "bottom": 894680,
+                "left": 20
+              }
+            },
+            {
+              "id": "assessment-home",
+              "token": "learning",
+              "tokenRect": {
+                "left": -1107.97,
+                "right": 1427.97,
+                "top": 846939,
+                "bottom": 851195
+              },
+              "elementRect": {
+                "x": 20,
+                "y": 808254,
+                "width": 280,
+                "height": 86426,
+                "top": 808254,
+                "right": 300,
+                "bottom": 894680,
+                "left": 20
+              }
+            },
+            {
+              "id": "assessment-home",
+              "token": "home",
+              "tokenRect": {
+                "left": -771.25,
+                "right": 1091.25,
+                "top": 875739,
+                "bottom": 879995
+              },
+              "elementRect": {
+                "x": 20,
+                "y": 808254,
+                "width": 280,
+                "height": 86426,
+                "top": 808254,
+                "right": 300,
+                "bottom": 894680,
+                "left": 20
+              }
+            }
+          ]
+        },
+        {
+          "id": "text-outside-box",
+          "status": "fail",
+          "detail": [
+            {
+              "id": null,
+              "classes": "",
+              "text": "Back",
+              "tag": "span",
+              "fontSize": 3200,
+              "fontWeight": 400,
+              "large": true,
+              "disabled": false,
+              "color": [
+                244,
+                246,
+                255
+              ],
+              "background": [
+                34,
+                38,
+                56
+              ],
+              "ratio": 13.89,
+              "rect": {
+                "x": -3122.62,
+                "y": 296,
+                "width": 6531.25,
+                "height": 4256,
+                "top": 296,
+                "right": 3408.63,
+                "bottom": 4552,
+                "left": -3122.62
+              },
+              "ancestor": {
+                "id": null,
+                "classes": "assessment-navigation",
+                "rect": {
+                  "x": 20,
+                  "y": 16,
+                  "width": 280,
+                  "height": 4816,
+                  "top": 16,
+                  "right": 300,
+                  "bottom": 4832,
+                  "left": 20
+                }
+              }
+            },
+            {
+              "id": null,
+              "classes": "",
+              "text": "Level check",
+              "tag": "span",
+              "fontSize": 5600,
+              "fontWeight": 650,
+              "large": true,
+              "disabled": false,
+              "color": [
+                244,
+                246,
+                255
+              ],
+              "background": [
+                34,
+                38,
+                56
+              ],
+              "ratio": 13.89,
+              "rect": {
+                "x": 20,
+                "y": 5068,
+                "width": 3371.48,
+                "height": 78008,
+                "top": 5068,
+                "right": 3391.48,
+                "bottom": 83076,
+                "left": 20
+              },
+              "ancestor": {
+                "id": "assessment-title",
+                "classes": "assessment-title",
+                "rect": {
+                  "x": 20,
+                  "y": 4872,
+                  "width": 280,
+                  "height": 78400,
+                  "top": 4872,
+                  "right": 300,
+                  "bottom": 83272,
+                  "left": 20
+                }
+              }
+            },
+            {
+              "id": null,
+              "classes": "",
+              "text": "Answer 10 questions to understand your current English start",
+              "tag": "span",
+              "fontSize": 3200,
+              "fontWeight": 400,
+              "large": true,
+              "disabled": false,
+              "color": [
+                178,
+                183,
+                205
+              ],
+              "background": [
+                34,
+                38,
+                56
+              ],
+              "ratio": 7.52,
+              "rect": {
+                "x": 20,
+                "y": 83568,
+                "width": 2312.5,
+                "height": 292256,
+                "top": 83568,
+                "right": 2332.5,
+                "bottom": 375824,
+                "left": 20
+              },
+              "ancestor": {
+                "id": null,
+                "classes": "assessment-description",
+                "rect": {
+                  "x": 20,
+                  "y": 83296,
+                  "width": 280,
+                  "height": 292800,
+                  "top": 83296,
+                  "right": 300,
+                  "bottom": 376096,
+                  "left": 20
+                }
+              }
+            },
+            {
+              "id": null,
+              "classes": "",
+              "text": "Answer at your current level",
+              "tag": "span",
+              "fontSize": 3200,
+              "fontWeight": 600,
+              "large": true,
+              "disabled": false,
+              "color": [
+                244,
+                246,
+                255
+              ],
+              "background": [
+                34,
+                38,
+                56
+              ],
+              "ratio": 13.89,
+              "rect": {
+                "x": 84,
+                "y": 376408,
+                "width": 10684.38,
+                "height": 23456,
+                "top": 376408,
+                "right": 10768.38,
+                "bottom": 399864,
+                "left": 84
+              },
+              "ancestor": {
+                "id": null,
+                "classes": "assessment-point-title",
+                "rect": {
+                  "x": 84,
+                  "y": 376136,
+                  "width": 216,
+                  "height": 24000,
+                  "top": 376136,
+                  "right": 300,
+                  "bottom": 400136,
+                  "left": 84
+                }
+              }
+            },
+            {
+              "id": null,
+              "classes": "",
+              "text": "Choose the answer you think is right.",
+              "tag": "span",
+              "fontSize": 3200,
+              "fontWeight": 400,
+              "large": true,
+              "disabled": false,
+              "color": [
+                178,
+                183,
+                205
+              ],
+              "background": [
+                34,
+                38,
+                56
+              ],
+              "ratio": 7.52,
+              "rect": {
+                "x": 84,
+                "y": 400414,
+                "width": 2312.5,
+                "height": 148256,
+                "top": 400414,
+                "right": 2396.5,
+                "bottom": 548670,
+                "left": 84
+              },
+              "ancestor": {
+                "id": null,
+                "classes": "assessment-description",
+                "rect": {
+                  "x": 84,
+                  "y": 400142,
+                  "width": 216,
+                  "height": 148800,
+                  "top": 400142,
+                  "right": 300,
+                  "bottom": 548942,
+                  "left": 84
+                }
+              }
+            },
+            {
+              "id": null,
+              "classes": "",
+              "text": "View your result when finished",
+              "tag": "span",
+              "fontSize": 3200,
+              "fontWeight": 600,
+              "large": true,
+              "disabled": false,
+              "color": [
+                244,
+                246,
+                255
+              ],
+              "background": [
+                34,
+                38,
+                56
+              ],
+              "ratio": 13.89,
+              "rect": {
+                "x": 84,
+                "y": 549242,
+                "width": 11512.5,
+                "height": 23456,
+                "top": 549242,
+                "right": 11596.5,
+                "bottom": 572698,
+                "left": 84
+              },
+              "ancestor": {
+                "id": null,
+                "classes": "assessment-point-title",
+                "rect": {
+                  "x": 84,
+                  "y": 548970,
+                  "width": 216,
+                  "height": 24000,
+                  "top": 548970,
+                  "right": 300,
+                  "bottom": 572970,
+                  "left": 84
+                }
+              }
+            },
+            {
+              "id": null,
+              "classes": "",
+              "text": "Your result is based on the answers received.",
+              "tag": "span",
+              "fontSize": 3200,
+              "fontWeight": 400,
+              "large": true,
+              "disabled": false,
+              "color": [
+                178,
+                183,
+                205
+              ],
+              "background": [
+                34,
+                38,
+                56
+              ],
+              "ratio": 7.52,
+              "rect": {
+                "x": 84,
+                "y": 573248,
+                "width": 2312.5,
+                "height": 181856,
+                "top": 573248,
+                "right": 2396.5,
+                "bottom": 755104,
+                "left": 84
+              },
+              "ancestor": {
+                "id": null,
+                "classes": "assessment-description",
+                "rect": {
+                  "x": 84,
+                  "y": 572976,
+                  "width": 216,
+                  "height": 182400,
+                  "top": 572976,
+                  "right": 300,
+                  "bottom": 755376,
+                  "left": 84
+                }
+              }
+            },
+            {
+              "id": null,
+              "classes": "",
+              "text": "Quick start is currently unavailable. Please complete the as",
+              "tag": "span",
+              "fontSize": 2800,
+              "fontWeight": 400,
+              "large": true,
+              "disabled": false,
+              "color": [
+                178,
+                183,
+                205
+              ],
+              "background": [
+                34,
+                38,
+                56
+              ],
+              "ratio": 7.52,
+              "rect": {
+                "x": 20,
+                "y": 895082,
+                "width": 2411.72,
+                "height": 272524,
+                "top": 895082,
+                "right": 2431.72,
+                "bottom": 1167606,
+                "left": 20
+              },
+              "ancestor": {
+                "id": null,
+                "classes": "assessment-note",
+                "rect": {
+                  "x": 20,
+                  "y": 894704,
+                  "width": 280,
+                  "height": 273280,
+                  "top": 894704,
+                  "right": 300,
+                  "bottom": 1167984,
+                  "left": 20
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "overlap",
+          "status": "ok",
+          "detail": []
+        },
+        {
+          "id": "word-split",
+          "status": "fail",
+          "detail": [
+            {
+              "id": null,
+              "classes": "",
+              "token": "Level",
+              "lines": 5
+            },
+            {
+              "id": null,
+              "classes": "",
+              "token": "check",
+              "lines": 5
+            },
+            {
+              "id": null,
+              "classes": "",
+              "token": "Answer",
+              "lines": 6
+            },
+            {
+              "id": null,
+              "classes": "",
+              "token": "10",
+              "lines": 2
+            },
+            {
+              "id": null,
+              "classes": "",
+              "token": "questions",
+              "lines": 9
+            },
+            {
+              "id": null,
+              "classes": "",
+              "token": "to",
+              "lines": 2
+            },
+            {
+              "id": null,
+              "classes": "",
+              "token": "understand",
+              "lines": 10
+            },
+            {
+              "id": null,
+              "classes": "",
+              "token": "your",
+              "lines": 4
+            },
+            {
+              "id": null,
+              "classes": "",
+              "token": "current",
+              "lines": 7
+            },
+            {
+              "id": null,
+              "classes": "",
+              "token": "English",
+              "lines": 7
+            },
+            {
+              "id": null,
+              "classes": "",
+              "token": "starting",
+              "lines": 8
+            },
+            {
+              "id": null,
+              "classes": "",
+              "token": "point",
+              "lines": 5
+            },
+            {
+              "id": null,
+              "classes": "",
+              "token": "Choose",
+              "lines": 6
+            },
+            {
+              "id": null,
+              "classes": "",
+              "token": "the",
+              "lines": 3
+            },
+            {
+              "id": null,
+              "classes": "",
+              "token": "answer",
+              "lines": 6
+            },
+            {
+              "id": null,
+              "classes": "",
+              "token": "you",
+              "lines": 3
+            },
+            {
+              "id": null,
+              "classes": "",
+              "token": "think",
+              "lines": 5
+            },
+            {
+              "id": null,
+              "classes": "",
+              "token": "is",
+              "lines": 2
+            },
+            {
+              "id": null,
+              "classes": "",
+              "token": "right",
+              "lines": 5
+            },
+            {
+              "id": null,
+              "classes": "",
+              "token": "Your",
+              "lines": 4
+            },
+            {
+              "id": null,
+              "classes": "",
+              "token": "result",
+              "lines": 6
+            },
+            {
+              "id": null,
+              "classes": "",
+              "token": "is",
+              "lines": 2
+            },
+            {
+              "id": null,
+              "classes": "",
+              "token": "based",
+              "lines": 5
+            },
+            {
+              "id": null,
+              "classes": "",
+              "token": "on",
+              "lines": 2
+            },
+            {
+              "id": null,
+              "classes": "",
+              "token": "the",
+              "lines": 3
+            },
+            {
+              "id": null,
+              "classes": "",
+              "token": "answers",
+              "lines": 7
+            },
+            {
+              "id": null,
+              "classes": "",
+              "token": "received",
+              "lines": 8
+            },
+            {
+              "id": "assessment-start",
+              "classes": "assessment-button assessment-primary",
+              "token": "Start",
+              "lines": 3
+            },
+            {
+              "id": "assessment-start",
+              "classes": "assessment-button assessment-primary",
+              "token": "assessment",
+              "lines": 8
+            },
+            {
+              "id": "assessment-home",
+              "classes": "assessment-button assessment-secondary",
+              "token": "Return",
+              "lines": 6
+            },
+            {
+              "id": "assessment-home",
+              "classes": "assessment-button assessment-secondary",
+              "token": "to",
+              "lines": 2
+            },
+            {
+              "id": "assessment-home",
+              "classes": "assessment-button assessment-secondary",
+              "token": "learning",
+              "lines": 6
+            },
+            {
+              "id": "assessment-home",
+              "classes": "assessment-button assessment-secondary",
+              "token": "home",
+              "lines": 4
+            },
+            {
+              "id": null,
+              "classes": "",
+              "token": "Quick",
+              "lines": 5
+            },
+            {
+              "id": null,
+              "classes": "",
+              "token": "start",
+              "lines": 5
+            },
+            {
+              "id": null,
+              "classes": "",
+              "token": "is",
+              "lines": 2
+            },
+            {
+              "id": null,
+              "classes": "",
+              "token": "currently",
+              "lines": 9
+            },
+            {
+              "id": null,
+              "classes": "",
+              "token": "unavailable",
+              "lines": 11
+            },
+            {
+              "id": null,
+              "classes": "",
+              "token": "Please",
+              "lines": 6
+            },
+            {
+              "id": null,
+              "classes": "",
+              "token": "complete",
+              "lines": 8
+            },
+            {
+              "id": null,
+              "classes": "",
+              "token": "the",
+              "lines": 3
+            },
+            {
+              "id": null,
+              "classes": "",
+              "token": "assessment",
+              "lines": 10
+            }
+          ]
+        },
+        {
+          "id": "contrast-text",
+          "status": "ok",
+          "detail": {
+            "measured": 10,
+            "violations": [],
+            "minRatio": 7.26
+          }
+        },
+        {
+          "id": "contrast-border",
+          "status": "fail",
+          "detail": {
+            "measured": 2,
+            "violations": [
+              {
+                "id": "assessment-start",
+                "border": [
+                  89,
+                  55,
+                  209
+                ],
+                "vsParentBackground": 2.06,
+                "vsOwnBackground": 1,
+                "disabled": false
+              }
+            ]
+          }
+        },
+        {
+          "id": "inputs",
+          "status": "ok",
+          "detail": {
+            "count": 0,
+            "list": []
+          }
+        }
+      ]
+    }
+  },
+  "screenshots": [
+    {
+      "file": "cases/en-US__dark__320__text200__short/01-guide.png",
+      "fullPage": false
+    }
+  ],
+  "checks": [
+    {
+      "id": "collector",
+      "status": "ok",
+      "detail": {
+        "errors": []
+      },
+      "state": "guide"
+    },
+    {
+      "id": "route",
+      "status": "ok",
+      "detail": {
+        "origin": "http://127.0.0.1:18183",
+        "pathname": "/",
+        "hash": "#/pages/assessment/assessment"
+      },
+      "state": "guide"
+    },
+    {
+      "id": "dev-overlay",
+      "status": "ok",
+      "detail": {
+        "overlay": false
+      },
+      "state": "guide"
+    },
+    {
+      "id": "locale",
+      "status": "ok",
+      "detail": {
+        "actual": "en-US",
+        "expected": "en-US",
+        "datasetUiLocale": null
+      },
+      "state": "guide"
+    },
+    {
+      "id": "resolved-theme",
+      "status": "ok",
+      "detail": {
+        "actual": "dark",
+        "expected": "dark",
+        "requested": "dark",
+        "colorScheme": "light"
+      },
+      "state": "guide"
+    },
+    {
+      "id": "theme-palette",
+      "status": "ok",
+      "detail": {
+        "resolved": "dark",
+        "mismatches": []
+      },
+      "state": "guide"
+    },
+    {
+      "id": "h1",
+      "status": "ok",
+      "detail": {
+        "text": "Level check",
+        "expected": "Level check",
+        "match": true,
+        "visible": true,
+        "rect": {
+          "x": 20,
+          "y": 4872,
+          "width": 280,
+          "height": 78400,
+          "top": 4872,
+          "right": 300,
+          "bottom": 83272,
+          "left": 20
+        },
+        "role": "heading",
+        "ariaLevel": "1",
+        "fontSize": 5600,
+        "hostFontSize": 28,
+        "fontWeight": 650,
+        "color": "rgb(244, 246, 255)"
+      },
+      "state": "guide"
+    },
+    {
+      "id": "controls-exact",
+      "status": "ok",
+      "detail": {
+        "host": "uni-button",
+        "count": 4,
+        "expected": 4,
+        "missing": [],
+        "extra": [],
+        "plainButtonCount": 0
+      },
+      "state": "guide"
+    },
+    {
+      "id": "controls-target-size",
+      "status": "ok",
+      "detail": {
+        "violations": []
+      },
+      "state": "guide"
+    },
+    {
+      "id": "copy-locale",
+      "status": "ok",
+      "detail": [],
+      "state": "guide"
+    },
+    {
+      "id": "body-typography",
+      "status": "ok",
+      "detail": {
+        "sampleCount": 10,
+        "violations": []
+      },
+      "state": "guide"
+    },
+    {
+      "id": "horizontal-overflow",
+      "status": "fail",
+      "detail": {
+        "documentHorizontal": true,
+        "elements": [
+          {
+            "id": null,
+            "classes": "app-icon",
+            "rect": {
+              "x": -3148.62,
+              "y": 2413,
+              "width": 22,
+              "height": 22,
+              "top": 2413,
+              "right": -3126.62,
+              "bottom": 2435,
+              "left": -3148.62
+            }
+          },
+          {
+            "id": null,
+            "classes": "",
+            "rect": {
+              "x": -3148.62,
+              "y": 2413,
+              "width": 22,
+              "height": 22,
+              "top": 2413,
+              "right": -3126.62,
+              "bottom": 2435,
+              "left": -3148.62
+            }
+          },
+          {
+            "id": null,
+            "classes": "",
+            "rect": {
+              "x": -3140.37,
+              "y": 2418.5,
+              "width": 5.5,
+              "height": 11,
+              "top": 2418.5,
+              "right": -3134.87,
+              "bottom": 2429.5,
+              "left": -3140.37
+            }
+          },
+          {
+            "id": null,
+            "classes": "",
+            "rect": {
+              "x": -3122.62,
+              "y": 24,
+              "width": 6531.25,
+              "height": 4800,
+              "top": 24,
+              "right": 3408.63,
+              "bottom": 4824,
+              "left": -3122.62
+            }
+          },
+          {
+            "id": null,
+            "classes": "",
+            "rect": {
+              "x": -3122.62,
+              "y": 296,
+              "width": 6531.25,
+              "height": 4256,
+              "top": 296,
+              "right": 3408.63,
+              "bottom": 4552,
+              "left": -3122.62
+            }
+          },
+          {
+            "id": null,
+            "classes": "",
+            "rect": {
+              "x": 20,
+              "y": 5068,
+              "width": 3371.48,
+              "height": 78008,
+              "top": 5068,
+              "right": 3391.48,
+              "bottom": 83076,
+              "left": 20
+            }
+          },
+          {
+            "id": null,
+            "classes": "",
+            "rect": {
+              "x": 20,
+              "y": 83568,
+              "width": 2312.5,
+              "height": 292256,
+              "top": 83568,
+              "right": 2332.5,
+              "bottom": 375824,
+              "left": 20
+            }
+          },
+          {
+            "id": null,
+            "classes": "",
+            "rect": {
+              "x": 84,
+              "y": 376408,
+              "width": 10684.38,
+              "height": 23456,
+              "top": 376408,
+              "right": 10768.38,
+              "bottom": 399864,
+              "left": 84
+            }
+          },
+          {
+            "id": null,
+            "classes": "",
+            "rect": {
+              "x": 84,
+              "y": 400414,
+              "width": 2312.5,
+              "height": 148256,
+              "top": 400414,
+              "right": 2396.5,
+              "bottom": 548670,
+              "left": 84
+            }
+          },
+          {
+            "id": null,
+            "classes": "",
+            "rect": {
+              "x": 84,
+              "y": 549242,
+              "width": 11512.5,
+              "height": 23456,
+              "top": 549242,
+              "right": 11596.5,
+              "bottom": 572698,
+              "left": 84
+            }
+          },
+          {
+            "id": null,
+            "classes": "",
+            "rect": {
+              "x": 84,
+              "y": 573248,
+              "width": 2312.5,
+              "height": 181856,
+              "top": 573248,
+              "right": 2396.5,
+              "bottom": 755104,
+              "left": 84
+            }
+          },
+          {
+            "id": null,
+            "classes": "",
+            "rect": {
+              "x": 20,
+              "y": 895082,
+              "width": 2411.72,
+              "height": 272524,
+              "top": 895082,
+              "right": 2431.72,
+              "bottom": 1167606,
+              "left": 20
+            }
+          }
+        ]
+      },
+      "state": "guide"
+    },
+    {
+      "id": "clipping",
+      "status": "fail",
+      "detail": [
+        {
+          "id": null,
+          "classes": "",
+          "text": "Back",
+          "tag": "span",
+          "fontSize": 3200,
+          "fontWeight": 400,
+          "large": true,
+          "disabled": false,
+          "color": [
+            244,
+            246,
+            255
+          ],
+          "background": [
+            34,
+            38,
+            56
+          ],
+          "ratio": 13.89,
+          "rect": {
+            "x": -3122.62,
+            "y": 296,
+            "width": 6531.25,
+            "height": 4256,
+            "top": 296,
+            "right": 3408.63,
+            "bottom": 4552,
+            "left": -3122.62
+          },
+          "clippedBy": {
+            "id": "assessment-back",
+            "classes": "assessment-nav-button",
+            "rect": {
+              "x": 20,
+              "y": 16,
+              "width": 220,
+              "height": 4816,
+              "top": 16,
+              "right": 240,
+              "bottom": 4832,
+              "left": 20
+            }
+          }
+        },
+        {
+          "id": null,
+          "classes": "",
+          "text": "Level check",
+          "tag": "span",
+          "fontSize": 5600,
+          "fontWeight": 650,
+          "large": true,
+          "disabled": false,
+          "color": [
+            244,
+            246,
+            255
+          ],
+          "background": [
+            34,
+            38,
+            56
+          ],
+          "ratio": 13.89,
+          "rect": {
+            "x": 20,
+            "y": 5068,
+            "width": 3371.48,
+            "height": 78008,
+            "top": 5068,
+            "right": 3391.48,
+            "bottom": 83076,
+            "left": 20
+          },
+          "clippedBy": {
+            "id": null,
+            "classes": "",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 320,
+              "height": 568,
+              "top": 0,
+              "right": 320,
+              "bottom": 568,
+              "left": 0
+            }
+          }
+        },
+        {
+          "id": null,
+          "classes": "",
+          "text": "Answer 10 questions to understand your current English start",
+          "tag": "span",
+          "fontSize": 3200,
+          "fontWeight": 400,
+          "large": true,
+          "disabled": false,
+          "color": [
+            178,
+            183,
+            205
+          ],
+          "background": [
+            34,
+            38,
+            56
+          ],
+          "ratio": 7.52,
+          "rect": {
+            "x": 20,
+            "y": 83568,
+            "width": 2312.5,
+            "height": 292256,
+            "top": 83568,
+            "right": 2332.5,
+            "bottom": 375824,
+            "left": 20
+          },
+          "clippedBy": {
+            "id": null,
+            "classes": "",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 320,
+              "height": 568,
+              "top": 0,
+              "right": 320,
+              "bottom": 568,
+              "left": 0
+            }
+          }
+        },
+        {
+          "id": null,
+          "classes": "",
+          "text": "Answer at your current level",
+          "tag": "span",
+          "fontSize": 3200,
+          "fontWeight": 600,
+          "large": true,
+          "disabled": false,
+          "color": [
+            244,
+            246,
+            255
+          ],
+          "background": [
+            34,
+            38,
+            56
+          ],
+          "ratio": 13.89,
+          "rect": {
+            "x": 84,
+            "y": 376408,
+            "width": 10684.38,
+            "height": 23456,
+            "top": 376408,
+            "right": 10768.38,
+            "bottom": 399864,
+            "left": 84
+          },
+          "clippedBy": {
+            "id": null,
+            "classes": "",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 320,
+              "height": 568,
+              "top": 0,
+              "right": 320,
+              "bottom": 568,
+              "left": 0
+            }
+          }
+        },
+        {
+          "id": null,
+          "classes": "",
+          "text": "Choose the answer you think is right.",
+          "tag": "span",
+          "fontSize": 3200,
+          "fontWeight": 400,
+          "large": true,
+          "disabled": false,
+          "color": [
+            178,
+            183,
+            205
+          ],
+          "background": [
+            34,
+            38,
+            56
+          ],
+          "ratio": 7.52,
+          "rect": {
+            "x": 84,
+            "y": 400414,
+            "width": 2312.5,
+            "height": 148256,
+            "top": 400414,
+            "right": 2396.5,
+            "bottom": 548670,
+            "left": 84
+          },
+          "clippedBy": {
+            "id": null,
+            "classes": "",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 320,
+              "height": 568,
+              "top": 0,
+              "right": 320,
+              "bottom": 568,
+              "left": 0
+            }
+          }
+        },
+        {
+          "id": null,
+          "classes": "",
+          "text": "View your result when finished",
+          "tag": "span",
+          "fontSize": 3200,
+          "fontWeight": 600,
+          "large": true,
+          "disabled": false,
+          "color": [
+            244,
+            246,
+            255
+          ],
+          "background": [
+            34,
+            38,
+            56
+          ],
+          "ratio": 13.89,
+          "rect": {
+            "x": 84,
+            "y": 549242,
+            "width": 11512.5,
+            "height": 23456,
+            "top": 549242,
+            "right": 11596.5,
+            "bottom": 572698,
+            "left": 84
+          },
+          "clippedBy": {
+            "id": null,
+            "classes": "",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 320,
+              "height": 568,
+              "top": 0,
+              "right": 320,
+              "bottom": 568,
+              "left": 0
+            }
+          }
+        },
+        {
+          "id": null,
+          "classes": "",
+          "text": "Your result is based on the answers received.",
+          "tag": "span",
+          "fontSize": 3200,
+          "fontWeight": 400,
+          "large": true,
+          "disabled": false,
+          "color": [
+            178,
+            183,
+            205
+          ],
+          "background": [
+            34,
+            38,
+            56
+          ],
+          "ratio": 7.52,
+          "rect": {
+            "x": 84,
+            "y": 573248,
+            "width": 2312.5,
+            "height": 181856,
+            "top": 573248,
+            "right": 2396.5,
+            "bottom": 755104,
+            "left": 84
+          },
+          "clippedBy": {
+            "id": null,
+            "classes": "",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 320,
+              "height": 568,
+              "top": 0,
+              "right": 320,
+              "bottom": 568,
+              "left": 0
+            }
+          }
+        },
+        {
+          "id": "assessment-start",
+          "classes": "assessment-button assessment-primary",
+          "text": "Start assessment",
+          "tag": "uni-button",
+          "fontSize": 3200,
+          "fontWeight": 600,
+          "large": true,
+          "disabled": false,
+          "color": [
+            255,
+            255,
+            255
+          ],
+          "background": [
+            89,
+            55,
+            209
+          ],
+          "ratio": 7.26,
+          "rect": {
+            "x": 20,
+            "y": 755416,
+            "width": 280,
+            "height": 52826,
+            "top": 755416,
+            "right": 300,
+            "bottom": 808242,
+            "left": 20
+          },
+          "clippedBy": {
+            "id": null,
+            "classes": "",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 320,
+              "height": 568,
+              "top": 0,
+              "right": 320,
+              "bottom": 568,
+              "left": 0
+            }
+          }
+        },
+        {
+          "id": "assessment-home",
+          "classes": "assessment-button assessment-secondary",
+          "text": "Return to learning home",
+          "tag": "uni-button",
+          "fontSize": 3200,
+          "fontWeight": 600,
+          "large": true,
+          "disabled": false,
+          "color": [
+            244,
+            246,
+            255
+          ],
+          "background": [
+            34,
+            38,
+            56
+          ],
+          "ratio": 13.89,
+          "rect": {
+            "x": 20,
+            "y": 808254,
+            "width": 280,
+            "height": 86426,
+            "top": 808254,
+            "right": 300,
+            "bottom": 894680,
+            "left": 20
+          },
+          "clippedBy": {
+            "id": null,
+            "classes": "",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 320,
+              "height": 568,
+              "top": 0,
+              "right": 320,
+              "bottom": 568,
+              "left": 0
+            }
+          }
+        },
+        {
+          "id": null,
+          "classes": "",
+          "text": "Quick start is currently unavailable. Please complete the as",
+          "tag": "span",
+          "fontSize": 2800,
+          "fontWeight": 400,
+          "large": true,
+          "disabled": false,
+          "color": [
+            178,
+            183,
+            205
+          ],
+          "background": [
+            34,
+            38,
+            56
+          ],
+          "ratio": 7.52,
+          "rect": {
+            "x": 20,
+            "y": 895082,
+            "width": 2411.72,
+            "height": 272524,
+            "top": 895082,
+            "right": 2431.72,
+            "bottom": 1167606,
+            "left": 20
+          },
+          "clippedBy": {
+            "id": null,
+            "classes": "",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 320,
+              "height": 568,
+              "top": 0,
+              "right": 320,
+              "bottom": 568,
+              "left": 0
+            }
+          }
+        }
+      ],
+      "state": "guide"
+    },
+    {
+      "id": "glyph-overflow",
+      "status": "fail",
+      "detail": [
+        {
+          "id": "assessment-start",
+          "token": "Start",
+          "tokenRect": {
+            "left": -1243.12,
+            "right": 1563.13,
+            "top": 755701,
+            "bottom": 759957
+          },
+          "elementRect": {
+            "x": 20,
+            "y": 755416,
+            "width": 280,
+            "height": 52826,
+            "top": 755416,
+            "right": 300,
+            "bottom": 808242,
+            "left": 20
+          }
+        },
+        {
+          "id": "assessment-start",
+          "token": "assessment",
+          "tokenRect": {
+            "left": -675.16,
+            "right": 995.16,
+            "top": 770101,
+            "bottom": 774357
+          },
+          "elementRect": {
+            "x": 20,
+            "y": 755416,
+            "width": 280,
+            "height": 52826,
+            "top": 755416,
+            "right": 300,
+            "bottom": 808242,
+            "left": 20
+          }
+        },
+        {
+          "id": "assessment-home",
+          "token": "Return",
+          "tokenRect": {
+            "left": -836.09,
+            "right": 1156.09,
+            "top": 808539,
+            "bottom": 812795
+          },
+          "elementRect": {
+            "x": 20,
+            "y": 808254,
+            "width": 280,
+            "height": 86426,
+            "top": 808254,
+            "right": 300,
+            "bottom": 894680,
+            "left": 20
+          }
+        },
+        {
+          "id": "assessment-home",
+          "token": "to",
+          "tokenRect": {
+            "left": -418.12,
+            "right": 738.13,
+            "top": 837339,
+            "bottom": 841595
+          },
+          "elementRect": {
+            "x": 20,
+            "y": 808254,
+            "width": 280,
+            "height": 86426,
+            "top": 808254,
+            "right": 300,
+            "bottom": 894680,
+            "left": 20
+          }
+        },
+        {
+          "id": "assessment-home",
+          "token": "learning",
+          "tokenRect": {
+            "left": -1107.97,
+            "right": 1427.97,
+            "top": 846939,
+            "bottom": 851195
+          },
+          "elementRect": {
+            "x": 20,
+            "y": 808254,
+            "width": 280,
+            "height": 86426,
+            "top": 808254,
+            "right": 300,
+            "bottom": 894680,
+            "left": 20
+          }
+        },
+        {
+          "id": "assessment-home",
+          "token": "home",
+          "tokenRect": {
+            "left": -771.25,
+            "right": 1091.25,
+            "top": 875739,
+            "bottom": 879995
+          },
+          "elementRect": {
+            "x": 20,
+            "y": 808254,
+            "width": 280,
+            "height": 86426,
+            "top": 808254,
+            "right": 300,
+            "bottom": 894680,
+            "left": 20
+          }
+        }
+      ],
+      "state": "guide"
+    },
+    {
+      "id": "text-outside-box",
+      "status": "fail",
+      "detail": [
+        {
+          "id": null,
+          "classes": "",
+          "text": "Back",
+          "tag": "span",
+          "fontSize": 3200,
+          "fontWeight": 400,
+          "large": true,
+          "disabled": false,
+          "color": [
+            244,
+            246,
+            255
+          ],
+          "background": [
+            34,
+            38,
+            56
+          ],
+          "ratio": 13.89,
+          "rect": {
+            "x": -3122.62,
+            "y": 296,
+            "width": 6531.25,
+            "height": 4256,
+            "top": 296,
+            "right": 3408.63,
+            "bottom": 4552,
+            "left": -3122.62
+          },
+          "ancestor": {
+            "id": null,
+            "classes": "assessment-navigation",
+            "rect": {
+              "x": 20,
+              "y": 16,
+              "width": 280,
+              "height": 4816,
+              "top": 16,
+              "right": 300,
+              "bottom": 4832,
+              "left": 20
+            }
+          }
+        },
+        {
+          "id": null,
+          "classes": "",
+          "text": "Level check",
+          "tag": "span",
+          "fontSize": 5600,
+          "fontWeight": 650,
+          "large": true,
+          "disabled": false,
+          "color": [
+            244,
+            246,
+            255
+          ],
+          "background": [
+            34,
+            38,
+            56
+          ],
+          "ratio": 13.89,
+          "rect": {
+            "x": 20,
+            "y": 5068,
+            "width": 3371.48,
+            "height": 78008,
+            "top": 5068,
+            "right": 3391.48,
+            "bottom": 83076,
+            "left": 20
+          },
+          "ancestor": {
+            "id": "assessment-title",
+            "classes": "assessment-title",
+            "rect": {
+              "x": 20,
+              "y": 4872,
+              "width": 280,
+              "height": 78400,
+              "top": 4872,
+              "right": 300,
+              "bottom": 83272,
+              "left": 20
+            }
+          }
+        },
+        {
+          "id": null,
+          "classes": "",
+          "text": "Answer 10 questions to understand your current English start",
+          "tag": "span",
+          "fontSize": 3200,
+          "fontWeight": 400,
+          "large": true,
+          "disabled": false,
+          "color": [
+            178,
+            183,
+            205
+          ],
+          "background": [
+            34,
+            38,
+            56
+          ],
+          "ratio": 7.52,
+          "rect": {
+            "x": 20,
+            "y": 83568,
+            "width": 2312.5,
+            "height": 292256,
+            "top": 83568,
+            "right": 2332.5,
+            "bottom": 375824,
+            "left": 20
+          },
+          "ancestor": {
+            "id": null,
+            "classes": "assessment-description",
+            "rect": {
+              "x": 20,
+              "y": 83296,
+              "width": 280,
+              "height": 292800,
+              "top": 83296,
+              "right": 300,
+              "bottom": 376096,
+              "left": 20
+            }
+          }
+        },
+        {
+          "id": null,
+          "classes": "",
+          "text": "Answer at your current level",
+          "tag": "span",
+          "fontSize": 3200,
+          "fontWeight": 600,
+          "large": true,
+          "disabled": false,
+          "color": [
+            244,
+            246,
+            255
+          ],
+          "background": [
+            34,
+            38,
+            56
+          ],
+          "ratio": 13.89,
+          "rect": {
+            "x": 84,
+            "y": 376408,
+            "width": 10684.38,
+            "height": 23456,
+            "top": 376408,
+            "right": 10768.38,
+            "bottom": 399864,
+            "left": 84
+          },
+          "ancestor": {
+            "id": null,
+            "classes": "assessment-point-title",
+            "rect": {
+              "x": 84,
+              "y": 376136,
+              "width": 216,
+              "height": 24000,
+              "top": 376136,
+              "right": 300,
+              "bottom": 400136,
+              "left": 84
+            }
+          }
+        },
+        {
+          "id": null,
+          "classes": "",
+          "text": "Choose the answer you think is right.",
+          "tag": "span",
+          "fontSize": 3200,
+          "fontWeight": 400,
+          "large": true,
+          "disabled": false,
+          "color": [
+            178,
+            183,
+            205
+          ],
+          "background": [
+            34,
+            38,
+            56
+          ],
+          "ratio": 7.52,
+          "rect": {
+            "x": 84,
+            "y": 400414,
+            "width": 2312.5,
+            "height": 148256,
+            "top": 400414,
+            "right": 2396.5,
+            "bottom": 548670,
+            "left": 84
+          },
+          "ancestor": {
+            "id": null,
+            "classes": "assessment-description",
+            "rect": {
+              "x": 84,
+              "y": 400142,
+              "width": 216,
+              "height": 148800,
+              "top": 400142,
+              "right": 300,
+              "bottom": 548942,
+              "left": 84
+            }
+          }
+        },
+        {
+          "id": null,
+          "classes": "",
+          "text": "View your result when finished",
+          "tag": "span",
+          "fontSize": 3200,
+          "fontWeight": 600,
+          "large": true,
+          "disabled": false,
+          "color": [
+            244,
+            246,
+            255
+          ],
+          "background": [
+            34,
+            38,
+            56
+          ],
+          "ratio": 13.89,
+          "rect": {
+            "x": 84,
+            "y": 549242,
+            "width": 11512.5,
+            "height": 23456,
+            "top": 549242,
+            "right": 11596.5,
+            "bottom": 572698,
+            "left": 84
+          },
+          "ancestor": {
+            "id": null,
+            "classes": "assessment-point-title",
+            "rect": {
+              "x": 84,
+              "y": 548970,
+              "width": 216,
+              "height": 24000,
+              "top": 548970,
+              "right": 300,
+              "bottom": 572970,
+              "left": 84
+            }
+          }
+        },
+        {
+          "id": null,
+          "classes": "",
+          "text": "Your result is based on the answers received.",
+          "tag": "span",
+          "fontSize": 3200,
+          "fontWeight": 400,
+          "large": true,
+          "disabled": false,
+          "color": [
+            178,
+            183,
+            205
+          ],
+          "background": [
+            34,
+            38,
+            56
+          ],
+          "ratio": 7.52,
+          "rect": {
+            "x": 84,
+            "y": 573248,
+            "width": 2312.5,
+            "height": 181856,
+            "top": 573248,
+            "right": 2396.5,
+            "bottom": 755104,
+            "left": 84
+          },
+          "ancestor": {
+            "id": null,
+            "classes": "assessment-description",
+            "rect": {
+              "x": 84,
+              "y": 572976,
+              "width": 216,
+              "height": 182400,
+              "top": 572976,
+              "right": 300,
+              "bottom": 755376,
+              "left": 84
+            }
+          }
+        },
+        {
+          "id": null,
+          "classes": "",
+          "text": "Quick start is currently unavailable. Please complete the as",
+          "tag": "span",
+          "fontSize": 2800,
+          "fontWeight": 400,
+          "large": true,
+          "disabled": false,
+          "color": [
+            178,
+            183,
+            205
+          ],
+          "background": [
+            34,
+            38,
+            56
+          ],
+          "ratio": 7.52,
+          "rect": {
+            "x": 20,
+            "y": 895082,
+            "width": 2411.72,
+            "height": 272524,
+            "top": 895082,
+            "right": 2431.72,
+            "bottom": 1167606,
+            "left": 20
+          },
+          "ancestor": {
+            "id": null,
+            "classes": "assessment-note",
+            "rect": {
+              "x": 20,
+              "y": 894704,
+              "width": 280,
+              "height": 273280,
+              "top": 894704,
+              "right": 300,
+              "bottom": 1167984,
+              "left": 20
+            }
+          }
+        }
+      ],
+      "state": "guide"
+    },
+    {
+      "id": "overlap",
+      "status": "ok",
+      "detail": [],
+      "state": "guide"
+    },
+    {
+      "id": "word-split",
+      "status": "fail",
+      "detail": [
+        {
+          "id": null,
+          "classes": "",
+          "token": "Level",
+          "lines": 5
+        },
+        {
+          "id": null,
+          "classes": "",
+          "token": "check",
+          "lines": 5
+        },
+        {
+          "id": null,
+          "classes": "",
+          "token": "Answer",
+          "lines": 6
+        },
+        {
+          "id": null,
+          "classes": "",
+          "token": "10",
+          "lines": 2
+        },
+        {
+          "id": null,
+          "classes": "",
+          "token": "questions",
+          "lines": 9
+        },
+        {
+          "id": null,
+          "classes": "",
+          "token": "to",
+          "lines": 2
+        },
+        {
+          "id": null,
+          "classes": "",
+          "token": "understand",
+          "lines": 10
+        },
+        {
+          "id": null,
+          "classes": "",
+          "token": "your",
+          "lines": 4
+        },
+        {
+          "id": null,
+          "classes": "",
+          "token": "current",
+          "lines": 7
+        },
+        {
+          "id": null,
+          "classes": "",
+          "token": "English",
+          "lines": 7
+        },
+        {
+          "id": null,
+          "classes": "",
+          "token": "starting",
+          "lines": 8
+        },
+        {
+          "id": null,
+          "classes": "",
+          "token": "point",
+          "lines": 5
+        },
+        {
+          "id": null,
+          "classes": "",
+          "token": "Choose",
+          "lines": 6
+        },
+        {
+          "id": null,
+          "classes": "",
+          "token": "the",
+          "lines": 3
+        },
+        {
+          "id": null,
+          "classes": "",
+          "token": "answer",
+          "lines": 6
+        },
+        {
+          "id": null,
+          "classes": "",
+          "token": "you",
+          "lines": 3
+        },
+        {
+          "id": null,
+          "classes": "",
+          "token": "think",
+          "lines": 5
+        },
+        {
+          "id": null,
+          "classes": "",
+          "token": "is",
+          "lines": 2
+        },
+        {
+          "id": null,
+          "classes": "",
+          "token": "right",
+          "lines": 5
+        },
+        {
+          "id": null,
+          "classes": "",
+          "token": "Your",
+          "lines": 4
+        },
+        {
+          "id": null,
+          "classes": "",
+          "token": "result",
+          "lines": 6
+        },
+        {
+          "id": null,
+          "classes": "",
+          "token": "is",
+          "lines": 2
+        },
+        {
+          "id": null,
+          "classes": "",
+          "token": "based",
+          "lines": 5
+        },
+        {
+          "id": null,
+          "classes": "",
+          "token": "on",
+          "lines": 2
+        },
+        {
+          "id": null,
+          "classes": "",
+          "token": "the",
+          "lines": 3
+        },
+        {
+          "id": null,
+          "classes": "",
+          "token": "answers",
+          "lines": 7
+        },
+        {
+          "id": null,
+          "classes": "",
+          "token": "received",
+          "lines": 8
+        },
+        {
+          "id": "assessment-start",
+          "classes": "assessment-button assessment-primary",
+          "token": "Start",
+          "lines": 3
+        },
+        {
+          "id": "assessment-start",
+          "classes": "assessment-button assessment-primary",
+          "token": "assessment",
+          "lines": 8
+        },
+        {
+          "id": "assessment-home",
+          "classes": "assessment-button assessment-secondary",
+          "token": "Return",
+          "lines": 6
+        },
+        {
+          "id": "assessment-home",
+          "classes": "assessment-button assessment-secondary",
+          "token": "to",
+          "lines": 2
+        },
+        {
+          "id": "assessment-home",
+          "classes": "assessment-button assessment-secondary",
+          "token": "learning",
+          "lines": 6
+        },
+        {
+          "id": "assessment-home",
+          "classes": "assessment-button assessment-secondary",
+          "token": "home",
+          "lines": 4
+        },
+        {
+          "id": null,
+          "classes": "",
+          "token": "Quick",
+          "lines": 5
+        },
+        {
+          "id": null,
+          "classes": "",
+          "token": "start",
+          "lines": 5
+        },
+        {
+          "id": null,
+          "classes": "",
+          "token": "is",
+          "lines": 2
+        },
+        {
+          "id": null,
+          "classes": "",
+          "token": "currently",
+          "lines": 9
+        },
+        {
+          "id": null,
+          "classes": "",
+          "token": "unavailable",
+          "lines": 11
+        },
+        {
+          "id": null,
+          "classes": "",
+          "token": "Please",
+          "lines": 6
+        },
+        {
+          "id": null,
+          "classes": "",
+          "token": "complete",
+          "lines": 8
+        },
+        {
+          "id": null,
+          "classes": "",
+          "token": "the",
+          "lines": 3
+        },
+        {
+          "id": null,
+          "classes": "",
+          "token": "assessment",
+          "lines": 10
+        }
+      ],
+      "state": "guide"
+    },
+    {
+      "id": "contrast-text",
+      "status": "ok",
+      "detail": {
+        "measured": 10,
+        "violations": [],
+        "minRatio": 7.26
+      },
+      "state": "guide"
+    },
+    {
+      "id": "contrast-border",
+      "status": "fail",
+      "detail": {
+        "measured": 2,
+        "violations": [
+          {
+            "id": "assessment-start",
+            "border": [
+              89,
+              55,
+              209
+            ],
+            "vsParentBackground": 2.06,
+            "vsOwnBackground": 1,
+            "disabled": false
+          }
+        ]
+      },
+      "state": "guide"
+    },
+    {
+      "id": "inputs",
+      "status": "ok",
+      "detail": {
+        "count": 0,
+        "list": []
+      },
+      "state": "guide"
+    }
+  ],
+  "submitLog": [],
+  "retest": {},
+  "reportFacts": null,
+  "externalResources": [],
+  "externalAttempts": [],
+  "fixtureFulfilledResponses": [
+    {
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me",
+      "status": 200,
+      "reason": "fixture.report.requests ledger match for this case id (strict synthetic API transport; not an external network response)"
+    },
+    {
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/iam/principal/me",
+      "status": 200,
+      "reason": "fixture.report.requests ledger match for this case id (strict synthetic API transport; not an external network response)"
+    },
+    {
+      "method": "GET",
+      "origin": "http://127.0.0.1:18070",
+      "path": "/api/v1/learner/targets",
+      "status": 200,
+      "reason": "fixture.report.requests ledger match for this case id (strict synthetic API transport; not an external network response)"
+    }
+  ],
+  "unclassifiedApiResponses": [],
+  "fixtureLedgerFailures": [],
+  "fixtureLedger": [],
+  "errors": [
+    {
+      "message": "page.screenshot: Protocol error (Page.captureScreenshot): Unable to capture screenshot\nCall log:\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m\n\n    at pageShot (C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-assessment\\dsh-20261020-matrix\\scripts\\matrix.cjs:438:25)\n    at main (C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-assessment\\dsh-20261020-matrix\\scripts\\matrix.cjs:519:38)",
+      "at": "2026-10-20T15:04:44.880Z"
+    }
+  ],
+  "sourceFreezeBefore": {
+    "apps/mobile/src/pages/assessment/assessment.vue": "86620ed0dbc2cb25afb4bbae35734a345b9e8066afa806684f99ccb678a5312d",
+    "packages/i18n/src/mobile-experience.ts": "6ac6800e179de0ba15ab3607918b2f8427d364e19306eaf8f2a146f016247380",
+    "apps/mobile/src/api/learner-content.ts": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6",
+    "apps/mobile/src/stores/learner-content.ts": "95cc92496db996242d91baed3301d76f985e4e3b9134e1e50c2b9ab8d41e4c61",
+    "apps/mobile/src/stores/session.ts": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+    "apps/mobile/src/auth/navigation.ts": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5"
+  },
+  "freezeCheck": {
+    "ok": true,
+    "detail": {
+      "drift": [],
+      "supporting": {
+        "packages/design-tokens/src/mobile.ts": "5b3aac642d103e998ae723c6af1c72fd3d47c7929a609d47aee1e003ad2281d9",
+        "packages/design-tokens/src/official-site.ts": "9d6af42d7ff255154d579729105c46fe15e2e4792ac64a4eab591108a7d03d62"
+      }
+    },
+    "final": true
+  },
+  "sourceFreezeAfter": {
+    "apps/mobile/src/pages/assessment/assessment.vue": "86620ed0dbc2cb25afb4bbae35734a345b9e8066afa806684f99ccb678a5312d",
+    "packages/i18n/src/mobile-experience.ts": "6ac6800e179de0ba15ab3607918b2f8427d364e19306eaf8f2a146f016247380",
+    "apps/mobile/src/api/learner-content.ts": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6",
+    "apps/mobile/src/stores/learner-content.ts": "95cc92496db996242d91baed3301d76f985e4e3b9134e1e50c2b9ab8d41e4c61",
+    "apps/mobile/src/stores/session.ts": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+    "apps/mobile/src/auth/navigation.ts": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5"
+  },
+  "sourceFreezeAfterSupporting": {
+    "packages/design-tokens/src/mobile.ts": "5b3aac642d103e998ae723c6af1c72fd3d47c7929a609d47aee1e003ad2281d9",
+    "packages/design-tokens/src/official-site.ts": "9d6af42d7ff255154d579729105c46fe15e2e4792ac64a4eab591108a7d03d62"
+  },
+  "summary": {
+    "ok": 14,
+    "review": 0,
+    "fail": 6,
+    "notMeasured": 0
+  }
+}

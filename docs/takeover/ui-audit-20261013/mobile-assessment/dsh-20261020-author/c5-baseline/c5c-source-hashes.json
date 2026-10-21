@@ -1,0 +1,21 @@
+{
+  "at": "2026-10-20T23:34:29.9211504+08:00",
+  "note": "C5c adds H5 beforeunload on top of C5b; C5b and first-C5 raw files preserved untouched",
+  "c5b": {
+    "page": "24281df07efb4a8553cfb605eab8d22eb3e16f83076805b141818021948c529a",
+    "package": "484382c73929055cc4ecd9a83679f8bab72388dd8069f71a056b3bbc595c0078",
+    "lock": "d57a87ca84985549fd53c69b1fe1d59db0b136036f2f7bf640d3b30c0a106624"
+  },
+  "c5c": {
+    "page": {
+      "raw": "719cc0cef407b492544b1bff39537324b0672126df287bf7d5644a25b6fe81c1",
+      "lf": "719cc0cef407b492544b1bff39537324b0672126df287bf7d5644a25b6fe81c1",
+      "bytes": 37049
+    },
+    "deps": {
+      "package": "484382c73929055cc4ecd9a83679f8bab72388dd8069f71a056b3bbc595c0078",
+      "lock": "d57a87ca84985549fd53c69b1fe1d59db0b136036f2f7bf640d3b30c0a106624",
+      "vueRouter": "4.4.4 (unchanged from C5)"
+    }
+  }
+}

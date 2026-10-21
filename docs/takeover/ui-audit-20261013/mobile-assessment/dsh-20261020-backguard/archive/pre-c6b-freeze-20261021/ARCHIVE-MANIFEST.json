@@ -1,0 +1,26 @@
+{
+  "archivedAt": "2026-10-21T00:11:22Z",
+  "stage": "C5c final driver before C6b freeze update",
+  "preservedApprovedPageSha": "719cc0cef407b492544b1bff39537324b0672126df287bf7d5644a25b6fe81c1",
+  "packageSha": "484382c73929055cc4ecd9a83679f8bab72388dd8069f71a056b3bbc595c0078",
+  "lockSha": "d57a87ca84985549fd53c69b1fe1d59db0b136036f2f7bf640d3b30c0a106624",
+  "i18nSha": "6ac6800e179de0ba15ab3607918b2f8427d364e19306eaf8f2a146f016247380",
+  "files": [
+    {
+      "file": "run.cjs",
+      "sha256": "eeeaba129c355e5a171fd5d85cd3fd59f902be3acc36e2aeb2654079c0249001",
+      "bytes": 67413
+    },
+    {
+      "file": "README.md",
+      "sha256": "1e802b99aefac4f0067f5193066f35615c63ed5f7d1a21d02560c577faa57c5b",
+      "bytes": 13601
+    },
+    {
+      "file": "PREP-20261021.md",
+      "sha256": "70cd48017aabc0c16ac6d1a556268155164847cff4e64671f93a0c43bed12ccb",
+      "bytes": 4954
+    }
+  ],
+  "oldRuns": "existing runs/ preserved untouched"
+}

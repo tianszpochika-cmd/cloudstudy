@@ -1,0 +1,74 @@
+{
+  "runId": "codex-20261021-c5c-darkhc-1",
+  "label": "Codex independent C5c bounded review 20261021",
+  "preparedBy": "DSH",
+  "renderer": "H5 uni-app in Playwright Chromium with fully synthetic API transport; NOT native/device",
+  "createdAt": "2026-10-20T23:51:46.940Z",
+  "updatedAt": "2026-10-20T23:51:54.187Z",
+  "cases": {
+    "zh-CN__high-contrast__390": {
+      "status": "MEASURED",
+      "dir": "cases/zh-CN__high-contrast__390",
+      "resultFile": "cases/zh-CN__high-contrast__390/result.json",
+      "partial": false,
+      "summary": {
+        "ok": 114,
+        "info": 4,
+        "review": 0,
+        "fail": 0,
+        "notMeasured": 0
+      },
+      "screenshots": 6,
+      "failedChecks": [],
+      "reviewChecks": [],
+      "infoChecks": [
+        "report:text-outside-box",
+        "retest-confirm:text-outside-box",
+        "retest-confirm:viewport-offscreen",
+        "retest-cancelled:text-outside-box"
+      ],
+      "harnessInvalid": false
+    },
+    "en-US__dark__320__text200__short": {
+      "status": "FAILED",
+      "dir": "cases/en-US__dark__320__text200__short",
+      "resultFile": "cases/en-US__dark__320__text200__short/result.json",
+      "partial": false,
+      "summary": {
+        "ok": 149,
+        "info": 11,
+        "review": 0,
+        "fail": 1,
+        "notMeasured": 0
+      },
+      "screenshots": 10,
+      "failedChecks": [
+        "flow:report-from-real-submits"
+      ],
+      "reviewChecks": [],
+      "infoChecks": [
+        "guide:viewport-offscreen",
+        "question-selected-C:text-outside-box",
+        "question-selected-C:viewport-offscreen",
+        "question:text-outside-box",
+        "question:viewport-offscreen",
+        "report:text-outside-box",
+        "report:viewport-offscreen",
+        "retest-confirm:text-outside-box",
+        "retest-confirm:viewport-offscreen",
+        "retest-cancelled:text-outside-box",
+        "retest-cancelled:viewport-offscreen"
+      ],
+      "harnessInvalid": false
+    }
+  },
+  "summary": {
+    "measured": 1,
+    "review": 0,
+    "incomplete": 0,
+    "failed": 1,
+    "error": 0,
+    "stopped": 0,
+    "screenshots": 16
+  }
+}

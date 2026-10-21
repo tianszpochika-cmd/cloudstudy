@@ -1,0 +1,13 @@
+{
+  "archive": "20261021-C3-guard-archive",
+  "archivedAtUtc": "2026-10-20T23:52:05Z",
+  "reason": "Preserve pre-C5c-label C3 guard files raw before updating to current C5c",
+  "files": [
+    {
+      "original": "c3-verify.cjs",
+      "archived": "c3-verify.cjs.c3.raw",
+      "sha256": "0224527a36ed6b793d86149dee71b4e2d4b8d3a7d6dc5edfd6810081555beda9",
+      "bytes": 24988
+    }
+  ]
+}

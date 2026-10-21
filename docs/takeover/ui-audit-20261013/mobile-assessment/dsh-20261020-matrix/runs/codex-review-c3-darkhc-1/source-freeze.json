@@ -1,0 +1,25 @@
+{
+  "frozenAt": "2026-10-20T15:04:38.375Z",
+  "base": "http://127.0.0.1:18183",
+  "product": {
+    "page": {
+      "path": "apps/mobile/src/pages/assessment/assessment.vue",
+      "sha256": "86620ed0dbc2cb25afb4bbae35734a345b9e8066afa806684f99ccb678a5312d",
+      "expected": "86620ed0dbc2cb25afb4bbae35734a345b9e8066afa806684f99ccb678a5312d",
+      "match": true
+    },
+    "i18n": {
+      "path": "packages/i18n/src/mobile-experience.ts",
+      "sha256": "6ac6800e179de0ba15ab3607918b2f8427d364e19306eaf8f2a146f016247380",
+      "expected": "6ac6800e179de0ba15ab3607918b2f8427d364e19306eaf8f2a146f016247380",
+      "match": true
+    }
+  },
+  "supporting": {
+    "hashes": {
+      "packages/design-tokens/src/mobile.ts": "5b3aac642d103e998ae723c6af1c72fd3d47c7929a609d47aee1e003ad2281d9",
+      "packages/design-tokens/src/official-site.ts": "9d6af42d7ff255154d579729105c46fe15e2e4792ac64a4eab591108a7d03d62"
+    }
+  },
+  "measuredBy": "dsh visual matrix runner; no PASS verdict written"
+}

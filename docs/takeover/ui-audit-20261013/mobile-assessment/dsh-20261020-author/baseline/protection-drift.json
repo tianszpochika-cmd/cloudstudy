@@ -1,0 +1,433 @@
+{
+  "checkedAt": "2026-10-20T14:04:13.513Z",
+  "manifestPath": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\.git\\codex-local-backups\\ui-audit-20261013\\preexisting-work.json",
+  "manifestHead": "670216b45511ebe21c4d292e66b5027077a589e5",
+  "manifestRemote": "4990dd295419de7f376f82b01975a5738b059b24",
+  "totalEntries": 70,
+  "match": 56,
+  "directoryPresent": 14,
+  "driftCount": 0,
+  "drift": [],
+  "results": [
+    {
+      "path": "apps/official-site/pages/announcements.vue",
+      "expected": "c17cb53331e1f83b7d146e9ff1b687aec1302bcc918eb7dcaca2d0619f299d42",
+      "actual": "c17cb53331e1f83b7d146e9ff1b687aec1302bcc918eb7dcaca2d0619f299d42",
+      "status": "MATCH"
+    },
+    {
+      "path": "apps/official-site/pages/compliance.vue",
+      "expected": "1d3dbae4d053ada1055263c2ec14cdef46b96ca23f971e3cd3e2dd03b7760b41",
+      "actual": "1d3dbae4d053ada1055263c2ec14cdef46b96ca23f971e3cd3e2dd03b7760b41",
+      "status": "MATCH"
+    },
+    {
+      "path": "apps/official-site/pages/index.vue",
+      "expected": "4ae46de320ee57ad07ce1df97c02fbab74012a5486e856cb9c413c32ea6af2c8",
+      "actual": "4ae46de320ee57ad07ce1df97c02fbab74012a5486e856cb9c413c32ea6af2c8",
+      "status": "MATCH"
+    },
+    {
+      "path": "apps/official-site/server/api/public-projection.get.ts",
+      "expected": "33eebcb2f16d76406067ff3beb0420dd177614875ac45b233a21b2f73e9b1144",
+      "actual": "33eebcb2f16d76406067ff3beb0420dd177614875ac45b233a21b2f73e9b1144",
+      "status": "MATCH"
+    },
+    {
+      "path": "apps/official-site/tests/browser/website-runtime.cjs",
+      "expected": "9104af6d5f26581eb15c1f1d5d4aeaf097d8946500097e744092d5740570fb4b",
+      "actual": "9104af6d5f26581eb15c1f1d5d4aeaf097d8946500097e744092d5740570fb4b",
+      "status": "MATCH"
+    },
+    {
+      "path": "apps/official-site/tests/public-projection-bff.test.mjs",
+      "expected": "0e7f100c8e75066af4eee8394f97c9f2b0bddf5d189e3734878e5b9508e56e33",
+      "actual": "0e7f100c8e75066af4eee8394f97c9f2b0bddf5d189e3734878e5b9508e56e33",
+      "status": "MATCH"
+    },
+    {
+      "path": "apps/official-site/utils/public-projection.ts",
+      "expected": "fa597d5844dc41a2bf951bfd477bc8f3729654fdf1f099ff2d24b8968c63a7bb",
+      "actual": "fa597d5844dc41a2bf951bfd477bc8f3729654fdf1f099ff2d24b8968c63a7bb",
+      "status": "MATCH"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/official-site-experience-proposal-2026-09-21/implementation/browser-checks.json",
+      "expected": "e439804f945c071f922fc28e8fdf58ab6a71a973ed63a37027e0f0faaf93a5e4",
+      "actual": "e439804f945c071f922fc28e8fdf58ab6a71a973ed63a37027e0f0faaf93a5e4",
+      "status": "MATCH"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/official-site-experience-proposal-2026-09-21/implementation/home-desktop-light.png",
+      "expected": "ef0b99cef86e6807d584ee3cff496caa7362c322bc056b7c76c64f4d8ae7fed7",
+      "actual": "ef0b99cef86e6807d584ee3cff496caa7362c322bc056b7c76c64f4d8ae7fed7",
+      "status": "MATCH"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/official-site-experience-proposal-2026-09-21/implementation/home-mobile-dark.png",
+      "expected": "300324a60add559a1e6f84a09c6fdc79303c3c2d753434fce3d2c4c242163a19",
+      "actual": "300324a60add559a1e6f84a09c6fdc79303c3c2d753434fce3d2c4c242163a19",
+      "status": "MATCH"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/official-site-experience-proposal-2026-09-21/implementation/home-mobile-light.png",
+      "expected": "1e8d351ec860279a1c1bf641bc2d5a6b496b51bdfedc76c87b7dc54b58728782",
+      "actual": "1e8d351ec860279a1c1bf641bc2d5a6b496b51bdfedc76c87b7dc54b58728782",
+      "status": "MATCH"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/official-site-experience-proposal-2026-09-21/implementation/world-mobile-game.png",
+      "expected": "e162182f20d684507c98ba352e1151eff5757d722b2b10e7c9d881c43ee8c504",
+      "actual": "e162182f20d684507c98ba352e1151eff5757d722b2b10e7c9d881c43ee8c504",
+      "status": "MATCH"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/official-site-experience-proposal-2026-09-21/implementation/world-wall-desktop.png",
+      "expected": "6d726ac42eeaf1426575490a0dfa4525d1478fa46aeb961f51a10db84876af8d",
+      "actual": "6d726ac42eeaf1426575490a0dfa4525d1478fa46aeb961f51a10db84876af8d",
+      "status": "MATCH"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/redesign/business-chains.md",
+      "expected": "f37907af051ab0b644654153f8b365a228451151fbb27527c53e43b8b714c637",
+      "actual": "f37907af051ab0b644654153f8b365a228451151fbb27527c53e43b8b714c637",
+      "status": "MATCH"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+      "expected": "37548c077648a633f821b83c73bfd4f66b93d710dc5bd5ccf57d32a24b596bdf",
+      "actual": "37548c077648a633f821b83c73bfd4f66b93d710dc5bd5ccf57d32a24b596bdf",
+      "status": "MATCH"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/redesign/mockups/admin/DEMO-GUIDE.md",
+      "expected": "8c195f06c32558ae7276700b3f5822f45c299a167877e5e72f1d188ada508e22",
+      "actual": "8c195f06c32558ae7276700b3f5822f45c299a167877e5e72f1d188ada508e22",
+      "status": "MATCH"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/redesign/mockups/admin/app.js",
+      "expected": "5807066677064ec0fca355272f976767533cc3ed7f295123128f9f7583b6518f",
+      "actual": "5807066677064ec0fca355272f976767533cc3ed7f295123128f9f7583b6518f",
+      "status": "MATCH"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/redesign/mockups/admin/index.html",
+      "expected": "f6c043dedc9e5a10e878c24d3bcaf44e351b89681f08bfd67eddacb9cb520602",
+      "actual": "f6c043dedc9e5a10e878c24d3bcaf44e351b89681f08bfd67eddacb9cb520602",
+      "status": "MATCH"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/redesign/mockups/mobile/DEMO-GUIDE.md",
+      "expected": "b7cd395820519721605223284d96fc4713f5681accbc24b4bc3ac85ff27b8628",
+      "actual": "b7cd395820519721605223284d96fc4713f5681accbc24b4bc3ac85ff27b8628",
+      "status": "MATCH"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/redesign/mockups/mobile/learning.js",
+      "expected": "c714402346c458b15f504ee741c35b65c68d333289b29e57792edbdb834cb550",
+      "actual": "c714402346c458b15f504ee741c35b65c68d333289b29e57792edbdb834cb550",
+      "status": "MATCH"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/redesign/revision-notes.md",
+      "expected": "f779c77a9bbc0a7a0e7671ef6659352679e221fbcd409676931ac0b803ffd0f6",
+      "actual": "f779c77a9bbc0a7a0e7671ef6659352679e221fbcd409676931ac0b803ffd0f6",
+      "status": "MATCH"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/manifest.json",
+      "expected": "4a42acf2af627708d503372bd54e9af0988611173d6bd7c7d168556b936a9779",
+      "actual": "4a42acf2af627708d503372bd54e9af0988611173d6bd7c7d168556b936a9779",
+      "status": "MATCH"
+    },
+    {
+      "path": "scripts/check-admin-mockups.mjs",
+      "expected": "dda4c687b9bd55110c1fc952906ea55d8825a229f5e0c6050999486d57302324",
+      "actual": "dda4c687b9bd55110c1fc952906ea55d8825a229f5e0c6050999486d57302324",
+      "status": "MATCH"
+    },
+    {
+      "path": "scripts/verify-mobile-learning-model.cjs",
+      "expected": "caba6de5444abe347239d9a9f9cc87f2c9dc634af35c4b17473ebdfd9a70a633",
+      "actual": "caba6de5444abe347239d9a9f9cc87f2c9dc634af35c4b17473ebdfd9a70a633",
+      "status": "MATCH"
+    },
+    {
+      "path": "artifacts/review-2026-10-02/",
+      "expected": null,
+      "actual": null,
+      "status": "DIRECTORY_PRESENT"
+    },
+    {
+      "path": "artifacts/review-2026-10-03/",
+      "expected": null,
+      "actual": null,
+      "status": "DIRECTORY_PRESENT"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/redesign/design-source-traceability.md",
+      "expected": "7e67c115a38df99eb1a6e5feacd6e47e103b7fb3f6060a851e90894f8cd0f55f",
+      "actual": "7e67c115a38df99eb1a6e5feacd6e47e103b7fb3f6060a851e90894f8cd0f55f",
+      "status": "MATCH"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/redesign/dev-plan-R1.status.json",
+      "expected": "bfbc08a9443f5861a204fc5b7786cfb30ad8ecb4429ba9a66c0d7576d995e68a",
+      "actual": "bfbc08a9443f5861a204fc5b7786cfb30ad8ecb4429ba9a66c0d7576d995e68a",
+      "status": "MATCH"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/redesign/dev-plan-R1.tasks.json",
+      "expected": "4003655a62542bfbd217ebe14f7f669e06b4ea87d50551af089d21cb318a1533",
+      "actual": "4003655a62542bfbd217ebe14f7f669e06b4ea87d50551af089d21cb318a1533",
+      "status": "MATCH"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/redesign/execution-handbook.md",
+      "expected": "5dd9c5b894cd4bfa08754c61b95b83308a7509cd722b6ede5d731e0d64214c88",
+      "actual": "5dd9c5b894cd4bfa08754c61b95b83308a7509cd722b6ede5d731e0d64214c88",
+      "status": "MATCH"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/redesign/input-gates.md",
+      "expected": "5778937db94ef5edb86c0d2fc9246602290f8547c235c50f16629feee4f458d1",
+      "actual": "5778937db94ef5edb86c0d2fc9246602290f8547c235c50f16629feee4f458d1",
+      "status": "MATCH"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/redesign/mockups/admin/model.js",
+      "expected": "342fe9885aff50a55c717013856e8786e5a06f9b66e3d7da625964e5f48eb507",
+      "actual": "342fe9885aff50a55c717013856e8786e5a06f9b66e3d7da625964e5f48eb507",
+      "status": "MATCH"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/redesign/status-wall.html",
+      "expected": "2e48e5b195cdc00525cde507dfb372ded8e702a3fb21c6b00a05d88719ef9e24",
+      "actual": "2e48e5b195cdc00525cde507dfb372ded8e702a3fb21c6b00a05d88719ef9e24",
+      "status": "MATCH"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/redesign/status-wall.md",
+      "expected": "58d47bf72b2166024c440e3f1114320ff9dae24b73df441dfdf4e549dd5f3c4b",
+      "actual": "58d47bf72b2166024c440e3f1114320ff9dae24b73df441dfdf4e549dd5f3c4b",
+      "status": "MATCH"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/redesign/task-specs/",
+      "expected": null,
+      "actual": null,
+      "status": "DIRECTORY_PRESENT"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/redesign/tasks/",
+      "expected": null,
+      "actual": null,
+      "status": "DIRECTORY_PRESENT"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/gateway-4/pid.json",
+      "expected": "6654eb27c646dff1c9ce2ed63acd6b458e6370998f23f2f7a0c2fd024655ca92",
+      "actual": "6654eb27c646dff1c9ce2ed63acd6b458e6370998f23f2f7a0c2fd024655ca92",
+      "status": "MATCH"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/iam-schema-2/",
+      "expected": null,
+      "actual": null,
+      "status": "DIRECTORY_PRESENT"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/iam-schema-3/",
+      "expected": null,
+      "actual": null,
+      "status": "DIRECTORY_PRESENT"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/launcher-3/",
+      "expected": null,
+      "actual": null,
+      "status": "DIRECTORY_PRESENT"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/launcher-4/pid.json",
+      "expected": "7b931372e8558055e33ff8000820f71ce4fef35da6c16a5d697cda5d01415738",
+      "actual": "7b931372e8558055e33ff8000820f71ce4fef35da6c16a5d697cda5d01415738",
+      "status": "MATCH"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/policy-fixture-2/",
+      "expected": null,
+      "actual": null,
+      "status": "DIRECTORY_PRESENT"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/policy-fixture-3/",
+      "expected": null,
+      "actual": null,
+      "status": "DIRECTORY_PRESENT"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/prep-report-2.md",
+      "expected": "ad0b69d3297bdc906377cc5d562aea1a5d0646428e08beb14c1ea6475ef0226c",
+      "actual": "ad0b69d3297bdc906377cc5d562aea1a5d0646428e08beb14c1ea6475ef0226c",
+      "status": "MATCH"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/prep-report-3.md",
+      "expected": "552a5a01711d01f299c2fb621f55f4b1b753c517b04fdec91cd92d0d9c302b13",
+      "actual": "552a5a01711d01f299c2fb621f55f4b1b753c517b04fdec91cd92d0d9c302b13",
+      "status": "MATCH"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/prep-report.md",
+      "expected": "faea2885c35bca8d77dabc5f5dc4e67d6a92c403a9cb45b7ab2cd7cac15e477a",
+      "actual": "faea2885c35bca8d77dabc5f5dc4e67d6a92c403a9cb45b7ab2cd7cac15e477a",
+      "status": "MATCH"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/prepare-iam-schema-2.mjs",
+      "expected": "be21a00007d75ec5eb859df961dcd601e3db50ec8e54f6705d7290112276bfb5",
+      "actual": "be21a00007d75ec5eb859df961dcd601e3db50ec8e54f6705d7290112276bfb5",
+      "status": "MATCH"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/prepare-iam-schema-3.mjs",
+      "expected": "8c1c97496251780e620e433e59d781dcf5d9cdc007425b3ad5c7e00597ce43b4",
+      "actual": "8c1c97496251780e620e433e59d781dcf5d9cdc007425b3ad5c7e00597ce43b4",
+      "status": "MATCH"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/prepare-policy-fixture-2.cjs",
+      "expected": "29a4a58537eb6367a8e3ce421c3b08e61663db2151dbe1584f0fd7c5d59c49ac",
+      "actual": "29a4a58537eb6367a8e3ce421c3b08e61663db2151dbe1584f0fd7c5d59c49ac",
+      "status": "MATCH"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/prepare-policy-fixture-3.cjs",
+      "expected": "705077e17ecbff42ca5360ab3e3487ac7afa904548db748e6024ec6c8f2310fe",
+      "actual": "705077e17ecbff42ca5360ab3e3487ac7afa904548db748e6024ec6c8f2310fe",
+      "status": "MATCH"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/r1-002-launcher-3.cjs",
+      "expected": "fd410cbb75c0d5d59ce55870890e9c1bf11cac40962c85836c10c9c406ad7b4e",
+      "actual": "fd410cbb75c0d5d59ce55870890e9c1bf11cac40962c85836c10c9c406ad7b4e",
+      "status": "MATCH"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/r1-002-safe-run-2.cjs",
+      "expected": "2eb00f7b7e7aebd7eac4b3d1a8b17656044c15891c88ca348d676f830024e17c",
+      "actual": "2eb00f7b7e7aebd7eac4b3d1a8b17656044c15891c88ca348d676f830024e17c",
+      "status": "MATCH"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/reviewer-1-prep/",
+      "expected": null,
+      "actual": null,
+      "status": "DIRECTORY_PRESENT"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/reviewer-2-prep/",
+      "expected": null,
+      "actual": null,
+      "status": "DIRECTORY_PRESENT"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/reviewer-3-closeout/publish-paths.json",
+      "expected": "2643fb1759f88b00c441711b7b6fcc8cc7a0de9cde9fd96f1d78d7afd789364d",
+      "actual": "2643fb1759f88b00c441711b7b6fcc8cc7a0de9cde9fd96f1d78d7afd789364d",
+      "status": "MATCH"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/reviewer-3-closeout/staged-documents.json",
+      "expected": "da626a151cdd4946c56a23221985665027c2d9d202b805ab561b681af47850d9",
+      "actual": "da626a151cdd4946c56a23221985665027c2d9d202b805ab561b681af47850d9",
+      "status": "MATCH"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/safe-run-2/",
+      "expected": null,
+      "actual": null,
+      "status": "DIRECTORY_PRESENT"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/source-and-inputs-2.json",
+      "expected": "d40004ecb0326d3b7c0bb92c1c82fffba1fa4a61fadbe586e72066fef37f4281",
+      "actual": "d40004ecb0326d3b7c0bb92c1c82fffba1fa4a61fadbe586e72066fef37f4281",
+      "status": "MATCH"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/source-and-inputs-3.json",
+      "expected": "c2449973ce34180ec8c9f2e31e070b8f6497d185b21b2a99cb9a884876bca1a8",
+      "actual": "c2449973ce34180ec8c9f2e31e070b8f6497d185b21b2a99cb9a884876bca1a8",
+      "status": "MATCH"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/source-and-inputs.json",
+      "expected": "7ccd3fedd24212f69a903c4302e226559da8009d5306735279f47b36233bf4cf",
+      "actual": "7ccd3fedd24212f69a903c4302e226559da8009d5306735279f47b36233bf4cf",
+      "status": "MATCH"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/tc03-plan-3.json",
+      "expected": "09d3453870222e45671a3574ac8598ed578a5f2f64553a4fc2713a018c92a9a6",
+      "actual": "09d3453870222e45671a3574ac8598ed578a5f2f64553a4fc2713a018c92a9a6",
+      "status": "MATCH"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/tls-preflight-3.cjs",
+      "expected": "049f6afa9f8d63b7284cbe0c0078b136ae2aaaeca9ccbb79af11eb199bddc134",
+      "actual": "049f6afa9f8d63b7284cbe0c0078b136ae2aaaeca9ccbb79af11eb199bddc134",
+      "status": "MATCH"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/tls-preflight-3.json",
+      "expected": "b17691b3e4b18a42266938e509fb7ef4a29c4a45c20e8e068e4aae1a78732fb8",
+      "actual": "b17691b3e4b18a42266938e509fb7ef4a29c4a45c20e8e068e4aae1a78732fb8",
+      "status": "MATCH"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/",
+      "expected": null,
+      "actual": null,
+      "status": "DIRECTORY_PRESENT"
+    },
+    {
+      "path": "scripts/check-redesign-dev-plan.mjs",
+      "expected": "5a65de578d976b4f7c641d5bc9b638f2d6e56c2564d1ede6fe797b921c38e77e",
+      "actual": "5a65de578d976b4f7c641d5bc9b638f2d6e56c2564d1ede6fe797b921c38e77e",
+      "status": "MATCH"
+    },
+    {
+      "path": "scripts/generate-redesign-dev-plan-index.cjs",
+      "expected": "9b63d170552c034b3c9756111c977669348c8fa84d4461cb325fdea4732b9c8f",
+      "actual": "9b63d170552c034b3c9756111c977669348c8fa84d4461cb325fdea4732b9c8f",
+      "status": "MATCH"
+    },
+    {
+      "path": "scripts/lib/",
+      "expected": null,
+      "actual": null,
+      "status": "DIRECTORY_PRESENT"
+    },
+    {
+      "path": "scripts/redesign-task-state.mjs",
+      "expected": "15d38aea648e4755b6a6b052bb63697763e122bcbf84b8688b2a0e690450f608",
+      "actual": "15d38aea648e4755b6a6b052bb63697763e122bcbf84b8688b2a0e690450f608",
+      "status": "MATCH"
+    },
+    {
+      "path": "scripts/test-admin-mockups.mjs",
+      "expected": "fb438969e424f6f9bd09066592f4c29b6e952efa4b75be276ef3e2ed65989fc6",
+      "actual": "fb438969e424f6f9bd09066592f4c29b6e952efa4b75be276ef3e2ed65989fc6",
+      "status": "MATCH"
+    },
+    {
+      "path": "scripts/test-redesign-task-state.mjs",
+      "expected": "9838c01334dc70edc3fc0e40ebc21484d7cd3385e72008221224edd1909ecce1",
+      "actual": "9838c01334dc70edc3fc0e40ebc21484d7cd3385e72008221224edd1909ecce1",
+      "status": "MATCH"
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "archive": "pre-diagnostics-20261021",
+  "archivedAtUtc": "2026-10-21T00:32:04Z",
+  "reason": "Preserve the pre-change navigation driver/fixture/docs raw before adding read-only [MB006 console diagnostic capture.",
+  "files": [
+    {
+      "original": "scripts/nav-diagnose.cjs",
+      "archived": "nav-diagnose.pre-diag.cjs",
+      "sha256": "973752047d2c396cf4892ab1322f0bb969269048367c775ff70dbdf925a8c0bd",
+      "bytes": 22093
+    },
+    {
+      "original": "scripts/fixture.nav.cjs",
+      "archived": "fixture.pre-diag.cjs",
+      "sha256": "0bcd9cf657c4b32c83d1d8c2ba84aae2ea97176faf6704763b3c912cf48ddbe6",
+      "bytes": 11618
+    },
+    {
+      "original": "README.md",
+      "archived": "README.pre-diag.md",
+      "sha256": "78054402373aa163a02059a7a521d18c0ae99f6a31f760d486eff8b556877e6a",
+      "bytes": 8430
+    },
+    {
+      "original": "PREPARED-CHECKPOINT.md",
+      "archived": "PREPARED-CHECKPOINT.pre-diag.md",
+      "sha256": "0fd38339c1fea2f9e13e98c8c70e7729ec32c647ee001c860d0370b1554c73b7",
+      "bytes": 5324
+    }
+  ],
+  "note": "Read-only diagnostic capture only; no product/test/Git/service change. The earlier spawn-EPERM attempt remains recorded in PREPARED-CHECKPOINT.md."
+}

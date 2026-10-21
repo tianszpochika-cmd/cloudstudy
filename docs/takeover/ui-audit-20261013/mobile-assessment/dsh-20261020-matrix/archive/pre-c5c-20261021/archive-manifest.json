@@ -1,0 +1,41 @@
+{
+  "archivedAt": "2026-10-21T07:49:52.3317004+08:00",
+  "note": "Pre-C5c C5b guard/script/hash metadata archive; no product/browser/Git.",
+  "files": [
+    {
+      "source": "scripts/coverage.cjs",
+      "sha256": "7cfa70d7419f1110184490078b36a55e87af215a56ca16b55c8661897a700d1c",
+      "bytes": 7566
+    },
+    {
+      "source": "scripts/matrix.cjs",
+      "sha256": "bfe57ec55ada68232c77a0d73b249865b54afa5e380b597d2e770e0e336cc69a",
+      "bytes": 52872
+    },
+    {
+      "source": "scripts/measure.cjs",
+      "sha256": "2a6fcfffe011b3faac2008c297cae4339bc79edb0a97eb72f8fdae3f2a83245a",
+      "bytes": 31662
+    },
+    {
+      "source": "scripts/README.md",
+      "sha256": "8c803aba22d0c1e25d85d6be753f61ba3c6a1e42a9b8cb3cb44591ab5b877bcf",
+      "bytes": 6008
+    },
+    {
+      "source": "README.md",
+      "sha256": "ef9332fbcc7e94a719d319f067f1b75c72d44487666dcc20117a75d3171a59bf",
+      "bytes": 17680
+    },
+    {
+      "source": "checkpoint.md",
+      "sha256": "834baccd3274d552a403b5b6aee12871590bed87d53081d828aa940857fc005a",
+      "bytes": 9499
+    },
+    {
+      "source": "C5b-MATRIX-FREEZE.md",
+      "sha256": "42b3388ab9059c6ee921519412c12c2c7a8c8c11652753853ce3b7a66b0af668",
+      "bytes": 3256
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "archivedAt": "2026-10-20T23:50:03Z",
+  "reason": "preserve the C5c script bytes before adding explicit browser Dialog observation / repeat-native-accept; immutable",
+  "files": [
+    {
+      "file": "run.cjs",
+      "sha256": "752697764c021152cd8ce62c7b203d695cdd166dee1b888cae4b7b6e0bfc569b",
+      "bytes": 49737
+    }
+  ],
+  "oldRunEvidence": "prior codex-c5c cancel21/busy18/clean14 runs remain outside source and are not upgraded",
+  "refusalLogs": "prior refusal logs remain outside source"
+}

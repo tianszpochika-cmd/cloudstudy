@@ -1,0 +1,14 @@
+{
+  "at": "2026-10-20T14:29:50.839Z",
+  "executor": "Codex independent review after refreshing own fixed-port server",
+  "url": "http://127.0.0.1:18183/node_modules/@englishflow/i18n/src/mobile-experience.ts?v=78288a10",
+  "status": 200,
+  "sha256": "85b3328be94ed1df68257b3f3e4ddc2afd3242103d0e302289197496627c62b2",
+  "facts": {
+    "completedCount": true,
+    "newZhProgress": true,
+    "oldZhProgress": false,
+    "newZhCompleted": true
+  },
+  "sourceRaw": "6ac6800e179de0ba15ab3607918b2f8427d364e19306eaf8f2a146f016247380"
+}

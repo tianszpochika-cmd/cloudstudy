@@ -1,0 +1,22 @@
+{
+  "archivedAt": "2026-10-20T15:07:36Z",
+  "reason": "Exact scripts executed by Root for runs/codex-review-c3-lifecycle-1 (same-owner-stale-get and dirty-history-back); preserved before repair. Root results kept unchanged.",
+  "rootRun": "runs/codex-review-c3-lifecycle-1",
+  "scripts": [
+    {
+      "file": "fixture.cjs",
+      "bytes": 13981,
+      "sha256": "4f9184a965367cc1baa5d8de811745a1273df404e675a8dcc44151af911d9a3e"
+    },
+    {
+      "file": "lifecycle-lib.cjs",
+      "bytes": 16438,
+      "sha256": "b116f0e3e2cf6e109c11b20c4cfe88bdd4187161b8f8d607dc549b3f27b0caa8"
+    },
+    {
+      "file": "lifecycle-get.cjs",
+      "bytes": 18259,
+      "sha256": "0dbea7b12285ea7e7e1f749a21fffaf7beaf76db00e73339d1f4ad5631a57dd6"
+    }
+  ]
+}

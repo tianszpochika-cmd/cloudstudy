@@ -1,0 +1,13 @@
+{
+  "archivedAt": "2026-10-20T15:38:58Z",
+  "reason": "preserve the C5b-gated prepared script before the Root-approved C5c page gate update; archive is immutable and never overwritten",
+  "files": [
+    {
+      "file": "run.cjs",
+      "sha256": "dc643335ba4630178b79b70592468025bffa7d47a6b63626c6ef8d9d6b59b22d",
+      "bytes": 49737
+    }
+  ],
+  "runDataPreserved": [],
+  "refusalLogs": "Root refusal logs for codex-c5c-cancel-1 / busy-1 are outside source and were not modified or copied"
+}

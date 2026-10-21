@@ -1,0 +1,12 @@
+{
+  "archivedAt": "2026-10-21T00:06:25Z",
+  "reason": "preserve driver before adding repeat-back-confirm; expected page hash unchanged (C6 not frozen)",
+  "files": [
+    {
+      "file": "run.cjs",
+      "sha256": "b8cccf0e0d76131230f41483555ac32c60b4b1788febc01575114a4001eb58bf",
+      "bytes": 61058
+    }
+  ],
+  "oldEvidence": "existing runs and earlier archives untouched"
+}

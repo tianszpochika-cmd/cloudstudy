@@ -1,0 +1,30 @@
+{
+  "at": "2026-10-20T23:25:42.8096183+08:00",
+  "c4": {
+    "page": "abff80cd1d16e8d688deb9ffdc3a7e0250577f10ef2dcd31ed9a5d6849a07d8c",
+    "package": "a30b662319a6dd223245bccc0a2ea0ff83866af072fdae1d5356365291568021",
+    "lock": "11f47d8e2bd57334df204c8a6dcbaa81e3b648a8896ca38129b6881ffd70a02a"
+  },
+  "c5": {
+    "page": {
+      "raw": "1e4e729c322b2d54c25812e91968cb5dc8ace803dc410019571a548943354204",
+      "lf": "1e4e729c322b2d54c25812e91968cb5dc8ace803dc410019571a548943354204",
+      "bytes": 35589
+    },
+    "package": {
+      "raw": "484382c73929055cc4ecd9a83679f8bab72388dd8069f71a056b3bbc595c0078",
+      "bytes": 1734,
+      "added": "vue-router 4.4.4 (dependencies)"
+    },
+    "lock": {
+      "raw": "d57a87ca84985549fd53c69b1fe1d59db0b136036f2f7bf640d3b30c0a106624",
+      "bytes": 397670,
+      "added": "apps/mobile importer: vue-router specifier 4.4.4 -> 4.4.4(vue@3.5.41(typescript@5.9.3))"
+    }
+  },
+  "vueRouter": {
+    "direct": "4.4.4",
+    "uniH5Resolved": "4.4.4",
+    "linkedTarget": "Global\\C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\node_modules\\.pnpm\\vue-router@4.4.4_vue@3.5.41_typescript@5.9.3_\\node_modules\\vue-router"
+  }
+}

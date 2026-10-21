@@ -1,0 +1,249 @@
+{
+  "label": "Codex review",
+  "preparedBy": "DSH (independent risk-test author; this suite was not executed by DSH and no browser was launched by DSH)",
+  "group": "busy-retest",
+  "run": "codex-20261021-c5c-busy-1",
+  "executor": "Codex independent C5c busy retest review",
+  "result": "PASS_EXECUTED_CHECKS",
+  "completion": "NOT_THE_WHOLE_PAGE",
+  "sourceHashesBefore": {
+    "apps/mobile/src/pages/assessment/assessment.vue": "719cc0cef407b492544b1bff39537324b0672126df287bf7d5644a25b6fe81c1",
+    "packages/i18n/src/mobile-experience.ts": "6ac6800e179de0ba15ab3607918b2f8427d364e19306eaf8f2a146f016247380",
+    "apps/mobile/src/api/learner-content.ts": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6",
+    "apps/mobile/src/stores/learner-content.ts": "95cc92496db996242d91baed3301d76f985e4e3b9134e1e50c2b9ab8d41e4c61",
+    "apps/mobile/src/stores/session.ts": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+    "apps/mobile/src/auth/navigation.ts": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5",
+    "apps/mobile/src/platform/uni-runtime.ts": "fcbeba8626d8364af0ae96db64a05fcff9a3bb2b46a7d8fbcba21507ef609751",
+    "apps/mobile/src/uni.scss": "0bd56842fc5baebd8767e721f2d938986e293d1d87bfc74bb087b3c228f638d7"
+  },
+  "sourceHashesAfter": {
+    "apps/mobile/src/pages/assessment/assessment.vue": "719cc0cef407b492544b1bff39537324b0672126df287bf7d5644a25b6fe81c1",
+    "packages/i18n/src/mobile-experience.ts": "6ac6800e179de0ba15ab3607918b2f8427d364e19306eaf8f2a146f016247380",
+    "apps/mobile/src/api/learner-content.ts": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6",
+    "apps/mobile/src/stores/learner-content.ts": "95cc92496db996242d91baed3301d76f985e4e3b9134e1e50c2b9ab8d41e4c61",
+    "apps/mobile/src/stores/session.ts": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+    "apps/mobile/src/auth/navigation.ts": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5",
+    "apps/mobile/src/platform/uni-runtime.ts": "fcbeba8626d8364af0ae96db64a05fcff9a3bb2b46a7d8fbcba21507ef609751",
+    "apps/mobile/src/uni.scss": "0bd56842fc5baebd8767e721f2d938986e293d1d87bfc74bb087b3c228f638d7"
+  },
+  "sourceStable": true,
+  "dependenciesBefore": {
+    "apps/mobile/package.json": "484382c73929055cc4ecd9a83679f8bab72388dd8069f71a056b3bbc595c0078",
+    "pnpm-lock.yaml": "d57a87ca84985549fd53c69b1fe1d59db0b136036f2f7bf640d3b30c0a106624"
+  },
+  "dependenciesAfter": {
+    "apps/mobile/package.json": "484382c73929055cc4ecd9a83679f8bab72388dd8069f71a056b3bbc595c0078",
+    "pnpm-lock.yaml": "d57a87ca84985549fd53c69b1fe1d59db0b136036f2f7bf640d3b30c0a106624"
+  },
+  "dependenciesStable": true,
+  "diagnostics": [],
+  "checks": [
+    {
+      "name": "B1-page-identity-question",
+      "result": "PASS"
+    },
+    {
+      "name": "B1-ten-submits-one-report-real-facts",
+      "result": "PASS"
+    },
+    {
+      "name": "B1-ensure-503-called-once",
+      "result": "PASS"
+    },
+    {
+      "name": "B1-plan-ensure-503-shows-honest-notice-not-fake-success",
+      "result": "PASS"
+    },
+    {
+      "name": "B1-plan-ensure-503-no-plan-success-path",
+      "result": "PASS"
+    },
+    {
+      "name": "B1-retest-ask-zero-write-keeps-report",
+      "result": "PASS"
+    },
+    {
+      "name": "B1-retest-cancel-zero-write-keeps-report",
+      "result": "PASS"
+    },
+    {
+      "name": "B1-retest-503-keeps-old-report-and-error",
+      "result": "PASS"
+    },
+    {
+      "name": "B1-retest-success-new-session-first-item",
+      "result": "PASS"
+    },
+    {
+      "name": "B1-retest-success-clears-selection",
+      "result": "PASS"
+    },
+    {
+      "name": "B1-no-page-or-console-errors",
+      "result": "PASS"
+    },
+    {
+      "name": "B1-no-unexpected-api",
+      "result": "PASS"
+    },
+    {
+      "name": "B1-exact-counts",
+      "result": "PASS"
+    },
+    {
+      "name": "B2-busy-stable-while-held",
+      "result": "PASS"
+    },
+    {
+      "name": "B2-first-press-single-write",
+      "result": "PASS"
+    },
+    {
+      "name": "B2-real-double-press-no-double-write",
+      "result": "PASS"
+    },
+    {
+      "name": "B2-busy-locks-options",
+      "result": "PASS"
+    },
+    {
+      "name": "B2-release-advances-exactly-one-checkpoint",
+      "result": "PASS"
+    },
+    {
+      "name": "B2-no-page-or-console-errors",
+      "result": "PASS"
+    },
+    {
+      "name": "B2-no-unexpected-api",
+      "result": "PASS"
+    },
+    {
+      "name": "B2-exact-counts",
+      "result": "PASS"
+    },
+    {
+      "name": "B3-submit-503-keeps-selection-no-checkpoint",
+      "result": "PASS"
+    },
+    {
+      "name": "B3-two-readback-503-no-new-start-no-question",
+      "result": "PASS"
+    },
+    {
+      "name": "B3-readback-failure-human-notice-no-raw-keys",
+      "result": "PASS"
+    },
+    {
+      "name": "B3-readback-failure-keeps-server-session-pointer",
+      "result": "PASS"
+    },
+    {
+      "name": "B3-readback-recovers-same-session-first-question",
+      "result": "PASS"
+    },
+    {
+      "name": "B3-no-page-or-console-errors",
+      "result": "PASS"
+    },
+    {
+      "name": "B3-no-unexpected-api",
+      "result": "PASS"
+    },
+    {
+      "name": "B3-exact-counts",
+      "result": "PASS"
+    },
+    {
+      "name": "fixture-closed-all-contexts",
+      "result": "PASS"
+    },
+    {
+      "name": "executed-check-count-nonzero",
+      "result": "PASS"
+    }
+  ],
+  "notRun": [],
+  "fallbacks": [],
+  "failure": null,
+  "routes": [
+    {
+      "label": "B1-question",
+      "route": "#/pages/assessment/assessment"
+    },
+    {
+      "label": "B1-report",
+      "route": "#/pages/assessment/assessment"
+    }
+  ],
+  "screenshots": [
+    "b1-01-report-plan-notice.png",
+    "b1-02-retest-503-old-report.png",
+    "b1-03-retest-new-session.png",
+    "b2-01-held-double-press.png",
+    "b3-01-readback-failure.png",
+    "b3-02-readback-recovered.png"
+  ],
+  "cases": [
+    {
+      "name": "B1-plan-ensure-and-retest",
+      "outcome": "PASS"
+    },
+    {
+      "name": "B2-held-busy-double-press",
+      "outcome": "PASS"
+    },
+    {
+      "name": "B3-readback-repeated-failure",
+      "outcome": "PASS"
+    }
+  ],
+  "fixture": "synthetic API transport via fixture.cjs; real uni-app login and guard",
+  "native": "NOT_RUN (no native/device capability in this prepared suite)",
+  "realBackend": "NOT_RUN (no real backend, IAM, DB or network is contacted)",
+  "transport": {
+    "requests": 51,
+    "unexpected": [],
+    "targetReads": [],
+    "injectedFailures": [
+      {
+        "id": 1,
+        "method": "POST",
+        "path": "/api/v1/learning/plans:ensure",
+        "status": 503,
+        "injection": "ensureError"
+      },
+      {
+        "id": 1,
+        "method": "POST",
+        "path": "/api/v1/assessment/placement/sessions/asess_ui_risk_1_1/retest",
+        "status": 503,
+        "injection": "retestError"
+      },
+      {
+        "id": 3,
+        "method": "POST",
+        "path": "/api/v1/assessment/placement/sessions/asess_ui_risk_3_1/responses",
+        "status": 503,
+        "injection": "responseError"
+      },
+      {
+        "id": 3,
+        "method": "GET",
+        "path": "/api/v1/assessment/placement/sessions/asess_ui_risk_3_1",
+        "status": 503,
+        "injection": "getError"
+      },
+      {
+        "id": 3,
+        "method": "GET",
+        "path": "/api/v1/assessment/placement/sessions/asess_ui_risk_3_1",
+        "status": 503,
+        "injection": "getError"
+      }
+    ],
+    "pageErrors": 0,
+    "consoleErrors": 5
+  },
+  "closed": true
+}

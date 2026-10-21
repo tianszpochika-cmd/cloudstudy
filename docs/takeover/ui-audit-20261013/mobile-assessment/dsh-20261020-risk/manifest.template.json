@@ -1,0 +1,55 @@
+{
+  "schema": "mb006-risk-run-manifest-template/1",
+  "note": "Template only. Root-run scripts write manifest.json from measured facts; no value below is a result.",
+  "label": "Codex review",
+  "preparedBy": "DSH (independent risk-test author; this suite was not executed by DSH and no browser was launched by DSH)",
+  "scope": "MB006_RISK_SUITE_PREPARED_NOT_RUN",
+  "group": "<keyboard|pointer|leave|busy-retest>",
+  "run": "<MB006_RISK_RUN>",
+  "executor": "<MB006_RISK_EXECUTOR>",
+  "result": "<FAIL|PASS_EXECUTED_CHECKS>",
+  "completion": "NOT_THE_WHOLE_PAGE",
+  "sourceHashesBefore": {
+    "apps/mobile/src/pages/assessment/assessment.vue": "<sha256>",
+    "packages/i18n/src/mobile-experience.ts": "<sha256>",
+    "apps/mobile/src/api/learner-content.ts": "<sha256>",
+    "apps/mobile/src/stores/learner-content.ts": "<sha256>",
+    "apps/mobile/src/stores/session.ts": "<sha256>",
+    "apps/mobile/src/auth/navigation.ts": "<sha256>",
+    "apps/mobile/src/platform/uni-runtime.ts": "<sha256>",
+    "apps/mobile/src/uni.scss": "<sha256>"
+  },
+  "sourceHashesAfter": "<same shape; compared for sourceStable>",
+  "sourceStable": "<boolean>",
+  "checks": [
+    { "name": "<measured check>", "result": "<PASS|FAIL>" }
+  ],
+  "notRun": [
+    { "name": "<untested branch>", "reason": "<concrete reason>" }
+  ],
+  "fallbacks": [
+    { "case": "<case>", "reason": "<why a pointer setup was needed>", "action": "<recorded setup, never a keyboard pass>" }
+  ],
+  "failure": "<null or {message,stack}>",
+  "routes": [
+    { "label": "<step>", "route": "<actual location.hash without query>" }
+  ],
+  "screenshots": ["<case-step>.png"],
+  "cases": [
+    { "name": "<case>", "outcome": "<PASS|FAIL|NOT_RUN>", "setup": "<real login/guard + input method>" }
+  ],
+  "fixture": "synthetic API transport via fixture.cjs; real uni-app login and guard",
+  "native": "NOT_RUN",
+  "realBackend": "NOT_RUN",
+  "transport": {
+    "requests": "<count>",
+    "unexpected": [],
+    "targetReads": [],
+    "injectedFailures": [
+      { "id": "<case id>", "method": "<METHOD>", "path": "<injected path>", "status": "<status>", "injection": "<startError|responseError|retestError|ensureError|getError|principalStatus>" }
+    ],
+    "pageErrors": "<count>",
+    "consoleErrors": "<count>"
+  },
+  "closed": "<boolean; all contexts and holds closed in finally>"
+}

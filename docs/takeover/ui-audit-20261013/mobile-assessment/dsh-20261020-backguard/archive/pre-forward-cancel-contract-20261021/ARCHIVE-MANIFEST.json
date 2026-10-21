@@ -1,0 +1,12 @@
+{
+  "archivedAt": "2026-10-21T00:31:55Z",
+  "reason": "preserve C7b driver before symmetric forward auto-cancel contract fix",
+  "files": [
+    {
+      "file": "run.cjs",
+      "sha256": "0d5d714ace43cedcc1069f5378f674bdb63e542bfba41c4d82366563c52056e8",
+      "bytes": 67413
+    }
+  ],
+  "oldEvidence": "existing runs and earlier archives untouched; C7b source freeze remains 37bad"
+}

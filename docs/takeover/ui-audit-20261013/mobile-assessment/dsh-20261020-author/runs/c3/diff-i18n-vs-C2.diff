@@ -1,0 +1,22 @@
+diff --git a/docs/takeover/ui-audit-20261013/mobile-assessment/dsh-20261020-author/baseline/mobile-experience.ts.raw b/packages/i18n/src/mobile-experience.ts
+index 717911e8..7e5f098b 100644
+--- a/docs/takeover/ui-audit-20261013/mobile-assessment/dsh-20261020-author/baseline/mobile-experience.ts.raw
++++ b/packages/i18n/src/mobile-experience.ts
+@@ -83,7 +83,7 @@ function assessmentCopy(en: boolean) {
+     title: 'Level check', resultTitle: 'Your result', introduction: 'Answer 10 questions to understand your current English starting point.',
+     answerHonestly: 'Answer at your current level', answerDescription: 'Choose the answer you think is right.', viewResult: 'View your result when finished', resultDescription: 'Your result is based on the answers received.',
+     start: 'Start assessment', home: 'Return to learning home', quickStartUnavailable: 'Quick start is currently unavailable. Please complete the assessment.',
+-    questionCount: 'Question {current} of {total}', received: '{count} of {total} answers received', progress: 'Answers received', answers: 'Answer choices', selected: 'Selected', submit: 'Submit answer', submitting: 'Recording answer…', localChoice: 'Unsubmitted choices stay on this page only.',
++    questionCount: 'Question {current} of {total}', completedCount: 'Completed {count}', received: 'Completed {count} of {total}', progress: 'Answer progress', answers: 'Answer choices', selected: 'Selected', submit: 'Submit answer', submitting: 'Recording answer…', localChoice: 'Unsubmitted choices stay on this page only.',
+     correct: 'Your last answer was correct.', incorrect: 'Your last answer was incorrect.', answerUnconfirmed: 'This answer has not been confirmed. Read the current question again before retrying. Your choice stays here if the question is unchanged.',
+     completed: 'Completed', score: '{score} points', answerCount: '{full} correct out of {total} questions.', levelUnavailable: 'The level is not available in this result.', scoreUnavailable: 'The score is not available in this result.', saved: 'Your assessment result is saved.', today: 'View today’s status',
+     retest: 'Take assessment again', retestTitle: 'Start a new assessment?', retestDescription: 'A new set of questions will open. Your previous report is kept.', confirmRetest: 'Confirm new assessment', retesting: 'Opening new assessment…', cancel: 'Cancel', planUnchanged: 'Taking the assessment again does not automatically rearrange your existing plan.', retestFailed: 'The new assessment did not open. Your previous report is still available. You can try again.',
+@@ -95,7 +95,7 @@ function assessmentCopy(en: boolean) {
+     title: '水平测评', resultTitle: '测评结果', introduction: '共 10 道题，了解你现在的英语起点。',
+     answerHonestly: '按实际水平作答', answerDescription: '选择你认为正确的答案。', viewResult: '完成后查看结果', resultDescription: '测评结果以已接收的答案为依据。',
+     start: '开始测评', home: '返回学习首页', quickStartUnavailable: '快速开始暂不可用，请先完成测评。',
+-    questionCount: '第 {current} 题，共 {total} 题', received: '已接收 {count} 题，共 {total} 题', progress: '已接收答案进度', answers: '答案选项', selected: '已选', submit: '提交答案', submitting: '正在记录答案…', localChoice: '未提交的选择仅保留在此页。',
++    questionCount: '第 {current} 题，共 {total} 题', completedCount: '已完成 {count} 题', received: '已完成 {count} 题，共 {total} 题', progress: '答题进度', answers: '答案选项', selected: '已选', submit: '提交答案', submitting: '正在记录答案…', localChoice: '未提交的选择仅保留在此页。',
+     correct: '刚才提交的这题答对了。', incorrect: '刚才提交的这题没有答对。', answerUnconfirmed: '答案状态尚未确认，请先重新读取当前题目再重试。同一道题会保留你在本页的选择。',
+     completed: '已完成', score: '{score} 分', answerCount: '答对 {full} 题，共 {total} 题。', levelUnavailable: '当前结果未提供等级。', scoreUnavailable: '当前结果未提供分数。', saved: '本次测评结果已保存。', today: '查看今日状态',
+     retest: '重新测评', retestTitle: '重新测评？', retestDescription: '新开一套题，原报告会保留。', confirmRetest: '确认重测', retesting: '正在开启重测…', cancel: '取消', planUnchanged: '重测不会自动调整已有计划。', retestFailed: '重测没有开出新题，原报告仍可查看。你可以再试一次。',

@@ -1,0 +1,14 @@
+{
+  "scope": "MB006_C2_EN_DARK_320x568_CSS_TEXT200_TITLE_REVERIFY",
+  "classification": "BLOCKED_BROWSER_LAUNCH",
+  "browserStarted": false,
+  "checks": [],
+  "screenshots": [],
+  "contextsOpened": 0,
+  "rawRunEvidence": "results.json (contains the genuine spawn EPERM failure; result field there is the aborted run, not a product verdict)",
+  "reason": "Playwright Chromium spawn EPERM under DSH workspace-write; externally launched headless shell dies on Mojo Win32 named-pipe access denied; danger-full-access escalation has no approval channel. Root confirmed this is execution-environment BLOCKED, not a C2 product FAIL and not a C2 title PASS.",
+  "notAProductFail": true,
+  "notATitlePass": true,
+  "rootFollowUp": "Root reviews the prepared scripts and independently executes page verification in its own reviewer environment.",
+  "recordedAt": "2026-10-20T22:20:00+08:00"
+}

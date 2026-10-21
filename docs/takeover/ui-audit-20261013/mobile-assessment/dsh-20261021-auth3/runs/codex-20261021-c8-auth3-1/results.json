@@ -1,0 +1,260 @@
+{
+  "scope": "AUTH3_SHARED_I18N_NARROW_SMOKE_ONLY",
+  "run": "codex-20261021-c8-auth3-1",
+  "at": "2026-10-21T01:07:28.756Z",
+  "executedBy": "Codex independent C8 auth3 shared i18n review",
+  "preparedBy": "DSH; no browser launch",
+  "base": "http://127.0.0.1:18183",
+  "viewport": "390x844",
+  "uiLocale": "en-US",
+  "theme": "light",
+  "sourcesBefore": {
+    "apps/mobile/src/pages/login/login.vue": "0c5fb5cd346d9e86271eaf65638cf2ffabbc9b466fb3d6cd1079e4fbc9a55460",
+    "apps/mobile/src/pages/register/register.vue": "9258cb03e36c97d53d2e88521ba29f95aaf81de794657c8c72689fa50bd66baf",
+    "apps/mobile/src/pages/reset-password/reset-password.vue": "c9a6da864e9ce8933cb5a42b6743ff99551fa433eafe701ea470c760d88cc936",
+    "apps/mobile/src/platform/pointer-feedback.ts": "24a1f9b26ad6797fc9a61a16cb43559d116230cd7e9cd66c1dd4d9a563d94a6c",
+    "apps/mobile/src/stores/session.ts": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+    "apps/mobile/src/pages/assessment/assessment.vue": "41e1670146621e532921a8916b2c81ea4954d880b2373c7bcc9945d6576d7e86",
+    "packages/i18n/src/mobile-experience.ts": "6ac6800e179de0ba15ab3607918b2f8427d364e19306eaf8f2a146f016247380"
+  },
+  "depsBefore": {
+    "apps/mobile/package.json": "484382c73929055cc4ecd9a83679f8bab72388dd8069f71a056b3bbc595c0078",
+    "pnpm-lock.yaml": "d57a87ca84985549fd53c69b1fe1d59db0b136036f2f7bf640d3b30c0a106624"
+  },
+  "sourcesAfter": {
+    "apps/mobile/src/pages/login/login.vue": "0c5fb5cd346d9e86271eaf65638cf2ffabbc9b466fb3d6cd1079e4fbc9a55460",
+    "apps/mobile/src/pages/register/register.vue": "9258cb03e36c97d53d2e88521ba29f95aaf81de794657c8c72689fa50bd66baf",
+    "apps/mobile/src/pages/reset-password/reset-password.vue": "c9a6da864e9ce8933cb5a42b6743ff99551fa433eafe701ea470c760d88cc936",
+    "apps/mobile/src/platform/pointer-feedback.ts": "24a1f9b26ad6797fc9a61a16cb43559d116230cd7e9cd66c1dd4d9a563d94a6c",
+    "apps/mobile/src/stores/session.ts": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+    "apps/mobile/src/pages/assessment/assessment.vue": "41e1670146621e532921a8916b2c81ea4954d880b2373c7bcc9945d6576d7e86",
+    "packages/i18n/src/mobile-experience.ts": "6ac6800e179de0ba15ab3607918b2f8427d364e19306eaf8f2a146f016247380"
+  },
+  "depsAfter": {
+    "apps/mobile/package.json": "484382c73929055cc4ecd9a83679f8bab72388dd8069f71a056b3bbc595c0078",
+    "pnpm-lock.yaml": "d57a87ca84985549fd53c69b1fe1d59db0b136036f2f7bf640d3b30c0a106624"
+  },
+  "sourceStable": true,
+  "checks": [
+    {
+      "case": "login",
+      "name": "login-open-390-en-US-light",
+      "result": "PASS",
+      "detail": {
+        "theme": "light",
+        "lang": "en-US",
+        "title": "Welcome back",
+        "labels": [
+          "Account",
+          "Password"
+        ],
+        "inputVisible": true
+      }
+    },
+    {
+      "case": "login",
+      "name": "login-empty-pointer160-required-focus-no-write",
+      "result": "PASS",
+      "detail": {
+        "submit": 0,
+        "focused": true,
+        "text": "Enter your account and password."
+      }
+    },
+    {
+      "case": "login",
+      "name": "login-held-submit-one-request-button-disabled",
+      "result": "PASS",
+      "detail": {
+        "submit": 1,
+        "disabled": true
+      }
+    },
+    {
+      "case": "login",
+      "name": "login-named-401-alert-and-button-restored",
+      "result": "PASS",
+      "detail": {
+        "text": "Your account or password is incorrect. Try again.",
+        "restored": true
+      }
+    },
+    {
+      "case": "login",
+      "name": "login-same-route-no-extra-write-transport-clean",
+      "result": "PASS",
+      "detail": {
+        "hash": "#/pages/login/login",
+        "submit": 1,
+        "pageErrors": [],
+        "unknown": [],
+        "unnamed": []
+      }
+    },
+    {
+      "case": "register",
+      "name": "register-open-390-en-US-light",
+      "result": "PASS",
+      "detail": {
+        "theme": "light",
+        "lang": "en-US",
+        "title": "Create account",
+        "labels": [
+          "Account",
+          "Password",
+          "Confirm password"
+        ],
+        "inputVisible": true
+      }
+    },
+    {
+      "case": "register",
+      "name": "register-empty-pointer160-required-focus-no-write",
+      "result": "PASS",
+      "detail": {
+        "submit": 0,
+        "focused": true,
+        "text": "Enter your account."
+      }
+    },
+    {
+      "case": "register",
+      "name": "register-held-submit-one-request-button-disabled",
+      "result": "PASS",
+      "detail": {
+        "submit": 1,
+        "disabled": true
+      }
+    },
+    {
+      "case": "register",
+      "name": "register-named-409-alert-and-button-restored",
+      "result": "PASS",
+      "detail": {
+        "text": "Registration did not complete. Try signing in or resetting your password.",
+        "restored": true
+      }
+    },
+    {
+      "case": "register",
+      "name": "register-same-route-no-extra-write-transport-clean",
+      "result": "PASS",
+      "detail": {
+        "hash": "#/pages/register/register",
+        "submit": 1,
+        "pageErrors": [],
+        "unknown": [],
+        "unnamed": []
+      }
+    },
+    {
+      "case": "reset",
+      "name": "reset-open-390-en-US-light",
+      "result": "PASS",
+      "detail": {
+        "theme": "light",
+        "lang": "en-US",
+        "title": "Set a new password",
+        "labels": [
+          "Account",
+          "Reset code",
+          "New password"
+        ],
+        "inputVisible": true
+      }
+    },
+    {
+      "case": "reset",
+      "name": "reset-empty-pointer160-required-focus-no-write",
+      "result": "PASS",
+      "detail": {
+        "submit": 0,
+        "focused": true,
+        "text": "Enter your account."
+      }
+    },
+    {
+      "case": "reset",
+      "name": "reset-held-submit-one-request-button-disabled",
+      "result": "PASS",
+      "detail": {
+        "submit": 1,
+        "disabled": true
+      }
+    },
+    {
+      "case": "reset",
+      "name": "reset-named-401-alert-and-button-restored",
+      "result": "PASS",
+      "detail": {
+        "text": "The reset code is invalid or expired. Request a new one.",
+        "restored": true
+      }
+    },
+    {
+      "case": "reset",
+      "name": "reset-same-route-no-extra-write-transport-clean",
+      "result": "PASS",
+      "detail": {
+        "hash": "#/pages/reset-password/reset-password",
+        "submit": 1,
+        "pageErrors": [],
+        "unknown": [],
+        "unnamed": []
+      }
+    }
+  ],
+  "requests": [
+    {
+      "mode": "login",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 401
+    },
+    {
+      "mode": "register",
+      "method": "POST",
+      "path": "/api/v1/auth/register",
+      "status": 409
+    },
+    {
+      "mode": "reset",
+      "method": "POST",
+      "path": "/api/v1/auth/password-reset/confirm",
+      "status": 401
+    }
+  ],
+  "unknownApi": [],
+  "pageErrors": [],
+  "consoleErrors": [
+    {
+      "mode": "login",
+      "message": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "p": "/api/v1/auth/login",
+      "named": true
+    },
+    {
+      "mode": "register",
+      "message": "Failed to load resource: the server responded with a status of 409 (Conflict)",
+      "p": "/api/v1/auth/register",
+      "named": true
+    },
+    {
+      "mode": "reset",
+      "message": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "p": "/api/v1/auth/password-reset/confirm",
+      "named": true
+    }
+  ],
+  "consoleWarnings": [],
+  "closed": true,
+  "businessPass": false,
+  "nativePass": false,
+  "result": "SMOKE_UI_FIXTURE_PASS_NO_BACKEND_OR_NATIVE_PASS",
+  "summary": {
+    "checks": 15,
+    "failed": 0,
+    "warnings": 0
+  },
+  "exit": 0
+}

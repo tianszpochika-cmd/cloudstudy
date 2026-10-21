@@ -1,0 +1,666 @@
+{
+  "scope": "MB006_BACKGUARD_SCOPED_EXECUTION_NOT_WHOLE_PAGE",
+  "preparedBy": "DSH (test preparer; DSH did not execute this suite or launch a browser)",
+  "preparationArchive": {
+    "path": "archive/pre-c5b-fix-20261020",
+    "runCjsSha256": "1f1520f47615950ad2968641112bc869bcb47527b6ab410ac042bba052cd3d34",
+    "readmeSha256": "836464c3ba61d06a2b5eee3c1401385732c026e66a2f32e2aca2e8e0bf9b22e6"
+  },
+  "executedBy": "Codex independent C5c reviewed suite",
+  "group": "backguard",
+  "run": "codex-c5c-clean-1",
+  "casesSelected": [
+    "clean-back"
+  ],
+  "startedAt": "2026-10-20T15:41:19.471Z",
+  "fixture": "strict synthetic API transport via ../dsh-20261020-risk/fixture.cjs; real uni-app login, Vue Router guard, UI and navigation",
+  "native": "NOT_RUN (no native/device capability in this H5 suite)",
+  "realBackend": "NOT_RUN (no real backend, IAM, DB or external network is contacted)",
+  "projectRoot": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy",
+  "expected": {
+    "page": "719cc0cef407b492544b1bff39537324b0672126df287bf7d5644a25b6fe81c1",
+    "package": "484382c73929055cc4ecd9a83679f8bab72388dd8069f71a056b3bbc595c0078",
+    "lock": "d57a87ca84985549fd53c69b1fe1d59db0b136036f2f7bf640d3b30c0a106624",
+    "packagePath": "apps/mobile/package.json",
+    "lockPath": "pnpm-lock.yaml",
+    "rootManifest": "e2bf8a40f36d435116326383be7fff376cb5fe126420583affceca76fa2c03c4",
+    "rootManifestPath": "package.json"
+  },
+  "approved": {
+    "page": "719cc0cef407b492544b1bff39537324b0672126df287bf7d5644a25b6fe81c1",
+    "mobilePackage": "484382c73929055cc4ecd9a83679f8bab72388dd8069f71a056b3bbc595c0078",
+    "lock": "d57a87ca84985549fd53c69b1fe1d59db0b136036f2f7bf640d3b30c0a106624",
+    "rootManifest": "e2bf8a40f36d435116326383be7fff376cb5fe126420583affceca76fa2c03c4"
+  },
+  "dependencyFiles": [
+    "apps/mobile/package.json",
+    "pnpm-lock.yaml"
+  ],
+  "rootManifestPath": "package.json",
+  "stableSourceExpectations": {
+    "packages/i18n/src/mobile-experience.ts": "6ac6800e179de0ba15ab3607918b2f8427d364e19306eaf8f2a146f016247380",
+    "apps/mobile/src/api/learner-content.ts": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6",
+    "apps/mobile/src/stores/learner-content.ts": "95cc92496db996242d91baed3301d76f985e4e3b9134e1e50c2b9ab8d41e4c61",
+    "apps/mobile/src/stores/session.ts": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+    "apps/mobile/src/auth/navigation.ts": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5"
+  },
+  "sourceHashesBefore": {
+    "apps/mobile/src/pages/assessment/assessment.vue": "719cc0cef407b492544b1bff39537324b0672126df287bf7d5644a25b6fe81c1",
+    "packages/i18n/src/mobile-experience.ts": "6ac6800e179de0ba15ab3607918b2f8427d364e19306eaf8f2a146f016247380",
+    "apps/mobile/src/api/learner-content.ts": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6",
+    "apps/mobile/src/stores/learner-content.ts": "95cc92496db996242d91baed3301d76f985e4e3b9134e1e50c2b9ab8d41e4c61",
+    "apps/mobile/src/stores/session.ts": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+    "apps/mobile/src/auth/navigation.ts": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5"
+  },
+  "dependencyHashesBefore": {
+    "apps/mobile/package.json": "484382c73929055cc4ecd9a83679f8bab72388dd8069f71a056b3bbc595c0078",
+    "pnpm-lock.yaml": "d57a87ca84985549fd53c69b1fe1d59db0b136036f2f7bf640d3b30c0a106624"
+  },
+  "rootManifestBefore": "e2bf8a40f36d435116326383be7fff376cb5fe126420583affceca76fa2c03c4",
+  "dependencyBundleBefore": "65ed9611661aa228848994293a295e84fda84daad800f79ae8586637a8f9ec68",
+  "sourceHashesAfter": {
+    "apps/mobile/src/pages/assessment/assessment.vue": "719cc0cef407b492544b1bff39537324b0672126df287bf7d5644a25b6fe81c1",
+    "packages/i18n/src/mobile-experience.ts": "6ac6800e179de0ba15ab3607918b2f8427d364e19306eaf8f2a146f016247380",
+    "apps/mobile/src/api/learner-content.ts": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6",
+    "apps/mobile/src/stores/learner-content.ts": "95cc92496db996242d91baed3301d76f985e4e3b9134e1e50c2b9ab8d41e4c61",
+    "apps/mobile/src/stores/session.ts": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+    "apps/mobile/src/auth/navigation.ts": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5"
+  },
+  "dependencyHashesAfter": {
+    "apps/mobile/package.json": "484382c73929055cc4ecd9a83679f8bab72388dd8069f71a056b3bbc595c0078",
+    "pnpm-lock.yaml": "d57a87ca84985549fd53c69b1fe1d59db0b136036f2f7bf640d3b30c0a106624"
+  },
+  "rootManifestAfter": "e2bf8a40f36d435116326383be7fff376cb5fe126420583affceca76fa2c03c4",
+  "dependencyBundleAfter": "65ed9611661aa228848994293a295e84fda84daad800f79ae8586637a8f9ec68",
+  "sourceStable": true,
+  "dependenciesStable": true,
+  "rootManifestStable": true,
+  "cases": [
+    {
+      "name": "clean-back",
+      "startedAt": "2026-10-20T15:41:19.548Z",
+      "outcome": "PASS",
+      "finishedAt": "2026-10-20T15:41:28.056Z",
+      "after": {
+        "url": "http://127.0.0.1:18183/#/pages/login/login?theme=light&uiLocale=zh-CN&returnTo=%2Fpages%2Fassessment%2Fassessment",
+        "origin": "http://127.0.0.1:18183",
+        "hash": "#/pages/login/login?theme=light&uiLocale=zh-CN&returnTo=%2Fpages%2Fassessment%2Fassessment",
+        "path": "#/pages/login/login",
+        "bodyLen": 66,
+        "busy": null,
+        "present": {
+          "assessment-page": false,
+          "assessment-guide": false,
+          "assessment-question": false,
+          "assessment-report": false,
+          "assessment-skipped": false,
+          "assessment-pending": false,
+          "assessment-leave-confirmation": false,
+          "assessment-retest-confirmation": false,
+          "assessment-error": false,
+          "assessment-submit": false,
+          "assessment-reload-answer": false,
+          "assessment-title": false
+        },
+        "options": [],
+        "submitDisabled": null,
+        "overlay": false,
+        "errorText": "",
+        "dialog": {
+          "count": 0,
+          "visible": false,
+          "text": "",
+          "cancel": null,
+          "confirm": null,
+          "activeId": "",
+          "ariaBusy": null
+        },
+        "questionText": "",
+        "counts": {
+          "login": 1,
+          "refresh": 0,
+          "logout": 0,
+          "principal": 4,
+          "start": 1,
+          "respond": 0,
+          "retest": 0,
+          "ensure": 0,
+          "GET": 9,
+          "placementGet": 0
+        },
+        "pending": []
+      },
+      "departure": {
+        "left": true,
+        "last": {
+          "url": "http://127.0.0.1:18183/#/pages/login/login?theme=light&uiLocale=zh-CN&returnTo=%2Fpages%2Fassessment%2Fassessment",
+          "origin": "http://127.0.0.1:18183",
+          "hash": "#/pages/login/login?theme=light&uiLocale=zh-CN&returnTo=%2Fpages%2Fassessment%2Fassessment",
+          "path": "#/pages/login/login",
+          "ready": "complete",
+          "bodyLen": 66
+        }
+      },
+      "traversal": {
+        "state": "resolved",
+        "response": false
+      }
+    }
+  ],
+  "checks": [
+    {
+      "name": "clean-back-no-selection-before-back",
+      "result": "PASS",
+      "detail": {
+        "pressed": [
+          [
+            "assessment-option-A",
+            "false"
+          ],
+          [
+            "assessment-option-B",
+            "false"
+          ],
+          [
+            "assessment-option-C",
+            "false"
+          ],
+          [
+            "assessment-option-D",
+            "false"
+          ]
+        ],
+        "submitDisabled": true
+      }
+    },
+    {
+      "name": "clean-back-clean-back-no-prompt",
+      "result": "PASS",
+      "detail": {
+        "dialog": {
+          "count": 0,
+          "visible": false,
+          "text": "",
+          "cancel": null,
+          "confirm": null,
+          "activeId": "",
+          "ariaBusy": null
+        }
+      }
+    },
+    {
+      "name": "clean-back-clean-back-actually-leaves-assessment",
+      "result": "PASS",
+      "detail": {
+        "path": "#/pages/login/login",
+        "url": "http://127.0.0.1:18183/#/pages/login/login?theme=light&uiLocale=zh-CN&returnTo=%2Fpages%2Fassessment%2Fassessment",
+        "traversal": {
+          "state": "resolved",
+          "response": false
+        },
+        "departure": {
+          "left": true,
+          "last": {
+            "url": "http://127.0.0.1:18183/#/pages/login/login?theme=light&uiLocale=zh-CN&returnTo=%2Fpages%2Fassessment%2Fassessment",
+            "origin": "http://127.0.0.1:18183",
+            "hash": "#/pages/login/login?theme=light&uiLocale=zh-CN&returnTo=%2Fpages%2Fassessment%2Fassessment",
+            "path": "#/pages/login/login",
+            "ready": "complete",
+            "bodyLen": 66
+          }
+        },
+        "stability": {
+          "stable": true,
+          "last": {
+            "path": "#/pages/login/login",
+            "url": "http://127.0.0.1:18183/#/pages/login/login?theme=light&uiLocale=zh-CN&returnTo=%2Fpages%2Fassessment%2Fassessment",
+            "origin": "http://127.0.0.1:18183"
+          },
+          "samples": [
+            {
+              "path": "#/pages/login/login",
+              "url": "http://127.0.0.1:18183/#/pages/login/login?theme=light&uiLocale=zh-CN&returnTo=%2Fpages%2Fassessment%2Fassessment",
+              "origin": "http://127.0.0.1:18183"
+            },
+            {
+              "path": "#/pages/login/login",
+              "url": "http://127.0.0.1:18183/#/pages/login/login?theme=light&uiLocale=zh-CN&returnTo=%2Fpages%2Fassessment%2Fassessment",
+              "origin": "http://127.0.0.1:18183"
+            },
+            {
+              "path": "#/pages/login/login",
+              "url": "http://127.0.0.1:18183/#/pages/login/login?theme=light&uiLocale=zh-CN&returnTo=%2Fpages%2Fassessment%2Fassessment",
+              "origin": "http://127.0.0.1:18183"
+            },
+            {
+              "path": "#/pages/login/login",
+              "url": "http://127.0.0.1:18183/#/pages/login/login?theme=light&uiLocale=zh-CN&returnTo=%2Fpages%2Fassessment%2Fassessment",
+              "origin": "http://127.0.0.1:18183"
+            },
+            {
+              "path": "#/pages/login/login",
+              "url": "http://127.0.0.1:18183/#/pages/login/login?theme=light&uiLocale=zh-CN&returnTo=%2Fpages%2Fassessment%2Fassessment",
+              "origin": "http://127.0.0.1:18183"
+            },
+            {
+              "path": "#/pages/login/login",
+              "url": "http://127.0.0.1:18183/#/pages/login/login?theme=light&uiLocale=zh-CN&returnTo=%2Fpages%2Fassessment%2Fassessment",
+              "origin": "http://127.0.0.1:18183"
+            },
+            {
+              "path": "#/pages/login/login",
+              "url": "http://127.0.0.1:18183/#/pages/login/login?theme=light&uiLocale=zh-CN&returnTo=%2Fpages%2Fassessment%2Fassessment",
+              "origin": "http://127.0.0.1:18183"
+            },
+            {
+              "path": "#/pages/login/login",
+              "url": "http://127.0.0.1:18183/#/pages/login/login?theme=light&uiLocale=zh-CN&returnTo=%2Fpages%2Fassessment%2Fassessment",
+              "origin": "http://127.0.0.1:18183"
+            },
+            {
+              "path": "#/pages/login/login",
+              "url": "http://127.0.0.1:18183/#/pages/login/login?theme=light&uiLocale=zh-CN&returnTo=%2Fpages%2Fassessment%2Fassessment",
+              "origin": "http://127.0.0.1:18183"
+            },
+            {
+              "path": "#/pages/login/login",
+              "url": "http://127.0.0.1:18183/#/pages/login/login?theme=light&uiLocale=zh-CN&returnTo=%2Fpages%2Fassessment%2Fassessment",
+              "origin": "http://127.0.0.1:18183"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "clean-back-clean-back-lands-on-app-entry",
+      "result": "PASS",
+      "detail": {
+        "path": "#/pages/login/login",
+        "origin": "http://127.0.0.1:18183",
+        "note": "the actual prior app entry is recorded, not forced to a guessed route"
+      }
+    },
+    {
+      "name": "clean-back-clean-back-zero-writes",
+      "result": "PASS",
+      "detail": {
+        "counts": {
+          "login": 1,
+          "refresh": 0,
+          "logout": 0,
+          "principal": 4,
+          "start": 1,
+          "respond": 0,
+          "retest": 0,
+          "ensure": 0,
+          "GET": 9,
+          "placementGet": 0
+        }
+      }
+    },
+    {
+      "name": "clean-back-no-page-errors",
+      "result": "PASS",
+      "detail": {
+        "pageErrors": []
+      }
+    },
+    {
+      "name": "clean-back-no-unexcluded-console-errors",
+      "result": "PASS",
+      "detail": {
+        "consoleErrors": [],
+        "consoleRaw": 0,
+        "excluded": [],
+        "note": "no exclusions are expected because this suite injects no failures"
+      }
+    },
+    {
+      "name": "clean-back-no-unknown-501",
+      "result": "PASS",
+      "detail": {
+        "unexpected": []
+      }
+    },
+    {
+      "name": "clean-back-no-unplanned-injections",
+      "result": "PASS",
+      "detail": {
+        "injectedFailures": [],
+        "planned503": "none; no 503 is injected by this suite"
+      }
+    },
+    {
+      "name": "source-stable-during-run",
+      "result": "PASS",
+      "detail": {
+        "before": {
+          "apps/mobile/src/pages/assessment/assessment.vue": "719cc0cef407b492544b1bff39537324b0672126df287bf7d5644a25b6fe81c1",
+          "packages/i18n/src/mobile-experience.ts": "6ac6800e179de0ba15ab3607918b2f8427d364e19306eaf8f2a146f016247380",
+          "apps/mobile/src/api/learner-content.ts": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6",
+          "apps/mobile/src/stores/learner-content.ts": "95cc92496db996242d91baed3301d76f985e4e3b9134e1e50c2b9ab8d41e4c61",
+          "apps/mobile/src/stores/session.ts": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+          "apps/mobile/src/auth/navigation.ts": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5"
+        },
+        "after": {
+          "apps/mobile/src/pages/assessment/assessment.vue": "719cc0cef407b492544b1bff39537324b0672126df287bf7d5644a25b6fe81c1",
+          "packages/i18n/src/mobile-experience.ts": "6ac6800e179de0ba15ab3607918b2f8427d364e19306eaf8f2a146f016247380",
+          "apps/mobile/src/api/learner-content.ts": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6",
+          "apps/mobile/src/stores/learner-content.ts": "95cc92496db996242d91baed3301d76f985e4e3b9134e1e50c2b9ab8d41e4c61",
+          "apps/mobile/src/stores/session.ts": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+          "apps/mobile/src/auth/navigation.ts": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5"
+        }
+      }
+    },
+    {
+      "name": "dependencies-stable-during-run",
+      "result": "PASS",
+      "detail": {
+        "before": {
+          "apps/mobile/package.json": "484382c73929055cc4ecd9a83679f8bab72388dd8069f71a056b3bbc595c0078",
+          "pnpm-lock.yaml": "d57a87ca84985549fd53c69b1fe1d59db0b136036f2f7bf640d3b30c0a106624"
+        },
+        "after": {
+          "apps/mobile/package.json": "484382c73929055cc4ecd9a83679f8bab72388dd8069f71a056b3bbc595c0078",
+          "pnpm-lock.yaml": "d57a87ca84985549fd53c69b1fe1d59db0b136036f2f7bf640d3b30c0a106624"
+        }
+      }
+    },
+    {
+      "name": "root-manifest-stable-during-run",
+      "result": "PASS",
+      "detail": {
+        "path": "package.json",
+        "before": "e2bf8a40f36d435116326383be7fff376cb5fe126420583affceca76fa2c03c4",
+        "after": "e2bf8a40f36d435116326383be7fff376cb5fe126420583affceca76fa2c03c4"
+      }
+    },
+    {
+      "name": "browser-and-all-contexts-closed",
+      "result": "PASS",
+      "detail": {
+        "closed": true
+      }
+    },
+    {
+      "name": "executed-check-count-nonzero",
+      "result": "PASS",
+      "detail": {
+        "checks": 13
+      }
+    }
+  ],
+  "notRun": [
+    {
+      "name": "native-android-back",
+      "reason": "H5 browser execution only; native/Android back and device WebView behavior are not exercised by this suite."
+    },
+    {
+      "name": "real-backend",
+      "reason": "The transport is the strict synthetic fixture only; real IAM, DB, network and service behavior are not exercised."
+    },
+    {
+      "name": "settings-home-own-writes",
+      "reason": "The leave cases do not exercise settings/home write features; only real navigation targets are observed."
+    }
+  ],
+  "setupFailures": [],
+  "uxFindings": [],
+  "observations": [
+    {
+      "name": "clean-back-before-back",
+      "at": "2026-10-20T15:41:20.802Z",
+      "before": {
+        "url": "http://127.0.0.1:18183/#/pages/assessment/assessment",
+        "origin": "http://127.0.0.1:18183",
+        "hash": "#/pages/assessment/assessment",
+        "path": "#/pages/assessment/assessment",
+        "bodyLen": 179,
+        "busy": "false",
+        "present": {
+          "assessment-page": true,
+          "assessment-guide": false,
+          "assessment-question": true,
+          "assessment-report": false,
+          "assessment-skipped": false,
+          "assessment-pending": false,
+          "assessment-leave-confirmation": false,
+          "assessment-retest-confirmation": false,
+          "assessment-error": false,
+          "assessment-submit": true,
+          "assessment-reload-answer": false,
+          "assessment-title": true
+        },
+        "options": [
+          {
+            "id": "assessment-option-A",
+            "pressed": "false",
+            "disabled": false,
+            "text": "A\nread a book"
+          },
+          {
+            "id": "assessment-option-B",
+            "pressed": "false",
+            "disabled": false,
+            "text": "B\nreads a book"
+          },
+          {
+            "id": "assessment-option-C",
+            "pressed": "false",
+            "disabled": false,
+            "text": "C\nreading a book"
+          },
+          {
+            "id": "assessment-option-D",
+            "pressed": "false",
+            "disabled": false,
+            "text": "D\nhas read a book"
+          }
+        ],
+        "submitDisabled": true,
+        "overlay": false,
+        "errorText": "",
+        "dialog": {
+          "count": 0,
+          "visible": false,
+          "text": "",
+          "cancel": null,
+          "confirm": null,
+          "activeId": "",
+          "ariaBusy": "false"
+        },
+        "questionText": "第 1 题，共 10 题\n已完成 0 题\nChoose the phrase that completes the sentence: I ___ every evening.\nA\nread a book\nB\nreads a book\nC\nreading a book\nD\nhas read a book\n提交答案\n未提交的选择仅保留在此页。",
+        "counts": {
+          "login": 1,
+          "refresh": 0,
+          "logout": 0,
+          "principal": 4,
+          "start": 1,
+          "respond": 0,
+          "retest": 0,
+          "ensure": 0,
+          "GET": 9,
+          "placementGet": 0
+        },
+        "pending": []
+      }
+    },
+    {
+      "name": "clean-back-after-clean-back",
+      "at": "2026-10-20T15:41:27.957Z",
+      "after": {
+        "url": "http://127.0.0.1:18183/#/pages/login/login?theme=light&uiLocale=zh-CN&returnTo=%2Fpages%2Fassessment%2Fassessment",
+        "origin": "http://127.0.0.1:18183",
+        "hash": "#/pages/login/login?theme=light&uiLocale=zh-CN&returnTo=%2Fpages%2Fassessment%2Fassessment",
+        "path": "#/pages/login/login",
+        "bodyLen": 66,
+        "busy": null,
+        "present": {
+          "assessment-page": false,
+          "assessment-guide": false,
+          "assessment-question": false,
+          "assessment-report": false,
+          "assessment-skipped": false,
+          "assessment-pending": false,
+          "assessment-leave-confirmation": false,
+          "assessment-retest-confirmation": false,
+          "assessment-error": false,
+          "assessment-submit": false,
+          "assessment-reload-answer": false,
+          "assessment-title": false
+        },
+        "options": [],
+        "submitDisabled": null,
+        "overlay": false,
+        "errorText": "",
+        "dialog": {
+          "count": 0,
+          "visible": false,
+          "text": "",
+          "cancel": null,
+          "confirm": null,
+          "activeId": "",
+          "ariaBusy": null
+        },
+        "questionText": "",
+        "counts": {
+          "login": 1,
+          "refresh": 0,
+          "logout": 0,
+          "principal": 4,
+          "start": 1,
+          "respond": 0,
+          "retest": 0,
+          "ensure": 0,
+          "GET": 9,
+          "placementGet": 0
+        },
+        "pending": []
+      },
+      "traversal": {
+        "state": "resolved",
+        "response": false
+      },
+      "departure": {
+        "left": true,
+        "last": {
+          "url": "http://127.0.0.1:18183/#/pages/login/login?theme=light&uiLocale=zh-CN&returnTo=%2Fpages%2Fassessment%2Fassessment",
+          "origin": "http://127.0.0.1:18183",
+          "hash": "#/pages/login/login?theme=light&uiLocale=zh-CN&returnTo=%2Fpages%2Fassessment%2Fassessment",
+          "path": "#/pages/login/login",
+          "ready": "complete",
+          "bodyLen": 66
+        }
+      },
+      "stability": {
+        "stable": true,
+        "last": {
+          "path": "#/pages/login/login",
+          "url": "http://127.0.0.1:18183/#/pages/login/login?theme=light&uiLocale=zh-CN&returnTo=%2Fpages%2Fassessment%2Fassessment",
+          "origin": "http://127.0.0.1:18183"
+        },
+        "samples": [
+          {
+            "path": "#/pages/login/login",
+            "url": "http://127.0.0.1:18183/#/pages/login/login?theme=light&uiLocale=zh-CN&returnTo=%2Fpages%2Fassessment%2Fassessment",
+            "origin": "http://127.0.0.1:18183"
+          },
+          {
+            "path": "#/pages/login/login",
+            "url": "http://127.0.0.1:18183/#/pages/login/login?theme=light&uiLocale=zh-CN&returnTo=%2Fpages%2Fassessment%2Fassessment",
+            "origin": "http://127.0.0.1:18183"
+          },
+          {
+            "path": "#/pages/login/login",
+            "url": "http://127.0.0.1:18183/#/pages/login/login?theme=light&uiLocale=zh-CN&returnTo=%2Fpages%2Fassessment%2Fassessment",
+            "origin": "http://127.0.0.1:18183"
+          },
+          {
+            "path": "#/pages/login/login",
+            "url": "http://127.0.0.1:18183/#/pages/login/login?theme=light&uiLocale=zh-CN&returnTo=%2Fpages%2Fassessment%2Fassessment",
+            "origin": "http://127.0.0.1:18183"
+          },
+          {
+            "path": "#/pages/login/login",
+            "url": "http://127.0.0.1:18183/#/pages/login/login?theme=light&uiLocale=zh-CN&returnTo=%2Fpages%2Fassessment%2Fassessment",
+            "origin": "http://127.0.0.1:18183"
+          },
+          {
+            "path": "#/pages/login/login",
+            "url": "http://127.0.0.1:18183/#/pages/login/login?theme=light&uiLocale=zh-CN&returnTo=%2Fpages%2Fassessment%2Fassessment",
+            "origin": "http://127.0.0.1:18183"
+          },
+          {
+            "path": "#/pages/login/login",
+            "url": "http://127.0.0.1:18183/#/pages/login/login?theme=light&uiLocale=zh-CN&returnTo=%2Fpages%2Fassessment%2Fassessment",
+            "origin": "http://127.0.0.1:18183"
+          },
+          {
+            "path": "#/pages/login/login",
+            "url": "http://127.0.0.1:18183/#/pages/login/login?theme=light&uiLocale=zh-CN&returnTo=%2Fpages%2Fassessment%2Fassessment",
+            "origin": "http://127.0.0.1:18183"
+          },
+          {
+            "path": "#/pages/login/login",
+            "url": "http://127.0.0.1:18183/#/pages/login/login?theme=light&uiLocale=zh-CN&returnTo=%2Fpages%2Fassessment%2Fassessment",
+            "origin": "http://127.0.0.1:18183"
+          },
+          {
+            "path": "#/pages/login/login",
+            "url": "http://127.0.0.1:18183/#/pages/login/login?theme=light&uiLocale=zh-CN&returnTo=%2Fpages%2Fassessment%2Fassessment",
+            "origin": "http://127.0.0.1:18183"
+          }
+        ]
+      },
+      "note": "no URL equality is asserted before the traversal settles."
+    }
+  ],
+  "screenshots": [
+    "clean-back-01-guide.png",
+    "clean-back-03-no-selection.png",
+    "clean-back-04-after-clean-back.png"
+  ],
+  "screenshotFailures": [],
+  "transport": [
+    {
+      "case": "clean-back",
+      "fixtureId": 1,
+      "counts": {
+        "login": 1,
+        "refresh": 0,
+        "logout": 0,
+        "principal": 4,
+        "start": 1,
+        "respond": 0,
+        "retest": 0,
+        "ensure": 0,
+        "GET": 9,
+        "placementGet": 0
+      },
+      "unexpected": [],
+      "injectedFailures": [],
+      "pageErrors": [],
+      "consoleErrors": [],
+      "consoleRaw": 0,
+      "consoleExcluded": 0
+    }
+  ],
+  "closed": true,
+  "failure": null,
+  "result": "PASS_SCOPED_ACTUAL",
+  "completion": "NOT_THE_WHOLE_PAGE",
+  "summary": {
+    "cases": 1,
+    "checks": 14,
+    "passed": 14,
+    "failed": 0,
+    "setupFailed": 0,
+    "setupIncomplete": 0,
+    "uxFindings": 0,
+    "notRun": 3,
+    "result": "PASS_SCOPED_ACTUAL"
+  },
+  "fixtureReportScope": "MB006_PREPARED_SYNTHETIC_TRANSPORT_NOT_RUN",
+  "browserLaunched": true,
+  "caveat": "Executed scoped checks only. notRun entries are untested or out-of-scope branches, not passes."
+}

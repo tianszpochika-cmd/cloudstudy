@@ -1,0 +1,31 @@
+{
+  "files": [
+    {
+      "sha256": "9ebea23d854666bf5537dbeac0ba7459c1f11271547d8ad36b8c4a2ef0b5df73",
+      "bytes": 2967,
+      "file": "source-freeze.json"
+    },
+    {
+      "sha256": "53d69f1c842721bba286e3adf732aea099e6e05ed2235abe308b36048cab5730",
+      "bytes": 26756,
+      "file": "owner-lib.cjs"
+    },
+    {
+      "sha256": "71aac767ab1efdc363da5f930b669b0b82b9abc5dd8465a79c74987711c42058",
+      "bytes": 17542,
+      "file": "owner-late-submit.cjs"
+    },
+    {
+      "sha256": "b79ac324f41b468ea326a8e218270f4f28e0ad98b47d3feeead7c86a5be5bc31",
+      "bytes": 18311,
+      "file": "owner-late-read.cjs"
+    },
+    {
+      "sha256": "cc350566d3eb28fd63b27a704852abcd278fcd8cbc35119e74ff679530df2dcb",
+      "bytes": 11320,
+      "file": "README.md"
+    }
+  ],
+  "note": "Pre-edit bytes before response-receipt/fulfill classification and preparedAt correction; tests remain not run.",
+  "createdAt": "2026-10-21T00:56:09.6014418Z"
+}

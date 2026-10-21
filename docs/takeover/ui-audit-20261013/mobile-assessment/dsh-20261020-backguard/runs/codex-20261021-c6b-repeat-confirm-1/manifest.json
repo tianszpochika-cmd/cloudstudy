@@ -1,0 +1,165 @@
+{
+  "preparedBy": "DSH (test preparer; DSH did not execute this suite or launch a browser)",
+  "preparationArchive": {
+    "path": "archive/pre-c5b-fix-20261020",
+    "runCjsSha256": "1f1520f47615950ad2968641112bc869bcb47527b6ab410ac042bba052cd3d34",
+    "readmeSha256": "836464c3ba61d06a2b5eee3c1401385732c026e66a2f32e2aca2e8e0bf9b22e6"
+  },
+  "executedBy": "Codex independent C6b repeated back confirm review",
+  "group": "backguard",
+  "run": "codex-20261021-c6b-repeat-confirm-1",
+  "casesSelected": [
+    "repeat-back-confirm"
+  ],
+  "result": "FAIL",
+  "completion": "NOT_THE_WHOLE_PAGE",
+  "sourceHashesBefore": {
+    "apps/mobile/src/pages/assessment/assessment.vue": "ac8fb8d2831f4d5f1f20091e09abef7cc6a1314021545ecbbb84a31d11f157fd",
+    "packages/i18n/src/mobile-experience.ts": "6ac6800e179de0ba15ab3607918b2f8427d364e19306eaf8f2a146f016247380",
+    "apps/mobile/src/api/learner-content.ts": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6",
+    "apps/mobile/src/stores/learner-content.ts": "95cc92496db996242d91baed3301d76f985e4e3b9134e1e50c2b9ab8d41e4c61",
+    "apps/mobile/src/stores/session.ts": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+    "apps/mobile/src/auth/navigation.ts": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5"
+  },
+  "sourceHashesAfter": {
+    "apps/mobile/src/pages/assessment/assessment.vue": "ac8fb8d2831f4d5f1f20091e09abef7cc6a1314021545ecbbb84a31d11f157fd",
+    "packages/i18n/src/mobile-experience.ts": "6ac6800e179de0ba15ab3607918b2f8427d364e19306eaf8f2a146f016247380",
+    "apps/mobile/src/api/learner-content.ts": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6",
+    "apps/mobile/src/stores/learner-content.ts": "95cc92496db996242d91baed3301d76f985e4e3b9134e1e50c2b9ab8d41e4c61",
+    "apps/mobile/src/stores/session.ts": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+    "apps/mobile/src/auth/navigation.ts": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5"
+  },
+  "sourceStable": true,
+  "dependenciesStable": true,
+  "rootManifestBefore": "e2bf8a40f36d435116326383be7fff376cb5fe126420583affceca76fa2c03c4",
+  "rootManifestAfter": "e2bf8a40f36d435116326383be7fff376cb5fe126420583affceca76fa2c03c4",
+  "rootManifestStable": true,
+  "dependencyFiles": [
+    "apps/mobile/package.json",
+    "pnpm-lock.yaml"
+  ],
+  "rootManifestPath": "package.json",
+  "checks": [
+    {
+      "name": "repeat-back-confirm-first-spa-no-native-beforeunload",
+      "result": "PASS"
+    },
+    {
+      "name": "repeat-back-confirm-first-prompt-single-visible-root-draft",
+      "result": "PASS"
+    },
+    {
+      "name": "repeat-back-confirm-second-back-native-beforeunload-observed",
+      "result": "PASS"
+    },
+    {
+      "name": "repeat-back-confirm-second-back-native-beforeunload-dismissed",
+      "result": "PASS"
+    },
+    {
+      "name": "repeat-back-confirm-second-back-visible-root-draft-prompt",
+      "result": "PASS"
+    },
+    {
+      "name": "repeat-back-confirm-third-back-visible-root-draft-prompt",
+      "result": "PASS"
+    },
+    {
+      "name": "repeat-back-confirm-forward-visible-root-draft-prompt",
+      "result": "PASS"
+    },
+    {
+      "name": "repeat-back-confirm-after-forward-choice-and-root",
+      "result": "PASS"
+    },
+    {
+      "name": "repeat-back-confirm-confirm-really-leaves-app-entry-once",
+      "result": "FAIL"
+    },
+    {
+      "name": "repeat-back-confirm-confirm-zero-writes",
+      "result": "PASS"
+    },
+    {
+      "name": "repeat-back-confirm-confirm-no-phantom-prompt-while-unchanged",
+      "result": "FAIL"
+    },
+    {
+      "name": "repeat-back-confirm-no-page-errors",
+      "result": "PASS"
+    },
+    {
+      "name": "repeat-back-confirm-no-unexcluded-console-errors",
+      "result": "PASS"
+    },
+    {
+      "name": "repeat-back-confirm-no-unknown-501",
+      "result": "PASS"
+    },
+    {
+      "name": "repeat-back-confirm-no-unplanned-injections",
+      "result": "PASS"
+    },
+    {
+      "name": "repeat-back-confirm-no-unexpected-native-dialogs",
+      "result": "PASS"
+    },
+    {
+      "name": "source-stable-during-run",
+      "result": "PASS"
+    },
+    {
+      "name": "dependencies-stable-during-run",
+      "result": "PASS"
+    },
+    {
+      "name": "root-manifest-stable-during-run",
+      "result": "PASS"
+    },
+    {
+      "name": "browser-and-all-contexts-closed",
+      "result": "PASS"
+    },
+    {
+      "name": "executed-check-count-nonzero",
+      "result": "PASS"
+    }
+  ],
+  "cases": [
+    {
+      "name": "repeat-back-confirm",
+      "outcome": "FAIL"
+    }
+  ],
+  "notRun": [
+    {
+      "name": "native-android-back",
+      "reason": "H5 browser execution only; native/Android back and device WebView behavior are not exercised by this suite."
+    },
+    {
+      "name": "real-backend",
+      "reason": "The transport is the strict synthetic fixture only; real IAM, DB, network and service behavior are not exercised."
+    },
+    {
+      "name": "settings-home-own-writes",
+      "reason": "The leave cases do not exercise settings/home write features; only real navigation targets are observed."
+    }
+  ],
+  "setupFailures": [],
+  "uxFindings": [],
+  "screenshots": [
+    "repeat-back-confirm-01-guide.png",
+    "repeat-back-confirm-02-selected-A.png",
+    "repeat-back-confirm-03-first-prompt.png",
+    "repeat-back-confirm-04-second-back.png",
+    "repeat-back-confirm-05-third-back.png",
+    "repeat-back-confirm-06-after-forward.png",
+    "repeat-back-confirm-07-after-custom-confirm.png"
+  ],
+  "screenshotFailures": [],
+  "fixture": "strict synthetic API transport via ../dsh-20261020-risk/fixture.cjs; real uni-app login, Vue Router guard, UI and navigation",
+  "native": "NOT_RUN (no native/device capability in this H5 suite)",
+  "realBackend": "NOT_RUN (no real backend, IAM, DB or external network is contacted)",
+  "closed": true,
+  "failure": null
+}

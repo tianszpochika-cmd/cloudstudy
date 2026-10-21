@@ -1,0 +1,395 @@
+{
+  "scope": "MB006_STATES_PREPARED_NOT_RUN",
+  "caseId": "start503-retry",
+  "run": "codex-20261021-c8-states-all-1",
+  "executedBy": "Codex C8 final states with target warning evidence",
+  "preparedBy": "DSH bounded STATES test preparation; DSH did not launch a browser",
+  "gate": {
+    "expectedPage": "41e1670146621e532921a8916b2c81ea4954d880b2373c7bcc9945d6576d7e86",
+    "actual": {
+      "sources": {
+        "apps/mobile/src/pages/assessment/assessment.vue": "41e1670146621e532921a8916b2c81ea4954d880b2373c7bcc9945d6576d7e86",
+        "packages/i18n/src/mobile-experience.ts": "6ac6800e179de0ba15ab3607918b2f8427d364e19306eaf8f2a146f016247380",
+        "apps/mobile/src/api/learner-content.ts": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6",
+        "apps/mobile/src/stores/learner-content.ts": "95cc92496db996242d91baed3301d76f985e4e3b9134e1e50c2b9ab8d41e4c61",
+        "apps/mobile/src/stores/session.ts": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+        "apps/mobile/src/auth/navigation.ts": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5"
+      },
+      "dependencies": {
+        "apps/mobile/package.json": "484382c73929055cc4ecd9a83679f8bab72388dd8069f71a056b3bbc595c0078",
+        "pnpm-lock.yaml": "d57a87ca84985549fd53c69b1fe1d59db0b136036f2f7bf640d3b30c0a106624"
+      }
+    }
+  },
+  "startedAt": "2026-10-21T00:43:20.705Z",
+  "checks": [
+    {
+      "name": "start503-guide-ready",
+      "result": "PASS",
+      "detail": {
+        "route": "#/pages/assessment/assessment",
+        "start": 0
+      }
+    },
+    {
+      "name": "start503-honest-visible-read-failure",
+      "result": "PASS",
+      "detail": {
+        "pendingText": "测评暂时无法读取，请重试。\n重试开始\n返回学习首页",
+        "overlay": false
+      }
+    },
+    {
+      "name": "start503-retry-start-not-spinner-no-question",
+      "result": "PASS",
+      "detail": {
+        "busy": "false",
+        "retryText": "重试开始",
+        "question": false,
+        "report": false
+      }
+    },
+    {
+      "name": "start503-first-post-count-one",
+      "result": "PASS",
+      "detail": {
+        "start": 1
+      }
+    },
+    {
+      "name": "start503-retry-second-post-count-two",
+      "result": "PASS",
+      "detail": {
+        "start": 2
+      }
+    },
+    {
+      "name": "start503-retry-question-visible",
+      "result": "PASS",
+      "detail": {
+        "question": true,
+        "report": false,
+        "overlay": false
+      }
+    },
+    {
+      "name": "start503-retry-no-unexpected-api",
+      "result": "PASS",
+      "detail": {
+        "unexpected": []
+      }
+    },
+    {
+      "name": "start503-retry-no-page-or-uninjected-console-errors",
+      "result": "PASS",
+      "detail": {
+        "pageErrors": [],
+        "consoleErrors": [],
+        "excluded": [
+          {
+            "message": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+            "path": "/api/v1/assessment/placement/sessions",
+            "reason": "matched planned injection startError POST /api/v1/assessment/placement/sessions -> 503"
+          }
+        ],
+        "consoleWarnings": []
+      }
+    },
+    {
+      "name": "start503-retry-no-console-warnings",
+      "result": "PASS",
+      "detail": {
+        "warnings": []
+      }
+    },
+    {
+      "name": "start503-retry-no-unhandled-rejection-or-object-window-error",
+      "result": "PASS",
+      "detail": {
+        "unhandledRejections": [],
+        "windowErrors": []
+      }
+    }
+  ],
+  "notRun": [],
+  "gaps": [
+    {
+      "name": "start503-first-start-idempotency",
+      "detail": "The first POST start returned 503; whether the server created an untracked session or idempotency record is unknown and is not asserted."
+    },
+    {
+      "name": "start503-retry-not-readonly",
+      "detail": "The retry is a second POST start (counts 1 then 2); this suite does not claim the retry is read-only."
+    }
+  ],
+  "dom": [
+    {
+      "name": "start503-after-503",
+      "at": "2026-10-21T00:43:21.737Z",
+      "route": "#/pages/assessment/assessment",
+      "root": true,
+      "busy": "false",
+      "bodyLen": 33,
+      "present": {
+        "assessment-page": true,
+        "assessment-guide": false,
+        "assessment-question": false,
+        "assessment-report": false,
+        "assessment-skipped": false,
+        "assessment-pending": true,
+        "assessment-leave-confirmation": false,
+        "assessment-error": false,
+        "assessment-submit": false,
+        "assessment-reload": true,
+        "assessment-reload-answer": false,
+        "assessment-title": true
+      },
+      "options": [],
+      "counts": {
+        "login": 1,
+        "refresh": 0,
+        "logout": 0,
+        "principal": 4,
+        "start": 1,
+        "respond": 0,
+        "retest": 0,
+        "ensure": 0,
+        "GET": 9,
+        "placementGet": 0
+      }
+    },
+    {
+      "name": "start503-retry-question",
+      "at": "2026-10-21T00:43:21.866Z",
+      "route": "#/pages/assessment/assessment",
+      "root": true,
+      "busy": "false",
+      "bodyLen": 179,
+      "present": {
+        "assessment-page": true,
+        "assessment-guide": false,
+        "assessment-question": true,
+        "assessment-report": false,
+        "assessment-skipped": false,
+        "assessment-pending": false,
+        "assessment-leave-confirmation": false,
+        "assessment-error": false,
+        "assessment-submit": true,
+        "assessment-reload": false,
+        "assessment-reload-answer": false,
+        "assessment-title": true
+      },
+      "options": [
+        {
+          "id": "assessment-option-A",
+          "pressed": "false",
+          "disabled": false
+        },
+        {
+          "id": "assessment-option-B",
+          "pressed": "false",
+          "disabled": false
+        },
+        {
+          "id": "assessment-option-C",
+          "pressed": "false",
+          "disabled": false
+        },
+        {
+          "id": "assessment-option-D",
+          "pressed": "false",
+          "disabled": false
+        }
+      ],
+      "counts": {
+        "login": 1,
+        "refresh": 0,
+        "logout": 0,
+        "principal": 4,
+        "start": 2,
+        "respond": 0,
+        "retest": 0,
+        "ensure": 0,
+        "GET": 9,
+        "placementGet": 0
+      }
+    }
+  ],
+  "routes": [
+    {
+      "label": "start503-error",
+      "route": "#/pages/assessment/assessment"
+    },
+    {
+      "label": "start503-question",
+      "route": "#/pages/assessment/assessment"
+    }
+  ],
+  "screenshots": [
+    "01-start503-error-retry.png",
+    "02-start503-retry-question.png"
+  ],
+  "counts": {
+    "login": 1,
+    "refresh": 0,
+    "logout": 0,
+    "principal": 4,
+    "start": 2,
+    "respond": 0,
+    "retest": 0,
+    "ensure": 0,
+    "GET": 9,
+    "placementGet": 0
+  },
+  "requests": [
+    {
+      "id": 1,
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "https://127.0.0.1:18087",
+      "method": "POST",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "id": 1,
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "id": 1,
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "id": 1,
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/learner/targets"
+    },
+    {
+      "id": 1,
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/learner/profile"
+    },
+    {
+      "id": 1,
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/learner/targets"
+    },
+    {
+      "id": 1,
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/learner/preferences"
+    },
+    {
+      "id": 1,
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "id": 1,
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "id": 1,
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/learner/targets"
+    },
+    {
+      "id": 1,
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "POST",
+      "path": "/api/v1/assessment/placement/sessions"
+    },
+    {
+      "id": 1,
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "POST",
+      "path": "/api/v1/assessment/placement/sessions"
+    }
+  ],
+  "targetReads": [],
+  "unexpected": [],
+  "injectedFailures": [
+    {
+      "id": 1,
+      "method": "POST",
+      "path": "/api/v1/assessment/placement/sessions",
+      "status": 503,
+      "injection": "startError"
+    }
+  ],
+  "pageErrors": [],
+  "consoleErrors": [
+    {
+      "id": 1,
+      "message": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+      "path": "/api/v1/assessment/placement/sessions",
+      "pathname": "/",
+      "route": "#/pages/assessment/assessment",
+      "stage": "assessment"
+    }
+  ],
+  "consoleWarnings": [],
+  "skippedReads": [],
+  "unhandledRejections": [],
+  "windowErrors": [],
+  "setupFailure": null,
+  "result": "PASS",
+  "summary": {
+    "checks": 10,
+    "passed": 10,
+    "failed": 0,
+    "notRun": 0,
+    "gaps": 2,
+    "result": "PASS"
+  },
+  "transportAudit": {
+    "unknownApi": [],
+    "pageErrors": [],
+    "consoleErrors": [],
+    "consoleWarnings": [],
+    "unhandledRejections": [],
+    "windowErrors": [],
+    "excluded": [
+      {
+        "message": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+        "path": "/api/v1/assessment/placement/sessions",
+        "reason": "matched planned injection startError POST /api/v1/assessment/placement/sessions -> 503"
+      }
+    ],
+    "warningsStatus": "NONE"
+  },
+  "finishedAt": "2026-10-21T00:43:21.936Z"
+}

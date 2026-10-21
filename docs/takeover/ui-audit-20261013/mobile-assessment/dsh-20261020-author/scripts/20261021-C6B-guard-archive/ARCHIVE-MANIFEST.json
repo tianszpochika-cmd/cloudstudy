@@ -1,0 +1,13 @@
+{
+  "archive": "20261021-C6B-guard-archive",
+  "archivedAtUtc": "2026-10-21T00:20:14Z",
+  "reason": "Preserve current C6b guard bytes before C7b metadata/page update",
+  "files": [
+    {
+      "original": "c3-verify.cjs",
+      "archived": "c3-verify.cjs.c6b.raw",
+      "sha256": "9373ed9c2ae04c414c2a21341e5406005f38282f523d11898a0b45988b7610d5",
+      "bytes": 27617
+    }
+  ]
+}

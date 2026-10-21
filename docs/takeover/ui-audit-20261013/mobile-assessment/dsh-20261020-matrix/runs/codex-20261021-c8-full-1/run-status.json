@@ -1,0 +1,22 @@
+{
+  "runId": "codex-20261021-c8-full-1",
+  "label": "Codex independent C8 pinned visual matrix",
+  "preparedBy": "DSH",
+  "status": "FINISHED",
+  "group": "all",
+  "caseIds": [],
+  "finishedAt": "2026-10-21T00:43:13.438Z",
+  "summary": {
+    "measured": 34,
+    "review": 0,
+    "incomplete": 0,
+    "failed": 0,
+    "error": 0,
+    "stopped": 0,
+    "screenshots": 226
+  },
+  "plannedContexts": 34,
+  "plannedScreenshots": 226,
+  "completedScreenshots": 226,
+  "note": "No PASS verdict is produced by this runner; Root reviews raw measurements and screenshots."
+}

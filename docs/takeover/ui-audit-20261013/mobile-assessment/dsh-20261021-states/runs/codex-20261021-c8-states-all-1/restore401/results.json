@@ -1,0 +1,782 @@
+{
+  "scope": "MB006_STATES_PREPARED_NOT_RUN",
+  "caseId": "restore401",
+  "run": "codex-20261021-c8-states-all-1",
+  "executedBy": "Codex C8 final states with target warning evidence",
+  "preparedBy": "DSH bounded STATES test preparation; DSH did not launch a browser",
+  "gate": {
+    "expectedPage": "41e1670146621e532921a8916b2c81ea4954d880b2373c7bcc9945d6576d7e86",
+    "actual": {
+      "sources": {
+        "apps/mobile/src/pages/assessment/assessment.vue": "41e1670146621e532921a8916b2c81ea4954d880b2373c7bcc9945d6576d7e86",
+        "packages/i18n/src/mobile-experience.ts": "6ac6800e179de0ba15ab3607918b2f8427d364e19306eaf8f2a146f016247380",
+        "apps/mobile/src/api/learner-content.ts": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6",
+        "apps/mobile/src/stores/learner-content.ts": "95cc92496db996242d91baed3301d76f985e4e3b9134e1e50c2b9ab8d41e4c61",
+        "apps/mobile/src/stores/session.ts": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+        "apps/mobile/src/auth/navigation.ts": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5"
+      },
+      "dependencies": {
+        "apps/mobile/package.json": "484382c73929055cc4ecd9a83679f8bab72388dd8069f71a056b3bbc595c0078",
+        "pnpm-lock.yaml": "d57a87ca84985549fd53c69b1fe1d59db0b136036f2f7bf640d3b30c0a106624"
+      }
+    }
+  },
+  "startedAt": "2026-10-21T00:43:24.709Z",
+  "checks": [
+    {
+      "name": "restore401-settings-navigation-reached",
+      "result": "PASS",
+      "detail": {
+        "route": "#/pages/settings/settings"
+      }
+    },
+    {
+      "name": "restore401-guard-login-navigation",
+      "result": "PASS",
+      "detail": {
+        "route": "#/pages/login/login"
+      }
+    },
+    {
+      "name": "restore401-normal-guard-login",
+      "result": "PASS",
+      "detail": {
+        "route": "#/pages/login/login",
+        "root": false
+      }
+    },
+    {
+      "name": "restore401-no-old-question-report-skipped",
+      "result": "PASS",
+      "detail": {
+        "question": false,
+        "report": false,
+        "skipped": false
+      }
+    },
+    {
+      "name": "restore401-no-assessment-write",
+      "result": "PASS",
+      "detail": {
+        "counts": {
+          "login": 1,
+          "refresh": 1,
+          "logout": 0,
+          "principal": 6,
+          "start": 1,
+          "respond": 0,
+          "retest": 0,
+          "ensure": 0,
+          "GET": 11,
+          "placementGet": 0
+        }
+      }
+    },
+    {
+      "name": "restore401-no-auth-bypass",
+      "result": "PASS",
+      "detail": {
+        "assessmentRoot": false,
+        "loginVisible": true
+      }
+    },
+    {
+      "name": "restore401-no-visible-question-report-flash",
+      "result": "PASS",
+      "detail": {
+        "sampledFrames": 33,
+        "assessmentFrames": 31,
+        "visibleQuestionFrames": 0,
+        "visibleReportFrames": 0,
+        "visibleSkippedFrames": 0,
+        "domPresence": {
+          "question": 0,
+          "report": 0,
+          "skipped": 0
+        },
+        "visibleTargetFrames": []
+      }
+    },
+    {
+      "name": "restore401-only-planned-401-console-path",
+      "result": "PASS",
+      "detail": {
+        "pageErrors": [],
+        "consoleErrors": [],
+        "consoleWarnings": [
+          {
+            "id": 4,
+            "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+            "path": null,
+            "pathname": "/",
+            "route": "#/pages/assessment/assessment",
+            "stage": "assessment"
+          },
+          {
+            "id": 4,
+            "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+            "path": null,
+            "pathname": "/",
+            "route": "#/pages/assessment/assessment",
+            "stage": "assessment"
+          },
+          {
+            "id": 4,
+            "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+            "path": null,
+            "pathname": "/",
+            "route": "#/pages/assessment/assessment",
+            "stage": "assessment"
+          },
+          {
+            "id": 4,
+            "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+            "path": null,
+            "pathname": "/",
+            "route": "#/pages/assessment/assessment",
+            "stage": "assessment"
+          },
+          {
+            "id": 4,
+            "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+            "path": null,
+            "pathname": "/",
+            "route": "#/pages/assessment/assessment",
+            "stage": "assessment"
+          },
+          {
+            "id": 4,
+            "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+            "path": null,
+            "pathname": "/",
+            "route": "#/pages/assessment/assessment",
+            "stage": "assessment"
+          }
+        ],
+        "excluded": [
+          {
+            "message": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+            "path": "/api/v1/iam/principal/me",
+            "reason": "matched planned injection principalStatus GET /api/v1/iam/principal/me -> 401"
+          },
+          {
+            "message": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+            "path": "/api/v1/iam/principal/me",
+            "reason": "matched planned injection principalStatus GET /api/v1/iam/principal/me -> 401"
+          },
+          {
+            "message": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+            "path": "/api/v1/auth/token/refresh",
+            "reason": "matched planned injection refreshStatus POST /api/v1/auth/token/refresh -> 401"
+          }
+        ],
+        "injected": [
+          {
+            "id": 4,
+            "method": "GET",
+            "path": "/api/v1/iam/principal/me",
+            "status": 401,
+            "injection": "principalStatus"
+          },
+          {
+            "id": 4,
+            "method": "GET",
+            "path": "/api/v1/iam/principal/me",
+            "status": 401,
+            "injection": "principalStatus"
+          },
+          {
+            "id": 4,
+            "method": "POST",
+            "path": "/api/v1/auth/token/refresh",
+            "status": 401,
+            "injection": "refreshStatus"
+          }
+        ]
+      }
+    },
+    {
+      "name": "restore401-refresh-and-principal-were-hit",
+      "result": "PASS",
+      "detail": {
+        "refresh": 1,
+        "principal": 6
+      }
+    },
+    {
+      "name": "restore401-no-unexpected-api",
+      "result": "PASS",
+      "detail": {
+        "unexpected": []
+      }
+    },
+    {
+      "name": "restore401-no-page-or-uninjected-console-errors",
+      "result": "PASS",
+      "detail": {
+        "pageErrors": [],
+        "consoleErrors": [],
+        "excluded": [
+          {
+            "message": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+            "path": "/api/v1/iam/principal/me",
+            "reason": "matched planned injection principalStatus GET /api/v1/iam/principal/me -> 401"
+          },
+          {
+            "message": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+            "path": "/api/v1/iam/principal/me",
+            "reason": "matched planned injection principalStatus GET /api/v1/iam/principal/me -> 401"
+          },
+          {
+            "message": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+            "path": "/api/v1/auth/token/refresh",
+            "reason": "matched planned injection refreshStatus POST /api/v1/auth/token/refresh -> 401"
+          }
+        ],
+        "consoleWarnings": [
+          {
+            "id": 4,
+            "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+            "path": null,
+            "pathname": "/",
+            "route": "#/pages/assessment/assessment",
+            "stage": "assessment"
+          },
+          {
+            "id": 4,
+            "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+            "path": null,
+            "pathname": "/",
+            "route": "#/pages/assessment/assessment",
+            "stage": "assessment"
+          },
+          {
+            "id": 4,
+            "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+            "path": null,
+            "pathname": "/",
+            "route": "#/pages/assessment/assessment",
+            "stage": "assessment"
+          },
+          {
+            "id": 4,
+            "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+            "path": null,
+            "pathname": "/",
+            "route": "#/pages/assessment/assessment",
+            "stage": "assessment"
+          },
+          {
+            "id": 4,
+            "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+            "path": null,
+            "pathname": "/",
+            "route": "#/pages/assessment/assessment",
+            "stage": "assessment"
+          },
+          {
+            "id": 4,
+            "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+            "path": null,
+            "pathname": "/",
+            "route": "#/pages/assessment/assessment",
+            "stage": "assessment"
+          }
+        ]
+      }
+    },
+    {
+      "name": "restore401-no-console-warnings",
+      "result": "FAIL",
+      "detail": {
+        "warnings": [
+          {
+            "id": 4,
+            "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+            "path": null,
+            "pathname": "/",
+            "route": "#/pages/assessment/assessment",
+            "stage": "assessment"
+          },
+          {
+            "id": 4,
+            "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+            "path": null,
+            "pathname": "/",
+            "route": "#/pages/assessment/assessment",
+            "stage": "assessment"
+          },
+          {
+            "id": 4,
+            "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+            "path": null,
+            "pathname": "/",
+            "route": "#/pages/assessment/assessment",
+            "stage": "assessment"
+          },
+          {
+            "id": 4,
+            "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+            "path": null,
+            "pathname": "/",
+            "route": "#/pages/assessment/assessment",
+            "stage": "assessment"
+          },
+          {
+            "id": 4,
+            "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+            "path": null,
+            "pathname": "/",
+            "route": "#/pages/assessment/assessment",
+            "stage": "assessment"
+          },
+          {
+            "id": 4,
+            "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+            "path": null,
+            "pathname": "/",
+            "route": "#/pages/assessment/assessment",
+            "stage": "assessment"
+          }
+        ]
+      }
+    },
+    {
+      "name": "restore401-no-unhandled-rejection-or-object-window-error",
+      "result": "PASS",
+      "detail": {
+        "unhandledRejections": [],
+        "windowErrors": []
+      }
+    }
+  ],
+  "notRun": [],
+  "gaps": [
+    {
+      "name": "restore401-dom-presence-is-not-visible-flash",
+      "detail": "DOM presence counts are recorded as domPresence and are not used as visible-flash evidence. The previous DOM-presence FAIL and unresolved Object error remain historical evidence; this case does not claim the product has no flash."
+    }
+  ],
+  "dom": [
+    {
+      "name": "restore401-login",
+      "at": "2026-10-21T00:43:26.247Z",
+      "route": "#/pages/login/login",
+      "root": false,
+      "busy": null,
+      "bodyLen": 66,
+      "present": {
+        "assessment-page": false,
+        "assessment-guide": false,
+        "assessment-question": false,
+        "assessment-report": false,
+        "assessment-skipped": false,
+        "assessment-pending": false,
+        "assessment-leave-confirmation": false,
+        "assessment-error": false,
+        "assessment-submit": false,
+        "assessment-reload": false,
+        "assessment-reload-answer": false,
+        "assessment-title": false
+      },
+      "options": [],
+      "counts": {
+        "login": 1,
+        "refresh": 1,
+        "logout": 0,
+        "principal": 6,
+        "start": 1,
+        "respond": 0,
+        "retest": 0,
+        "ensure": 0,
+        "GET": 11,
+        "placementGet": 0
+      }
+    }
+  ],
+  "routes": [
+    {
+      "label": "restore401-settings",
+      "route": "#/pages/settings/settings"
+    },
+    {
+      "label": "restore401-back",
+      "route": "#/pages/login/login"
+    },
+    {
+      "label": "restore401-login",
+      "route": "#/pages/login/login"
+    }
+  ],
+  "screenshots": [
+    "06-restore401-login.png"
+  ],
+  "counts": {
+    "login": 1,
+    "refresh": 1,
+    "logout": 0,
+    "principal": 6,
+    "start": 1,
+    "respond": 0,
+    "retest": 0,
+    "ensure": 0,
+    "GET": 11,
+    "placementGet": 0
+  },
+  "requests": [
+    {
+      "id": 4,
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "https://127.0.0.1:18087",
+      "method": "POST",
+      "path": "/api/v1/auth/login"
+    },
+    {
+      "id": 4,
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "id": 4,
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "id": 4,
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/learner/targets"
+    },
+    {
+      "id": 4,
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/learner/profile"
+    },
+    {
+      "id": 4,
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/learner/targets"
+    },
+    {
+      "id": 4,
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/learner/preferences"
+    },
+    {
+      "id": 4,
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "id": 4,
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "id": 4,
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/learner/targets"
+    },
+    {
+      "id": 4,
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "POST",
+      "path": "/api/v1/assessment/placement/sessions"
+    },
+    {
+      "id": 4,
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "id": 4,
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "http://127.0.0.1:18070",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me"
+    },
+    {
+      "id": 4,
+      "locale": "zh-CN",
+      "theme": "light",
+      "origin": "https://127.0.0.1:18087",
+      "method": "POST",
+      "path": "/api/v1/auth/token/refresh"
+    }
+  ],
+  "targetReads": [],
+  "unexpected": [],
+  "injectedFailures": [
+    {
+      "id": 4,
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me",
+      "status": 401,
+      "injection": "principalStatus"
+    },
+    {
+      "id": 4,
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me",
+      "status": 401,
+      "injection": "principalStatus"
+    },
+    {
+      "id": 4,
+      "method": "POST",
+      "path": "/api/v1/auth/token/refresh",
+      "status": 401,
+      "injection": "refreshStatus"
+    }
+  ],
+  "pageErrors": [],
+  "consoleErrors": [
+    {
+      "id": 4,
+      "message": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "path": "/api/v1/iam/principal/me",
+      "pathname": "/",
+      "route": "#/pages/assessment/assessment",
+      "stage": "assessment"
+    },
+    {
+      "id": 4,
+      "message": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "path": "/api/v1/iam/principal/me",
+      "pathname": "/",
+      "route": "#/pages/assessment/assessment",
+      "stage": "assessment"
+    },
+    {
+      "id": 4,
+      "message": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "path": "/api/v1/auth/token/refresh",
+      "pathname": "/",
+      "route": "#/pages/assessment/assessment",
+      "stage": "assessment"
+    }
+  ],
+  "consoleWarnings": [
+    {
+      "id": 4,
+      "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+      "path": null,
+      "pathname": "/",
+      "route": "#/pages/assessment/assessment",
+      "stage": "assessment"
+    },
+    {
+      "id": 4,
+      "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+      "path": null,
+      "pathname": "/",
+      "route": "#/pages/assessment/assessment",
+      "stage": "assessment"
+    },
+    {
+      "id": 4,
+      "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+      "path": null,
+      "pathname": "/",
+      "route": "#/pages/assessment/assessment",
+      "stage": "assessment"
+    },
+    {
+      "id": 4,
+      "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+      "path": null,
+      "pathname": "/",
+      "route": "#/pages/assessment/assessment",
+      "stage": "assessment"
+    },
+    {
+      "id": 4,
+      "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+      "path": null,
+      "pathname": "/",
+      "route": "#/pages/assessment/assessment",
+      "stage": "assessment"
+    },
+    {
+      "id": 4,
+      "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+      "path": null,
+      "pathname": "/",
+      "route": "#/pages/assessment/assessment",
+      "stage": "assessment"
+    }
+  ],
+  "skippedReads": [],
+  "unhandledRejections": [],
+  "windowErrors": [],
+  "setupFailure": null,
+  "result": "FAIL",
+  "summary": {
+    "checks": 13,
+    "passed": 12,
+    "failed": 1,
+    "notRun": 0,
+    "gaps": 1,
+    "result": "FAIL"
+  },
+  "domPresence": {
+    "question": 0,
+    "report": 0,
+    "skipped": 0
+  },
+  "domGate": {
+    "route": "#/pages/login/login",
+    "assessmentRoute": false,
+    "root": false,
+    "busy": null,
+    "present": {
+      "assessment-page": false,
+      "assessment-guide": false,
+      "assessment-question": false,
+      "assessment-report": false,
+      "assessment-skipped": false,
+      "assessment-pending": false,
+      "assessment-leave-confirmation": false,
+      "assessment-error": false,
+      "assessment-submit": false,
+      "assessment-reload": false,
+      "assessment-reload-answer": false,
+      "assessment-title": false
+    }
+  },
+  "visibleProbe": {
+    "sampledFrames": 33,
+    "assessmentFrames": 31,
+    "visibleQuestionFrames": 0,
+    "visibleReportFrames": 0,
+    "visibleSkippedFrames": 0,
+    "domPresence": {
+      "question": 0,
+      "report": 0,
+      "skipped": 0
+    },
+    "lastFrame": {
+      "frame": 33,
+      "at": 1792543406221,
+      "pathname": "/",
+      "route": "#/pages/login/login",
+      "stage": "login",
+      "assessmentRoute": false,
+      "busy": null,
+      "gateDom": "LOGIN",
+      "question": false,
+      "report": false,
+      "skipped": false,
+      "receivedAt": 1792543406225
+    }
+  },
+  "transportAudit": {
+    "unknownApi": [],
+    "pageErrors": [],
+    "consoleErrors": [],
+    "consoleWarnings": [
+      {
+        "id": 4,
+        "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+        "path": null,
+        "pathname": "/",
+        "route": "#/pages/assessment/assessment",
+        "stage": "assessment"
+      },
+      {
+        "id": 4,
+        "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+        "path": null,
+        "pathname": "/",
+        "route": "#/pages/assessment/assessment",
+        "stage": "assessment"
+      },
+      {
+        "id": 4,
+        "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+        "path": null,
+        "pathname": "/",
+        "route": "#/pages/assessment/assessment",
+        "stage": "assessment"
+      },
+      {
+        "id": 4,
+        "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+        "path": null,
+        "pathname": "/",
+        "route": "#/pages/assessment/assessment",
+        "stage": "assessment"
+      },
+      {
+        "id": 4,
+        "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+        "path": null,
+        "pathname": "/",
+        "route": "#/pages/assessment/assessment",
+        "stage": "assessment"
+      },
+      {
+        "id": 4,
+        "message": "Do not nest other components in the text component, as there may be display differences on different platforms.",
+        "path": null,
+        "pathname": "/",
+        "route": "#/pages/assessment/assessment",
+        "stage": "assessment"
+      }
+    ],
+    "unhandledRejections": [],
+    "windowErrors": [],
+    "excluded": [
+      {
+        "message": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+        "path": "/api/v1/iam/principal/me",
+        "reason": "matched planned injection principalStatus GET /api/v1/iam/principal/me -> 401"
+      },
+      {
+        "message": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+        "path": "/api/v1/iam/principal/me",
+        "reason": "matched planned injection principalStatus GET /api/v1/iam/principal/me -> 401"
+      },
+      {
+        "message": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+        "path": "/api/v1/auth/token/refresh",
+        "reason": "matched planned injection refreshStatus POST /api/v1/auth/token/refresh -> 401"
+      }
+    ],
+    "warningsStatus": "RECORDED_NAMED"
+  },
+  "finishedAt": "2026-10-21T00:43:26.279Z"
+}

@@ -1,0 +1,12 @@
+{
+  "archivedAt": "2026-10-20T23:55:18Z",
+  "reason": "preserve script before fixing repeat-native-accept to first SPA prompt then second-back native beforeunload accept",
+  "files": [
+    {
+      "file": "run.cjs",
+      "sha256": "24974fe06546bbdd1454473f95d85e7e3f2e2d5992b7da27b354ff44c6f8dcc8",
+      "bytes": 57646
+    }
+  ],
+  "oldEvidence": "existing runs and earlier archives untouched"
+}

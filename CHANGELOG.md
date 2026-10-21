@@ -1,5 +1,8 @@
 # Changelog
 
+- [MB-006-C8-UI-20261021] 正式Mobile水平测评C8单页通过Root具名H5审签（UI_ACCEPTED_LOCAL / PUBLISH_BLOCKED）：受控合成API下6-case backguard 95/95、author 32/32、keyboard31/pointer30/busy31、matrix 34 contexts/226图、owner late submit 22/22与read 23/23、auth3 15/15、fonts 21、nav 15/17/12+reload11、Root H5 build exit 0；修复home别名intent、forward取消旧promise、onShow/owner/hide轻准备遮旧内容与syncTitle late promise。states完整suite仍因read/skip/restore三case的no-console-warnings（12/9/6条关联route警告）判FAIL，settings-baseline 9/today 2/owner-read 14条warnings原样保留并归未重排页面follow-up；真实后台/IAM/native与R1阶段门未升级。本地UI 9/远程7，单页提交待Root审stage后授权；不推送。
+
+
 - [MB-005-REDESIGN-20261016] 全面重排正式Mobile受限页：移除重复标题/大卡，统一双语、字号/主题/图标及账号主动作、帮助次动作和独立退出。导航被取消不再永久锁住按钮；保留owner/晚响应边界，退出失败用人话提示，修复320px/200%英文拆词。当前52项独立H5具名记录、完整类型/H5构建与3项直接检查通过，真实后台/native另列，远程发布状态见本页最终报告。
 
 - [MB-004-REDESIGN-20261015] 正式Mobile学习设置全面重排成人资格/同意状态/目标/保存摘要，取消装饰大框，统一字号/图标/语义色、短文案与主次动作，补200%整词布局。修复目标覆盖偏好、未知资格伪拒绝、旧JWT恢复误跳登录与真实禁用/即时启用指针边界；当前作者128矩阵/43交互/8实际SVG、独立视觉/风险/指针与恢复、共享影响及typecheck/H5 build均获具名通过。旧FAIL保留；无待签发布投影仍blocked，不自动签署，不提升真实后台/native状态。

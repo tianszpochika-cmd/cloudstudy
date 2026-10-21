@@ -1,0 +1,18 @@
+{
+  "archivedAt": "2026-10-20T15:30:52Z",
+  "reason": "preserve the pre-execution DSH-prepared suite before the Root C5b corrections; archive is immutable and never overwritten",
+  "files": [
+    {
+      "file": "run.cjs",
+      "sha256": "1f1520f47615950ad2968641112bc869bcb47527b6ab410ac042bba052cd3d34",
+      "bytes": 43308
+    },
+    {
+      "file": "README.md",
+      "sha256": "836464c3ba61d06a2b5eee3c1401385732c026e66a2f32e2aca2e8e0bf9b22e6",
+      "bytes": 7411
+    }
+  ],
+  "runDataPreserved": [],
+  "note": "No runs/ results.json existed when this archive was taken; only the first-prepared run.cjs and README are preserved. Archive contents are not overwritten."
+}
