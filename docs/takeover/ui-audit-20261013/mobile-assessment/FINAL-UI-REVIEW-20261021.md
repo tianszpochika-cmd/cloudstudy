@@ -49,3 +49,10 @@ SKIPPED 保守计划契约；首次 start 未知结果恢复；retest `data{}` v
 - 本地 UI 已签 **8 → 9** 页；远程仍 **7** 页（MB005 `758dc0fb…` 与本页均未推）。
 - HEAD `687af101…`；远程 `3230ac94…` 仅旧只读观测，**不称同步**。
 - 本轮只准备本页单独提交；**publish 仍 blocked**（DSH Git credential-helper 子进程权限阻塞，未 fetch/push/SSH/探凭据）。下一页为 **MB007 首页**。
+
+### 09:15 暂停时的发布状态更新
+
+- 页面已 **local commit `8a66cc73…`**（parent `687af101…`，branch `dev-redesign`，index 0）；这是**本地提交**，不是推送。
+- `687af101…` 是提交前快照 HEAD；当前 HEAD 为 `8a66cc73…`。如 checkpoint 文档另 commit，其 SHA 与本页 commit 分开记录。
+- 本地 UI 9 / 远程 7；MB005 `758dc0fb…` 与本页均未推；`PUBLISH_BLOCKED` 依旧（DSH Git helper 子进程权限阻塞，不重试/不绕过/不探凭据，Root 不代 Git）。
+- 远程 `3230ac94…` 仅旧只读观测，不称同步；旧 FAIL/states 部分通过/关联页 warnings 均原样保留。
