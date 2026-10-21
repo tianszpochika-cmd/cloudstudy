@@ -13,7 +13,7 @@
 | `root-home-empty-c6.json` / `.png` | C6 空态 | 684 / 46273 | `aba14bd1f8f6f3cb…` / `368e210aa5bb3778…` |
 | `root-home-auth401-l2.json` / `.png` | C7+L2 auth401 真实 FAIL（触发 C8） | 2770 / 14182 | `1b05a5ba488c533f…` / `1a002dd799e0b54c…` |
 
-完整 64 位值见同目录 `HASHES-ROOT-REVIEW-20261021.json`（随本次归档生成）。
+完整 64 位值可在提交后由 `git show`/文件哈希复核；本 README 仅列前 16 位。
 
 ## 版本边界
 
@@ -22,3 +22,4 @@
 - **C7+L2 auth401**：Root 实读 home 401 + refresh 401 清会话后仍停 `#/`，是**真实产品 FAIL**，并触发 C8 候选修复——**C8 本身未签、浏览器未跑**，本目录不等于 C8 PASS。
 - 这些 JSON 只含具名 H5 检查事实、DOM/受控 API 路径状态；**不含请求 headers/token 正文**。已按私钥块/明显 token 模式扫描，命中 0。
 - 旧 FAIL、旧矩阵与 RECONSTRUCTED 归档继续保留；不因本归档升级任何页面或业务结论。
+

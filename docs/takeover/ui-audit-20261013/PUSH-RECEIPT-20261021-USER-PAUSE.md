@@ -10,7 +10,7 @@
 | 提交范围 | 361 文件（Root 已审 index；product 5 / entry 3 / CHANGELOG / doc 352），+389713 −170 |
 | push 命令 | `git push origin HEAD:dev-redesign`（仅一次） |
 | push exit | **128** |
-| 失败原因 | Git 经 `sh.exe -c` 拉起凭据 helper 时 msys 子进程崩溃（signal pipe / Win32 error 5，历史同一 helper 子进程权限阻塞）；非凭据失效、非 TLS 失败 |
+| 失败原因 | Git 经 `sh.exe -c` 拉起凭据 helper 时 msys 子进程崩溃（signal pipe / Win32 error 5，历史同一 helper 子进程权限阻塞）；失败发生在凭据助手子进程启动阶段，认证未完成；凭据状态未验证（非 TLS 失败） |
 | ls-remote | 未执行（push 失败后立即停止网络，未换 transport） |
 | UI 计数 | 本地已验 **9**；远程仍按 **7**，本轮未新核 |
 | 既有本地未推 | MB005 `758dc0fb…`、MB006 C8 `8a66cc73…` 仍在本地 |
