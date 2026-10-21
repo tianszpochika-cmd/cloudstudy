@@ -1,0 +1,352 @@
+{
+  "scope": "MB007_SHARED_HOME_ASSESSMENT_HOME_NARROW_H5",
+  "run": "codex-20261021-c7-l2-assessment-home-1",
+  "at": "2026-10-21T07:18:50.426Z",
+  "executedBy": "Codex independent review",
+  "preparedBy": "DSH; no browser launch",
+  "base": "http://127.0.0.1:18183",
+  "viewport": "390x844",
+  "locale": "zh-CN",
+  "theme": "light",
+  "expected": {
+    "apps/mobile/src/pages/assessment/assessment.vue": "41e1670146621e532921a8916b2c81ea4954d880b2373c7bcc9945d6576d7e86",
+    "apps/mobile/src/api/learner-content.ts": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6",
+    "apps/mobile/src/stores/session.ts": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+    "apps/mobile/src/auth/navigation.ts": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5",
+    "apps/mobile/package.json": "484382c73929055cc4ecd9a83679f8bab72388dd8069f71a056b3bbc595c0078",
+    "pnpm-lock.yaml": "d57a87ca84985549fd53c69b1fe1d59db0b136036f2f7bf640d3b30c0a106624",
+    "apps/mobile/src/pages/home/home.vue": "044948af7e0fab462f6c8c51f99e9bde2666cb799c9f2d261a37efedcbdcd5af",
+    "packages/i18n/src/mobile-experience.ts": "7e2ef7b596eeb15fa60f715a0e00274a7d1290ddf13b1da4c6cc91116311126f",
+    "apps/mobile/src/stores/learner-content.ts": "c4ef9dd83452ea44f6deda55ac0be2dd3e49a810cd82d183d5342fa9b71cec21",
+    "apps/mobile/src/platform/uni-runtime.ts": "03b21bab8c4121ec289b5633ae9fab79ba0b64c60d0431f7adbf8953115f265a",
+    "apps/mobile/src/pages/learn/learn.vue": "4bd50e4b5af9685f7eabe88e89635f061632d383d0d8e6ae7105d510db90bb03"
+  },
+  "sourcesBefore": {
+    "apps/mobile/src/pages/home/home.vue": "044948af7e0fab462f6c8c51f99e9bde2666cb799c9f2d261a37efedcbdcd5af",
+    "packages/i18n/src/mobile-experience.ts": "7e2ef7b596eeb15fa60f715a0e00274a7d1290ddf13b1da4c6cc91116311126f",
+    "apps/mobile/src/stores/learner-content.ts": "c4ef9dd83452ea44f6deda55ac0be2dd3e49a810cd82d183d5342fa9b71cec21",
+    "apps/mobile/src/pages/learn/learn.vue": "4bd50e4b5af9685f7eabe88e89635f061632d383d0d8e6ae7105d510db90bb03",
+    "apps/mobile/src/api/learner-content.ts": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6",
+    "apps/mobile/src/stores/session.ts": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+    "apps/mobile/src/auth/navigation.ts": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5",
+    "apps/mobile/src/platform/uni-runtime.ts": "03b21bab8c4121ec289b5633ae9fab79ba0b64c60d0431f7adbf8953115f265a",
+    "apps/mobile/src/platform/public-auth-handoff.mjs": "f363aad14b7a52fcb7138be6c659d509a7201daeb4b32d100f4e92db83d812be",
+    "apps/mobile/package.json": "484382c73929055cc4ecd9a83679f8bab72388dd8069f71a056b3bbc595c0078",
+    "pnpm-lock.yaml": "d57a87ca84985549fd53c69b1fe1d59db0b136036f2f7bf640d3b30c0a106624",
+    "apps/mobile/src/pages/assessment/assessment.vue": "41e1670146621e532921a8916b2c81ea4954d880b2373c7bcc9945d6576d7e86"
+  },
+  "sourcesAfter": {
+    "apps/mobile/src/pages/home/home.vue": "044948af7e0fab462f6c8c51f99e9bde2666cb799c9f2d261a37efedcbdcd5af",
+    "packages/i18n/src/mobile-experience.ts": "7e2ef7b596eeb15fa60f715a0e00274a7d1290ddf13b1da4c6cc91116311126f",
+    "apps/mobile/src/stores/learner-content.ts": "c4ef9dd83452ea44f6deda55ac0be2dd3e49a810cd82d183d5342fa9b71cec21",
+    "apps/mobile/src/pages/learn/learn.vue": "4bd50e4b5af9685f7eabe88e89635f061632d383d0d8e6ae7105d510db90bb03",
+    "apps/mobile/src/api/learner-content.ts": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6",
+    "apps/mobile/src/stores/session.ts": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931",
+    "apps/mobile/src/auth/navigation.ts": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5",
+    "apps/mobile/src/platform/uni-runtime.ts": "03b21bab8c4121ec289b5633ae9fab79ba0b64c60d0431f7adbf8953115f265a",
+    "apps/mobile/src/platform/public-auth-handoff.mjs": "f363aad14b7a52fcb7138be6c659d509a7201daeb4b32d100f4e92db83d812be",
+    "apps/mobile/package.json": "484382c73929055cc4ecd9a83679f8bab72388dd8069f71a056b3bbc595c0078",
+    "pnpm-lock.yaml": "d57a87ca84985549fd53c69b1fe1d59db0b136036f2f7bf640d3b30c0a106624",
+    "apps/mobile/src/pages/assessment/assessment.vue": "41e1670146621e532921a8916b2c81ea4954d880b2373c7bcc9945d6576d7e86"
+  },
+  "sourceStable": true,
+  "depsStable": true,
+  "checks": [
+    {
+      "name": "home-ready-390-zh-light",
+      "result": "PASS",
+      "detail": {
+        "homeTitle": "今日学习",
+        "counts": {
+          "login": 1,
+          "refresh": 0,
+          "principal": 4,
+          "profile": 1,
+          "targets": 3,
+          "preferences": 1,
+          "home": 1,
+          "catalog": 1,
+          "today": 1,
+          "contentDetail": 0,
+          "reviewQueue": 0,
+          "notifications": 0,
+          "support": 0,
+          "GET": 12,
+          "write": 1
+        }
+      }
+    },
+    {
+      "name": "assessment-guide-real-dom-and-necessary-gets",
+      "result": "PASS",
+      "detail": {
+        "guideTitle": "水平测评",
+        "points": 2,
+        "phase": [
+          {
+            "caseId": 1,
+            "caseKey": "case-1",
+            "method": "GET",
+            "path": "/api/v1/iam/principal/me",
+            "status": 200,
+            "held": false
+          },
+          {
+            "caseId": 1,
+            "caseKey": "case-1",
+            "method": "GET",
+            "path": "/api/v1/iam/principal/me",
+            "status": 200,
+            "held": false
+          },
+          {
+            "caseId": 1,
+            "caseKey": "case-1",
+            "method": "GET",
+            "path": "/api/v1/learner/targets",
+            "status": 200,
+            "held": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "assessment-zero-start-respond-retest-ensure",
+      "result": "PASS",
+      "detail": {
+        "writeDelta": 0,
+        "writes": [],
+        "forbidden": []
+      }
+    },
+    {
+      "name": "c8-home-canonical-hash-dom-and-new-gets",
+      "result": "PASS",
+      "detail": {
+        "hash": "#/",
+        "returnedTitle": "今日学习",
+        "tasks": 5,
+        "counts": {
+          "login": 1,
+          "refresh": 0,
+          "principal": 8,
+          "profile": 1,
+          "targets": 5,
+          "preferences": 1,
+          "home": 2,
+          "catalog": 2,
+          "today": 2,
+          "contentDetail": 0,
+          "reviewQueue": 0,
+          "notifications": 0,
+          "support": 0,
+          "GET": 21,
+          "write": 1
+        }
+      }
+    },
+    {
+      "name": "transport-zero-unknown-pageerror-console-error",
+      "result": "PASS",
+      "detail": {
+        "unknown": [],
+        "pageErrors": [],
+        "consoleErrors": [],
+        "warnings": [],
+        "writeDelta": 0
+      }
+    }
+  ],
+  "requests": [
+    {
+      "caseId": 1,
+      "caseKey": "case-1",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "status": 200,
+      "held": false
+    },
+    {
+      "caseId": 1,
+      "caseKey": "case-1",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me",
+      "status": 200,
+      "held": false
+    },
+    {
+      "caseId": 1,
+      "caseKey": "case-1",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me",
+      "status": 200,
+      "held": false
+    },
+    {
+      "caseId": 1,
+      "caseKey": "case-1",
+      "method": "GET",
+      "path": "/api/v1/learner/targets",
+      "status": 200,
+      "held": false
+    },
+    {
+      "caseId": 1,
+      "caseKey": "case-1",
+      "method": "GET",
+      "path": "/api/v1/learner/profile",
+      "status": 200,
+      "held": false
+    },
+    {
+      "caseId": 1,
+      "caseKey": "case-1",
+      "method": "GET",
+      "path": "/api/v1/learner/targets",
+      "status": 200,
+      "held": false
+    },
+    {
+      "caseId": 1,
+      "caseKey": "case-1",
+      "method": "GET",
+      "path": "/api/v1/learner/preferences",
+      "status": 200,
+      "held": false
+    },
+    {
+      "caseId": 1,
+      "caseKey": "case-1",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me",
+      "status": 200,
+      "held": false
+    },
+    {
+      "caseId": 1,
+      "caseKey": "case-1",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me",
+      "status": 200,
+      "held": false
+    },
+    {
+      "caseId": 1,
+      "caseKey": "case-1",
+      "method": "GET",
+      "path": "/api/v1/learner/targets",
+      "status": 200,
+      "held": false
+    },
+    {
+      "caseId": 1,
+      "caseKey": "case-1",
+      "method": "GET",
+      "path": "/api/v1/learner/home",
+      "status": 200,
+      "held": false
+    },
+    {
+      "caseId": 1,
+      "caseKey": "case-1",
+      "method": "GET",
+      "path": "/api/v1/content/learner/catalog",
+      "status": 200,
+      "held": false
+    },
+    {
+      "caseId": 1,
+      "caseKey": "case-1",
+      "method": "GET",
+      "path": "/api/v1/learning/today",
+      "status": 200,
+      "held": false
+    },
+    {
+      "caseId": 1,
+      "caseKey": "case-1",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me",
+      "status": 200,
+      "held": false
+    },
+    {
+      "caseId": 1,
+      "caseKey": "case-1",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me",
+      "status": 200,
+      "held": false
+    },
+    {
+      "caseId": 1,
+      "caseKey": "case-1",
+      "method": "GET",
+      "path": "/api/v1/learner/targets",
+      "status": 200,
+      "held": false
+    },
+    {
+      "caseId": 1,
+      "caseKey": "case-1",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me",
+      "status": 200,
+      "held": false
+    },
+    {
+      "caseId": 1,
+      "caseKey": "case-1",
+      "method": "GET",
+      "path": "/api/v1/iam/principal/me",
+      "status": 200,
+      "held": false
+    },
+    {
+      "caseId": 1,
+      "caseKey": "case-1",
+      "method": "GET",
+      "path": "/api/v1/learner/targets",
+      "status": 200,
+      "held": false
+    },
+    {
+      "caseId": 1,
+      "caseKey": "case-1",
+      "method": "GET",
+      "path": "/api/v1/learner/home",
+      "status": 200,
+      "held": false
+    },
+    {
+      "caseId": 1,
+      "caseKey": "case-1",
+      "method": "GET",
+      "path": "/api/v1/content/learner/catalog",
+      "status": 200,
+      "held": false
+    },
+    {
+      "caseId": 1,
+      "caseKey": "case-1",
+      "method": "GET",
+      "path": "/api/v1/learning/today",
+      "status": 200,
+      "held": false
+    }
+  ],
+  "unknown": [],
+  "pageErrors": [],
+  "consoleErrors": [],
+  "consoleWarnings": [],
+  "closed": true,
+  "businessPass": false,
+  "nativePass": false,
+  "result": "HOME_ASSESSMENT_HOME_FIXTURE_PASS_NO_BACKEND_OR_NATIVE_PASS",
+  "summary": {
+    "checks": 5,
+    "failed": 0,
+    "warnings": 0
+  },
+  "exit": 0
+}

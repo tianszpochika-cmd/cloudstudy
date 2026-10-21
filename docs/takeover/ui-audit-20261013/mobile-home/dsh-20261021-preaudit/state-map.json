@@ -1,0 +1,410 @@
+{
+  "schema": "dsh-ui-preaid-state-map/v1",
+  "generatedAt": "2026-10-21",
+  "mode": "PREAUDIT_ONLY",
+  "h5Run": false,
+  "productChanged": false,
+  "gitOperations": false,
+  "page": {
+    "id": "MB007",
+    "name": "mobile-home",
+    "source": "apps/mobile/src/pages/home/home.vue",
+    "lines": 207,
+    "route": "/pages/home/home",
+    "h5Hash": "#/pages/home/home",
+    "canonicalRoot": "#/",
+    "entry": {
+      "pagesJson": "apps/mobile/src/pages.json:4-9",
+      "tabBar": "apps/mobile/src/pages.json:242-245",
+      "navigationBarTitleText": "学习",
+      "navigationStyle": "custom"
+    }
+  },
+  "baseline": {
+    "branch": "dev-redesign",
+    "head": "5b3ca5a7",
+    "headEvidence": "git log --oneline -1",
+    "localUiPages": 9,
+    "remoteUiPages": 7,
+    "mb005Commit": "758dc0fb",
+    "mb005Pushed": false,
+    "mb006C8": "ACCEPTED_LOCAL/PUBLISH_BLOCKED",
+    "mb006C8Pushed": false,
+    "r1Station": "IT-1 REJECT; IT-2 BLOCKED; not READY",
+    "protectionManifest": ".git/codex-local-backups/ui-audit-20261013/preexisting-work.json",
+    "protectionManifestExists": true,
+    "protectionManifestBytes": 11308,
+    "protectionManifestReadOnly": true
+  },
+  "regions": [
+    {
+      "id": "header",
+      "line": 98,
+      "component": "MobilePageHeader page=home compact",
+      "content": ["brand wordmark", "settings button -> /pages/settings/settings", "semantic H1 role=heading aria-level=1"],
+      "source": "components/MobilePageHeader.vue:6,13-22,34-36"
+    },
+    {
+      "id": "onboarding-guide",
+      "line": 100,
+      "condition": "guideVisible",
+      "content": ["onboardingProgressLabel", "剩余步骤：{steps}", "继续设置，开始学习"],
+      "actions": ["open(/pages/onboarding/onboarding)", "open(/pages/assessment/assessment)"],
+      "source": "store.onboardingResume; domain/onboarding-resume.ts:67-74,215-225"
+    },
+    {
+      "id": "first-learning-guide",
+      "line": 101,
+      "condition": "firstLearningCopy",
+      "role": "status",
+      "source": "store.planQueue.firstLearning <- GET /learning/today; domain/plan-today.ts:158-163"
+    },
+    {
+      "id": "plan-explanation",
+      "line": 102,
+      "condition": "planExplanation",
+      "role": "status",
+      "source": "GET /learning/today"
+    },
+    {
+      "id": "plan-notice",
+      "line": 103,
+      "condition": "store.planNotice",
+      "role": "status",
+      "source": "store.replanAfterGoal 409/failure"
+    },
+    {
+      "id": "loading",
+      "line": 105,
+      "condition": "homeStatus idle|loading",
+      "content": ["正在读取今日任务…"]
+    },
+    {
+      "id": "error",
+      "lines": [106, 110],
+      "condition": "homeStatus offline|error|forbidden",
+      "role": "alert",
+      "content": ["今日任务暂不可用", "store.lastError || 请稍后重试。", "重试"],
+      "action": "store.loadHome()"
+    },
+    {
+      "id": "greet",
+      "line": 112,
+      "content": ["一点积累，走得更远", "你好，继续今天的学习"],
+      "semanticHeading": false,
+      "finding": "competing visual title with header H1"
+    },
+    {
+      "id": "hero",
+      "lines": [113, 122],
+      "content": ["今日学习 · 目标 {targetMinutes} 分钟", "继续推进", "今日共 {taskCount} 个任务", "今日进度 {progress}%", "继续课程"],
+      "action": "continueCourse()",
+      "disabledWhen": "!canContinueCourse",
+      "styleFinding": "gradient var(--v2-grad), #fff text, box-shadow"
+    },
+    {
+      "id": "kpis",
+      "lines": [123, 127],
+      "items": ["今日任务", "课程内容", "今日进度"],
+      "finding": "duplicates hero task count/progress"
+    },
+    {
+      "id": "task-card",
+      "lines": [129, 138],
+      "title": "今日任务（{count}）",
+      "empty": {
+        "planEmpty": "lines 40-44, 132; requires planQueueStatus ready|empty",
+        "noTasks": "line 133; 今天还没有安排任务。 + 可从下方选择课程。",
+        "finding": ":hidden and v-if both used; both empties may render"
+      },
+      "rowFields": ["title", "description", "minutes", "unavailableReason"],
+      "statusLabels": ["已完成", "未解锁", "暂不可用", "继续课程", "查看课程"],
+      "action": "openTask -> /pages/learn/learn?contentCode=...&taskId=...",
+      "enabledWhen": "status in (AVAILABLE, IN_PROGRESS) and contentCode present"
+    },
+    {
+      "id": "mistake-book",
+      "lines": [140, 145],
+      "content": ["错题本", "答错的题目会收进错题本，随时回来补救。", "进错题本"],
+      "action": "open(/pages/b10-report/b10-report)",
+      "dataRead": false
+    },
+    {
+      "id": "course-shelf",
+      "lines": [147, 161],
+      "content": ["课程内容", "release note (shelfNote)", "search input", "shelf states", "course rows", "课程列表暂不可用。"],
+      "search": {
+        "model": "courseQuery ref",
+        "filter": "title + summary, trim + toLowerCase",
+        "debounce": false,
+        "clearButton": false,
+        "resultCountShown": false,
+        "imeCompositionHandling": "none explicit"
+      },
+      "shelfStates": ["results", "catalog-empty", "no-matches", "error"],
+      "action": "open(/pages/learn/learn?contentCode=...)"
+    },
+    {
+      "id": "entry-grid",
+      "line": 164,
+      "content": ["修改目标", "进入测评"],
+      "targets": ["/pages/onboarding/onboarding", "/pages/assessment/assessment"],
+      "renderedOutsideBody": true,
+      "finding": "visible during loading/error/forbidden/unauthenticated"
+    },
+    {
+      "id": "login-status",
+      "line": 166,
+      "condition": "!session.isAuthenticated",
+      "content": ["登录后，继续查看你的学习进度。", "登录后继续"],
+      "action": "open(/pages/login/login)",
+      "finding": "nearly unreachable on protected route"
+    }
+  ],
+  "states": [
+    "idle",
+    "loading",
+    "ready",
+    "empty",
+    "offline",
+    "error",
+    "forbidden",
+    "stale",
+    "content-READY",
+    "content-EMPTY",
+    "content-UNAVAILABLE",
+    "guide-gate",
+    "guide-consent",
+    "guide-goal",
+    "guide-assessment",
+    "guide-rejected",
+    "plan-empty-NO_PLAN",
+    "plan-empty-COMPLETED",
+    "plan-empty-NO_CONTENT",
+    "plan-empty-NO_DUE_REVIEW",
+    "plan-empty-READY",
+    "plan-read-error",
+    "plan-notice-409",
+    "plan-notice-replan-failed",
+    "unauthenticated",
+    "search-results",
+    "search-no-matches",
+    "search-catalog-empty",
+    "search-error"
+  ],
+  "actions": [
+    {"id": "retry-home", "label": "重试", "calls": "store.loadHome()", "line": 109},
+    {"id": "continue-course", "label": "继续课程", "calls": "continueCourse() -> /pages/learn/learn", "line": 121},
+    {"id": "open-task", "label": "继续课程/查看课程", "calls": "openTask(task) -> /pages/learn/learn", "line": 136},
+    {"id": "open-mistakes", "label": "进错题本", "calls": "open(/pages/b10-report/b10-report)", "line": 144},
+    {"id": "open-course", "label": "课程行", "calls": "open(/pages/learn/learn?contentCode=...)", "line": 155},
+    {"id": "change-goal", "label": "修改目标", "calls": "open(/pages/onboarding/onboarding)", "line": 164},
+    {"id": "take-assessment", "label": "进入测评", "calls": "open(/pages/assessment/assessment)", "line": 164},
+    {"id": "open-login", "label": "登录后继续", "calls": "open(/pages/login/login)", "line": 166},
+    {"id": "guide-continue", "label": "继续设置，开始学习", "calls": "open(guidePath)", "line": 100},
+    {"id": "plan-empty-action", "label": "planEmpty.action", "calls": "refreshPlanQueue | onboarding | home", "line": 132}
+  ],
+  "dataSources": [
+    {"id": "home-projection", "endpoint": "GET /api/v1/learner/home?contentLocale", "operationId": "getB9LearnerHomeProjection", "owner": "learner-service", "permission": "learner.home.read", "client": "api/learner-content.ts:732-738; parseHome :359-377", "model": "domain/learner-content.ts:78-87"},
+    {"id": "content-catalog", "endpoint": "GET /api/v1/content/learner/catalog?contentLocale", "owner": "content-service", "client": "api/learner-content.ts:733-737", "filter": "availability === PUBLISHED"},
+    {"id": "plan-today", "endpoint": "GET /api/v1/learning/today", "owner": "learning-service", "client": "api/plan-today.ts:9-11", "model": "domain/plan-today.ts:14-27,82-104"},
+    {"id": "onboarding-resume", "endpoints": ["GET /iam/principal/me", "GET /learner/targets"], "client": "api/learner-content.ts:443-533", "usedFor": "guide visibility/labels"},
+    {"id": "session", "client": "stores/session.ts:63-71", "usedFor": "isAuthenticated, adultGate, adultLearningAccess, permissions"},
+    {"id": "progress", "client": "stores/learner-content.ts:68-71", "formula": "min(100, round(completedMinutes / targetMinutes * 100))", "requires": "targetMinutes > 0"},
+    {"id": "complete-task-unused", "endpoint": "POST /onboarding/daily-tasks/{taskId}/complete", "client": "api/learner-content.ts:744-747", "wiredOnHome": false, "owner": "GAP"}
+  ],
+  "contracts": [
+    {"id": "home", "path": "packages/contracts/fragments/b9/b9-learner.openapi.json", "operation": "getB9LearnerHomeProjection", "owner": "learner-service", "authorization": {"defaultDecision": "DENY", "requiredPermission": "learner.home.read", "pep": "learner-service-local"}},
+    {"id": "gateway-home", "path": "packages/contracts/fragments/p1r-gateway-boundary.openapi.json:2635-2648", "upstreamOwner": "learner-service"},
+    {"id": "gateway-content", "path": "packages/contracts/fragments/p1r-gateway-boundary.openapi.json:2798-2809", "upstreamOwner": "content-service"},
+    {"id": "gateway-learning", "path": "packages/contracts/fragments/p1r-gateway-boundary.openapi.json:3308-3315", "upstreamOwner": "learning-service"}
+  ],
+  "owners": [
+    {"domain": "home projection", "owner": "learner-service"},
+    {"domain": "content catalog / rights / versions", "owner": "content-service"},
+    {"domain": "plan / today / replan", "owner": "learning-service"},
+    {"domain": "adult gate / consent / permissions", "owner": "IAM"}
+  ],
+  "gates": [
+    {"id": "adult", "rule": "server adultGate=PASSED and adultLearningAccess=ELIGIBLE", "source": "stores/session.ts:63-71"},
+    {"id": "consent", "rule": "required consents complete; CONSENT_REQUIRED routes to onboarding; withdrawn -> forbidden", "source": "auth/navigation.ts:326-357"},
+    {"id": "learning-ready", "rule": "isAuthenticated && adultGate PASSED && learningAccess ELIGIBLE && permissions includes learning.plan.read", "source": "stores/session.ts:70"},
+    {"id": "content-rights", "rule": "only availability=PUBLISHED rendered as learnable", "source": "domain/plan-today.ts:165-167"},
+    {"id": "phase-1", "rule": "18+ adults only; no Phase 2 AI/K12", "source": "AGENTS.md section 2"}
+  ],
+  "mapping": {
+    "PAGE": ["PAGE-P1-LEARN-HOME", "PAGE-P1-TODAY", "PAGE-P1-PLAN-MAP", "PAGE-P1-COURSE-SHELF", "PAGE-P1-MISTAKES-MASTERY", "PAGE-P1-ASSESSMENT"],
+    "JNY": ["JNY-P1-03", "JNY-P1-04", "JNY-P1-05", "JNY-P1-08"],
+    "RULE": ["RULE-P1-DAILY-PLAN", "RULE-P1-SESSION"],
+    "INT": ["INT-P1-003", "INT-P1-004"],
+    "E2E": ["E2E-P1-FIRST-DAY", "E2E-P1-TODAY-SESSION"],
+    "ACT": ["ACT-P1-LEARNER"],
+    "R1": [
+      {"id": "R1-017", "scope": "IC-057/009 guide; move placement button", "owner": "learner-web", "dependsOn": "R1-010"},
+      {"id": "R1-030", "scope": "BC-023 plan ensure", "owner": "learning-service"},
+      {"id": "R1-032", "scope": "BC-025 home plan banner", "owner": "learner-web/mobile"},
+      {"id": "R1-033", "scope": "BC-026 one-line explanation", "owner": "learning-service"},
+      {"id": "R1-034", "scope": "BC-027 task practiceRef", "owner": "learning-service"},
+      {"id": "R1-035", "scope": "BC-028 empty-state split", "owner": "learner-web/mobile"},
+      {"id": "R1-037", "scope": "BC-030 web/H5 read-back consistency", "owner": "learner-web/mobile"},
+      {"id": "R1-038", "scope": "BC-031 immutable plan snapshot", "owner": "learning-service"},
+      {"id": "R1-040", "scope": "BC-199 shelf/search/continue", "owner": "learner-web/mobile"},
+      {"id": "R1-041", "scope": "IC-013...021/029 plan-today interaction acceptance", "owner": "learner-web/mobile"},
+      {"id": "R1-042", "scope": "L3 clean-db replay", "owner": "QA"}
+    ],
+    "GAP": [
+      "FEAT/PRD-ATOM/V2-980 atom ids not established for this page",
+      "ARCH mapping not established in read scope",
+      "INT-P1 id for course shelf/search not confirmed",
+      "ACT for system recovery not confirmed",
+      "complete-task endpoint owner not confirmed",
+      "content read permission id not confirmed"
+    ]
+  },
+  "gaps": [
+    {"id": "GAP-I18N", "detail": "page copy is hardcoded zh; only MobilePageHeader uses i18n", "impact": "mixed language on en-US"},
+    {"id": "GAP-H1-KEY", "detail": "decision needed: header pages.home.title vs new mobile.home.title", "impact": "two H1 sources"},
+    {"id": "GAP-PERM", "detail": "page gate checks learning.plan.read while contract requires learner.home.read", "impact": "wrong entry/403 behavior"},
+    {"id": "GAP-REQUEST-ORDER", "detail": "loadHome has no in-flight dedupe or request sequence", "impact": "late same-identity response may overwrite newer"},
+    {"id": "GAP-PLAN-EMPTY", "detail": "planEmpty null when planQueueStatus not ready/empty, falling through to no-tasks copy", "impact": "plan read failure looks like no tasks"},
+    {"id": "GAP-PLAN-FACTS", "detail": "planQueue arrangements/deferredCount/planVersion not rendered", "impact": "progress/plan state under-shown"},
+    {"id": "GAP-MISTAKE-DATA", "detail": "mistake card has no read model or count", "impact": "cannot show real mistake state"},
+    {"id": "GAP-SHELF-NOTE", "detail": "shelfNote infers lock from summary containing 已锁定", "impact": "fragile content-copy dependency"},
+    {"id": "GAP-COMPLETE", "detail": "completeTask exists but is not wired on home", "impact": "home cannot complete tasks or update minutes"},
+    {"id": "GAP-403-COPY", "detail": "forbidden retry reissues loadHome with same copy", "impact": "permission failure looks retryable"},
+    {"id": "GAP-SEARCH-RESTORE", "detail": "search term retention across onShow undecided", "impact": "inconsistent return behavior"},
+    {"id": "GAP-CONTRAST", "detail": "hero #fff on brand gradient/high-contrast not measured", "impact": "contrast may fail 3:1/4.5:1"}
+  ],
+  "risks": [
+    {"id": "R1", "level": "high", "finding": "gradient hero + #fff + --v2-grad hardcoded brand hex; bypasses --yx-* semantic tokens", "evidence": "home.vue:183-199; theme/v2-tokens.scss:53,89"},
+    {"id": "R2", "level": "high", "finding": "duplicate KPI cards and two competing titles", "evidence": "home.vue:112-127"},
+    {"id": "R3", "level": "high", "finding": "auxiliary text 21-23rpx (~10.5-11.5px) below 14px minimum", "evidence": "home.vue:173,176,178,180"},
+    {"id": "R4", "level": "high", "finding": "hardcoded Chinese across page; i18n only in header", "evidence": "home.vue:100-166"},
+    {"id": "R5", "level": "medium", "finding": ":hidden and v-if on no-task empty; both empty states may render", "evidence": "home.vue:132-133"},
+    {"id": "R6", "level": "medium", "finding": "entry-grid rendered outside state body; visible when loading/error/forbidden/unauthenticated", "evidence": "home.vue:164"},
+    {"id": "R7", "level": "medium", "finding": "search has no count/clear/IME handling; filter is immediate on every keystroke", "evidence": "home.vue:24-27,151"},
+    {"id": "R8", "level": "medium", "finding": "plan read failure can fall through to 'no tasks' copy", "evidence": "home.vue:40-44,133"},
+    {"id": "R9", "level": "medium", "finding": "no busy state; retry and navigation buttons remain active during loading", "evidence": "home.vue:105-110"},
+    {"id": "R10", "level": "medium", "finding": "permission gate mismatch learner.home.read vs learning.plan.read", "evidence": "b9-learner.openapi.json; session.ts:70"},
+    {"id": "R11", "level": "low", "finding": "login block nearly unreachable on protected route", "evidence": "home.vue:166; auth/navigation.ts:47"},
+    {"id": "R12", "level": "low", "finding": "task button visually small though global min-height 44px applies", "evidence": "home.vue:178; uni.scss:7"}
+  ],
+  "storeProtectionsToPreserve": [
+    "scope() subject + identityRevision (stores/learner-content.ts:76-91)",
+    "watch(identityRevision, reset, {flush:'sync'}) (:137)",
+    "stillCurrent checks after awaits (:448)",
+    "LOCAL_REAL_RUNTIME does not treat cached home as authority (:19,145-167)",
+    "preserveContentProjectionAfterCompletion (:517-523)",
+    "session clear on 401 and consent routing (auth/navigation.ts:326-357)",
+    "isLearningReady gate (stores/session.ts:70)"
+  ],
+  "copy": {
+    "zh-CN": {
+      "h1": "今日学习",
+      "progress": "已完成 {done} / {target} 分钟",
+      "progressUnknown": "已读取今日任务",
+      "primaryContinue": "继续学习",
+      "primaryStart": "开始学习",
+      "taskTitle": "今日任务（{count}）",
+      "taskStates": ["已完成", "未解锁", "暂不可用", "继续课程", "查看课程"],
+      "noTasks": "今天还没有安排任务。",
+      "noTasksHint": "可从下方选择课程。",
+      "loading": "正在读取今日任务…",
+      "errorTitle": "今日任务暂不可用",
+      "errorHint": "请稍后重试。",
+      "retry": "重试",
+      "courses": "课程内容",
+      "search": "搜索课程",
+      "resultCount": "共 {total} 门，匹配 {count} 门",
+      "catalogEmpty": "书架里还没有可学习的内容。",
+      "noMatches": "没有匹配的课程。",
+      "shelfError": "课程暂时没能加载。",
+      "shelfUnavailable": "课程列表暂不可用。",
+      "noSummary": "暂无简介",
+      "mistakes": "错题本",
+      "mistakesDesc": "答错的题目会收进错题本，随时回来补救。",
+      "mistakesAction": "进错题本",
+      "changeGoal": "修改目标",
+      "assessment": "进入测评",
+      "loginNote": "登录后，继续查看你的学习进度。",
+      "loginAction": "登录后继续",
+      "guideAction": "继续设置，开始学习",
+      "guideProgress": "剩余步骤：{steps}",
+      "guideSteps": ["确认身份", "必要同意", "学习目标", "定级"],
+      "planConflict": "计划版本已变化，请重新读取。",
+      "replanFailed": "目标已保存。计划还没有按新目标重排。"
+    },
+    "en-US": {
+      "h1": "Today's learning",
+      "progress": "{done} of {target} min completed",
+      "progressUnknown": "Today's tasks loaded",
+      "primaryContinue": "Continue learning",
+      "primaryStart": "Start learning",
+      "taskTitle": "Today's tasks ({count})",
+      "taskStates": ["Completed", "Locked", "Not available", "Continue course", "View course"],
+      "noTasks": "No tasks scheduled for today.",
+      "noTasksHint": "Choose a course below.",
+      "loading": "Loading today's tasks…",
+      "errorTitle": "Today's tasks are unavailable",
+      "errorHint": "Please try again shortly.",
+      "retry": "Retry",
+      "courses": "Courses",
+      "search": "Search courses",
+      "resultCount": "{count} of {total} courses",
+      "catalogEmpty": "No courses are available yet.",
+      "noMatches": "No courses match your search.",
+      "shelfError": "Courses could not be loaded.",
+      "shelfUnavailable": "The course list is unavailable.",
+      "noSummary": "No description yet",
+      "mistakes": "Mistakes",
+      "mistakesDesc": "Incorrect answers go to Mistakes for later review.",
+      "mistakesAction": "Open Mistakes",
+      "changeGoal": "Change goal",
+      "assessment": "Take assessment",
+      "loginNote": "Sign in to see your learning progress.",
+      "loginAction": "Sign in to continue",
+      "guideAction": "Continue setup to start learning",
+      "guideProgress": "Remaining steps: {steps}",
+      "guideSteps": ["Confirm identity", "Required consent", "Learning goal", "Placement"],
+      "planConflict": "The plan changed. Read it again.",
+      "replanFailed": "Goal saved. Your plan has not been re-ordered yet."
+    },
+    "domainCopyRequiresI18n": [
+      "还没有学习计划 / 先完成设置，再开始今天的练习。/ 开始设置",
+      "今天的学习已经完成 / 已保存的练习还在。/ 结束学习",
+      "暂时没有可学习的内容 / 可以先看现在能打开的内容。/ 看可用内容",
+      "今天没有到期的复习 / 可以新学一节，或先结束今天。/ 新学或结束",
+      "今日任务没有加载成功 / 已提交的进度会保留。/ 重试",
+      "继续设置，开始学习",
+      "第一次学习还没有可完成的任务",
+      "继续完成第一次学习",
+      "今天排不下，已顺延，这不是欠账。"
+    ],
+    "forbidden": ["口号/承诺/恐吓文案", "把测量/等级/已掌握写进首页", "编造任务数、错题数、计划状态"]
+  },
+  "tests": {
+    "status": "NOT_RUN",
+    "groups": [
+      {"id": "entry", "items": ["#/pages/home/home", "canonical #/ lands on home", "18183 fixed port", "same source hash"]},
+      {"id": "states", "items": ["loading", "ready all 5 task statuses", "5 empty reasons", "home offline/error/forbidden", "content READY/EMPTY/UNAVAILABLE", "stale", "guide 4 steps + rejected", "plan notice 409/failure", "unauthenticated deep link"]},
+      {"id": "search-native", "items": ["native immediate input", "IME composition", "case/whitespace", "clear", "no matches", "locale switch", "result count consistency"]},
+      {"id": "restore", "items": ["return from learn/assessment/onboarding/settings", "onShow refresh", "fast tab switching", "concurrent loadHome last-write-wins"]},
+      {"id": "busy", "items": ["repeat retry", "repeat primary/task/course/secondary", "single navigation", "disabled task no-op"]},
+      {"id": "late-identity", "items": ["delayed home/catalog/today/guide", "account switch", "logout", "permission loss", "401/403 routing"]},
+      {"id": "permissions", "items": ["PUBLISHED only", "RIGHTS_* hidden", "learner.home.read missing explicit", "no fake empty list"]},
+      {"id": "no-fabrication", "items": ["emptyReason action mapping", "NO_PLAN never assessment", "no planId no start", "no report no level", "target 0 no progress", "no mistake count"]},
+      {"id": "typography-theme-locale", "items": ["320/390/768/1280", "zh/en", "light/dark/system/high-contrast", "200% text", "28/39,16/24,>=14", "44/48 controls", ">=3:1 borders"]},
+      {"id": "a11y-input", "items": ["tab order", "Enter/Space", "visible focus", "single H1", "status/alert dedupe", "status not color-only"]},
+      {"id": "engineering", "items": ["typecheck/build", "named state/contract tests", "author+review same hash", "backend/IAM/native separated"]}
+    ]
+  },
+  "notRun": ["browser", "server", "tests", "build", "git", "network", "install"],
+  "nextDependency": [
+    "Root-provided simple home reference",
+    "decision on H1 key",
+    "decision on search retention",
+    "decision on 403 copy split",
+    "decision on learner.home.read gate",
+    "i18n latest bytes before narrow key addition"
+  ]
+}

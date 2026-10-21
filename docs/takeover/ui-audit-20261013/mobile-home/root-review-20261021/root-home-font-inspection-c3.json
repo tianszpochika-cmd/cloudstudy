@@ -1,0 +1,102 @@
+{
+  "scope": "Root read-only real H5/CDP inspection; not full-page acceptance",
+  "time": "2026-10-21T05:35:15.514Z",
+  "facts": [
+    {
+      "selector": ".home-brand",
+      "css": {
+        "text": "语学星",
+        "family": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+        "size": "15px",
+        "lineHeight": "22.5px"
+      },
+      "used": {
+        "fonts": [
+          {
+            "familyName": "Microsoft YaHei",
+            "postScriptName": "MicrosoftYaHei-Bold",
+            "isCustomFont": false,
+            "glyphCount": 3
+          }
+        ]
+      }
+    },
+    {
+      "selector": ".home-title",
+      "css": {
+        "text": "mobile.home.h1",
+        "family": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+        "size": "28px",
+        "lineHeight": "39.2px"
+      },
+      "used": {
+        "fonts": [
+          {
+            "familyName": "Microsoft YaHei",
+            "postScriptName": "MicrosoftYaHei-Bold",
+            "isCustomFont": false,
+            "glyphCount": 14
+          }
+        ]
+      }
+    },
+    {
+      "selector": ".home-task__title",
+      "css": {
+        "text": "机场值机：换取登机牌",
+        "family": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+        "size": "16px",
+        "lineHeight": "24px"
+      },
+      "used": {
+        "fonts": [
+          {
+            "familyName": "Microsoft YaHei",
+            "postScriptName": "MicrosoftYaHei-Bold",
+            "isCustomFont": false,
+            "glyphCount": 10
+          }
+        ]
+      }
+    },
+    {
+      "selector": ".home-task__primary",
+      "css": {
+        "text": "mobile.home.startLearning",
+        "family": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+        "size": "16px",
+        "lineHeight": "24px"
+      },
+      "used": {
+        "fonts": [
+          {
+            "familyName": "Microsoft YaHei",
+            "postScriptName": "MicrosoftYaHei-Bold",
+            "isCustomFont": false,
+            "glyphCount": 25
+          }
+        ]
+      }
+    },
+    {
+      "selector": ".home-task__desc",
+      "css": {
+        "text": "跟着对话完成值机与行李托运。",
+        "family": "Inter, \"PingFang SC\", \"Microsoft YaHei\", system-ui, sans-serif",
+        "size": "14px",
+        "lineHeight": "22.4px"
+      },
+      "used": {
+        "fonts": [
+          {
+            "familyName": "Microsoft YaHei",
+            "postScriptName": "MicrosoftYaHei",
+            "isCustomFont": false,
+            "glyphCount": 14
+          }
+        ]
+      }
+    }
+  ],
+  "contextsClosed": true
+}

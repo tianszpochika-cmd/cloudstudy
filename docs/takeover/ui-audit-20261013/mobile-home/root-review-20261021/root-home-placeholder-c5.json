@@ -1,0 +1,12 @@
+{
+  "scope": "C5 dark native placeholder read-only audit",
+  "facts": {
+    "native": "rgb(117, 117, 117)",
+    "overlay": "rgb(178, 183, 205)",
+    "rules": [
+      ".home-search[data-v-0cd09a48] .uni-input-placeholder { color: var(--yx-text-secondary); opacity: 1; font: inherit; }",
+      ".home-search[data-v-0cd09a48] uni-input::placeholder { color: var(--yx-text-secondary); opacity: 1; font: inherit; }"
+    ]
+  },
+  "closed": true
+}

@@ -1,0 +1,124 @@
+{
+  "scope": "Root real H5 bounded race diagnosis",
+  "facts": {
+    "beforeSettings": {
+      "disabled": "true",
+      "aria": null,
+      "rect": {
+        "x": 326,
+        "y": -32,
+        "width": 44,
+        "height": 44,
+        "top": -32,
+        "right": 370,
+        "bottom": 12,
+        "left": 326
+      }
+    },
+    "url": "http://127.0.0.1:18183/#/",
+    "dom": "语学星\n今日学习\n正在读取今日任务…\n学习\n练习\n成长\n课程\n我的",
+    "requests": [
+      {
+        "method": "POST",
+        "path": "/api/v1/auth/login",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/learner/targets",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/learner/profile",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/learner/targets",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/learner/preferences",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/learner/targets",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/learner/home",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/content/learner/catalog",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/learning/today",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/content/learner/mb007-course-airport",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/learning/review-queue",
+        "status": 501
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/learner/targets",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/learner/home",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/content/learner/catalog",
+        "status": 200
+      }
+    ]
+  },
+  "closed": true
+}

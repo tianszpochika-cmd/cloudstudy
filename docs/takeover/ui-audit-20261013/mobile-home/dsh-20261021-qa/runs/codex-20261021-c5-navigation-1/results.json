@@ -1,0 +1,519 @@
+{
+  "scope": "MB007_QA_NAVIGATION",
+  "preparedBy": "DSH author session (prepared, not executed)",
+  "preparedAt": "2026-10-21",
+  "case": "navigation",
+  "runId": "codex-20261021-c5-navigation-1",
+  "runDirectory": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-home\\dsh-20261021-qa\\runs\\codex-20261021-c5-navigation-1",
+  "at": "2026-10-21T05:46:24.423Z",
+  "base": "http://127.0.0.1:18183",
+  "expectedHashes": {
+    "home": "920df081a81e96b940c286e72821a0ecbd7300ee97ddaa66d4cd5ef5651548d9",
+    "i18n": "278b9d030b02532a872c502b38f62561e41dc94ffdfb7abc35585c4496967ddc",
+    "store": "c4ef9dd83452ea44f6deda55ac0be2dd3e49a810cd82d183d5342fa9b71cec21",
+    "runtime": "03b21bab8c4121ec289b5633ae9fab79ba0b64c60d0431f7adbf8953115f265a"
+  },
+  "observedHashes": {
+    "home": "920df081a81e96b940c286e72821a0ecbd7300ee97ddaa66d4cd5ef5651548d9",
+    "i18n": "278b9d030b02532a872c502b38f62561e41dc94ffdfb7abc35585c4496967ddc",
+    "store": "c4ef9dd83452ea44f6deda55ac0be2dd3e49a810cd82d183d5342fa9b71cec21",
+    "runtime": "03b21bab8c4121ec289b5633ae9fab79ba0b64c60d0431f7adbf8953115f265a"
+  },
+  "sourceHashesBefore": {
+    "page": {
+      "path": "apps/mobile/src/pages/home/home.vue",
+      "sha256": "920df081a81e96b940c286e72821a0ecbd7300ee97ddaa66d4cd5ef5651548d9"
+    },
+    "i18n": {
+      "path": "packages/i18n/src/mobile-experience.ts",
+      "sha256": "278b9d030b02532a872c502b38f62561e41dc94ffdfb7abc35585c4496967ddc"
+    },
+    "store": {
+      "path": "apps/mobile/src/stores/learner-content.ts",
+      "sha256": "c4ef9dd83452ea44f6deda55ac0be2dd3e49a810cd82d183d5342fa9b71cec21"
+    },
+    "api": {
+      "path": "apps/mobile/src/api/learner-content.ts",
+      "sha256": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6"
+    },
+    "session": {
+      "path": "apps/mobile/src/stores/session.ts",
+      "sha256": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931"
+    },
+    "navigation": {
+      "path": "apps/mobile/src/auth/navigation.ts",
+      "sha256": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5"
+    },
+    "runtime": {
+      "path": "apps/mobile/src/platform/uni-runtime.ts",
+      "sha256": "03b21bab8c4121ec289b5633ae9fab79ba0b64c60d0431f7adbf8953115f265a"
+    },
+    "handoff": {
+      "path": "apps/mobile/src/platform/public-auth-handoff.mjs",
+      "sha256": "f363aad14b7a52fcb7138be6c659d509a7201daeb4b32d100f4e92db83d812be"
+    },
+    "depPackage": {
+      "path": "apps/mobile/package.json",
+      "sha256": "484382c73929055cc4ecd9a83679f8bab72388dd8069f71a056b3bbc595c0078"
+    },
+    "depLock": {
+      "path": "pnpm-lock.yaml",
+      "sha256": "d57a87ca84985549fd53c69b1fe1d59db0b136036f2f7bf640d3b30c0a106624"
+    }
+  },
+  "sourceHashesAfter": {
+    "page": {
+      "path": "apps/mobile/src/pages/home/home.vue",
+      "sha256": "920df081a81e96b940c286e72821a0ecbd7300ee97ddaa66d4cd5ef5651548d9"
+    },
+    "i18n": {
+      "path": "packages/i18n/src/mobile-experience.ts",
+      "sha256": "278b9d030b02532a872c502b38f62561e41dc94ffdfb7abc35585c4496967ddc"
+    },
+    "store": {
+      "path": "apps/mobile/src/stores/learner-content.ts",
+      "sha256": "c4ef9dd83452ea44f6deda55ac0be2dd3e49a810cd82d183d5342fa9b71cec21"
+    },
+    "api": {
+      "path": "apps/mobile/src/api/learner-content.ts",
+      "sha256": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6"
+    },
+    "session": {
+      "path": "apps/mobile/src/stores/session.ts",
+      "sha256": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931"
+    },
+    "navigation": {
+      "path": "apps/mobile/src/auth/navigation.ts",
+      "sha256": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5"
+    },
+    "runtime": {
+      "path": "apps/mobile/src/platform/uni-runtime.ts",
+      "sha256": "03b21bab8c4121ec289b5633ae9fab79ba0b64c60d0431f7adbf8953115f265a"
+    },
+    "handoff": {
+      "path": "apps/mobile/src/platform/public-auth-handoff.mjs",
+      "sha256": "f363aad14b7a52fcb7138be6c659d509a7201daeb4b32d100f4e92db83d812be"
+    },
+    "depPackage": {
+      "path": "apps/mobile/package.json",
+      "sha256": "484382c73929055cc4ecd9a83679f8bab72388dd8069f71a056b3bbc595c0078"
+    },
+    "depLock": {
+      "path": "pnpm-lock.yaml",
+      "sha256": "d57a87ca84985549fd53c69b1fe1d59db0b136036f2f7bf640d3b30c0a106624"
+    }
+  },
+  "sourcesStable": true,
+  "checks": [
+    {
+      "name": "navigation-primary-task-visible",
+      "result": "PASS",
+      "detail": {
+        "primaryText": "开始学习"
+      }
+    },
+    {
+      "name": "navigation-primary-learn-get",
+      "result": "PASS",
+      "detail": {
+        "beforeDetail": 1,
+        "afterDetail": 2,
+        "url": "http://127.0.0.1:18183/#/pages/learn/learn"
+      }
+    },
+    {
+      "name": "navigation-primary-learn-dom",
+      "result": "PASS",
+      "detail": {
+        "url": "http://127.0.0.1:18183/#/pages/learn/learn",
+        "excerpt": "✦\n语学星\n☷\n课程\n课程与练习\n继续课程，查看复习内容。\n找到今天的练习灵感\n听 · 说 · 读 · 写\nAa\n单词复习\n先回想，再揭晓。用适合你的节奏巩固记忆。\n▤\n分级阅读\n选择适合的阅读难度，把好表达收入日常。\n⌘\n语法结构\n拆解结构、调整语序，把语法变成表达的底气。\n课程\n课程内容\n机场值机：从问候到登机牌\n英语 · 课程\n值机、托运行李和登机口问路。airport check-in practice.\nSynthetic lesson item. No formal report, plan or legal text is produced.\n练习\n练习入口\n基础练习\n分级阅读\n语法练习\n复习\n待复习 0 项\n尚不能判断\n暂无待复习内容。\nNo due reviews.\n学习\n练习\n成长\n课程\n我的"
+      }
+    },
+    {
+      "name": "navigation-return-home-via-tab",
+      "result": "PASS",
+      "detail": {
+        "homeBack": {
+          "method": "tab",
+          "label": "学习"
+        },
+        "beforeHome": 1,
+        "afterHome": 2,
+        "url": "http://127.0.0.1:18183/#/"
+      }
+    },
+    {
+      "name": "navigation-course-row-visible",
+      "result": "PASS",
+      "detail": {
+        "url": "http://127.0.0.1:18183/#/"
+      }
+    },
+    {
+      "name": "navigation-course-learn-get",
+      "result": "FAIL",
+      "detail": {
+        "beforeCourseDetail": 3,
+        "afterCourseDetail": 3,
+        "url": "http://127.0.0.1:18183/#/pages/learn/learn"
+      }
+    },
+    {
+      "name": "navigation-course-learn-dom",
+      "result": "PASS",
+      "detail": {
+        "url": "http://127.0.0.1:18183/#/pages/learn/learn",
+        "excerpt": "✦\n语学星\n☷\n课程\n课程与练习\n继续课程，查看复习内容。\n找到今天的练习灵感\n听 · 说 · 读 · 写\nAa\n单词复习\n先回想，再揭晓。用适合你的节奏巩固记忆。\n▤\n分级阅读\n选择适合的阅读难度，把好表达收入日常。\n⌘\n语法结构\n拆解结构、调整语序，把语法变成表达的底气。\n课程\n课程内容\n机场值机：从问候到登机牌\n英语 · 课程\n值机、托运行李和登机口问路。airport check-in practice.\nSynthetic lesson item. No formal report, plan or legal text is produced.\n练习\n练习入口\n基础练习\n分级阅读\n语法练习\n复习\n待复习 0 项\n尚不能判断\n暂无待复习内容。\nNo due reviews.\n学习\n练习\n成长\n课程\n我的"
+      }
+    },
+    {
+      "name": "browser-closed-cleanly",
+      "result": "PASS",
+      "detail": {
+        "closed": true
+      }
+    },
+    {
+      "name": "source-and-deps-hashes-stable",
+      "result": "PASS",
+      "detail": {
+        "before": {
+          "page": {
+            "path": "apps/mobile/src/pages/home/home.vue",
+            "sha256": "920df081a81e96b940c286e72821a0ecbd7300ee97ddaa66d4cd5ef5651548d9"
+          },
+          "i18n": {
+            "path": "packages/i18n/src/mobile-experience.ts",
+            "sha256": "278b9d030b02532a872c502b38f62561e41dc94ffdfb7abc35585c4496967ddc"
+          },
+          "store": {
+            "path": "apps/mobile/src/stores/learner-content.ts",
+            "sha256": "c4ef9dd83452ea44f6deda55ac0be2dd3e49a810cd82d183d5342fa9b71cec21"
+          },
+          "api": {
+            "path": "apps/mobile/src/api/learner-content.ts",
+            "sha256": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6"
+          },
+          "session": {
+            "path": "apps/mobile/src/stores/session.ts",
+            "sha256": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931"
+          },
+          "navigation": {
+            "path": "apps/mobile/src/auth/navigation.ts",
+            "sha256": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5"
+          },
+          "runtime": {
+            "path": "apps/mobile/src/platform/uni-runtime.ts",
+            "sha256": "03b21bab8c4121ec289b5633ae9fab79ba0b64c60d0431f7adbf8953115f265a"
+          },
+          "handoff": {
+            "path": "apps/mobile/src/platform/public-auth-handoff.mjs",
+            "sha256": "f363aad14b7a52fcb7138be6c659d509a7201daeb4b32d100f4e92db83d812be"
+          },
+          "depPackage": {
+            "path": "apps/mobile/package.json",
+            "sha256": "484382c73929055cc4ecd9a83679f8bab72388dd8069f71a056b3bbc595c0078"
+          },
+          "depLock": {
+            "path": "pnpm-lock.yaml",
+            "sha256": "d57a87ca84985549fd53c69b1fe1d59db0b136036f2f7bf640d3b30c0a106624"
+          }
+        },
+        "after": {
+          "page": {
+            "path": "apps/mobile/src/pages/home/home.vue",
+            "sha256": "920df081a81e96b940c286e72821a0ecbd7300ee97ddaa66d4cd5ef5651548d9"
+          },
+          "i18n": {
+            "path": "packages/i18n/src/mobile-experience.ts",
+            "sha256": "278b9d030b02532a872c502b38f62561e41dc94ffdfb7abc35585c4496967ddc"
+          },
+          "store": {
+            "path": "apps/mobile/src/stores/learner-content.ts",
+            "sha256": "c4ef9dd83452ea44f6deda55ac0be2dd3e49a810cd82d183d5342fa9b71cec21"
+          },
+          "api": {
+            "path": "apps/mobile/src/api/learner-content.ts",
+            "sha256": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6"
+          },
+          "session": {
+            "path": "apps/mobile/src/stores/session.ts",
+            "sha256": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931"
+          },
+          "navigation": {
+            "path": "apps/mobile/src/auth/navigation.ts",
+            "sha256": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5"
+          },
+          "runtime": {
+            "path": "apps/mobile/src/platform/uni-runtime.ts",
+            "sha256": "03b21bab8c4121ec289b5633ae9fab79ba0b64c60d0431f7adbf8953115f265a"
+          },
+          "handoff": {
+            "path": "apps/mobile/src/platform/public-auth-handoff.mjs",
+            "sha256": "f363aad14b7a52fcb7138be6c659d509a7201daeb4b32d100f4e92db83d812be"
+          },
+          "depPackage": {
+            "path": "apps/mobile/package.json",
+            "sha256": "484382c73929055cc4ecd9a83679f8bab72388dd8069f71a056b3bbc595c0078"
+          },
+          "depLock": {
+            "path": "pnpm-lock.yaml",
+            "sha256": "d57a87ca84985549fd53c69b1fe1d59db0b136036f2f7bf640d3b30c0a106624"
+          }
+        }
+      }
+    },
+    {
+      "name": "console-errors-classified",
+      "result": "PASS",
+      "detail": {
+        "expectedHttpConsole": [],
+        "unexpectedConsoleErrors": [],
+        "allowedConsolePaths": [],
+        "expectedConsoleStatuses": []
+      }
+    },
+    {
+      "name": "no-page-errors",
+      "result": "PASS",
+      "detail": {
+        "pageErrors": []
+      }
+    },
+    {
+      "name": "no-unknown-api",
+      "result": "PASS",
+      "detail": {
+        "unknown": [],
+        "note": "Settled after the case interaction; top-level and detail counts share the same caseKey source."
+      }
+    }
+  ],
+  "gaps": [],
+  "result": "FAIL",
+  "evidence": {
+    "navigation": {
+      "primaryText": "开始学习",
+      "primary": {
+        "beforeDetail": 1,
+        "afterDetail": 2,
+        "learnText": "✦\n语学星\n☷\n课程\n课程与练习\n继续课程，查看复习内容。\n找到今天的练习灵感\n听 · 说 · 读 · 写\nAa\n单词复习\n先回想，再揭晓。用适合你的节奏巩固记忆。\n▤\n分级阅读\n选择适合的阅读难度，把好表达收入日常。\n⌘\n语法结构\n拆解结构、调整语序，把语法变成表达的底气。\n课程\n课程内容\n机场值机：从问候到登机牌\n英语 · 课程\n值机、托运行李和登机口问路。airport check-in practice.\nSynthetic lesson item. No formal report, plan or legal text is produced.\n练习\n练习入口\n基础练习\n分级阅读\n语法练习\n复习\n待复习 0 项\n尚不能判断\n暂无待复习内容。\nNo due reviews.\n学习\n练习\n成长\n课程\n我的"
+      },
+      "course": {
+        "beforeCourseDetail": 3,
+        "afterCourseDetail": 3,
+        "courseText": "✦\n语学星\n☷\n课程\n课程与练习\n继续课程，查看复习内容。\n找到今天的练习灵感\n听 · 说 · 读 · 写\nAa\n单词复习\n先回想，再揭晓。用适合你的节奏巩固记忆。\n▤\n分级阅读\n选择适合的阅读难度，把好表达收入日常。\n⌘\n语法结构\n拆解结构、调整语序，把语法变成表达的底气。\n课程\n课程内容\n机场值机：从问候到登机牌\n英语 · 课程\n值机、托运行李和登机口问路。airport check-in practice.\nSynthetic lesson item. No formal report, plan or legal text is produced.\n练习\n练习入口\n基础练习\n分级阅读\n语法练习\n复习\n待复习 0 项\n尚不能判断\n暂无待复习内容。\nNo due reviews.\n学习\n练习\n成长\n课程\n我的"
+      }
+    },
+    "screenshot": {
+      "fullpage": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-home\\dsh-20261021-qa\\runs\\codex-20261021-c5-navigation-1\\01-navigation-course-learn-full.png",
+      "viewport": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-home\\dsh-20261021-qa\\runs\\codex-20261021-c5-navigation-1\\01-navigation-course-learn-viewport.png"
+    }
+  },
+  "api": {
+    "requestCount": 22,
+    "unknownCount": 0,
+    "unknown": [],
+    "writeCount": 1,
+    "authWrites": [
+      {
+        "caseId": 1,
+        "caseKey": "navigation",
+        "method": "POST",
+        "path": "/api/v1/auth/login",
+        "status": 200,
+        "held": false
+      }
+    ],
+    "domainWrites": [],
+    "requests": [
+      {
+        "caseId": 1,
+        "caseKey": "navigation",
+        "method": "POST",
+        "path": "/api/v1/auth/login",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "navigation",
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "navigation",
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "navigation",
+        "method": "GET",
+        "path": "/api/v1/learner/targets",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "navigation",
+        "method": "GET",
+        "path": "/api/v1/learner/profile",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "navigation",
+        "method": "GET",
+        "path": "/api/v1/learner/targets",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "navigation",
+        "method": "GET",
+        "path": "/api/v1/learner/preferences",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "navigation",
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "navigation",
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "navigation",
+        "method": "GET",
+        "path": "/api/v1/learner/targets",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "navigation",
+        "method": "GET",
+        "path": "/api/v1/learner/home",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "navigation",
+        "method": "GET",
+        "path": "/api/v1/content/learner/catalog",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "navigation",
+        "method": "GET",
+        "path": "/api/v1/learning/today",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "navigation",
+        "method": "GET",
+        "path": "/api/v1/content/learner/mb007-course-airport",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "navigation",
+        "method": "GET",
+        "path": "/api/v1/learning/review-queue",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "navigation",
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "navigation",
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "navigation",
+        "method": "GET",
+        "path": "/api/v1/learner/targets",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "navigation",
+        "method": "GET",
+        "path": "/api/v1/learner/home",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "navigation",
+        "method": "GET",
+        "path": "/api/v1/content/learner/catalog",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "navigation",
+        "method": "GET",
+        "path": "/api/v1/learning/today",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "navigation",
+        "method": "GET",
+        "path": "/api/v1/learning/review-queue",
+        "status": 200,
+        "held": false
+      }
+    ]
+  },
+  "consoleWarnings": [],
+  "consoleErrors": [],
+  "consoleClassification": {
+    "expectedHttpConsole": [],
+    "unexpectedConsoleErrors": [],
+    "allowedConsolePaths": [],
+    "expectedConsoleStatuses": []
+  },
+  "pageErrors": [],
+  "closed": true,
+  "exitCode": 1
+}

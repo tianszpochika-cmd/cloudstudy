@@ -1,5 +1,14 @@
 # 迭代 2（第二轮重设计）当前进度 — dev-redesign
 
+> **2026-10-21 人类暂停并授权提交（最新）**：人类先说“先暂停工作”，随后要求“更新文档并把所有工作提交到远程”，为新的普通Git推送授权（不绕权限/不改安全配置/不探凭据/不换SSH/不force）。当前HEAD 5b3ca5a7、index0，本地UI 9/远程7仍为发布前；MB007 home C8 b097私有候选未签、浏览器未验，auth401/empty/cross-owner风险未清，旧C7具名PASS不套C8；自动任务已不存在且不创建替代。详见[用户暂停与提交指令](../../../takeover/ui-audit-20261013/USER-PAUSE-AND-PUBLISH-20261021.md)。
+
+
+> **2026-10-21 20:40已恢复（最新）**：Root实读0%/周62%、ordinary=true，reset→2026-10-22 01:40:42 CST；HEAD 5b3ca5a7/index0，五源与暂停一致，18183/18180当前无监听（旧服务自退），准备固定18183严格端口；本地UI9/远程7，MB007首页C8 b097私有未签未提交，LearnL2仅跳转补修；Root先审C8与最终QA脚本、复验auth401/empty/cross-owner，再全矩阵；旧C7 PASS不升级C8，发布仍DSH Git阻塞禁fetch/push，>=95只存断点。详见[恢复记录](../../../takeover/ui-audit-20261013/RESUME-20261021-2040.md)。
+
+
+> **2026-10-21 16:26实际暂停（最新）**：Root实读五小时96%/周62%、ordinary=true，已停止新设计/源码/测试，仅保存断点。本地UI 9页/远程7页；MB007首页IN_REVIEW/PRIVATE_CANDIDATE_C8未签未提交；MB005 758dc0fb与MB006 C8 8a66cc73均本地未推；HEAD 5b3ca5a7，远程3230ac94仅旧读值。DSH Git helper子进程权限/无审批通道阻塞，禁fetch/push/SSH/探钥/Root代Git。本轮完成首页全重排候选+Learn onShow任务跳转L2窄补修（Learn非整页、不计页面）；C7→C8真实home401+refresh401清会话后仍停#/，为产品FAIL（root-home-auth401-l2.json/.png），C8仅候选会话恢复未浏览器复验。当前五源raw：home b097382f/i18n7e2ef7b5(store c4ef9dd8/runtime03b21bab/LearnL2 4bd50e4b)，package/lock未改；快照含16源/测试/候选记录，56保护0漂移/14目录、index0、原dirty保留。C8-CANDIDATE仅作者typecheck/SFC通过、browser NOT_RUN；Root旧读6813与当前b097差异已记录，恢复按实际字节；c8-l2-auth-1目录不存在，不得称已跑auth。旧C7五源组合ready24/search19/nav13/retry16/learn-retry9/late-same13/learn-late10/plan-late13、共享auth3 15/assessment-home5、full34/68PNG零失败、build0，仅旧组合不升级C8/IAM/native。未收口：empty40/41测试过早、auth401真实产品FAIL待C8、cross-owner late测试前提GAP；QA脚本PREPARED NOT_RUN未审。C7原件ARCHIVE_GAP、archive为RECONSTRUCTED不可冒称原始。恢复先查额度<95、读actual raw、审C8与QA差量、真实auth401/empty/cross-owner，再构建/矩阵/独立审；未签不提交。18183当前93267/PID40220 creation14:10:03，旧已停；18180 24615/PID42932未动。ui下一17:53 CST后每5h，>=95只存断点。详见[暂停记录](../../../takeover/ui-audit-20261013/PAUSE-20261021-1626.md)。
+
+
 > **2026-10-21 09:15实际暂停（最新）**：Root实读primary95%/周46%、ordinary=true，立即停止新设计/修复/测试/新页，本轮仅保存断点。C8页已local commit **8a66cc73…**（parent 687af101…，branch dev-redesign，index 0），为本地提交非推送；687af101为提交前快照HEAD。Local UI 9/远程7，MB005 758dc0fb与本页均未推，PUBLISH_BLOCKED（DSH Git helper子进程权限阻塞，不重试/不探凭据/Root不代Git）。C8三主要修复与已验各组见FINAL-UI-REVIEW；states full suite仍FAIL（read/skip/restore唯一no-console-warnings 12/9/6），settings-baseline 9/today 2/owner-read 14 warnings原样保留；真实后台/IAM/native未PASS，SKIPPED/首次start/retest{} GAP继续。18183 Root 99776/PID37960 creation21Oct08:27:39，pinned 4.4.4；18180 24615/PID42932先核未动。保护56文件/14目录0漂移，产品raw/LF快照已存私有目录。reset 1792558092=今天12:48:12，heartbeat DTSTART20261021T045000Z每5h，下查12:50。下一页MB007首页未开始，不重做C8。详见[暂停记录](../../../takeover/ui-audit-20261013/PAUSE-20261021-0915.md)与[本地提交收据](../../../takeover/ui-audit-20261013/LOCAL-COMMIT-RECEIPT-20261021-MB006.md)。
 
 

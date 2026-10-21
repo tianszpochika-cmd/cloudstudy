@@ -1,0 +1,71 @@
+{
+  "scope": "Root read-only real H5 keyboard Tab inspection; not full-page acceptance",
+  "time": "2026-10-21T05:40:03.144Z",
+  "facts": [
+    {
+      "tag": "UNI-BUTTON",
+      "cls": "home-settings",
+      "label": "设置",
+      "isSearch": false,
+      "outline": null
+    },
+    {
+      "tag": "UNI-BUTTON",
+      "cls": "home-primary home-task__primary",
+      "label": null,
+      "isSearch": false,
+      "outline": null
+    },
+    {
+      "tag": "UNI-BUTTON",
+      "cls": "home-ghost home-task__secondary",
+      "label": null,
+      "isSearch": false,
+      "outline": null
+    },
+    {
+      "tag": "INPUT",
+      "cls": "uni-input-input",
+      "label": "搜索课程",
+      "isSearch": true,
+      "outline": "rgb(89, 55, 209) solid 2px",
+      "focusWithin": true
+    },
+    {
+      "tag": "UNI-BUTTON",
+      "cls": "home-course",
+      "label": null,
+      "isSearch": false,
+      "outline": null
+    },
+    {
+      "tag": "UNI-BUTTON",
+      "cls": "home-course",
+      "label": null,
+      "isSearch": false,
+      "outline": null
+    },
+    {
+      "tag": "UNI-BUTTON",
+      "cls": "home-navrow",
+      "label": null,
+      "isSearch": false,
+      "outline": null
+    },
+    {
+      "tag": "UNI-BUTTON",
+      "cls": "home-text-action",
+      "label": null,
+      "isSearch": false,
+      "outline": null
+    },
+    {
+      "tag": "UNI-BUTTON",
+      "cls": "home-text-action",
+      "label": null,
+      "isSearch": false,
+      "outline": null
+    }
+  ],
+  "contextsClosed": true
+}

@@ -1,0 +1,585 @@
+{
+  "scope": "MB007_QA_LATE-SAME",
+  "preparedBy": "DSH author session (prepared, not executed)",
+  "preparedAt": "2026-10-21",
+  "case": "late-same",
+  "runId": "codex-20261021-c6-late-same-1",
+  "runDirectory": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-home\\dsh-20261021-qa\\runs\\codex-20261021-c6-late-same-1",
+  "at": "2026-10-21T05:53:48.264Z",
+  "base": "http://127.0.0.1:18183",
+  "expectedHashes": {
+    "home": "593994f2a6340e450b674cf492c5ed99f1cfc10f61f67b79ebb1c327ccae020d",
+    "i18n": "278b9d030b02532a872c502b38f62561e41dc94ffdfb7abc35585c4496967ddc",
+    "store": "c4ef9dd83452ea44f6deda55ac0be2dd3e49a810cd82d183d5342fa9b71cec21",
+    "runtime": "03b21bab8c4121ec289b5633ae9fab79ba0b64c60d0431f7adbf8953115f265a"
+  },
+  "observedHashes": {
+    "home": "593994f2a6340e450b674cf492c5ed99f1cfc10f61f67b79ebb1c327ccae020d",
+    "i18n": "278b9d030b02532a872c502b38f62561e41dc94ffdfb7abc35585c4496967ddc",
+    "store": "c4ef9dd83452ea44f6deda55ac0be2dd3e49a810cd82d183d5342fa9b71cec21",
+    "runtime": "03b21bab8c4121ec289b5633ae9fab79ba0b64c60d0431f7adbf8953115f265a"
+  },
+  "sourceHashesBefore": {
+    "page": {
+      "path": "apps/mobile/src/pages/home/home.vue",
+      "sha256": "593994f2a6340e450b674cf492c5ed99f1cfc10f61f67b79ebb1c327ccae020d"
+    },
+    "i18n": {
+      "path": "packages/i18n/src/mobile-experience.ts",
+      "sha256": "278b9d030b02532a872c502b38f62561e41dc94ffdfb7abc35585c4496967ddc"
+    },
+    "store": {
+      "path": "apps/mobile/src/stores/learner-content.ts",
+      "sha256": "c4ef9dd83452ea44f6deda55ac0be2dd3e49a810cd82d183d5342fa9b71cec21"
+    },
+    "api": {
+      "path": "apps/mobile/src/api/learner-content.ts",
+      "sha256": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6"
+    },
+    "session": {
+      "path": "apps/mobile/src/stores/session.ts",
+      "sha256": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931"
+    },
+    "navigation": {
+      "path": "apps/mobile/src/auth/navigation.ts",
+      "sha256": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5"
+    },
+    "runtime": {
+      "path": "apps/mobile/src/platform/uni-runtime.ts",
+      "sha256": "03b21bab8c4121ec289b5633ae9fab79ba0b64c60d0431f7adbf8953115f265a"
+    },
+    "handoff": {
+      "path": "apps/mobile/src/platform/public-auth-handoff.mjs",
+      "sha256": "f363aad14b7a52fcb7138be6c659d509a7201daeb4b32d100f4e92db83d812be"
+    },
+    "depPackage": {
+      "path": "apps/mobile/package.json",
+      "sha256": "484382c73929055cc4ecd9a83679f8bab72388dd8069f71a056b3bbc595c0078"
+    },
+    "depLock": {
+      "path": "pnpm-lock.yaml",
+      "sha256": "d57a87ca84985549fd53c69b1fe1d59db0b136036f2f7bf640d3b30c0a106624"
+    }
+  },
+  "sourceHashesAfter": {
+    "page": {
+      "path": "apps/mobile/src/pages/home/home.vue",
+      "sha256": "593994f2a6340e450b674cf492c5ed99f1cfc10f61f67b79ebb1c327ccae020d"
+    },
+    "i18n": {
+      "path": "packages/i18n/src/mobile-experience.ts",
+      "sha256": "278b9d030b02532a872c502b38f62561e41dc94ffdfb7abc35585c4496967ddc"
+    },
+    "store": {
+      "path": "apps/mobile/src/stores/learner-content.ts",
+      "sha256": "c4ef9dd83452ea44f6deda55ac0be2dd3e49a810cd82d183d5342fa9b71cec21"
+    },
+    "api": {
+      "path": "apps/mobile/src/api/learner-content.ts",
+      "sha256": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6"
+    },
+    "session": {
+      "path": "apps/mobile/src/stores/session.ts",
+      "sha256": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931"
+    },
+    "navigation": {
+      "path": "apps/mobile/src/auth/navigation.ts",
+      "sha256": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5"
+    },
+    "runtime": {
+      "path": "apps/mobile/src/platform/uni-runtime.ts",
+      "sha256": "03b21bab8c4121ec289b5633ae9fab79ba0b64c60d0431f7adbf8953115f265a"
+    },
+    "handoff": {
+      "path": "apps/mobile/src/platform/public-auth-handoff.mjs",
+      "sha256": "f363aad14b7a52fcb7138be6c659d509a7201daeb4b32d100f4e92db83d812be"
+    },
+    "depPackage": {
+      "path": "apps/mobile/package.json",
+      "sha256": "484382c73929055cc4ecd9a83679f8bab72388dd8069f71a056b3bbc595c0078"
+    },
+    "depLock": {
+      "path": "pnpm-lock.yaml",
+      "sha256": "d57a87ca84985549fd53c69b1fe1d59db0b136036f2f7bf640d3b30c0a106624"
+    }
+  },
+  "sourcesStable": true,
+  "checks": [
+    {
+      "name": "late-same-initial-payload",
+      "result": "PASS",
+      "detail": {
+        "firstTitle": "G1 机场值机：换取登机牌",
+        "payloads": 1
+      }
+    },
+    {
+      "name": "late-same-return-home-via-tab",
+      "result": "PASS",
+      "detail": {
+        "homeBack": {
+          "method": "tab",
+          "label": "学习"
+        },
+        "url": "http://127.0.0.1:18183/#/"
+      }
+    },
+    {
+      "name": "late-same-held-get-received",
+      "result": "PASS",
+      "detail": {
+        "received": {
+          "kind": "received",
+          "label": "same-held",
+          "path": "/api/v1/learner/home",
+          "owner": "A",
+          "generation": 2,
+          "payload": 2,
+          "at": "2026-10-21T05:53:13.515Z"
+        }
+      }
+    },
+    {
+      "name": "late-same-newer-payload-visible",
+      "result": "FAIL",
+      "detail": {
+        "heldPayload": 2,
+        "latest": 2,
+        "latestTitle": "G2 机场值机：换取登机牌",
+        "returnNav": {
+          "method": "tab",
+          "label": "学习"
+        },
+        "url": "http://127.0.0.1:18183/#/"
+      }
+    },
+    {
+      "name": "late-same-old-get-real-http-200",
+      "result": "PASS",
+      "detail": {
+        "received": true,
+        "fulfilled": true,
+        "aborted": false,
+        "label": "same-held",
+        "status": 200,
+        "payload": 2,
+        "planExplanation": null
+      }
+    },
+    {
+      "name": "late-same-newer-data-not-overwritten",
+      "result": "FAIL",
+      "detail": {
+        "excerpt": "语学星\n今日学习\n今日任务暂不可用\n请稍后重试。\n重试\n学习\n练习\n成长\n课程\n我的",
+        "heldPayload": 2,
+        "latest": 2
+      }
+    },
+    {
+      "name": "browser-closed-cleanly",
+      "result": "PASS",
+      "detail": {
+        "closed": true
+      }
+    },
+    {
+      "name": "source-and-deps-hashes-stable",
+      "result": "PASS",
+      "detail": {
+        "before": {
+          "page": {
+            "path": "apps/mobile/src/pages/home/home.vue",
+            "sha256": "593994f2a6340e450b674cf492c5ed99f1cfc10f61f67b79ebb1c327ccae020d"
+          },
+          "i18n": {
+            "path": "packages/i18n/src/mobile-experience.ts",
+            "sha256": "278b9d030b02532a872c502b38f62561e41dc94ffdfb7abc35585c4496967ddc"
+          },
+          "store": {
+            "path": "apps/mobile/src/stores/learner-content.ts",
+            "sha256": "c4ef9dd83452ea44f6deda55ac0be2dd3e49a810cd82d183d5342fa9b71cec21"
+          },
+          "api": {
+            "path": "apps/mobile/src/api/learner-content.ts",
+            "sha256": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6"
+          },
+          "session": {
+            "path": "apps/mobile/src/stores/session.ts",
+            "sha256": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931"
+          },
+          "navigation": {
+            "path": "apps/mobile/src/auth/navigation.ts",
+            "sha256": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5"
+          },
+          "runtime": {
+            "path": "apps/mobile/src/platform/uni-runtime.ts",
+            "sha256": "03b21bab8c4121ec289b5633ae9fab79ba0b64c60d0431f7adbf8953115f265a"
+          },
+          "handoff": {
+            "path": "apps/mobile/src/platform/public-auth-handoff.mjs",
+            "sha256": "f363aad14b7a52fcb7138be6c659d509a7201daeb4b32d100f4e92db83d812be"
+          },
+          "depPackage": {
+            "path": "apps/mobile/package.json",
+            "sha256": "484382c73929055cc4ecd9a83679f8bab72388dd8069f71a056b3bbc595c0078"
+          },
+          "depLock": {
+            "path": "pnpm-lock.yaml",
+            "sha256": "d57a87ca84985549fd53c69b1fe1d59db0b136036f2f7bf640d3b30c0a106624"
+          }
+        },
+        "after": {
+          "page": {
+            "path": "apps/mobile/src/pages/home/home.vue",
+            "sha256": "593994f2a6340e450b674cf492c5ed99f1cfc10f61f67b79ebb1c327ccae020d"
+          },
+          "i18n": {
+            "path": "packages/i18n/src/mobile-experience.ts",
+            "sha256": "278b9d030b02532a872c502b38f62561e41dc94ffdfb7abc35585c4496967ddc"
+          },
+          "store": {
+            "path": "apps/mobile/src/stores/learner-content.ts",
+            "sha256": "c4ef9dd83452ea44f6deda55ac0be2dd3e49a810cd82d183d5342fa9b71cec21"
+          },
+          "api": {
+            "path": "apps/mobile/src/api/learner-content.ts",
+            "sha256": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6"
+          },
+          "session": {
+            "path": "apps/mobile/src/stores/session.ts",
+            "sha256": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931"
+          },
+          "navigation": {
+            "path": "apps/mobile/src/auth/navigation.ts",
+            "sha256": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5"
+          },
+          "runtime": {
+            "path": "apps/mobile/src/platform/uni-runtime.ts",
+            "sha256": "03b21bab8c4121ec289b5633ae9fab79ba0b64c60d0431f7adbf8953115f265a"
+          },
+          "handoff": {
+            "path": "apps/mobile/src/platform/public-auth-handoff.mjs",
+            "sha256": "f363aad14b7a52fcb7138be6c659d509a7201daeb4b32d100f4e92db83d812be"
+          },
+          "depPackage": {
+            "path": "apps/mobile/package.json",
+            "sha256": "484382c73929055cc4ecd9a83679f8bab72388dd8069f71a056b3bbc595c0078"
+          },
+          "depLock": {
+            "path": "pnpm-lock.yaml",
+            "sha256": "d57a87ca84985549fd53c69b1fe1d59db0b136036f2f7bf640d3b30c0a106624"
+          }
+        }
+      }
+    },
+    {
+      "name": "console-errors-classified",
+      "result": "PASS",
+      "detail": {
+        "expectedHttpConsole": [],
+        "unexpectedConsoleErrors": [],
+        "allowedConsolePaths": [],
+        "expectedConsoleStatuses": [
+          401,
+          403
+        ]
+      }
+    },
+    {
+      "name": "no-page-errors",
+      "result": "PASS",
+      "detail": {
+        "pageErrors": []
+      }
+    },
+    {
+      "name": "no-unknown-api",
+      "result": "PASS",
+      "detail": {
+        "unknown": [],
+        "note": "Settled after the case interaction; top-level and detail counts share the same caseKey source."
+      }
+    }
+  ],
+  "gaps": [
+    {
+      "name": "late-same-browser-response-not-observed",
+      "note": "route.fulfill resolved but the page response event was not observed; browser receipt is NOT claimed."
+    }
+  ],
+  "result": "FAIL",
+  "evidence": {
+    "latePacket": {
+      "received": true,
+      "fulfilled": true,
+      "aborted": false,
+      "browserResponseObserved": false,
+      "browserStatus": null,
+      "browserFinishedAfterRelease": 0,
+      "release": {
+        "received": true,
+        "fulfilled": true,
+        "aborted": false,
+        "label": "same-held",
+        "status": 200,
+        "payload": 2,
+        "planExplanation": null
+      },
+      "heldPayload": 2,
+      "latest": 2
+    },
+    "after": {
+      "url": "http://127.0.0.1:18183/#/",
+      "excerpt": "语学星\n今日学习\n今日任务暂不可用\n请稍后重试。\n重试\n学习\n练习\n成长\n课程\n我的",
+      "hold": {
+        "received": 1,
+        "fulfilled": 1,
+        "aborted": 0,
+        "pending": 0,
+        "events": [
+          {
+            "kind": "received",
+            "label": "same-held",
+            "path": "/api/v1/learner/home",
+            "owner": "A",
+            "generation": 2,
+            "payload": 2,
+            "at": "2026-10-21T05:53:13.515Z"
+          },
+          {
+            "kind": "fulfilled",
+            "label": "same-held",
+            "path": "/api/v1/learner/home",
+            "payload": 2,
+            "status": 200,
+            "at": "2026-10-21T05:53:43.982Z"
+          }
+        ]
+      },
+      "latePacket": {
+        "received": true,
+        "fulfilled": true,
+        "aborted": false,
+        "browserResponseObserved": false,
+        "browserStatus": null,
+        "browserFinishedAfterRelease": 0,
+        "release": {
+          "received": true,
+          "fulfilled": true,
+          "aborted": false,
+          "label": "same-held",
+          "status": 200,
+          "payload": 2,
+          "planExplanation": null
+        },
+        "heldPayload": 2,
+        "latest": 2
+      }
+    },
+    "screenshot": {
+      "fullpage": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-home\\dsh-20261021-qa\\runs\\codex-20261021-c6-late-same-1\\01-late-same-after-old-release-full.png",
+      "viewport": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-home\\dsh-20261021-qa\\runs\\codex-20261021-c6-late-same-1\\01-late-same-after-old-release-viewport.png"
+    }
+  },
+  "api": {
+    "requestCount": 21,
+    "unknownCount": 0,
+    "unknown": [],
+    "writeCount": 1,
+    "authWrites": [
+      {
+        "caseId": 1,
+        "caseKey": "late-same",
+        "method": "POST",
+        "path": "/api/v1/auth/login",
+        "status": 200,
+        "held": false
+      }
+    ],
+    "domainWrites": [],
+    "requests": [
+      {
+        "caseId": 1,
+        "caseKey": "late-same",
+        "method": "POST",
+        "path": "/api/v1/auth/login",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "late-same",
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "late-same",
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "late-same",
+        "method": "GET",
+        "path": "/api/v1/learner/targets",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "late-same",
+        "method": "GET",
+        "path": "/api/v1/learner/profile",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "late-same",
+        "method": "GET",
+        "path": "/api/v1/learner/targets",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "late-same",
+        "method": "GET",
+        "path": "/api/v1/learner/preferences",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "late-same",
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "late-same",
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "late-same",
+        "method": "GET",
+        "path": "/api/v1/learner/targets",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "late-same",
+        "method": "GET",
+        "path": "/api/v1/learner/home",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "late-same",
+        "method": "GET",
+        "path": "/api/v1/content/learner/catalog",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "late-same",
+        "method": "GET",
+        "path": "/api/v1/learning/today",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "late-same",
+        "method": "GET",
+        "path": "/api/v1/content/learner/mb007-course-airport",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "late-same",
+        "method": "GET",
+        "path": "/api/v1/learning/review-queue",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "late-same",
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "late-same",
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "late-same",
+        "method": "GET",
+        "path": "/api/v1/learner/targets",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "late-same",
+        "method": "GET",
+        "path": "/api/v1/learner/home",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "late-same",
+        "method": "GET",
+        "path": "/api/v1/content/learner/catalog",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "late-same",
+        "method": "GET",
+        "path": "/api/v1/learning/today",
+        "status": 200,
+        "held": false
+      }
+    ]
+  },
+  "consoleWarnings": [],
+  "consoleErrors": [],
+  "consoleClassification": {
+    "expectedHttpConsole": [],
+    "unexpectedConsoleErrors": [],
+    "allowedConsolePaths": [],
+    "expectedConsoleStatuses": [
+      401,
+      403
+    ]
+  },
+  "pageErrors": [],
+  "closed": true,
+  "exitCode": 1
+}

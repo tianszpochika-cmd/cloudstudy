@@ -1,0 +1,1090 @@
+{
+  "scope": "MB007_QA_SEARCH",
+  "preparedBy": "DSH author session (prepared, not executed)",
+  "preparedAt": "2026-10-21",
+  "case": "search",
+  "runId": "qa-search-20261021-053126",
+  "runDirectory": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-home\\dsh-20261021-qa\\runs\\qa-search-20261021-053126",
+  "at": "2026-10-21T05:31:56.498Z",
+  "base": "http://127.0.0.1:18183",
+  "expectedHashes": {
+    "home": "cc5ff41770cbee776cdf1be293eb20ffb19337add9ea5f95cbc6baf511b7345b",
+    "i18n": "99ad89ffe73b8493500f97a94207f6dcda5dda1ac3456bdc56795275ad7aac63",
+    "store": "c4ef9dd83452ea44f6deda55ac0be2dd3e49a810cd82d183d5342fa9b71cec21",
+    "runtime": "03b21bab8c4121ec289b5633ae9fab79ba0b64c60d0431f7adbf8953115f265a"
+  },
+  "observedHashes": {
+    "home": "cc5ff41770cbee776cdf1be293eb20ffb19337add9ea5f95cbc6baf511b7345b",
+    "i18n": "99ad89ffe73b8493500f97a94207f6dcda5dda1ac3456bdc56795275ad7aac63",
+    "store": "c4ef9dd83452ea44f6deda55ac0be2dd3e49a810cd82d183d5342fa9b71cec21",
+    "runtime": "03b21bab8c4121ec289b5633ae9fab79ba0b64c60d0431f7adbf8953115f265a"
+  },
+  "sourceHashesBefore": {
+    "page": {
+      "path": "apps/mobile/src/pages/home/home.vue",
+      "sha256": "cc5ff41770cbee776cdf1be293eb20ffb19337add9ea5f95cbc6baf511b7345b"
+    },
+    "i18n": {
+      "path": "packages/i18n/src/mobile-experience.ts",
+      "sha256": "99ad89ffe73b8493500f97a94207f6dcda5dda1ac3456bdc56795275ad7aac63"
+    },
+    "store": {
+      "path": "apps/mobile/src/stores/learner-content.ts",
+      "sha256": "c4ef9dd83452ea44f6deda55ac0be2dd3e49a810cd82d183d5342fa9b71cec21"
+    },
+    "api": {
+      "path": "apps/mobile/src/api/learner-content.ts",
+      "sha256": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6"
+    },
+    "session": {
+      "path": "apps/mobile/src/stores/session.ts",
+      "sha256": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931"
+    },
+    "navigation": {
+      "path": "apps/mobile/src/auth/navigation.ts",
+      "sha256": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5"
+    },
+    "runtime": {
+      "path": "apps/mobile/src/platform/uni-runtime.ts",
+      "sha256": "03b21bab8c4121ec289b5633ae9fab79ba0b64c60d0431f7adbf8953115f265a"
+    },
+    "handoff": {
+      "path": "apps/mobile/src/platform/public-auth-handoff.mjs",
+      "sha256": "f363aad14b7a52fcb7138be6c659d509a7201daeb4b32d100f4e92db83d812be"
+    },
+    "depPackage": {
+      "path": "apps/mobile/package.json",
+      "sha256": "484382c73929055cc4ecd9a83679f8bab72388dd8069f71a056b3bbc595c0078"
+    },
+    "depLock": {
+      "path": "pnpm-lock.yaml",
+      "sha256": "d57a87ca84985549fd53c69b1fe1d59db0b136036f2f7bf640d3b30c0a106624"
+    }
+  },
+  "sourceHashesAfter": {
+    "page": {
+      "path": "apps/mobile/src/pages/home/home.vue",
+      "sha256": "cc5ff41770cbee776cdf1be293eb20ffb19337add9ea5f95cbc6baf511b7345b"
+    },
+    "i18n": {
+      "path": "packages/i18n/src/mobile-experience.ts",
+      "sha256": "99ad89ffe73b8493500f97a94207f6dcda5dda1ac3456bdc56795275ad7aac63"
+    },
+    "store": {
+      "path": "apps/mobile/src/stores/learner-content.ts",
+      "sha256": "c4ef9dd83452ea44f6deda55ac0be2dd3e49a810cd82d183d5342fa9b71cec21"
+    },
+    "api": {
+      "path": "apps/mobile/src/api/learner-content.ts",
+      "sha256": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6"
+    },
+    "session": {
+      "path": "apps/mobile/src/stores/session.ts",
+      "sha256": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931"
+    },
+    "navigation": {
+      "path": "apps/mobile/src/auth/navigation.ts",
+      "sha256": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5"
+    },
+    "runtime": {
+      "path": "apps/mobile/src/platform/uni-runtime.ts",
+      "sha256": "03b21bab8c4121ec289b5633ae9fab79ba0b64c60d0431f7adbf8953115f265a"
+    },
+    "handoff": {
+      "path": "apps/mobile/src/platform/public-auth-handoff.mjs",
+      "sha256": "f363aad14b7a52fcb7138be6c659d509a7201daeb4b32d100f4e92db83d812be"
+    },
+    "depPackage": {
+      "path": "apps/mobile/package.json",
+      "sha256": "484382c73929055cc4ecd9a83679f8bab72388dd8069f71a056b3bbc595c0078"
+    },
+    "depLock": {
+      "path": "pnpm-lock.yaml",
+      "sha256": "d57a87ca84985549fd53c69b1fe1d59db0b136036f2f7bf640d3b30c0a106624"
+    }
+  },
+  "sourcesStable": true,
+  "checks": [
+    {
+      "name": "search-real-input-present",
+      "result": "PASS",
+      "detail": {
+        "inputs": [
+          {
+            "type": "search",
+            "placeholder": "mobile.home.searchPlaceholder",
+            "aria": "mobile.home.searchLabel",
+            "rect": {
+              "x": 59,
+              "y": 1135,
+              "width": 302,
+              "height": 21
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "search-empty-shows-both-published",
+      "result": "PASS",
+      "detail": {
+        "visible": [
+          "机场值机：从问候到登机牌",
+          "酒店入住：房型与早餐"
+        ]
+      }
+    },
+    {
+      "name": "search-case-insensitive",
+      "result": "PASS",
+      "detail": {
+        "visible": [
+          "机场值机：从问候到登机牌"
+        ]
+      }
+    },
+    {
+      "name": "search-chinese",
+      "result": "PASS",
+      "detail": {
+        "visible": [
+          "机场值机：从问候到登机牌"
+        ]
+      }
+    },
+    {
+      "name": "search-no-match-settled",
+      "result": "PASS",
+      "detail": {
+        "immediate": [],
+        "settled": []
+      }
+    },
+    {
+      "name": "search-clear-visible",
+      "result": "FAIL",
+      "detail": {
+        "immediate": []
+      }
+    },
+    {
+      "name": "search-pointer-clear-restores",
+      "result": "FAIL",
+      "detail": {
+        "reason": "clear button not found"
+      }
+    },
+    {
+      "name": "search-space-clear-restores",
+      "result": "FAIL",
+      "detail": {
+        "reason": "clear button not found"
+      }
+    },
+    {
+      "name": "search-enter-clear-restores",
+      "result": "FAIL",
+      "detail": {
+        "reason": "clear button not found"
+      }
+    },
+    {
+      "name": "search-text200-long-text-present",
+      "result": "PASS",
+      "detail": {
+        "longCourse": true
+      }
+    },
+    {
+      "name": "search-text200-no-horizontal-overflow",
+      "result": "FAIL",
+      "detail": {
+        "documentScroll": {
+          "scrollWidth": 505,
+          "clientWidth": 390
+        },
+        "courseOverflow": [
+          {
+            "tag": "div",
+            "class": "",
+            "text": "语学星mobile.home.h1mobile.home.progressmobile.home.tasksmobile.home.taskCount机场值机：换取登机牌mobile.home.min",
+            "clientWidth": 390,
+            "scrollWidth": 505,
+            "clientHeight": 844,
+            "scrollHeight": 3058,
+            "overflowX": "visible",
+            "overflowY": "visible"
+          },
+          {
+            "tag": "uni-app",
+            "class": "uni-app--showtabbar",
+            "text": "语学星mobile.home.h1mobile.home.progressmobile.home.tasksmobile.home.taskCount机场值机：换取登机牌mobile.home.min",
+            "clientWidth": 390,
+            "scrollWidth": 505,
+            "clientHeight": 844,
+            "scrollHeight": 3058,
+            "overflowX": "visible",
+            "overflowY": "visible"
+          },
+          {
+            "tag": "uni-page",
+            "class": "",
+            "text": "语学星mobile.home.h1mobile.home.progressmobile.home.tasksmobile.home.taskCount机场值机：换取登机牌mobile.home.min",
+            "clientWidth": 390,
+            "scrollWidth": 505,
+            "clientHeight": 844,
+            "scrollHeight": 3058,
+            "overflowX": "visible",
+            "overflowY": "visible"
+          },
+          {
+            "tag": "uni-page-wrapper",
+            "class": "",
+            "text": "语学星mobile.home.h1mobile.home.progressmobile.home.tasksmobile.home.taskCount机场值机：换取登机牌mobile.home.min",
+            "clientWidth": 390,
+            "scrollWidth": 505,
+            "clientHeight": 794,
+            "scrollHeight": 3058,
+            "overflowX": "visible",
+            "overflowY": "visible"
+          },
+          {
+            "tag": "uni-page-body",
+            "class": "",
+            "text": "语学星mobile.home.h1mobile.home.progressmobile.home.tasksmobile.home.taskCount机场值机：换取登机牌mobile.home.min",
+            "clientWidth": 390,
+            "scrollWidth": 505,
+            "clientHeight": 3008,
+            "scrollHeight": 3008,
+            "overflowX": "visible",
+            "overflowY": "visible"
+          },
+          {
+            "tag": "uni-view",
+            "class": "yx-page home-page",
+            "text": "语学星mobile.home.h1mobile.home.progressmobile.home.tasksmobile.home.taskCount机场值机：换取登机牌mobile.home.min",
+            "clientWidth": 390,
+            "scrollWidth": 505,
+            "clientHeight": 3008,
+            "scrollHeight": 3008,
+            "overflowX": "visible",
+            "overflowY": "visible"
+          },
+          {
+            "tag": "uni-view",
+            "class": "home-section",
+            "text": "mobile.home.tasksmobile.home.taskCount机场值机：换取登机牌mobile.home.minutes跟着对话完成值机与行李托运。mobile.home.startLe",
+            "clientWidth": 350,
+            "scrollWidth": 485,
+            "clientHeight": 1490,
+            "scrollHeight": 1490,
+            "overflowX": "visible",
+            "overflowY": "visible"
+          }
+        ]
+      }
+    },
+    {
+      "name": "search-course-click-learn-url",
+      "result": "PASS",
+      "detail": {
+        "url": "http://127.0.0.1:18183/#/pages/learn/learn"
+      }
+    },
+    {
+      "name": "search-course-click-learn-dom",
+      "result": "PASS",
+      "detail": {
+        "excerpt": "✦\n语学星\n☷\n课程\n课程与练习\n继续课程，查看复习内容。\n找到今天的练习灵感\n听 · 说 · 读 · 写\nAa\n单词复习\n先回想，再揭晓。用适合你的节奏巩固记忆。\n▤\n分级阅读\n选择适合的阅读难度，把好表达收入日常。\n⌘\n语法结构\n拆解结构、调整语序，把语法变成表达的底气。\n课程\n课程内容\n机场值机：从问候到登机牌\n英语 · 课程\n值机、托运行李和登机口问路。airport check-in practice.\nSynthetic lesson item. No formal report, plan or legal text is produced.\n练习\n练习入口\n基础练习\n分级阅读\n"
+      }
+    },
+    {
+      "name": "search-course-click-learn-get",
+      "result": "PASS",
+      "detail": {
+        "beforeDetail": 1,
+        "afterDetail": 2
+      }
+    },
+    {
+      "name": "search-no-unknown-api",
+      "result": "FAIL",
+      "detail": {
+        "unknown": [
+          {
+            "caseId": 1,
+            "method": "GET",
+            "path": "/api/v1/learning/review-queue",
+            "status": 501
+          }
+        ]
+      }
+    },
+    {
+      "name": "search-no-page-errors",
+      "result": "PASS",
+      "detail": {
+        "pageErrors": []
+      }
+    },
+    {
+      "name": "browser-closed-cleanly",
+      "result": "PASS",
+      "detail": {
+        "closed": true
+      }
+    },
+    {
+      "name": "source-and-deps-hashes-stable",
+      "result": "PASS",
+      "detail": {
+        "before": {
+          "page": {
+            "path": "apps/mobile/src/pages/home/home.vue",
+            "sha256": "cc5ff41770cbee776cdf1be293eb20ffb19337add9ea5f95cbc6baf511b7345b"
+          },
+          "i18n": {
+            "path": "packages/i18n/src/mobile-experience.ts",
+            "sha256": "99ad89ffe73b8493500f97a94207f6dcda5dda1ac3456bdc56795275ad7aac63"
+          },
+          "store": {
+            "path": "apps/mobile/src/stores/learner-content.ts",
+            "sha256": "c4ef9dd83452ea44f6deda55ac0be2dd3e49a810cd82d183d5342fa9b71cec21"
+          },
+          "api": {
+            "path": "apps/mobile/src/api/learner-content.ts",
+            "sha256": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6"
+          },
+          "session": {
+            "path": "apps/mobile/src/stores/session.ts",
+            "sha256": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931"
+          },
+          "navigation": {
+            "path": "apps/mobile/src/auth/navigation.ts",
+            "sha256": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5"
+          },
+          "runtime": {
+            "path": "apps/mobile/src/platform/uni-runtime.ts",
+            "sha256": "03b21bab8c4121ec289b5633ae9fab79ba0b64c60d0431f7adbf8953115f265a"
+          },
+          "handoff": {
+            "path": "apps/mobile/src/platform/public-auth-handoff.mjs",
+            "sha256": "f363aad14b7a52fcb7138be6c659d509a7201daeb4b32d100f4e92db83d812be"
+          },
+          "depPackage": {
+            "path": "apps/mobile/package.json",
+            "sha256": "484382c73929055cc4ecd9a83679f8bab72388dd8069f71a056b3bbc595c0078"
+          },
+          "depLock": {
+            "path": "pnpm-lock.yaml",
+            "sha256": "d57a87ca84985549fd53c69b1fe1d59db0b136036f2f7bf640d3b30c0a106624"
+          }
+        },
+        "after": {
+          "page": {
+            "path": "apps/mobile/src/pages/home/home.vue",
+            "sha256": "cc5ff41770cbee776cdf1be293eb20ffb19337add9ea5f95cbc6baf511b7345b"
+          },
+          "i18n": {
+            "path": "packages/i18n/src/mobile-experience.ts",
+            "sha256": "99ad89ffe73b8493500f97a94207f6dcda5dda1ac3456bdc56795275ad7aac63"
+          },
+          "store": {
+            "path": "apps/mobile/src/stores/learner-content.ts",
+            "sha256": "c4ef9dd83452ea44f6deda55ac0be2dd3e49a810cd82d183d5342fa9b71cec21"
+          },
+          "api": {
+            "path": "apps/mobile/src/api/learner-content.ts",
+            "sha256": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6"
+          },
+          "session": {
+            "path": "apps/mobile/src/stores/session.ts",
+            "sha256": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931"
+          },
+          "navigation": {
+            "path": "apps/mobile/src/auth/navigation.ts",
+            "sha256": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5"
+          },
+          "runtime": {
+            "path": "apps/mobile/src/platform/uni-runtime.ts",
+            "sha256": "03b21bab8c4121ec289b5633ae9fab79ba0b64c60d0431f7adbf8953115f265a"
+          },
+          "handoff": {
+            "path": "apps/mobile/src/platform/public-auth-handoff.mjs",
+            "sha256": "f363aad14b7a52fcb7138be6c659d509a7201daeb4b32d100f4e92db83d812be"
+          },
+          "depPackage": {
+            "path": "apps/mobile/package.json",
+            "sha256": "484382c73929055cc4ecd9a83679f8bab72388dd8069f71a056b3bbc595c0078"
+          },
+          "depLock": {
+            "path": "pnpm-lock.yaml",
+            "sha256": "d57a87ca84985549fd53c69b1fe1d59db0b136036f2f7bf640d3b30c0a106624"
+          }
+        }
+      }
+    },
+    {
+      "name": "console-errors-classified",
+      "result": "PASS",
+      "detail": {
+        "expectedHttpConsole": [],
+        "unexpectedConsoleErrors": [],
+        "allowedConsolePaths": [],
+        "expectedConsoleStatuses": []
+      }
+    },
+    {
+      "name": "no-page-errors",
+      "result": "PASS",
+      "detail": {
+        "pageErrors": []
+      }
+    }
+  ],
+  "gaps": [],
+  "result": "FAIL",
+  "evidence": {
+    "scaled": {
+      "text": "语学星 mobile.home.h1 mobile.home.progress mobile.home.tasks mobile.home.taskCount 机场值机：换取登机牌 mobile.home.minutes 跟着对话完成值机与行李托运。 mobile.home.startLearning 酒店入住：确认房型 mobile.home.minutes 继续上次的入住登记练习。 mobile.home.continueShort 退税柜台：材料核对 mobile.home.minutes 这一项已经完成。 mobile.home.statusCompleted 地铁换乘：问路 这一版正在更新。 内容版本正在更新，暂时不能开始。 电话改签：客服沟通 mobile.home.minutes 完成前一课后解锁。 mobile.home.statusLocked mobile.home.courses mobile.home.searchPlaceholder 机场值机：从问候到登机牌 值机、托运行李和登机口问路。airport check-in practice. 酒店入住：房型与早餐 入住登记、房型确认和早餐时间。hotel check-in practice. mobile.home.mistakes mobile.home.mistakesDesc mobile.home.changeGoal mobile.home.takeAssessment 学习 练习 成长 课程 我的",
+      "bodyTextLength": 652,
+      "headings": [
+        "mobile.home.h1"
+      ],
+      "sizes": [
+        {
+          "tag": "span",
+          "text": "语学星",
+          "fontSize": 30,
+          "lineHeight": 45
+        },
+        {
+          "tag": "span",
+          "text": "mobile.home.h1",
+          "fontSize": 56,
+          "lineHeight": 78.4
+        },
+        {
+          "tag": "span",
+          "text": "mobile.home.progress",
+          "fontSize": 32,
+          "lineHeight": 48
+        },
+        {
+          "tag": "span",
+          "text": "mobile.home.tasks",
+          "fontSize": 40,
+          "lineHeight": 58
+        },
+        {
+          "tag": "span",
+          "text": "mobile.home.taskCount",
+          "fontSize": 28,
+          "lineHeight": 44.8
+        },
+        {
+          "tag": "span",
+          "text": "机场值机：换取登机牌",
+          "fontSize": 32,
+          "lineHeight": 48
+        },
+        {
+          "tag": "span",
+          "text": "mobile.home.minutes",
+          "fontSize": 28,
+          "lineHeight": 44.8
+        },
+        {
+          "tag": "span",
+          "text": "跟着对话完成值机与行李托运。",
+          "fontSize": 28,
+          "lineHeight": 44.8
+        },
+        {
+          "tag": "uni-button",
+          "text": "mobile.home.startLearning",
+          "fontSize": 32,
+          "lineHeight": 48
+        },
+        {
+          "tag": "span",
+          "text": "酒店入住：确认房型",
+          "fontSize": 32,
+          "lineHeight": 48
+        },
+        {
+          "tag": "span",
+          "text": "mobile.home.minutes",
+          "fontSize": 28,
+          "lineHeight": 44.8
+        },
+        {
+          "tag": "span",
+          "text": "继续上次的入住登记练习。",
+          "fontSize": 28,
+          "lineHeight": 44.8
+        },
+        {
+          "tag": "uni-button",
+          "text": "mobile.home.continueShort",
+          "fontSize": 32,
+          "lineHeight": 48
+        },
+        {
+          "tag": "span",
+          "text": "退税柜台：材料核对",
+          "fontSize": 32,
+          "lineHeight": 48
+        },
+        {
+          "tag": "span",
+          "text": "mobile.home.minutes",
+          "fontSize": 28,
+          "lineHeight": 44.8
+        },
+        {
+          "tag": "span",
+          "text": "这一项已经完成。",
+          "fontSize": 28,
+          "lineHeight": 44.8
+        },
+        {
+          "tag": "span",
+          "text": "mobile.home.statusCompleted",
+          "fontSize": 28,
+          "lineHeight": 44.8
+        },
+        {
+          "tag": "span",
+          "text": "地铁换乘：问路",
+          "fontSize": 32,
+          "lineHeight": 48
+        },
+        {
+          "tag": "span",
+          "text": "这一版正在更新。",
+          "fontSize": 28,
+          "lineHeight": 44.8
+        },
+        {
+          "tag": "span",
+          "text": "内容版本正在更新，暂时不能开始。",
+          "fontSize": 28,
+          "lineHeight": 44.8
+        },
+        {
+          "tag": "span",
+          "text": "电话改签：客服沟通",
+          "fontSize": 32,
+          "lineHeight": 48
+        },
+        {
+          "tag": "span",
+          "text": "mobile.home.minutes",
+          "fontSize": 28,
+          "lineHeight": 44.8
+        },
+        {
+          "tag": "span",
+          "text": "完成前一课后解锁。",
+          "fontSize": 28,
+          "lineHeight": 44.8
+        },
+        {
+          "tag": "span",
+          "text": "mobile.home.statusLocked",
+          "fontSize": 28,
+          "lineHeight": 44.8
+        },
+        {
+          "tag": "span",
+          "text": "mobile.home.courses",
+          "fontSize": 40,
+          "lineHeight": 58
+        },
+        {
+          "tag": "div",
+          "text": "mobile.home.searchPlaceholder",
+          "fontSize": 32,
+          "lineHeight": 48
+        },
+        {
+          "tag": "span",
+          "text": "机场值机：从问候到登机牌",
+          "fontSize": 32,
+          "lineHeight": 48
+        },
+        {
+          "tag": "span",
+          "text": "值机、托运行李和登机口问路。airport check-in practice.",
+          "fontSize": 28,
+          "lineHeight": 44.8
+        },
+        {
+          "tag": "span",
+          "text": "酒店入住：房型与早餐",
+          "fontSize": 32,
+          "lineHeight": 48
+        },
+        {
+          "tag": "span",
+          "text": "入住登记、房型确认和早餐时间。hotel check-in practice.",
+          "fontSize": 28,
+          "lineHeight": 44.8
+        },
+        {
+          "tag": "span",
+          "text": "mobile.home.mistakes",
+          "fontSize": 32,
+          "lineHeight": 48
+        },
+        {
+          "tag": "span",
+          "text": "mobile.home.mistakesDesc",
+          "fontSize": 28,
+          "lineHeight": 44.8
+        },
+        {
+          "tag": "uni-button",
+          "text": "mobile.home.changeGoal",
+          "fontSize": 32,
+          "lineHeight": 48
+        },
+        {
+          "tag": "uni-button",
+          "text": "mobile.home.takeAssessment",
+          "fontSize": 32,
+          "lineHeight": 48
+        }
+      ],
+      "minFontSize": 28,
+      "body16_24Count": 0,
+      "buttons": [
+        {
+          "text": "",
+          "aria": "设置",
+          "disabled": false,
+          "rect": {
+            "x": 326,
+            "y": -1261,
+            "width": 44,
+            "height": 44
+          },
+          "fontSize": "28px",
+          "lineHeight": "42px"
+        },
+        {
+          "text": "mobile.home.startLearning",
+          "aria": "",
+          "disabled": false,
+          "rect": {
+            "x": 20,
+            "y": -533,
+            "width": 350,
+            "height": 74
+          },
+          "fontSize": "32px",
+          "lineHeight": "48px"
+        },
+        {
+          "text": "mobile.home.continueShort",
+          "aria": "",
+          "disabled": false,
+          "rect": {
+            "x": 20,
+            "y": -260,
+            "width": 485,
+            "height": 70
+          },
+          "fontSize": "32px",
+          "lineHeight": "48px"
+        },
+        {
+          "text": "机场值机：从问候到登机牌 值机、托运行李和登机口问路。airport check-in practice.",
+          "aria": "",
+          "disabled": false,
+          "rect": {
+            "x": 20,
+            "y": 793,
+            "width": 350,
+            "height": 265
+          },
+          "fontSize": "28px",
+          "lineHeight": "42px"
+        },
+        {
+          "text": "酒店入住：房型与早餐 入住登记、房型确认和早餐时间。hotel check-in practice.",
+          "aria": "",
+          "disabled": false,
+          "rect": {
+            "x": 20,
+            "y": 1058,
+            "width": 350,
+            "height": 217
+          },
+          "fontSize": "28px",
+          "lineHeight": "42px"
+        },
+        {
+          "text": "mobile.home.mistakes mobile.home.mistakesDesc",
+          "aria": "",
+          "disabled": false,
+          "rect": {
+            "x": 20,
+            "y": 1308,
+            "width": 350,
+            "height": 222
+          },
+          "fontSize": "28px",
+          "lineHeight": "42px"
+        },
+        {
+          "text": "mobile.home.changeGoal",
+          "aria": "",
+          "disabled": false,
+          "rect": {
+            "x": 20,
+            "y": 1546,
+            "width": 350,
+            "height": 68
+          },
+          "fontSize": "32px",
+          "lineHeight": "48px"
+        },
+        {
+          "text": "mobile.home.takeAssessment",
+          "aria": "",
+          "disabled": false,
+          "rect": {
+            "x": 20,
+            "y": 1622,
+            "width": 350,
+            "height": 68
+          },
+          "fontSize": "32px",
+          "lineHeight": "48px"
+        }
+      ],
+      "inputs": [
+        {
+          "type": "search",
+          "placeholder": "mobile.home.searchPlaceholder",
+          "aria": "mobile.home.searchLabel",
+          "rect": {
+            "x": 59,
+            "y": 727,
+            "width": 302,
+            "height": 42
+          }
+        }
+      ],
+      "overflowCount": 25,
+      "overflow": [
+        {
+          "tag": "div",
+          "class": "",
+          "text": "语学星mobile.home.h1mobile.home.progressmobile.home.tasksmobile.home.taskCount机场值机：换取登机牌mobile.home.min",
+          "clientWidth": 390,
+          "scrollWidth": 505,
+          "clientHeight": 844,
+          "scrollHeight": 3058,
+          "overflowX": "visible",
+          "overflowY": "visible"
+        },
+        {
+          "tag": "uni-app",
+          "class": "uni-app--showtabbar",
+          "text": "语学星mobile.home.h1mobile.home.progressmobile.home.tasksmobile.home.taskCount机场值机：换取登机牌mobile.home.min",
+          "clientWidth": 390,
+          "scrollWidth": 505,
+          "clientHeight": 844,
+          "scrollHeight": 3058,
+          "overflowX": "visible",
+          "overflowY": "visible"
+        },
+        {
+          "tag": "uni-page",
+          "class": "",
+          "text": "语学星mobile.home.h1mobile.home.progressmobile.home.tasksmobile.home.taskCount机场值机：换取登机牌mobile.home.min",
+          "clientWidth": 390,
+          "scrollWidth": 505,
+          "clientHeight": 844,
+          "scrollHeight": 3058,
+          "overflowX": "visible",
+          "overflowY": "visible"
+        },
+        {
+          "tag": "uni-page-wrapper",
+          "class": "",
+          "text": "语学星mobile.home.h1mobile.home.progressmobile.home.tasksmobile.home.taskCount机场值机：换取登机牌mobile.home.min",
+          "clientWidth": 390,
+          "scrollWidth": 505,
+          "clientHeight": 794,
+          "scrollHeight": 3058,
+          "overflowX": "visible",
+          "overflowY": "visible"
+        },
+        {
+          "tag": "uni-page-body",
+          "class": "",
+          "text": "语学星mobile.home.h1mobile.home.progressmobile.home.tasksmobile.home.taskCount机场值机：换取登机牌mobile.home.min",
+          "clientWidth": 390,
+          "scrollWidth": 505,
+          "clientHeight": 3008,
+          "scrollHeight": 3008,
+          "overflowX": "visible",
+          "overflowY": "visible"
+        },
+        {
+          "tag": "uni-view",
+          "class": "yx-page home-page",
+          "text": "语学星mobile.home.h1mobile.home.progressmobile.home.tasksmobile.home.taskCount机场值机：换取登机牌mobile.home.min",
+          "clientWidth": 390,
+          "scrollWidth": 505,
+          "clientHeight": 3008,
+          "scrollHeight": 3008,
+          "overflowX": "visible",
+          "overflowY": "visible"
+        },
+        {
+          "tag": "uni-view",
+          "class": "home-section",
+          "text": "mobile.home.tasksmobile.home.taskCount机场值机：换取登机牌mobile.home.minutes跟着对话完成值机与行李托运。mobile.home.startLe",
+          "clientWidth": 350,
+          "scrollWidth": 485,
+          "clientHeight": 1490,
+          "scrollHeight": 1490,
+          "overflowX": "visible",
+          "overflowY": "visible"
+        },
+        {
+          "tag": "uni-button",
+          "class": "home-primary home-task__primary",
+          "text": "mobile.home.startLearning",
+          "clientWidth": 348,
+          "scrollWidth": 411,
+          "clientHeight": 72,
+          "scrollHeight": 72,
+          "overflowX": "hidden",
+          "overflowY": "hidden"
+        },
+        {
+          "tag": "uni-view",
+          "class": "home-task",
+          "text": "酒店入住：确认房型mobile.home.minutes继续上次的入住登记练习。mobile.home.continueShort",
+          "clientWidth": 350,
+          "scrollWidth": 485,
+          "clientHeight": 268,
+          "scrollHeight": 268,
+          "overflowX": "visible",
+          "overflowY": "visible"
+        },
+        {
+          "tag": "uni-view",
+          "class": "home-task",
+          "text": "退税柜台：材料核对mobile.home.minutes这一项已经完成。mobile.home.statusCompleted",
+          "clientWidth": 350,
+          "scrollWidth": 433,
+          "clientHeight": 242,
+          "scrollHeight": 242,
+          "overflowX": "visible",
+          "overflowY": "visible"
+        },
+        {
+          "tag": "uni-view",
+          "class": "home-task__state",
+          "text": "mobile.home.statusCompleted",
+          "clientWidth": 350,
+          "scrollWidth": 433,
+          "clientHeight": 45,
+          "scrollHeight": 45,
+          "overflowX": "visible",
+          "overflowY": "visible"
+        },
+        {
+          "tag": "uni-view",
+          "class": "home-task",
+          "text": "电话改签：客服沟通mobile.home.minutes完成前一课后解锁。mobile.home.statusLocked",
+          "clientWidth": 350,
+          "scrollWidth": 380,
+          "clientHeight": 242,
+          "scrollHeight": 242,
+          "overflowX": "visible",
+          "overflowY": "visible"
+        },
+        {
+          "tag": "uni-view",
+          "class": "home-task__state",
+          "text": "mobile.home.statusLocked",
+          "clientWidth": 350,
+          "scrollWidth": 380,
+          "clientHeight": 45,
+          "scrollHeight": 45,
+          "overflowX": "visible",
+          "overflowY": "visible"
+        },
+        {
+          "tag": "div",
+          "class": "uni-input-wrapper",
+          "text": "mobile.home.searchPlaceholder",
+          "clientWidth": 302,
+          "scrollWidth": 302,
+          "clientHeight": 42,
+          "scrollHeight": 45,
+          "overflowX": "visible",
+          "overflowY": "visible"
+        },
+        {
+          "tag": "div",
+          "class": "uni-input-placeholder input-placeholder",
+          "text": "mobile.home.searchPlaceholder",
+          "clientWidth": 302,
+          "scrollWidth": 487,
+          "clientHeight": 48,
+          "scrollHeight": 48,
+          "overflowX": "hidden",
+          "overflowY": "hidden"
+        },
+        {
+          "tag": "uni-button",
+          "class": "home-text-action",
+          "text": "mobile.home.changeGoal",
+          "clientWidth": 350,
+          "scrollWidth": 384,
+          "clientHeight": 68,
+          "scrollHeight": 68,
+          "overflowX": "hidden",
+          "overflowY": "hidden"
+        },
+        {
+          "tag": "uni-button",
+          "class": "home-text-action",
+          "text": "mobile.home.takeAssessment",
+          "clientWidth": 350,
+          "scrollWidth": 419,
+          "clientHeight": 68,
+          "scrollHeight": 68,
+          "overflowX": "hidden",
+          "overflowY": "hidden"
+        },
+        {
+          "tag": "div",
+          "class": "",
+          "text": "",
+          "clientWidth": 100,
+          "scrollWidth": 100,
+          "clientHeight": 200,
+          "scrollHeight": 400,
+          "overflowX": "hidden",
+          "overflowY": "hidden"
+        },
+        {
+          "tag": "div",
+          "class": "",
+          "text": "",
+          "clientWidth": 100,
+          "scrollWidth": 100,
+          "clientHeight": 200,
+          "scrollHeight": 500,
+          "overflowX": "hidden",
+          "overflowY": "hidden"
+        },
+        {
+          "tag": "div",
+          "class": "",
+          "text": "",
+          "clientWidth": 100,
+          "scrollWidth": 100,
+          "clientHeight": 200,
+          "scrollHeight": 400,
+          "overflowX": "hidden",
+          "overflowY": "hidden"
+        },
+        {
+          "tag": "div",
+          "class": "",
+          "text": "",
+          "clientWidth": 100,
+          "scrollWidth": 100,
+          "clientHeight": 200,
+          "scrollHeight": 500,
+          "overflowX": "hidden",
+          "overflowY": "hidden"
+        },
+        {
+          "tag": "div",
+          "class": "",
+          "text": "",
+          "clientWidth": 100,
+          "scrollWidth": 100,
+          "clientHeight": 200,
+          "scrollHeight": 400,
+          "overflowX": "hidden",
+          "overflowY": "hidden"
+        },
+        {
+          "tag": "div",
+          "class": "",
+          "text": "",
+          "clientWidth": 100,
+          "scrollWidth": 100,
+          "clientHeight": 200,
+          "scrollHeight": 500,
+          "overflowX": "hidden",
+          "overflowY": "hidden"
+        },
+        {
+          "tag": "div",
+          "class": "",
+          "text": "",
+          "clientWidth": 100,
+          "scrollWidth": 100,
+          "clientHeight": 200,
+          "scrollHeight": 400,
+          "overflowX": "hidden",
+          "overflowY": "hidden"
+        },
+        {
+          "tag": "div",
+          "class": "",
+          "text": "",
+          "clientWidth": 100,
+          "scrollWidth": 100,
+          "clientHeight": 200,
+          "scrollHeight": 500,
+          "overflowX": "hidden",
+          "overflowY": "hidden"
+        }
+      ],
+      "documentScroll": {
+        "scrollWidth": 505,
+        "clientWidth": 390
+      }
+    },
+    "learn": {
+      "url": "http://127.0.0.1:18183/#/pages/learn/learn",
+      "excerpt": "✦\n语学星\n☷\n课程\n课程与练习\n继续课程，查看复习内容。\n找到今天的练习灵感\n听 · 说 · 读 · 写\nAa\n单词复习\n先回想，再揭晓。用适合你的节奏巩固记忆。\n▤\n分级阅读\n选择适合的阅读难度，把好表达收入日常。\n⌘\n语法结构\n拆解结构、调整语序，把语法变成表达的底气。\n课程\n课程内容\n机场值机：从问候到登机牌\n英语 · 课程\n值机、托运行李和登机口问路。airport check-in practice.\nSynthetic lesson item. No formal report, plan or legal text is produced.\n练习\n练习入口\n基础练习\n分级阅读\n语法练习\n复习\n复习安排\n尚不能判断\n复习列表暂时没有读出来\n服务暂时不可用，请稍后重试。\n重试\n学习\n练习\n成长\n课程\n我的",
+      "warnings": []
+    }
+  },
+  "api": {
+    "requestCount": 0,
+    "unknownCount": 0,
+    "unknown": [],
+    "writeCount": 0,
+    "authWrites": [],
+    "domainWrites": [],
+    "requests": []
+  },
+  "consoleWarnings": [],
+  "consoleErrors": [],
+  "consoleClassification": {
+    "expectedHttpConsole": [],
+    "unexpectedConsoleErrors": [],
+    "allowedConsolePaths": [],
+    "expectedConsoleStatuses": []
+  },
+  "pageErrors": [],
+  "closed": true,
+  "exitCode": 1
+}

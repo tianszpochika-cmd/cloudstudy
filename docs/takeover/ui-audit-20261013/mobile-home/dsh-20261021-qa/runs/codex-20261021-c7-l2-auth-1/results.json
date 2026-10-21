@@ -1,0 +1,658 @@
+{
+  "scope": "MB007_QA_AUTH",
+  "preparedBy": "DSH author session (prepared, not executed)",
+  "preparedAt": "2026-10-21",
+  "case": "auth",
+  "runId": "codex-20261021-c7-l2-auth-1",
+  "runDirectory": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-home\\dsh-20261021-qa\\runs\\codex-20261021-c7-l2-auth-1",
+  "at": "2026-10-21T07:17:11.304Z",
+  "base": "http://127.0.0.1:18183",
+  "expectedHashes": {
+    "home": "044948af7e0fab462f6c8c51f99e9bde2666cb799c9f2d261a37efedcbdcd5af",
+    "i18n": "7e2ef7b596eeb15fa60f715a0e00274a7d1290ddf13b1da4c6cc91116311126f",
+    "store": "c4ef9dd83452ea44f6deda55ac0be2dd3e49a810cd82d183d5342fa9b71cec21",
+    "runtime": "03b21bab8c4121ec289b5633ae9fab79ba0b64c60d0431f7adbf8953115f265a",
+    "learn": "4bd50e4b5af9685f7eabe88e89635f061632d383d0d8e6ae7105d510db90bb03"
+  },
+  "observedHashes": {
+    "home": "044948af7e0fab462f6c8c51f99e9bde2666cb799c9f2d261a37efedcbdcd5af",
+    "i18n": "7e2ef7b596eeb15fa60f715a0e00274a7d1290ddf13b1da4c6cc91116311126f",
+    "store": "c4ef9dd83452ea44f6deda55ac0be2dd3e49a810cd82d183d5342fa9b71cec21",
+    "runtime": "03b21bab8c4121ec289b5633ae9fab79ba0b64c60d0431f7adbf8953115f265a",
+    "learn": "4bd50e4b5af9685f7eabe88e89635f061632d383d0d8e6ae7105d510db90bb03"
+  },
+  "sourceHashesBefore": {
+    "page": {
+      "path": "apps/mobile/src/pages/home/home.vue",
+      "sha256": "044948af7e0fab462f6c8c51f99e9bde2666cb799c9f2d261a37efedcbdcd5af"
+    },
+    "i18n": {
+      "path": "packages/i18n/src/mobile-experience.ts",
+      "sha256": "7e2ef7b596eeb15fa60f715a0e00274a7d1290ddf13b1da4c6cc91116311126f"
+    },
+    "store": {
+      "path": "apps/mobile/src/stores/learner-content.ts",
+      "sha256": "c4ef9dd83452ea44f6deda55ac0be2dd3e49a810cd82d183d5342fa9b71cec21"
+    },
+    "api": {
+      "path": "apps/mobile/src/api/learner-content.ts",
+      "sha256": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6"
+    },
+    "session": {
+      "path": "apps/mobile/src/stores/session.ts",
+      "sha256": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931"
+    },
+    "navigation": {
+      "path": "apps/mobile/src/auth/navigation.ts",
+      "sha256": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5"
+    },
+    "runtime": {
+      "path": "apps/mobile/src/platform/uni-runtime.ts",
+      "sha256": "03b21bab8c4121ec289b5633ae9fab79ba0b64c60d0431f7adbf8953115f265a"
+    },
+    "learn": {
+      "path": "apps/mobile/src/pages/learn/learn.vue",
+      "sha256": "4bd50e4b5af9685f7eabe88e89635f061632d383d0d8e6ae7105d510db90bb03"
+    },
+    "handoff": {
+      "path": "apps/mobile/src/platform/public-auth-handoff.mjs",
+      "sha256": "f363aad14b7a52fcb7138be6c659d509a7201daeb4b32d100f4e92db83d812be"
+    },
+    "depPackage": {
+      "path": "apps/mobile/package.json",
+      "sha256": "484382c73929055cc4ecd9a83679f8bab72388dd8069f71a056b3bbc595c0078"
+    },
+    "depLock": {
+      "path": "pnpm-lock.yaml",
+      "sha256": "d57a87ca84985549fd53c69b1fe1d59db0b136036f2f7bf640d3b30c0a106624"
+    }
+  },
+  "sourceHashesAfter": {
+    "page": {
+      "path": "apps/mobile/src/pages/home/home.vue",
+      "sha256": "044948af7e0fab462f6c8c51f99e9bde2666cb799c9f2d261a37efedcbdcd5af"
+    },
+    "i18n": {
+      "path": "packages/i18n/src/mobile-experience.ts",
+      "sha256": "7e2ef7b596eeb15fa60f715a0e00274a7d1290ddf13b1da4c6cc91116311126f"
+    },
+    "store": {
+      "path": "apps/mobile/src/stores/learner-content.ts",
+      "sha256": "c4ef9dd83452ea44f6deda55ac0be2dd3e49a810cd82d183d5342fa9b71cec21"
+    },
+    "api": {
+      "path": "apps/mobile/src/api/learner-content.ts",
+      "sha256": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6"
+    },
+    "session": {
+      "path": "apps/mobile/src/stores/session.ts",
+      "sha256": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931"
+    },
+    "navigation": {
+      "path": "apps/mobile/src/auth/navigation.ts",
+      "sha256": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5"
+    },
+    "runtime": {
+      "path": "apps/mobile/src/platform/uni-runtime.ts",
+      "sha256": "03b21bab8c4121ec289b5633ae9fab79ba0b64c60d0431f7adbf8953115f265a"
+    },
+    "learn": {
+      "path": "apps/mobile/src/pages/learn/learn.vue",
+      "sha256": "4bd50e4b5af9685f7eabe88e89635f061632d383d0d8e6ae7105d510db90bb03"
+    },
+    "handoff": {
+      "path": "apps/mobile/src/platform/public-auth-handoff.mjs",
+      "sha256": "f363aad14b7a52fcb7138be6c659d509a7201daeb4b32d100f4e92db83d812be"
+    },
+    "depPackage": {
+      "path": "apps/mobile/package.json",
+      "sha256": "484382c73929055cc4ecd9a83679f8bab72388dd8069f71a056b3bbc595c0078"
+    },
+    "depLock": {
+      "path": "pnpm-lock.yaml",
+      "sha256": "d57a87ca84985549fd53c69b1fe1d59db0b136036f2f7bf640d3b30c0a106624"
+    }
+  },
+  "sourcesStable": true,
+  "checks": [
+    {
+      "name": "auth-403-forbidden-route",
+      "result": "PASS",
+      "detail": {
+        "url": "http://127.0.0.1:18183/#/pages/forbidden/forbidden?returnTo=%252Fpages%252Fhome%252Fhome",
+        "titleText": "暂时无法访问这项内容"
+      }
+    },
+    {
+      "name": "auth-403-signed-h1",
+      "result": "PASS",
+      "detail": {
+        "titleText": "暂时无法访问这项内容",
+        "allowed": [
+          "暂时无法确认访问状态",
+          "暂时无法访问这项内容",
+          "暂时无法开始学习",
+          "学习访问已暂停",
+          "We cannot confirm access",
+          "This content is not available.",
+          "Learning is not available yet",
+          "Learning access is paused"
+        ]
+      }
+    },
+    {
+      "name": "auth-403-neutral-description",
+      "result": "PASS",
+      "detail": {
+        "description": "当前账号无法打开这项内容。你仍可管理账号或查看帮助。"
+      }
+    },
+    {
+      "name": "auth-403-old-data-hidden",
+      "result": "PASS",
+      "detail": {
+        "excerpt": "语学星\n暂时无法访问这项内容\n当前账号无法打开这项内容。你仍可管理账号或查看帮助。\n管理账号\n帮助与反馈\n退出登录"
+      }
+    },
+    {
+      "name": "auth-403-secondary-exit",
+      "result": "PASS",
+      "detail": {
+        "buttons": [
+          "管理账号",
+          "帮助与反馈",
+          "退出登录"
+        ]
+      }
+    },
+    {
+      "name": "auth-403-zero-domain-writes",
+      "result": "PASS",
+      "detail": {
+        "domainWrites": []
+      }
+    },
+    {
+      "name": "case-completed-without-exception",
+      "result": "FAIL",
+      "detail": {
+        "message": "locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#mobile-login-identifier') to be visible\u001b[22m\n",
+        "stack": "locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#mobile-login-identifier') to be visible\u001b[22m\n\n    at runAuth (C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-home\\dsh-20261021-qa\\author.cjs:777:65)\n    at async main (C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-home\\dsh-20261021-qa\\author.cjs:1434:44)"
+      }
+    },
+    {
+      "name": "browser-closed-cleanly",
+      "result": "PASS",
+      "detail": {
+        "closed": true
+      }
+    },
+    {
+      "name": "source-and-deps-hashes-stable",
+      "result": "PASS",
+      "detail": {
+        "before": {
+          "page": {
+            "path": "apps/mobile/src/pages/home/home.vue",
+            "sha256": "044948af7e0fab462f6c8c51f99e9bde2666cb799c9f2d261a37efedcbdcd5af"
+          },
+          "i18n": {
+            "path": "packages/i18n/src/mobile-experience.ts",
+            "sha256": "7e2ef7b596eeb15fa60f715a0e00274a7d1290ddf13b1da4c6cc91116311126f"
+          },
+          "store": {
+            "path": "apps/mobile/src/stores/learner-content.ts",
+            "sha256": "c4ef9dd83452ea44f6deda55ac0be2dd3e49a810cd82d183d5342fa9b71cec21"
+          },
+          "api": {
+            "path": "apps/mobile/src/api/learner-content.ts",
+            "sha256": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6"
+          },
+          "session": {
+            "path": "apps/mobile/src/stores/session.ts",
+            "sha256": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931"
+          },
+          "navigation": {
+            "path": "apps/mobile/src/auth/navigation.ts",
+            "sha256": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5"
+          },
+          "runtime": {
+            "path": "apps/mobile/src/platform/uni-runtime.ts",
+            "sha256": "03b21bab8c4121ec289b5633ae9fab79ba0b64c60d0431f7adbf8953115f265a"
+          },
+          "learn": {
+            "path": "apps/mobile/src/pages/learn/learn.vue",
+            "sha256": "4bd50e4b5af9685f7eabe88e89635f061632d383d0d8e6ae7105d510db90bb03"
+          },
+          "handoff": {
+            "path": "apps/mobile/src/platform/public-auth-handoff.mjs",
+            "sha256": "f363aad14b7a52fcb7138be6c659d509a7201daeb4b32d100f4e92db83d812be"
+          },
+          "depPackage": {
+            "path": "apps/mobile/package.json",
+            "sha256": "484382c73929055cc4ecd9a83679f8bab72388dd8069f71a056b3bbc595c0078"
+          },
+          "depLock": {
+            "path": "pnpm-lock.yaml",
+            "sha256": "d57a87ca84985549fd53c69b1fe1d59db0b136036f2f7bf640d3b30c0a106624"
+          }
+        },
+        "after": {
+          "page": {
+            "path": "apps/mobile/src/pages/home/home.vue",
+            "sha256": "044948af7e0fab462f6c8c51f99e9bde2666cb799c9f2d261a37efedcbdcd5af"
+          },
+          "i18n": {
+            "path": "packages/i18n/src/mobile-experience.ts",
+            "sha256": "7e2ef7b596eeb15fa60f715a0e00274a7d1290ddf13b1da4c6cc91116311126f"
+          },
+          "store": {
+            "path": "apps/mobile/src/stores/learner-content.ts",
+            "sha256": "c4ef9dd83452ea44f6deda55ac0be2dd3e49a810cd82d183d5342fa9b71cec21"
+          },
+          "api": {
+            "path": "apps/mobile/src/api/learner-content.ts",
+            "sha256": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6"
+          },
+          "session": {
+            "path": "apps/mobile/src/stores/session.ts",
+            "sha256": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931"
+          },
+          "navigation": {
+            "path": "apps/mobile/src/auth/navigation.ts",
+            "sha256": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5"
+          },
+          "runtime": {
+            "path": "apps/mobile/src/platform/uni-runtime.ts",
+            "sha256": "03b21bab8c4121ec289b5633ae9fab79ba0b64c60d0431f7adbf8953115f265a"
+          },
+          "learn": {
+            "path": "apps/mobile/src/pages/learn/learn.vue",
+            "sha256": "4bd50e4b5af9685f7eabe88e89635f061632d383d0d8e6ae7105d510db90bb03"
+          },
+          "handoff": {
+            "path": "apps/mobile/src/platform/public-auth-handoff.mjs",
+            "sha256": "f363aad14b7a52fcb7138be6c659d509a7201daeb4b32d100f4e92db83d812be"
+          },
+          "depPackage": {
+            "path": "apps/mobile/package.json",
+            "sha256": "484382c73929055cc4ecd9a83679f8bab72388dd8069f71a056b3bbc595c0078"
+          },
+          "depLock": {
+            "path": "pnpm-lock.yaml",
+            "sha256": "d57a87ca84985549fd53c69b1fe1d59db0b136036f2f7bf640d3b30c0a106624"
+          }
+        }
+      }
+    },
+    {
+      "name": "console-errors-classified",
+      "result": "PASS",
+      "detail": {
+        "expectedHttpConsole": [
+          {
+            "caseId": 1,
+            "caseKey": "auth-403",
+            "message": "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+            "path": "/api/v1/learner/home"
+          },
+          {
+            "caseId": 2,
+            "caseKey": "auth-401",
+            "message": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+            "path": "/api/v1/learner/home"
+          },
+          {
+            "caseId": 2,
+            "caseKey": "auth-401",
+            "message": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+            "path": "/api/v1/auth/token/refresh"
+          }
+        ],
+        "unexpectedConsoleErrors": [],
+        "allowedConsolePaths": [
+          "/api/v1/learner/home",
+          "/api/v1/auth/token/refresh"
+        ],
+        "expectedConsoleStatuses": [
+          401,
+          403
+        ]
+      }
+    },
+    {
+      "name": "no-page-errors",
+      "result": "PASS",
+      "detail": {
+        "pageErrors": []
+      }
+    },
+    {
+      "name": "no-unknown-api",
+      "result": "PASS",
+      "detail": {
+        "unknown": [],
+        "note": "Settled after the case interaction; top-level and detail counts share the same caseKey source."
+      }
+    }
+  ],
+  "gaps": [
+    {
+      "name": "auth-403-permission-contract",
+      "note": "fixture returned synthetic HTTP 403 for learner.home.read; the redesigned forbidden page is checked by its signed H1/neutral copy, but no formal permission-error envelope is asserted."
+    }
+  ],
+  "result": "FAIL",
+  "evidence": {
+    "error": {
+      "message": "locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#mobile-login-identifier') to be visible\u001b[22m\n",
+      "stack": "locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#mobile-login-identifier') to be visible\u001b[22m\n\n    at runAuth (C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-home\\dsh-20261021-qa\\author.cjs:777:65)\n    at async main (C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-home\\dsh-20261021-qa\\author.cjs:1434:44)"
+    }
+  },
+  "api": {
+    "requestCount": 27,
+    "unknownCount": 0,
+    "unknown": [],
+    "writeCount": 3,
+    "authWrites": [
+      {
+        "caseId": 1,
+        "caseKey": "auth-403",
+        "method": "POST",
+        "path": "/api/v1/auth/login",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 2,
+        "caseKey": "auth-401",
+        "method": "POST",
+        "path": "/api/v1/auth/login",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 2,
+        "caseKey": "auth-401",
+        "method": "POST",
+        "path": "/api/v1/auth/token/refresh",
+        "status": 401,
+        "held": false
+      }
+    ],
+    "domainWrites": [],
+    "requests": [
+      {
+        "caseId": 1,
+        "caseKey": "auth-403",
+        "method": "POST",
+        "path": "/api/v1/auth/login",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "auth-403",
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "auth-403",
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "auth-403",
+        "method": "GET",
+        "path": "/api/v1/learner/targets",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "auth-403",
+        "method": "GET",
+        "path": "/api/v1/learner/profile",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "auth-403",
+        "method": "GET",
+        "path": "/api/v1/learner/targets",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "auth-403",
+        "method": "GET",
+        "path": "/api/v1/learner/preferences",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "auth-403",
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "auth-403",
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "auth-403",
+        "method": "GET",
+        "path": "/api/v1/learner/targets",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "auth-403",
+        "method": "GET",
+        "path": "/api/v1/learner/home",
+        "status": 403,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "auth-403",
+        "method": "GET",
+        "path": "/api/v1/content/learner/catalog",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "auth-403",
+        "method": "GET",
+        "path": "/api/v1/learning/today",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "auth-403",
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 2,
+        "caseKey": "auth-401",
+        "method": "POST",
+        "path": "/api/v1/auth/login",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 2,
+        "caseKey": "auth-401",
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 2,
+        "caseKey": "auth-401",
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 2,
+        "caseKey": "auth-401",
+        "method": "GET",
+        "path": "/api/v1/learner/targets",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 2,
+        "caseKey": "auth-401",
+        "method": "GET",
+        "path": "/api/v1/learner/profile",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 2,
+        "caseKey": "auth-401",
+        "method": "GET",
+        "path": "/api/v1/learner/targets",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 2,
+        "caseKey": "auth-401",
+        "method": "GET",
+        "path": "/api/v1/learner/preferences",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 2,
+        "caseKey": "auth-401",
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 2,
+        "caseKey": "auth-401",
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 2,
+        "caseKey": "auth-401",
+        "method": "GET",
+        "path": "/api/v1/learner/targets",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 2,
+        "caseKey": "auth-401",
+        "method": "GET",
+        "path": "/api/v1/learner/home",
+        "status": 401,
+        "held": false
+      },
+      {
+        "caseId": 2,
+        "caseKey": "auth-401",
+        "method": "GET",
+        "path": "/api/v1/content/learner/catalog",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 2,
+        "caseKey": "auth-401",
+        "method": "POST",
+        "path": "/api/v1/auth/token/refresh",
+        "status": 401,
+        "held": false
+      }
+    ]
+  },
+  "consoleWarnings": [],
+  "consoleErrors": [
+    {
+      "caseId": 1,
+      "caseKey": "auth-403",
+      "message": "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+      "path": "/api/v1/learner/home"
+    },
+    {
+      "caseId": 2,
+      "caseKey": "auth-401",
+      "message": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "path": "/api/v1/learner/home"
+    },
+    {
+      "caseId": 2,
+      "caseKey": "auth-401",
+      "message": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "path": "/api/v1/auth/token/refresh"
+    }
+  ],
+  "consoleClassification": {
+    "expectedHttpConsole": [
+      {
+        "caseId": 1,
+        "caseKey": "auth-403",
+        "message": "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+        "path": "/api/v1/learner/home"
+      },
+      {
+        "caseId": 2,
+        "caseKey": "auth-401",
+        "message": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+        "path": "/api/v1/learner/home"
+      },
+      {
+        "caseId": 2,
+        "caseKey": "auth-401",
+        "message": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+        "path": "/api/v1/auth/token/refresh"
+      }
+    ],
+    "unexpectedConsoleErrors": [],
+    "allowedConsolePaths": [
+      "/api/v1/learner/home",
+      "/api/v1/auth/token/refresh"
+    ],
+    "expectedConsoleStatuses": [
+      401,
+      403
+    ]
+  },
+  "pageErrors": [],
+  "closed": true,
+  "exitCode": 1
+}

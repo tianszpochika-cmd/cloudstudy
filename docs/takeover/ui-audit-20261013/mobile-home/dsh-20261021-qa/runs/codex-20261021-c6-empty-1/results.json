@@ -1,0 +1,1868 @@
+{
+  "scope": "MB007_QA_EMPTY",
+  "preparedBy": "DSH author session (prepared, not executed)",
+  "preparedAt": "2026-10-21",
+  "case": "empty",
+  "runId": "codex-20261021-c6-empty-1",
+  "runDirectory": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-home\\dsh-20261021-qa\\runs\\codex-20261021-c6-empty-1",
+  "at": "2026-10-21T05:53:21.316Z",
+  "base": "http://127.0.0.1:18183",
+  "expectedHashes": {
+    "home": "593994f2a6340e450b674cf492c5ed99f1cfc10f61f67b79ebb1c327ccae020d",
+    "i18n": "278b9d030b02532a872c502b38f62561e41dc94ffdfb7abc35585c4496967ddc",
+    "store": "c4ef9dd83452ea44f6deda55ac0be2dd3e49a810cd82d183d5342fa9b71cec21",
+    "runtime": "03b21bab8c4121ec289b5633ae9fab79ba0b64c60d0431f7adbf8953115f265a"
+  },
+  "observedHashes": {
+    "home": "593994f2a6340e450b674cf492c5ed99f1cfc10f61f67b79ebb1c327ccae020d",
+    "i18n": "278b9d030b02532a872c502b38f62561e41dc94ffdfb7abc35585c4496967ddc",
+    "store": "c4ef9dd83452ea44f6deda55ac0be2dd3e49a810cd82d183d5342fa9b71cec21",
+    "runtime": "03b21bab8c4121ec289b5633ae9fab79ba0b64c60d0431f7adbf8953115f265a"
+  },
+  "sourceHashesBefore": {
+    "page": {
+      "path": "apps/mobile/src/pages/home/home.vue",
+      "sha256": "593994f2a6340e450b674cf492c5ed99f1cfc10f61f67b79ebb1c327ccae020d"
+    },
+    "i18n": {
+      "path": "packages/i18n/src/mobile-experience.ts",
+      "sha256": "278b9d030b02532a872c502b38f62561e41dc94ffdfb7abc35585c4496967ddc"
+    },
+    "store": {
+      "path": "apps/mobile/src/stores/learner-content.ts",
+      "sha256": "c4ef9dd83452ea44f6deda55ac0be2dd3e49a810cd82d183d5342fa9b71cec21"
+    },
+    "api": {
+      "path": "apps/mobile/src/api/learner-content.ts",
+      "sha256": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6"
+    },
+    "session": {
+      "path": "apps/mobile/src/stores/session.ts",
+      "sha256": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931"
+    },
+    "navigation": {
+      "path": "apps/mobile/src/auth/navigation.ts",
+      "sha256": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5"
+    },
+    "runtime": {
+      "path": "apps/mobile/src/platform/uni-runtime.ts",
+      "sha256": "03b21bab8c4121ec289b5633ae9fab79ba0b64c60d0431f7adbf8953115f265a"
+    },
+    "handoff": {
+      "path": "apps/mobile/src/platform/public-auth-handoff.mjs",
+      "sha256": "f363aad14b7a52fcb7138be6c659d509a7201daeb4b32d100f4e92db83d812be"
+    },
+    "depPackage": {
+      "path": "apps/mobile/package.json",
+      "sha256": "484382c73929055cc4ecd9a83679f8bab72388dd8069f71a056b3bbc595c0078"
+    },
+    "depLock": {
+      "path": "pnpm-lock.yaml",
+      "sha256": "d57a87ca84985549fd53c69b1fe1d59db0b136036f2f7bf640d3b30c0a106624"
+    }
+  },
+  "sourceHashesAfter": {
+    "page": {
+      "path": "apps/mobile/src/pages/home/home.vue",
+      "sha256": "593994f2a6340e450b674cf492c5ed99f1cfc10f61f67b79ebb1c327ccae020d"
+    },
+    "i18n": {
+      "path": "packages/i18n/src/mobile-experience.ts",
+      "sha256": "278b9d030b02532a872c502b38f62561e41dc94ffdfb7abc35585c4496967ddc"
+    },
+    "store": {
+      "path": "apps/mobile/src/stores/learner-content.ts",
+      "sha256": "c4ef9dd83452ea44f6deda55ac0be2dd3e49a810cd82d183d5342fa9b71cec21"
+    },
+    "api": {
+      "path": "apps/mobile/src/api/learner-content.ts",
+      "sha256": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6"
+    },
+    "session": {
+      "path": "apps/mobile/src/stores/session.ts",
+      "sha256": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931"
+    },
+    "navigation": {
+      "path": "apps/mobile/src/auth/navigation.ts",
+      "sha256": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5"
+    },
+    "runtime": {
+      "path": "apps/mobile/src/platform/uni-runtime.ts",
+      "sha256": "03b21bab8c4121ec289b5633ae9fab79ba0b64c60d0431f7adbf8953115f265a"
+    },
+    "handoff": {
+      "path": "apps/mobile/src/platform/public-auth-handoff.mjs",
+      "sha256": "f363aad14b7a52fcb7138be6c659d509a7201daeb4b32d100f4e92db83d812be"
+    },
+    "depPackage": {
+      "path": "apps/mobile/package.json",
+      "sha256": "484382c73929055cc4ecd9a83679f8bab72388dd8069f71a056b3bbc595c0078"
+    },
+    "depLock": {
+      "path": "pnpm-lock.yaml",
+      "sha256": "d57a87ca84985549fd53c69b1fe1d59db0b136036f2f7bf640d3b30c0a106624"
+    }
+  },
+  "sourcesStable": true,
+  "checks": [
+    {
+      "name": "empty-NO_PLAN-no-fabricated-task",
+      "result": "FAIL",
+      "detail": {
+        "rows": 0,
+        "buttons": [
+          "",
+          "继续设置，开始学习",
+          "开始设置",
+          "机场值机：从问候到登机牌 值机、托运行李和登机口问路。airport check-in practice.",
+          "酒店入住：房型与早餐 入住登记、房型确认和早餐时间。hotel check-in practice.",
+          "错题本 回顾做过的错题",
+          "修改目标",
+          "进入测评"
+        ]
+      }
+    },
+    {
+      "name": "empty-NO_PLAN-no-fabricated-zero-percent",
+      "result": "PASS",
+      "detail": {
+        "text": "语学星\n今日学习\n今日任务已读取\n目标已保存，下一步进入定级\n剩余步骤：定级\n继续设置，开始学习\n今日任务\n0 项\n还没有学习计划\n先完成设置，再开始今天的练习。\n开始设置\n课程内容\n搜索课程\n机场值机：从问候到登机牌\n值机、托运行李和登机口问路。airport check-in practice.\n酒店入住：房型与早餐\n入住登记、房型确认和早餐时间。hotel check-in practice.\n错题本\n回顾做过的错题\n修改目标\n进入测评\n学习\n练习\n成长\n课程\n我的"
+      }
+    },
+    {
+      "name": "empty-NO_PLAN-no-fabricated-plan",
+      "result": "PASS",
+      "detail": {
+        "text": "语学星\n今日学习\n今日任务已读取\n目标已保存，下一步进入定级\n剩余步骤：定级\n继续设置，开始学习\n今日任务\n0 项\n还没有学习计划\n先完成设置，再开始今天的练习。\n开始设置\n课程内容\n搜索课程\n机场值机：从问候到登机牌\n值机、托运行李和登机口问路。airport check-in practice.\n酒店入住：房型与早餐\n入住登记、房型确认和早餐时间。hotel check-in practice.\n错题本\n回顾做过的错题\n修改目标\n进入测评\n学习\n练习\n成长\n课程\n我的"
+      }
+    },
+    {
+      "name": "empty-NO_PLAN-action-visible",
+      "result": "PASS",
+      "detail": {
+        "actions": [
+          "开始设置",
+          "Start setup"
+        ]
+      }
+    },
+    {
+      "name": "empty-NO_PLAN-onboarding-outlet",
+      "result": "PASS",
+      "detail": {
+        "before": "http://127.0.0.1:18183/#/",
+        "after": "http://127.0.0.1:18183/#/pages/onboarding/onboarding",
+        "excerpt": "语学星\n18 岁以上成人学习\n1\n确认身份\n已完成\n2\n必要同意\n已完成\n3\n学习目标\n已完成\n设置已完成\n定级帮助你找到合适的起点，也可以先调整已保存的目标。\n已保存学习目标\n成人零基础\n每天愿意投入多久？\n15 分钟\n开始定级\n调整目标\n账号设置\n退出登录"
+      }
+    },
+    {
+      "name": "empty-NO_CONTENT-no-fabricated-task",
+      "result": "FAIL",
+      "detail": {
+        "rows": 0,
+        "buttons": [
+          "",
+          "继续设置，开始学习",
+          "错题本 回顾做过的错题",
+          "修改目标",
+          "进入测评"
+        ]
+      }
+    },
+    {
+      "name": "empty-NO_CONTENT-no-fabricated-zero-percent",
+      "result": "PASS",
+      "detail": {
+        "text": "语学星\n今日学习\n今日任务已读取\n目标已保存，下一步进入定级\n剩余步骤：定级\n继续设置，开始学习\n今日任务\n0 项\n暂时没有可学习的内容\n可以先看现在能打开的内容。\n课程内容\n搜索课程\n书架里还没有可学习的内容。\n错题本\n回顾做过的错题\n修改目标\n进入测评\n学习\n练习\n成长\n课程\n我的"
+      }
+    },
+    {
+      "name": "empty-NO_CONTENT-no-fabricated-plan",
+      "result": "PASS",
+      "detail": {
+        "text": "语学星\n今日学习\n今日任务已读取\n目标已保存，下一步进入定级\n剩余步骤：定级\n继续设置，开始学习\n今日任务\n0 项\n暂时没有可学习的内容\n可以先看现在能打开的内容。\n课程内容\n搜索课程\n书架里还没有可学习的内容。\n错题本\n回顾做过的错题\n修改目标\n进入测评\n学习\n练习\n成长\n课程\n我的"
+      }
+    },
+    {
+      "name": "empty-NO_CONTENT-no-invalid-cta",
+      "result": "PASS",
+      "detail": {
+        "invalidCta": false,
+        "courses": 0,
+        "buttons": [
+          "",
+          "继续设置，开始学习",
+          "错题本 回顾做过的错题",
+          "修改目标",
+          "进入测评"
+        ]
+      }
+    },
+    {
+      "name": "empty-NO_DUE_REVIEW-no-fabricated-task",
+      "result": "FAIL",
+      "detail": {
+        "rows": 0,
+        "buttons": [
+          "",
+          "继续设置，开始学习",
+          "查看课程",
+          "机场值机：从问候到登机牌 值机、托运行李和登机口问路。airport check-in practice.",
+          "酒店入住：房型与早餐 入住登记、房型确认和早餐时间。hotel check-in practice.",
+          "错题本 回顾做过的错题",
+          "修改目标",
+          "进入测评"
+        ]
+      }
+    },
+    {
+      "name": "empty-NO_DUE_REVIEW-no-fabricated-zero-percent",
+      "result": "PASS",
+      "detail": {
+        "text": "语学星\n今日学习\n今日任务已读取\n目标已保存，下一步进入定级\n剩余步骤：定级\n继续设置，开始学习\n今日任务\n0 项\n今天没有到期的复习\n可以新学一节，或先看课程。\n查看课程\n课程内容\n搜索课程\n机场值机：从问候到登机牌\n值机、托运行李和登机口问路。airport check-in practice.\n酒店入住：房型与早餐\n入住登记、房型确认和早餐时间。hotel check-in practice.\n错题本\n回顾做过的错题\n修改目标\n进入测评\n学习\n练习\n成长\n课程\n我的"
+      }
+    },
+    {
+      "name": "empty-NO_DUE_REVIEW-no-fabricated-plan",
+      "result": "PASS",
+      "detail": {
+        "text": "语学星\n今日学习\n今日任务已读取\n目标已保存，下一步进入定级\n剩余步骤：定级\n继续设置，开始学习\n今日任务\n0 项\n今天没有到期的复习\n可以新学一节，或先看课程。\n查看课程\n课程内容\n搜索课程\n机场值机：从问候到登机牌\n值机、托运行李和登机口问路。airport check-in practice.\n酒店入住：房型与早餐\n入住登记、房型确认和早餐时间。hotel check-in practice.\n错题本\n回顾做过的错题\n修改目标\n进入测评\n学习\n练习\n成长\n课程\n我的"
+      }
+    },
+    {
+      "name": "empty-NO_DUE_REVIEW-action-visible",
+      "result": "PASS",
+      "detail": {
+        "actions": [
+          "查看课程",
+          "View courses"
+        ]
+      }
+    },
+    {
+      "name": "empty-NO_DUE_REVIEW-shelf-outlet",
+      "result": "PASS",
+      "detail": {
+        "before": "http://127.0.0.1:18183/#/",
+        "after": "http://127.0.0.1:18183/#/",
+        "shelfSeen": true,
+        "shelfInView": true
+      }
+    },
+    {
+      "name": "empty-COMPLETED-no-fabricated-task",
+      "result": "FAIL",
+      "detail": {
+        "rows": 0,
+        "buttons": [
+          "",
+          "继续设置，开始学习",
+          "查看课程",
+          "机场值机：从问候到登机牌 值机、托运行李和登机口问路。airport check-in practice.",
+          "酒店入住：房型与早餐 入住登记、房型确认和早餐时间。hotel check-in practice.",
+          "错题本 回顾做过的错题",
+          "修改目标",
+          "进入测评"
+        ]
+      }
+    },
+    {
+      "name": "empty-COMPLETED-no-fabricated-zero-percent",
+      "result": "PASS",
+      "detail": {
+        "text": "语学星\n今日学习\n今日任务已读取\n目标已保存，下一步进入定级\n剩余步骤：定级\n继续设置，开始学习\n今日任务\n0 项\n今天的学习已经完成\n已保存的练习还在。\n查看课程\n课程内容\n搜索课程\n机场值机：从问候到登机牌\n值机、托运行李和登机口问路。airport check-in practice.\n酒店入住：房型与早餐\n入住登记、房型确认和早餐时间。hotel check-in practice.\n错题本\n回顾做过的错题\n修改目标\n进入测评\n学习\n练习\n成长\n课程\n我的"
+      }
+    },
+    {
+      "name": "empty-COMPLETED-no-fabricated-plan",
+      "result": "PASS",
+      "detail": {
+        "text": "语学星\n今日学习\n今日任务已读取\n目标已保存，下一步进入定级\n剩余步骤：定级\n继续设置，开始学习\n今日任务\n0 项\n今天的学习已经完成\n已保存的练习还在。\n查看课程\n课程内容\n搜索课程\n机场值机：从问候到登机牌\n值机、托运行李和登机口问路。airport check-in practice.\n酒店入住：房型与早餐\n入住登记、房型确认和早餐时间。hotel check-in practice.\n错题本\n回顾做过的错题\n修改目标\n进入测评\n学习\n练习\n成长\n课程\n我的"
+      }
+    },
+    {
+      "name": "empty-COMPLETED-action-visible",
+      "result": "PASS",
+      "detail": {
+        "actions": [
+          "查看课程",
+          "View courses"
+        ]
+      }
+    },
+    {
+      "name": "empty-COMPLETED-shelf-outlet",
+      "result": "PASS",
+      "detail": {
+        "before": "http://127.0.0.1:18183/#/",
+        "after": "http://127.0.0.1:18183/#/",
+        "shelfSeen": true,
+        "shelfInView": true
+      }
+    },
+    {
+      "name": "empty-COMPLETED-no-self-loop",
+      "result": "PASS",
+      "detail": {
+        "before": "http://127.0.0.1:18183/#/",
+        "after": "http://127.0.0.1:18183/#/",
+        "shelfInView": true
+      }
+    },
+    {
+      "name": "stale-no-fabricated-zero-percent",
+      "result": "PASS",
+      "detail": {
+        "text": "语学星\n今日学习\n今日任务已读取\n目标已保存，下一步进入定级\n剩余步骤：定级\n继续设置，开始学习\n今日任务\n0 项\n今天还没有安排任务。\n可从下方选择课程。\n课程内容\n搜索课程\n机场值机：从问候到登机牌\n值机、托运行李和登机口问路。airport check-in practice.\n酒店入住：房型与早餐\n入住登记、房型确认和早餐时间。hotel check-in practice.\n错题本\n回顾做过的错题\n修改目标\n进入测评\n学习\n练习\n成长\n课程\n我的"
+      }
+    },
+    {
+      "name": "stale-no-fabricated-task",
+      "result": "FAIL",
+      "detail": {
+        "rows": 0,
+        "buttons": [
+          "",
+          "继续设置，开始学习",
+          "机场值机：从问候到登机牌 值机、托运行李和登机口问路。airport check-in practice.",
+          "酒店入住：房型与早餐 入住登记、房型确认和早餐时间。hotel check-in practice.",
+          "错题本 回顾做过的错题",
+          "修改目标",
+          "进入测评"
+        ]
+      }
+    },
+    {
+      "name": "stale-no-fabricated-plan",
+      "result": "PASS",
+      "detail": {
+        "text": "语学星\n今日学习\n今日任务已读取\n目标已保存，下一步进入定级\n剩余步骤：定级\n继续设置，开始学习\n今日任务\n0 项\n今天还没有安排任务。\n可从下方选择课程。\n课程内容\n搜索课程\n机场值机：从问候到登机牌\n值机、托运行李和登机口问路。airport check-in practice.\n酒店入住：房型与早餐\n入住登记、房型确认和早餐时间。hotel check-in practice.\n错题本\n回顾做过的错题\n修改目标\n进入测评\n学习\n练习\n成长\n课程\n我的"
+      }
+    },
+    {
+      "name": "catalog-unavailable-http-503",
+      "result": "PASS",
+      "detail": {
+        "catalogStatuses": [
+          503
+        ]
+      }
+    },
+    {
+      "name": "catalog-unavailable-no-fabricated-published",
+      "result": "PASS",
+      "detail": {
+        "excerpt": "语学星\n今日学习\n今日任务暂不可用\n请稍后重试。\n重试\n学习\n练习\n成长\n课程\n我的"
+      }
+    },
+    {
+      "name": "browser-closed-cleanly",
+      "result": "PASS",
+      "detail": {
+        "closed": true
+      }
+    },
+    {
+      "name": "source-and-deps-hashes-stable",
+      "result": "PASS",
+      "detail": {
+        "before": {
+          "page": {
+            "path": "apps/mobile/src/pages/home/home.vue",
+            "sha256": "593994f2a6340e450b674cf492c5ed99f1cfc10f61f67b79ebb1c327ccae020d"
+          },
+          "i18n": {
+            "path": "packages/i18n/src/mobile-experience.ts",
+            "sha256": "278b9d030b02532a872c502b38f62561e41dc94ffdfb7abc35585c4496967ddc"
+          },
+          "store": {
+            "path": "apps/mobile/src/stores/learner-content.ts",
+            "sha256": "c4ef9dd83452ea44f6deda55ac0be2dd3e49a810cd82d183d5342fa9b71cec21"
+          },
+          "api": {
+            "path": "apps/mobile/src/api/learner-content.ts",
+            "sha256": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6"
+          },
+          "session": {
+            "path": "apps/mobile/src/stores/session.ts",
+            "sha256": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931"
+          },
+          "navigation": {
+            "path": "apps/mobile/src/auth/navigation.ts",
+            "sha256": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5"
+          },
+          "runtime": {
+            "path": "apps/mobile/src/platform/uni-runtime.ts",
+            "sha256": "03b21bab8c4121ec289b5633ae9fab79ba0b64c60d0431f7adbf8953115f265a"
+          },
+          "handoff": {
+            "path": "apps/mobile/src/platform/public-auth-handoff.mjs",
+            "sha256": "f363aad14b7a52fcb7138be6c659d509a7201daeb4b32d100f4e92db83d812be"
+          },
+          "depPackage": {
+            "path": "apps/mobile/package.json",
+            "sha256": "484382c73929055cc4ecd9a83679f8bab72388dd8069f71a056b3bbc595c0078"
+          },
+          "depLock": {
+            "path": "pnpm-lock.yaml",
+            "sha256": "d57a87ca84985549fd53c69b1fe1d59db0b136036f2f7bf640d3b30c0a106624"
+          }
+        },
+        "after": {
+          "page": {
+            "path": "apps/mobile/src/pages/home/home.vue",
+            "sha256": "593994f2a6340e450b674cf492c5ed99f1cfc10f61f67b79ebb1c327ccae020d"
+          },
+          "i18n": {
+            "path": "packages/i18n/src/mobile-experience.ts",
+            "sha256": "278b9d030b02532a872c502b38f62561e41dc94ffdfb7abc35585c4496967ddc"
+          },
+          "store": {
+            "path": "apps/mobile/src/stores/learner-content.ts",
+            "sha256": "c4ef9dd83452ea44f6deda55ac0be2dd3e49a810cd82d183d5342fa9b71cec21"
+          },
+          "api": {
+            "path": "apps/mobile/src/api/learner-content.ts",
+            "sha256": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6"
+          },
+          "session": {
+            "path": "apps/mobile/src/stores/session.ts",
+            "sha256": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931"
+          },
+          "navigation": {
+            "path": "apps/mobile/src/auth/navigation.ts",
+            "sha256": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5"
+          },
+          "runtime": {
+            "path": "apps/mobile/src/platform/uni-runtime.ts",
+            "sha256": "03b21bab8c4121ec289b5633ae9fab79ba0b64c60d0431f7adbf8953115f265a"
+          },
+          "handoff": {
+            "path": "apps/mobile/src/platform/public-auth-handoff.mjs",
+            "sha256": "f363aad14b7a52fcb7138be6c659d509a7201daeb4b32d100f4e92db83d812be"
+          },
+          "depPackage": {
+            "path": "apps/mobile/package.json",
+            "sha256": "484382c73929055cc4ecd9a83679f8bab72388dd8069f71a056b3bbc595c0078"
+          },
+          "depLock": {
+            "path": "pnpm-lock.yaml",
+            "sha256": "d57a87ca84985549fd53c69b1fe1d59db0b136036f2f7bf640d3b30c0a106624"
+          }
+        }
+      }
+    },
+    {
+      "name": "console-errors-classified",
+      "result": "FAIL",
+      "detail": {
+        "expectedHttpConsole": [],
+        "unexpectedConsoleErrors": [
+          {
+            "caseId": 6,
+            "caseKey": "empty-catalog",
+            "message": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+            "path": "/api/v1/content/learner/catalog"
+          }
+        ],
+        "allowedConsolePaths": [],
+        "expectedConsoleStatuses": []
+      }
+    },
+    {
+      "name": "no-page-errors",
+      "result": "PASS",
+      "detail": {
+        "pageErrors": []
+      }
+    },
+    {
+      "name": "no-unknown-api",
+      "result": "PASS",
+      "detail": {
+        "unknown": [],
+        "note": "Settled after the case interaction; top-level and detail counts share the same caseKey source."
+      }
+    }
+  ],
+  "gaps": [],
+  "result": "FAIL",
+  "evidence": {
+    "NO_PLAN": {
+      "text": "语学星\n今日学习\n今日任务已读取\n目标已保存，下一步进入定级\n剩余步骤：定级\n继续设置，开始学习\n今日任务\n0 项\n还没有学习计划\n先完成设置，再开始今天的练习。\n开始设置\n课程内容\n搜索课程\n机场值机：从问候到登机牌\n值机、托运行李和登机口问路。airport check-in practice.\n酒店入住：房型与早餐\n入住登记、房型确认和早餐时间。hotel check-in practice.\n错题本\n回顾做过的错题\n修改目标\n进入测评\n学习\n练习\n成长\n课程\n我的",
+      "buttons": [
+        {
+          "text": "",
+          "aria": "设置",
+          "disabled": false,
+          "rect": {
+            "x": 326,
+            "y": 18,
+            "width": 44,
+            "height": 44
+          },
+          "fontSize": "14px",
+          "lineHeight": "21px"
+        },
+        {
+          "text": "继续设置，开始学习",
+          "aria": "",
+          "disabled": false,
+          "rect": {
+            "x": 20,
+            "y": 239,
+            "width": 178,
+            "height": 46
+          },
+          "fontSize": "16px",
+          "lineHeight": "24px"
+        },
+        {
+          "text": "开始设置",
+          "aria": "",
+          "disabled": false,
+          "rect": {
+            "x": 20,
+            "y": 439,
+            "width": 98,
+            "height": 46
+          },
+          "fontSize": "16px",
+          "lineHeight": "24px"
+        },
+        {
+          "text": "机场值机：从问候到登机牌 值机、托运行李和登机口问路。airport check-in practice.",
+          "aria": "",
+          "disabled": false,
+          "rect": {
+            "x": 20,
+            "y": 635,
+            "width": 350,
+            "height": 104
+          },
+          "fontSize": "14px",
+          "lineHeight": "21px"
+        },
+        {
+          "text": "酒店入住：房型与早餐 入住登记、房型确认和早餐时间。hotel check-in practice.",
+          "aria": "",
+          "disabled": false,
+          "rect": {
+            "x": 20,
+            "y": 739,
+            "width": 350,
+            "height": 104
+          },
+          "fontSize": "14px",
+          "lineHeight": "21px"
+        },
+        {
+          "text": "错题本 回顾做过的错题",
+          "aria": "",
+          "disabled": false,
+          "rect": {
+            "x": 20,
+            "y": 875,
+            "width": 350,
+            "height": 82
+          },
+          "fontSize": "14px",
+          "lineHeight": "21px"
+        },
+        {
+          "text": "修改目标",
+          "aria": "",
+          "disabled": false,
+          "rect": {
+            "x": 20,
+            "y": 974,
+            "width": 72,
+            "height": 44
+          },
+          "fontSize": "16px",
+          "lineHeight": "24px"
+        },
+        {
+          "text": "进入测评",
+          "aria": "",
+          "disabled": false,
+          "rect": {
+            "x": 116,
+            "y": 974,
+            "width": 72,
+            "height": 44
+          },
+          "fontSize": "16px",
+          "lineHeight": "24px"
+        }
+      ],
+      "url": "http://127.0.0.1:18183/#/pages/onboarding/onboarding",
+      "actionVisible": true
+    },
+    "screenshot": {
+      "fullpage": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-home\\dsh-20261021-qa\\runs\\codex-20261021-c6-empty-1\\01-empty-no-plan-full.png",
+      "viewport": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-home\\dsh-20261021-qa\\runs\\codex-20261021-c6-empty-1\\01-empty-no-plan-viewport.png"
+    },
+    "NO_CONTENT": {
+      "text": "语学星\n今日学习\n今日任务已读取\n目标已保存，下一步进入定级\n剩余步骤：定级\n继续设置，开始学习\n今日任务\n0 项\n暂时没有可学习的内容\n可以先看现在能打开的内容。\n课程内容\n搜索课程\n书架里还没有可学习的内容。\n错题本\n回顾做过的错题\n修改目标\n进入测评\n学习\n练习\n成长\n课程\n我的",
+      "buttons": [
+        {
+          "text": "",
+          "aria": "设置",
+          "disabled": false,
+          "rect": {
+            "x": 326,
+            "y": 18,
+            "width": 44,
+            "height": 44
+          },
+          "fontSize": "14px",
+          "lineHeight": "21px"
+        },
+        {
+          "text": "继续设置，开始学习",
+          "aria": "",
+          "disabled": false,
+          "rect": {
+            "x": 20,
+            "y": 239,
+            "width": 178,
+            "height": 46
+          },
+          "fontSize": "16px",
+          "lineHeight": "24px"
+        },
+        {
+          "text": "错题本 回顾做过的错题",
+          "aria": "",
+          "disabled": false,
+          "rect": {
+            "x": 20,
+            "y": 648,
+            "width": 350,
+            "height": 82
+          },
+          "fontSize": "14px",
+          "lineHeight": "21px"
+        },
+        {
+          "text": "修改目标",
+          "aria": "",
+          "disabled": false,
+          "rect": {
+            "x": 20,
+            "y": 748,
+            "width": 72,
+            "height": 44
+          },
+          "fontSize": "16px",
+          "lineHeight": "24px"
+        },
+        {
+          "text": "进入测评",
+          "aria": "",
+          "disabled": false,
+          "rect": {
+            "x": 116,
+            "y": 748,
+            "width": 72,
+            "height": 44
+          },
+          "fontSize": "16px",
+          "lineHeight": "24px"
+        }
+      ],
+      "url": "http://127.0.0.1:18183/#/",
+      "actionVisible": false
+    },
+    "NO_DUE_REVIEW": {
+      "text": "语学星\n今日学习\n今日任务已读取\n目标已保存，下一步进入定级\n剩余步骤：定级\n继续设置，开始学习\n今日任务\n0 项\n今天没有到期的复习\n可以新学一节，或先看课程。\n查看课程\n课程内容\n搜索课程\n机场值机：从问候到登机牌\n值机、托运行李和登机口问路。airport check-in practice.\n酒店入住：房型与早餐\n入住登记、房型确认和早餐时间。hotel check-in practice.\n错题本\n回顾做过的错题\n修改目标\n进入测评\n学习\n练习\n成长\n课程\n我的",
+      "buttons": [
+        {
+          "text": "",
+          "aria": "设置",
+          "disabled": false,
+          "rect": {
+            "x": 326,
+            "y": 18,
+            "width": 44,
+            "height": 44
+          },
+          "fontSize": "14px",
+          "lineHeight": "21px"
+        },
+        {
+          "text": "继续设置，开始学习",
+          "aria": "",
+          "disabled": false,
+          "rect": {
+            "x": 20,
+            "y": 239,
+            "width": 178,
+            "height": 46
+          },
+          "fontSize": "16px",
+          "lineHeight": "24px"
+        },
+        {
+          "text": "查看课程",
+          "aria": "",
+          "disabled": false,
+          "rect": {
+            "x": 20,
+            "y": 439,
+            "width": 98,
+            "height": 46
+          },
+          "fontSize": "16px",
+          "lineHeight": "24px"
+        },
+        {
+          "text": "机场值机：从问候到登机牌 值机、托运行李和登机口问路。airport check-in practice.",
+          "aria": "",
+          "disabled": false,
+          "rect": {
+            "x": 20,
+            "y": 635,
+            "width": 350,
+            "height": 104
+          },
+          "fontSize": "14px",
+          "lineHeight": "21px"
+        },
+        {
+          "text": "酒店入住：房型与早餐 入住登记、房型确认和早餐时间。hotel check-in practice.",
+          "aria": "",
+          "disabled": false,
+          "rect": {
+            "x": 20,
+            "y": 739,
+            "width": 350,
+            "height": 104
+          },
+          "fontSize": "14px",
+          "lineHeight": "21px"
+        },
+        {
+          "text": "错题本 回顾做过的错题",
+          "aria": "",
+          "disabled": false,
+          "rect": {
+            "x": 20,
+            "y": 875,
+            "width": 350,
+            "height": 82
+          },
+          "fontSize": "14px",
+          "lineHeight": "21px"
+        },
+        {
+          "text": "修改目标",
+          "aria": "",
+          "disabled": false,
+          "rect": {
+            "x": 20,
+            "y": 974,
+            "width": 72,
+            "height": 44
+          },
+          "fontSize": "16px",
+          "lineHeight": "24px"
+        },
+        {
+          "text": "进入测评",
+          "aria": "",
+          "disabled": false,
+          "rect": {
+            "x": 116,
+            "y": 974,
+            "width": 72,
+            "height": 44
+          },
+          "fontSize": "16px",
+          "lineHeight": "24px"
+        }
+      ],
+      "url": "http://127.0.0.1:18183/#/",
+      "actionVisible": true
+    },
+    "COMPLETED": {
+      "text": "语学星\n今日学习\n今日任务已读取\n目标已保存，下一步进入定级\n剩余步骤：定级\n继续设置，开始学习\n今日任务\n0 项\n今天的学习已经完成\n已保存的练习还在。\n查看课程\n课程内容\n搜索课程\n机场值机：从问候到登机牌\n值机、托运行李和登机口问路。airport check-in practice.\n酒店入住：房型与早餐\n入住登记、房型确认和早餐时间。hotel check-in practice.\n错题本\n回顾做过的错题\n修改目标\n进入测评\n学习\n练习\n成长\n课程\n我的",
+      "buttons": [
+        {
+          "text": "",
+          "aria": "设置",
+          "disabled": false,
+          "rect": {
+            "x": 326,
+            "y": 18,
+            "width": 44,
+            "height": 44
+          },
+          "fontSize": "14px",
+          "lineHeight": "21px"
+        },
+        {
+          "text": "继续设置，开始学习",
+          "aria": "",
+          "disabled": false,
+          "rect": {
+            "x": 20,
+            "y": 239,
+            "width": 178,
+            "height": 46
+          },
+          "fontSize": "16px",
+          "lineHeight": "24px"
+        },
+        {
+          "text": "查看课程",
+          "aria": "",
+          "disabled": false,
+          "rect": {
+            "x": 20,
+            "y": 439,
+            "width": 98,
+            "height": 46
+          },
+          "fontSize": "16px",
+          "lineHeight": "24px"
+        },
+        {
+          "text": "机场值机：从问候到登机牌 值机、托运行李和登机口问路。airport check-in practice.",
+          "aria": "",
+          "disabled": false,
+          "rect": {
+            "x": 20,
+            "y": 635,
+            "width": 350,
+            "height": 104
+          },
+          "fontSize": "14px",
+          "lineHeight": "21px"
+        },
+        {
+          "text": "酒店入住：房型与早餐 入住登记、房型确认和早餐时间。hotel check-in practice.",
+          "aria": "",
+          "disabled": false,
+          "rect": {
+            "x": 20,
+            "y": 739,
+            "width": 350,
+            "height": 104
+          },
+          "fontSize": "14px",
+          "lineHeight": "21px"
+        },
+        {
+          "text": "错题本 回顾做过的错题",
+          "aria": "",
+          "disabled": false,
+          "rect": {
+            "x": 20,
+            "y": 875,
+            "width": 350,
+            "height": 82
+          },
+          "fontSize": "14px",
+          "lineHeight": "21px"
+        },
+        {
+          "text": "修改目标",
+          "aria": "",
+          "disabled": false,
+          "rect": {
+            "x": 20,
+            "y": 974,
+            "width": 72,
+            "height": 44
+          },
+          "fontSize": "16px",
+          "lineHeight": "24px"
+        },
+        {
+          "text": "进入测评",
+          "aria": "",
+          "disabled": false,
+          "rect": {
+            "x": 116,
+            "y": 974,
+            "width": 72,
+            "height": 44
+          },
+          "fontSize": "16px",
+          "lineHeight": "24px"
+        }
+      ],
+      "url": "http://127.0.0.1:18183/#/",
+      "actionVisible": true
+    },
+    "screenshotCompleted": {
+      "fullpage": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-home\\dsh-20261021-qa\\runs\\codex-20261021-c6-empty-1\\01-empty-completed-shelf-full.png",
+      "viewport": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-home\\dsh-20261021-qa\\runs\\codex-20261021-c6-empty-1\\01-empty-completed-shelf-viewport.png"
+    },
+    "STALE": {
+      "text": "语学星\n今日学习\n今日任务已读取\n目标已保存，下一步进入定级\n剩余步骤：定级\n继续设置，开始学习\n今日任务\n0 项\n今天还没有安排任务。\n可从下方选择课程。\n课程内容\n搜索课程\n机场值机：从问候到登机牌\n值机、托运行李和登机口问路。airport check-in practice.\n酒店入住：房型与早餐\n入住登记、房型确认和早餐时间。hotel check-in practice.\n错题本\n回顾做过的错题\n修改目标\n进入测评\n学习\n练习\n成长\n课程\n我的",
+      "buttons": [
+        {
+          "text": "",
+          "aria": "设置",
+          "disabled": false,
+          "rect": {
+            "x": 326,
+            "y": 18,
+            "width": 44,
+            "height": 44
+          },
+          "fontSize": "14px",
+          "lineHeight": "21px"
+        },
+        {
+          "text": "继续设置，开始学习",
+          "aria": "",
+          "disabled": false,
+          "rect": {
+            "x": 20,
+            "y": 239,
+            "width": 178,
+            "height": 46
+          },
+          "fontSize": "16px",
+          "lineHeight": "24px"
+        },
+        {
+          "text": "机场值机：从问候到登机牌 值机、托运行李和登机口问路。airport check-in practice.",
+          "aria": "",
+          "disabled": false,
+          "rect": {
+            "x": 20,
+            "y": 581,
+            "width": 350,
+            "height": 104
+          },
+          "fontSize": "14px",
+          "lineHeight": "21px"
+        },
+        {
+          "text": "酒店入住：房型与早餐 入住登记、房型确认和早餐时间。hotel check-in practice.",
+          "aria": "",
+          "disabled": false,
+          "rect": {
+            "x": 20,
+            "y": 685,
+            "width": 350,
+            "height": 104
+          },
+          "fontSize": "14px",
+          "lineHeight": "21px"
+        },
+        {
+          "text": "错题本 回顾做过的错题",
+          "aria": "",
+          "disabled": false,
+          "rect": {
+            "x": 20,
+            "y": 821,
+            "width": 350,
+            "height": 82
+          },
+          "fontSize": "14px",
+          "lineHeight": "21px"
+        },
+        {
+          "text": "修改目标",
+          "aria": "",
+          "disabled": false,
+          "rect": {
+            "x": 20,
+            "y": 920,
+            "width": 72,
+            "height": 44
+          },
+          "fontSize": "16px",
+          "lineHeight": "24px"
+        },
+        {
+          "text": "进入测评",
+          "aria": "",
+          "disabled": false,
+          "rect": {
+            "x": 116,
+            "y": 920,
+            "width": 72,
+            "height": 44
+          },
+          "fontSize": "16px",
+          "lineHeight": "24px"
+        }
+      ]
+    },
+    "CATALOG_UNAVAILABLE": {
+      "text": "语学星\n今日学习\n今日任务暂不可用\n请稍后重试。\n重试\n学习\n练习\n成长\n课程\n我的",
+      "stats": {
+        "requests": [
+          {
+            "caseId": 6,
+            "caseKey": "empty-catalog",
+            "method": "POST",
+            "path": "/api/v1/auth/login",
+            "status": 200,
+            "held": false
+          },
+          {
+            "caseId": 6,
+            "caseKey": "empty-catalog",
+            "method": "GET",
+            "path": "/api/v1/iam/principal/me",
+            "status": 200,
+            "held": false
+          },
+          {
+            "caseId": 6,
+            "caseKey": "empty-catalog",
+            "method": "GET",
+            "path": "/api/v1/iam/principal/me",
+            "status": 200,
+            "held": false
+          },
+          {
+            "caseId": 6,
+            "caseKey": "empty-catalog",
+            "method": "GET",
+            "path": "/api/v1/learner/targets",
+            "status": 200,
+            "held": false
+          },
+          {
+            "caseId": 6,
+            "caseKey": "empty-catalog",
+            "method": "GET",
+            "path": "/api/v1/learner/profile",
+            "status": 200,
+            "held": false
+          },
+          {
+            "caseId": 6,
+            "caseKey": "empty-catalog",
+            "method": "GET",
+            "path": "/api/v1/learner/targets",
+            "status": 200,
+            "held": false
+          },
+          {
+            "caseId": 6,
+            "caseKey": "empty-catalog",
+            "method": "GET",
+            "path": "/api/v1/learner/preferences",
+            "status": 200,
+            "held": false
+          },
+          {
+            "caseId": 6,
+            "caseKey": "empty-catalog",
+            "method": "GET",
+            "path": "/api/v1/iam/principal/me",
+            "status": 200,
+            "held": false
+          },
+          {
+            "caseId": 6,
+            "caseKey": "empty-catalog",
+            "method": "GET",
+            "path": "/api/v1/iam/principal/me",
+            "status": 200,
+            "held": false
+          },
+          {
+            "caseId": 6,
+            "caseKey": "empty-catalog",
+            "method": "GET",
+            "path": "/api/v1/learner/targets",
+            "status": 200,
+            "held": false
+          },
+          {
+            "caseId": 6,
+            "caseKey": "empty-catalog",
+            "method": "GET",
+            "path": "/api/v1/learner/home",
+            "status": 200,
+            "held": false
+          },
+          {
+            "caseId": 6,
+            "caseKey": "empty-catalog",
+            "method": "GET",
+            "path": "/api/v1/content/learner/catalog",
+            "status": 503,
+            "held": false
+          },
+          {
+            "caseId": 6,
+            "caseKey": "empty-catalog",
+            "method": "GET",
+            "path": "/api/v1/learning/today",
+            "status": 200,
+            "held": false
+          }
+        ],
+        "writes": [
+          {
+            "caseId": 6,
+            "caseKey": "empty-catalog",
+            "method": "POST",
+            "path": "/api/v1/auth/login",
+            "status": 200,
+            "held": false
+          }
+        ],
+        "authWrites": [
+          {
+            "caseId": 6,
+            "caseKey": "empty-catalog",
+            "method": "POST",
+            "path": "/api/v1/auth/login",
+            "status": 200,
+            "held": false
+          }
+        ],
+        "domainWrites": [],
+        "unknown": [],
+        "homeStatuses": [
+          200
+        ],
+        "catalogStatuses": [
+          503
+        ]
+      }
+    },
+    "screenshotCatalog": {
+      "fullpage": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-home\\dsh-20261021-qa\\runs\\codex-20261021-c6-empty-1\\01-catalog-unavailable-full.png",
+      "viewport": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-home\\dsh-20261021-qa\\runs\\codex-20261021-c6-empty-1\\01-catalog-unavailable-viewport.png"
+    }
+  },
+  "api": {
+    "requestCount": 80,
+    "unknownCount": 0,
+    "unknown": [],
+    "writeCount": 6,
+    "authWrites": [
+      {
+        "caseId": 1,
+        "caseKey": "empty-NO_PLAN",
+        "method": "POST",
+        "path": "/api/v1/auth/login",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 2,
+        "caseKey": "empty-NO_CONTENT",
+        "method": "POST",
+        "path": "/api/v1/auth/login",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 3,
+        "caseKey": "empty-NO_DUE_REVIEW",
+        "method": "POST",
+        "path": "/api/v1/auth/login",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 4,
+        "caseKey": "empty-COMPLETED",
+        "method": "POST",
+        "path": "/api/v1/auth/login",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 5,
+        "caseKey": "empty-stale",
+        "method": "POST",
+        "path": "/api/v1/auth/login",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 6,
+        "caseKey": "empty-catalog",
+        "method": "POST",
+        "path": "/api/v1/auth/login",
+        "status": 200,
+        "held": false
+      }
+    ],
+    "domainWrites": [],
+    "requests": [
+      {
+        "caseId": 1,
+        "caseKey": "empty-NO_PLAN",
+        "method": "POST",
+        "path": "/api/v1/auth/login",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "empty-NO_PLAN",
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "empty-NO_PLAN",
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "empty-NO_PLAN",
+        "method": "GET",
+        "path": "/api/v1/learner/targets",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "empty-NO_PLAN",
+        "method": "GET",
+        "path": "/api/v1/learner/profile",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "empty-NO_PLAN",
+        "method": "GET",
+        "path": "/api/v1/learner/targets",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "empty-NO_PLAN",
+        "method": "GET",
+        "path": "/api/v1/learner/preferences",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "empty-NO_PLAN",
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "empty-NO_PLAN",
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "empty-NO_PLAN",
+        "method": "GET",
+        "path": "/api/v1/learner/targets",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "empty-NO_PLAN",
+        "method": "GET",
+        "path": "/api/v1/learner/home",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "empty-NO_PLAN",
+        "method": "GET",
+        "path": "/api/v1/content/learner/catalog",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "empty-NO_PLAN",
+        "method": "GET",
+        "path": "/api/v1/learning/today",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "empty-NO_PLAN",
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "empty-NO_PLAN",
+        "method": "GET",
+        "path": "/api/v1/learner/targets",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 2,
+        "caseKey": "empty-NO_CONTENT",
+        "method": "POST",
+        "path": "/api/v1/auth/login",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 2,
+        "caseKey": "empty-NO_CONTENT",
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 2,
+        "caseKey": "empty-NO_CONTENT",
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 2,
+        "caseKey": "empty-NO_CONTENT",
+        "method": "GET",
+        "path": "/api/v1/learner/targets",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 2,
+        "caseKey": "empty-NO_CONTENT",
+        "method": "GET",
+        "path": "/api/v1/learner/profile",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 2,
+        "caseKey": "empty-NO_CONTENT",
+        "method": "GET",
+        "path": "/api/v1/learner/targets",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 2,
+        "caseKey": "empty-NO_CONTENT",
+        "method": "GET",
+        "path": "/api/v1/learner/preferences",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 2,
+        "caseKey": "empty-NO_CONTENT",
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 2,
+        "caseKey": "empty-NO_CONTENT",
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 2,
+        "caseKey": "empty-NO_CONTENT",
+        "method": "GET",
+        "path": "/api/v1/learner/targets",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 2,
+        "caseKey": "empty-NO_CONTENT",
+        "method": "GET",
+        "path": "/api/v1/learner/home",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 2,
+        "caseKey": "empty-NO_CONTENT",
+        "method": "GET",
+        "path": "/api/v1/content/learner/catalog",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 2,
+        "caseKey": "empty-NO_CONTENT",
+        "method": "GET",
+        "path": "/api/v1/learning/today",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 3,
+        "caseKey": "empty-NO_DUE_REVIEW",
+        "method": "POST",
+        "path": "/api/v1/auth/login",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 3,
+        "caseKey": "empty-NO_DUE_REVIEW",
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 3,
+        "caseKey": "empty-NO_DUE_REVIEW",
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 3,
+        "caseKey": "empty-NO_DUE_REVIEW",
+        "method": "GET",
+        "path": "/api/v1/learner/targets",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 3,
+        "caseKey": "empty-NO_DUE_REVIEW",
+        "method": "GET",
+        "path": "/api/v1/learner/profile",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 3,
+        "caseKey": "empty-NO_DUE_REVIEW",
+        "method": "GET",
+        "path": "/api/v1/learner/targets",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 3,
+        "caseKey": "empty-NO_DUE_REVIEW",
+        "method": "GET",
+        "path": "/api/v1/learner/preferences",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 3,
+        "caseKey": "empty-NO_DUE_REVIEW",
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 3,
+        "caseKey": "empty-NO_DUE_REVIEW",
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 3,
+        "caseKey": "empty-NO_DUE_REVIEW",
+        "method": "GET",
+        "path": "/api/v1/learner/targets",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 3,
+        "caseKey": "empty-NO_DUE_REVIEW",
+        "method": "GET",
+        "path": "/api/v1/learner/home",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 3,
+        "caseKey": "empty-NO_DUE_REVIEW",
+        "method": "GET",
+        "path": "/api/v1/content/learner/catalog",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 3,
+        "caseKey": "empty-NO_DUE_REVIEW",
+        "method": "GET",
+        "path": "/api/v1/learning/today",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 4,
+        "caseKey": "empty-COMPLETED",
+        "method": "POST",
+        "path": "/api/v1/auth/login",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 4,
+        "caseKey": "empty-COMPLETED",
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 4,
+        "caseKey": "empty-COMPLETED",
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 4,
+        "caseKey": "empty-COMPLETED",
+        "method": "GET",
+        "path": "/api/v1/learner/targets",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 4,
+        "caseKey": "empty-COMPLETED",
+        "method": "GET",
+        "path": "/api/v1/learner/profile",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 4,
+        "caseKey": "empty-COMPLETED",
+        "method": "GET",
+        "path": "/api/v1/learner/targets",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 4,
+        "caseKey": "empty-COMPLETED",
+        "method": "GET",
+        "path": "/api/v1/learner/preferences",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 4,
+        "caseKey": "empty-COMPLETED",
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 4,
+        "caseKey": "empty-COMPLETED",
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 4,
+        "caseKey": "empty-COMPLETED",
+        "method": "GET",
+        "path": "/api/v1/learner/targets",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 4,
+        "caseKey": "empty-COMPLETED",
+        "method": "GET",
+        "path": "/api/v1/learner/home",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 4,
+        "caseKey": "empty-COMPLETED",
+        "method": "GET",
+        "path": "/api/v1/content/learner/catalog",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 4,
+        "caseKey": "empty-COMPLETED",
+        "method": "GET",
+        "path": "/api/v1/learning/today",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 5,
+        "caseKey": "empty-stale",
+        "method": "POST",
+        "path": "/api/v1/auth/login",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 5,
+        "caseKey": "empty-stale",
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 5,
+        "caseKey": "empty-stale",
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 5,
+        "caseKey": "empty-stale",
+        "method": "GET",
+        "path": "/api/v1/learner/targets",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 5,
+        "caseKey": "empty-stale",
+        "method": "GET",
+        "path": "/api/v1/learner/profile",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 5,
+        "caseKey": "empty-stale",
+        "method": "GET",
+        "path": "/api/v1/learner/targets",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 5,
+        "caseKey": "empty-stale",
+        "method": "GET",
+        "path": "/api/v1/learner/preferences",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 5,
+        "caseKey": "empty-stale",
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 5,
+        "caseKey": "empty-stale",
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 5,
+        "caseKey": "empty-stale",
+        "method": "GET",
+        "path": "/api/v1/learner/targets",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 5,
+        "caseKey": "empty-stale",
+        "method": "GET",
+        "path": "/api/v1/learner/home",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 5,
+        "caseKey": "empty-stale",
+        "method": "GET",
+        "path": "/api/v1/content/learner/catalog",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 5,
+        "caseKey": "empty-stale",
+        "method": "GET",
+        "path": "/api/v1/learning/today",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 6,
+        "caseKey": "empty-catalog",
+        "method": "POST",
+        "path": "/api/v1/auth/login",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 6,
+        "caseKey": "empty-catalog",
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 6,
+        "caseKey": "empty-catalog",
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 6,
+        "caseKey": "empty-catalog",
+        "method": "GET",
+        "path": "/api/v1/learner/targets",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 6,
+        "caseKey": "empty-catalog",
+        "method": "GET",
+        "path": "/api/v1/learner/profile",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 6,
+        "caseKey": "empty-catalog",
+        "method": "GET",
+        "path": "/api/v1/learner/targets",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 6,
+        "caseKey": "empty-catalog",
+        "method": "GET",
+        "path": "/api/v1/learner/preferences",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 6,
+        "caseKey": "empty-catalog",
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 6,
+        "caseKey": "empty-catalog",
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 6,
+        "caseKey": "empty-catalog",
+        "method": "GET",
+        "path": "/api/v1/learner/targets",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 6,
+        "caseKey": "empty-catalog",
+        "method": "GET",
+        "path": "/api/v1/learner/home",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 6,
+        "caseKey": "empty-catalog",
+        "method": "GET",
+        "path": "/api/v1/content/learner/catalog",
+        "status": 503,
+        "held": false
+      },
+      {
+        "caseId": 6,
+        "caseKey": "empty-catalog",
+        "method": "GET",
+        "path": "/api/v1/learning/today",
+        "status": 200,
+        "held": false
+      }
+    ]
+  },
+  "consoleWarnings": [],
+  "consoleErrors": [
+    {
+      "caseId": 6,
+      "caseKey": "empty-catalog",
+      "message": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+      "path": "/api/v1/content/learner/catalog"
+    }
+  ],
+  "consoleClassification": {
+    "expectedHttpConsole": [],
+    "unexpectedConsoleErrors": [
+      {
+        "caseId": 6,
+        "caseKey": "empty-catalog",
+        "message": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+        "path": "/api/v1/content/learner/catalog"
+      }
+    ],
+    "allowedConsolePaths": [],
+    "expectedConsoleStatuses": []
+  },
+  "pageErrors": [],
+  "closed": true,
+  "exitCode": 1
+}

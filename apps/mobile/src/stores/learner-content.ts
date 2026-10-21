@@ -119,7 +119,10 @@ export const useLearnerContentStore = defineStore('mobile-learner-content', () =
   }
   // Declared before the identity watch. That watch calls reset during setup.
   let ensuredPlanVersion = 0
+  // Invalidates an in-flight home read when a newer read starts or the account resets.
+  let homeGeneration = 0
   function reset(): void {
+    homeGeneration += 1
     restored.value = false
     onboarding.value = { ...fallbackOnboarding, goals: [...fallbackGoals], quotas: [...fallbackQuotas] }
     goals.value = [...fallbackGoals]; quotas.value = [...fallbackQuotas]
@@ -444,20 +447,36 @@ export const useLearnerContentStore = defineStore('mobile-learner-content', () =
   async function loadHome(): Promise<void> {
     const owner = scope()
     if (!owner) { reset(); homeStatus.value = 'forbidden'; return }
+    const generation = ++homeGeneration
+    const current = (): boolean => generation === homeGeneration && stillCurrent(owner)
     restore(); homeStatus.value = 'loading'; lastError.value = null
-    try { const contentLocale = await ensureContentLocale(owner); if (!contentLocale) throw new Error(lastError.value || '学习语言设置暂时无法读取。'); const remote = await mobileLearnerContentApi.readHome(contentLocale); if (!stillCurrent(owner)) return; home.value = remote; homeStatus.value = home.value.contentStatus === 'UNAVAILABLE' ? 'unavailable' : home.value.tasks.length || home.value.content.length ? 'ready' : 'empty'; persist() }
-    catch (error) { if (!stillCurrent(owner)) return; homeStatus.value = 'offline'; lastError.value = mobileLearnerContentError(error).message; persist() }
-    await refreshPlanQueue(owner)
+    try {
+      const contentLocale = await ensureContentLocale(owner)
+      if (!current()) return
+      if (!contentLocale) throw new Error(lastError.value || '学习语言设置暂时无法读取。')
+      const remote = await mobileLearnerContentApi.readHome(contentLocale)
+      if (!current()) return
+      home.value = remote
+      homeStatus.value = home.value.contentStatus === 'UNAVAILABLE' ? 'unavailable' : home.value.tasks.length || home.value.content.length ? 'ready' : 'empty'
+      persist()
+    } catch (error) {
+      if (!current()) return
+      homeStatus.value = 'offline'
+      lastError.value = mobileLearnerContentError(error).message
+      persist()
+    }
+    if (!current()) return
+    await refreshPlanQueue(owner, current)
   }
-  async function refreshPlanQueue(owner: Scope | null = scope()): Promise<void> {
-    if (!stillCurrent(owner)) return
+  async function refreshPlanQueue(owner: Scope | null = scope(), stillWanted?: () => boolean): Promise<void> {
+    if (!stillCurrent(owner) || (stillWanted && !stillWanted())) return
     try {
       const queue = await readPlanToday()
-      if (!stillCurrent(owner)) return
+      if (!stillCurrent(owner) || (stillWanted && !stillWanted())) return
       planQueue.value = queue
       planQueueStatus.value = queue.planId || queue.itemCount > 0 ? 'ready' : 'empty'
     } catch {
-      if (!stillCurrent(owner)) return
+      if (!stillCurrent(owner) || (stillWanted && !stillWanted())) return
       planQueueStatus.value = 'error'
     }
   }

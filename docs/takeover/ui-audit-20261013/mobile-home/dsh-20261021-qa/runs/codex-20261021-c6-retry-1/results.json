@@ -1,0 +1,561 @@
+{
+  "scope": "MB007_QA_RETRY",
+  "preparedBy": "DSH author session (prepared, not executed)",
+  "preparedAt": "2026-10-21",
+  "case": "retry",
+  "runId": "codex-20261021-c6-retry-1",
+  "runDirectory": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-home\\dsh-20261021-qa\\runs\\codex-20261021-c6-retry-1",
+  "at": "2026-10-21T05:53:13.645Z",
+  "base": "http://127.0.0.1:18183",
+  "expectedHashes": {
+    "home": "593994f2a6340e450b674cf492c5ed99f1cfc10f61f67b79ebb1c327ccae020d",
+    "i18n": "278b9d030b02532a872c502b38f62561e41dc94ffdfb7abc35585c4496967ddc",
+    "store": "c4ef9dd83452ea44f6deda55ac0be2dd3e49a810cd82d183d5342fa9b71cec21",
+    "runtime": "03b21bab8c4121ec289b5633ae9fab79ba0b64c60d0431f7adbf8953115f265a"
+  },
+  "observedHashes": {
+    "home": "593994f2a6340e450b674cf492c5ed99f1cfc10f61f67b79ebb1c327ccae020d",
+    "i18n": "278b9d030b02532a872c502b38f62561e41dc94ffdfb7abc35585c4496967ddc",
+    "store": "c4ef9dd83452ea44f6deda55ac0be2dd3e49a810cd82d183d5342fa9b71cec21",
+    "runtime": "03b21bab8c4121ec289b5633ae9fab79ba0b64c60d0431f7adbf8953115f265a"
+  },
+  "sourceHashesBefore": {
+    "page": {
+      "path": "apps/mobile/src/pages/home/home.vue",
+      "sha256": "593994f2a6340e450b674cf492c5ed99f1cfc10f61f67b79ebb1c327ccae020d"
+    },
+    "i18n": {
+      "path": "packages/i18n/src/mobile-experience.ts",
+      "sha256": "278b9d030b02532a872c502b38f62561e41dc94ffdfb7abc35585c4496967ddc"
+    },
+    "store": {
+      "path": "apps/mobile/src/stores/learner-content.ts",
+      "sha256": "c4ef9dd83452ea44f6deda55ac0be2dd3e49a810cd82d183d5342fa9b71cec21"
+    },
+    "api": {
+      "path": "apps/mobile/src/api/learner-content.ts",
+      "sha256": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6"
+    },
+    "session": {
+      "path": "apps/mobile/src/stores/session.ts",
+      "sha256": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931"
+    },
+    "navigation": {
+      "path": "apps/mobile/src/auth/navigation.ts",
+      "sha256": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5"
+    },
+    "runtime": {
+      "path": "apps/mobile/src/platform/uni-runtime.ts",
+      "sha256": "03b21bab8c4121ec289b5633ae9fab79ba0b64c60d0431f7adbf8953115f265a"
+    },
+    "handoff": {
+      "path": "apps/mobile/src/platform/public-auth-handoff.mjs",
+      "sha256": "f363aad14b7a52fcb7138be6c659d509a7201daeb4b32d100f4e92db83d812be"
+    },
+    "depPackage": {
+      "path": "apps/mobile/package.json",
+      "sha256": "484382c73929055cc4ecd9a83679f8bab72388dd8069f71a056b3bbc595c0078"
+    },
+    "depLock": {
+      "path": "pnpm-lock.yaml",
+      "sha256": "d57a87ca84985549fd53c69b1fe1d59db0b136036f2f7bf640d3b30c0a106624"
+    }
+  },
+  "sourceHashesAfter": {
+    "page": {
+      "path": "apps/mobile/src/pages/home/home.vue",
+      "sha256": "593994f2a6340e450b674cf492c5ed99f1cfc10f61f67b79ebb1c327ccae020d"
+    },
+    "i18n": {
+      "path": "packages/i18n/src/mobile-experience.ts",
+      "sha256": "278b9d030b02532a872c502b38f62561e41dc94ffdfb7abc35585c4496967ddc"
+    },
+    "store": {
+      "path": "apps/mobile/src/stores/learner-content.ts",
+      "sha256": "c4ef9dd83452ea44f6deda55ac0be2dd3e49a810cd82d183d5342fa9b71cec21"
+    },
+    "api": {
+      "path": "apps/mobile/src/api/learner-content.ts",
+      "sha256": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6"
+    },
+    "session": {
+      "path": "apps/mobile/src/stores/session.ts",
+      "sha256": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931"
+    },
+    "navigation": {
+      "path": "apps/mobile/src/auth/navigation.ts",
+      "sha256": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5"
+    },
+    "runtime": {
+      "path": "apps/mobile/src/platform/uni-runtime.ts",
+      "sha256": "03b21bab8c4121ec289b5633ae9fab79ba0b64c60d0431f7adbf8953115f265a"
+    },
+    "handoff": {
+      "path": "apps/mobile/src/platform/public-auth-handoff.mjs",
+      "sha256": "f363aad14b7a52fcb7138be6c659d509a7201daeb4b32d100f4e92db83d812be"
+    },
+    "depPackage": {
+      "path": "apps/mobile/package.json",
+      "sha256": "484382c73929055cc4ecd9a83679f8bab72388dd8069f71a056b3bbc595c0078"
+    },
+    "depLock": {
+      "path": "pnpm-lock.yaml",
+      "sha256": "d57a87ca84985549fd53c69b1fe1d59db0b136036f2f7bf640d3b30c0a106624"
+    }
+  },
+  "sourcesStable": true,
+  "checks": [
+    {
+      "name": "retry-first-home-503",
+      "result": "PASS",
+      "detail": {
+        "homeStatuses": [
+          503
+        ]
+      }
+    },
+    {
+      "name": "retry-light-error-visible",
+      "result": "PASS",
+      "detail": {
+        "excerpt": "语学星\n今日学习\n今日任务暂不可用\n请稍后重试。\n重试\n学习\n练习\n成长\n课程\n我的"
+      }
+    },
+    {
+      "name": "retry-held-get-received",
+      "result": "PASS",
+      "detail": {
+        "received": {
+          "kind": "received",
+          "label": "retry-held",
+          "path": "/api/v1/learner/home",
+          "owner": "A",
+          "generation": 1,
+          "payload": 1,
+          "at": "2026-10-21T05:53:13.030Z"
+        }
+      }
+    },
+    {
+      "name": "retry-button-disabled-while-held",
+      "result": "PASS",
+      "detail": {
+        "buttonPresent": false,
+        "disabled": null
+      }
+    },
+    {
+      "name": "retry-repeat-clicks-zero-new-home-get",
+      "result": "PASS",
+      "detail": {
+        "beforeRepeat": 2,
+        "afterRepeat": 2
+      }
+    },
+    {
+      "name": "retry-release-http-200",
+      "result": "PASS",
+      "detail": {
+        "received": true,
+        "fulfilled": true,
+        "aborted": false,
+        "label": "retry-held",
+        "status": 200,
+        "payload": 1,
+        "planExplanation": null
+      }
+    },
+    {
+      "name": "retry-recovers-ready",
+      "result": "PASS",
+      "detail": {
+        "heading": "今日学习",
+        "homeStatuses": [
+          503,
+          200
+        ]
+      }
+    },
+    {
+      "name": "retry-expected-503-console-recorded",
+      "result": "PASS",
+      "detail": {
+        "consoleErrors": [
+          {
+            "caseId": 1,
+            "caseKey": "retry",
+            "message": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+            "path": "/api/v1/learner/home"
+          }
+        ],
+        "home503Paths": [
+          "/api/v1/learner/home"
+        ]
+      }
+    },
+    {
+      "name": "retry-no-page-errors",
+      "result": "PASS",
+      "detail": {
+        "pageErrors": []
+      }
+    },
+    {
+      "name": "retry-no-unknown-api",
+      "result": "PASS",
+      "detail": {
+        "unknown": []
+      }
+    },
+    {
+      "name": "retry-zero-domain-writes",
+      "result": "PASS",
+      "detail": {
+        "domainWrites": []
+      }
+    },
+    {
+      "name": "browser-closed-cleanly",
+      "result": "PASS",
+      "detail": {
+        "closed": true
+      }
+    },
+    {
+      "name": "source-and-deps-hashes-stable",
+      "result": "PASS",
+      "detail": {
+        "before": {
+          "page": {
+            "path": "apps/mobile/src/pages/home/home.vue",
+            "sha256": "593994f2a6340e450b674cf492c5ed99f1cfc10f61f67b79ebb1c327ccae020d"
+          },
+          "i18n": {
+            "path": "packages/i18n/src/mobile-experience.ts",
+            "sha256": "278b9d030b02532a872c502b38f62561e41dc94ffdfb7abc35585c4496967ddc"
+          },
+          "store": {
+            "path": "apps/mobile/src/stores/learner-content.ts",
+            "sha256": "c4ef9dd83452ea44f6deda55ac0be2dd3e49a810cd82d183d5342fa9b71cec21"
+          },
+          "api": {
+            "path": "apps/mobile/src/api/learner-content.ts",
+            "sha256": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6"
+          },
+          "session": {
+            "path": "apps/mobile/src/stores/session.ts",
+            "sha256": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931"
+          },
+          "navigation": {
+            "path": "apps/mobile/src/auth/navigation.ts",
+            "sha256": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5"
+          },
+          "runtime": {
+            "path": "apps/mobile/src/platform/uni-runtime.ts",
+            "sha256": "03b21bab8c4121ec289b5633ae9fab79ba0b64c60d0431f7adbf8953115f265a"
+          },
+          "handoff": {
+            "path": "apps/mobile/src/platform/public-auth-handoff.mjs",
+            "sha256": "f363aad14b7a52fcb7138be6c659d509a7201daeb4b32d100f4e92db83d812be"
+          },
+          "depPackage": {
+            "path": "apps/mobile/package.json",
+            "sha256": "484382c73929055cc4ecd9a83679f8bab72388dd8069f71a056b3bbc595c0078"
+          },
+          "depLock": {
+            "path": "pnpm-lock.yaml",
+            "sha256": "d57a87ca84985549fd53c69b1fe1d59db0b136036f2f7bf640d3b30c0a106624"
+          }
+        },
+        "after": {
+          "page": {
+            "path": "apps/mobile/src/pages/home/home.vue",
+            "sha256": "593994f2a6340e450b674cf492c5ed99f1cfc10f61f67b79ebb1c327ccae020d"
+          },
+          "i18n": {
+            "path": "packages/i18n/src/mobile-experience.ts",
+            "sha256": "278b9d030b02532a872c502b38f62561e41dc94ffdfb7abc35585c4496967ddc"
+          },
+          "store": {
+            "path": "apps/mobile/src/stores/learner-content.ts",
+            "sha256": "c4ef9dd83452ea44f6deda55ac0be2dd3e49a810cd82d183d5342fa9b71cec21"
+          },
+          "api": {
+            "path": "apps/mobile/src/api/learner-content.ts",
+            "sha256": "43ce2ad5d6519b5fab7e38867d1349b569d08b6153b74c87e5c96f11e24e1ae6"
+          },
+          "session": {
+            "path": "apps/mobile/src/stores/session.ts",
+            "sha256": "d944c9e84617af5ad553d2fbc1fd0c07120ce790411dbe02603f9338333f8931"
+          },
+          "navigation": {
+            "path": "apps/mobile/src/auth/navigation.ts",
+            "sha256": "7365fec07c55857445fdb1d87b60659734e9e94dc06cfb65afabcb3e8863a4b5"
+          },
+          "runtime": {
+            "path": "apps/mobile/src/platform/uni-runtime.ts",
+            "sha256": "03b21bab8c4121ec289b5633ae9fab79ba0b64c60d0431f7adbf8953115f265a"
+          },
+          "handoff": {
+            "path": "apps/mobile/src/platform/public-auth-handoff.mjs",
+            "sha256": "f363aad14b7a52fcb7138be6c659d509a7201daeb4b32d100f4e92db83d812be"
+          },
+          "depPackage": {
+            "path": "apps/mobile/package.json",
+            "sha256": "484382c73929055cc4ecd9a83679f8bab72388dd8069f71a056b3bbc595c0078"
+          },
+          "depLock": {
+            "path": "pnpm-lock.yaml",
+            "sha256": "d57a87ca84985549fd53c69b1fe1d59db0b136036f2f7bf640d3b30c0a106624"
+          }
+        }
+      }
+    },
+    {
+      "name": "console-errors-classified",
+      "result": "PASS",
+      "detail": {
+        "expectedHttpConsole": [
+          {
+            "caseId": 1,
+            "caseKey": "retry",
+            "message": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+            "path": "/api/v1/learner/home"
+          }
+        ],
+        "unexpectedConsoleErrors": [],
+        "allowedConsolePaths": [
+          "/api/v1/learner/home"
+        ],
+        "expectedConsoleStatuses": [
+          503
+        ]
+      }
+    },
+    {
+      "name": "no-page-errors",
+      "result": "PASS",
+      "detail": {
+        "pageErrors": []
+      }
+    },
+    {
+      "name": "no-unknown-api",
+      "result": "PASS",
+      "detail": {
+        "unknown": [],
+        "note": "Settled after the case interaction; top-level and detail counts share the same caseKey source."
+      }
+    }
+  ],
+  "gaps": [],
+  "result": "PASS",
+  "evidence": {
+    "hold": {
+      "received": true,
+      "fulfilled": true,
+      "aborted": false,
+      "label": "retry-held",
+      "status": 200,
+      "payload": 1,
+      "planExplanation": null
+    },
+    "expectedHttpConsole": [
+      {
+        "caseId": 1,
+        "caseKey": "retry",
+        "message": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+        "path": "/api/v1/learner/home"
+      }
+    ],
+    "unclassifiedConsoleErrors": [],
+    "consoleErrors": [
+      {
+        "caseId": 1,
+        "caseKey": "retry",
+        "message": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+        "path": "/api/v1/learner/home"
+      }
+    ],
+    "screenshot": {
+      "fullpage": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-home\\dsh-20261021-qa\\runs\\codex-20261021-c6-retry-1\\01-retry-recovered-full.png",
+      "viewport": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\docs\\takeover\\ui-audit-20261013\\mobile-home\\dsh-20261021-qa\\runs\\codex-20261021-c6-retry-1\\01-retry-recovered-viewport.png"
+    }
+  },
+  "api": {
+    "requestCount": 16,
+    "unknownCount": 0,
+    "unknown": [],
+    "writeCount": 1,
+    "authWrites": [
+      {
+        "caseId": 1,
+        "caseKey": "retry",
+        "method": "POST",
+        "path": "/api/v1/auth/login",
+        "status": 200,
+        "held": false
+      }
+    ],
+    "domainWrites": [],
+    "requests": [
+      {
+        "caseId": 1,
+        "caseKey": "retry",
+        "method": "POST",
+        "path": "/api/v1/auth/login",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "retry",
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "retry",
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "retry",
+        "method": "GET",
+        "path": "/api/v1/learner/targets",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "retry",
+        "method": "GET",
+        "path": "/api/v1/learner/profile",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "retry",
+        "method": "GET",
+        "path": "/api/v1/learner/targets",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "retry",
+        "method": "GET",
+        "path": "/api/v1/learner/preferences",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "retry",
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "retry",
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "retry",
+        "method": "GET",
+        "path": "/api/v1/learner/targets",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "retry",
+        "method": "GET",
+        "path": "/api/v1/learner/home",
+        "status": 503,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "retry",
+        "method": "GET",
+        "path": "/api/v1/content/learner/catalog",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "retry",
+        "method": "GET",
+        "path": "/api/v1/learning/today",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "retry",
+        "method": "GET",
+        "path": "/api/v1/learner/home",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "retry",
+        "method": "GET",
+        "path": "/api/v1/content/learner/catalog",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "retry",
+        "method": "GET",
+        "path": "/api/v1/learning/today",
+        "status": 200,
+        "held": false
+      }
+    ]
+  },
+  "consoleWarnings": [],
+  "consoleErrors": [
+    {
+      "caseId": 1,
+      "caseKey": "retry",
+      "message": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+      "path": "/api/v1/learner/home"
+    }
+  ],
+  "consoleClassification": {
+    "expectedHttpConsole": [
+      {
+        "caseId": 1,
+        "caseKey": "retry",
+        "message": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+        "path": "/api/v1/learner/home"
+      }
+    ],
+    "unexpectedConsoleErrors": [],
+    "allowedConsolePaths": [
+      "/api/v1/learner/home"
+    ],
+    "expectedConsoleStatuses": [
+      503
+    ]
+  },
+  "pageErrors": [],
+  "closed": true,
+  "exitCode": 0
+}

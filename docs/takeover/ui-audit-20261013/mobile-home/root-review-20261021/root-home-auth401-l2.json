@@ -1,0 +1,113 @@
+{
+  "facts": {
+    "url": "http://127.0.0.1:18183/#/",
+    "text": "语学星\n今日学习\n正在确认学习状态…\n学习\n练习\n成长\n课程\n我的",
+    "requests": [
+      {
+        "caseId": 1,
+        "caseKey": "root-auth401-diagnosis",
+        "method": "POST",
+        "path": "/api/v1/auth/login",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "root-auth401-diagnosis",
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "root-auth401-diagnosis",
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "root-auth401-diagnosis",
+        "method": "GET",
+        "path": "/api/v1/learner/targets",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "root-auth401-diagnosis",
+        "method": "GET",
+        "path": "/api/v1/learner/profile",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "root-auth401-diagnosis",
+        "method": "GET",
+        "path": "/api/v1/learner/targets",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "root-auth401-diagnosis",
+        "method": "GET",
+        "path": "/api/v1/learner/preferences",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "root-auth401-diagnosis",
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "root-auth401-diagnosis",
+        "method": "GET",
+        "path": "/api/v1/iam/principal/me",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "root-auth401-diagnosis",
+        "method": "GET",
+        "path": "/api/v1/learner/targets",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "root-auth401-diagnosis",
+        "method": "GET",
+        "path": "/api/v1/learner/home",
+        "status": 401,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "root-auth401-diagnosis",
+        "method": "GET",
+        "path": "/api/v1/content/learner/catalog",
+        "status": 200,
+        "held": false
+      },
+      {
+        "caseId": 1,
+        "caseKey": "root-auth401-diagnosis",
+        "method": "POST",
+        "path": "/api/v1/auth/token/refresh",
+        "status": 401,
+        "held": false
+      }
+    ]
+  },
+  "closed": true
+}

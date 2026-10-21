@@ -176,7 +176,7 @@ export function getUniRuntime(): UniRuntime {
 }
 
 /** Use switchTab for tab-bar pages; navigateTo is rejected by uni-h5 for them. */
-export function openUniPage(url: string): void {
+export function openUniPage(url: string): void | Promise<unknown> {
   const runtime = getUniRuntime()
   const path = url.split('?')[0]
   if (TAB_BAR_PATHS.has(path)) {
@@ -185,9 +185,9 @@ export function openUniPage(url: string): void {
       const params = Object.fromEntries(new URLSearchParams(query).entries())
       runtime.setStorageSync(PENDING_NAVIGATION_QUERY_KEY, JSON.stringify({ path, params }))
     }
-    runtime.switchTab({ url: path })
+    return runtime.switchTab({ url: path })
   }
-  else runtime.navigateTo({ url })
+  return runtime.navigateTo({ url })
 }
 
 /** Read query parameters that had to cross a uni-app tab-bar switch. */

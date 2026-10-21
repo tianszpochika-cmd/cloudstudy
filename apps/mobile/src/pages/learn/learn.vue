@@ -5,13 +5,14 @@ import AppIcon from '../../components/AppIcon.vue'
 import { useMobileExperience } from '../../platform/experience'
 const { experienceStyle, experienceMotion } = useMobileExperience()
 
-import { computed, onMounted, ref } from 'vue'
-import { onLoad, onShow } from '@dcloudio/uni-app'
+import { computed, onBeforeUnmount, ref, watch } from 'vue'
+import { onHide, onLoad, onShow } from '@dcloudio/uni-app'
 import { mobileLearnerContentApi } from '../../api/learner-content'
 import type { MobileB18ReviewQueueItem } from '../../api/b18-learning'
 import type { MobileContentDetail } from '../../domain/learner-content'
 import { b10ThemeMode } from '../../platform/b10-foundation'
 import { consumePendingNavigationQuery, openUniPage, getUniRuntime } from '../../platform/uni-runtime'
+import { ensureMobilePageAccess } from '../../auth/navigation'
 import { useSessionStore } from '../../stores/session'
 import { useB18LearningStore } from '../../stores/b18-learning'
 import { weaknessView } from '../../domain/mistake-book'
@@ -40,6 +41,18 @@ const reviewNotice = computed(() => {
   return learning.lastError || (learning.state === 'permission' ? '当前账号无法查看复习安排。' : '复习安排暂不可用。')
 })
 let loadedContentCode = ''
+const pageVisible = ref(false)
+const gateReady = ref(false)
+let pageEpoch = 0
+let readSeq = 0
+let activeSync = 0
+let initialIntent: { contentCode: string; taskId: string } | null = null
+let initialConsumed = false
+let lastOwnerSubject: string | null = session.verifiedSubject
+
+function currentOwner(): string {
+  return session.isAuthenticated && session.verifiedSubject ? `${session.verifiedSubject}:${session.identityRevision}` : ''
+}
 function open(path: string): void { openUniPage(path === '/pages/b2-practice/b2-practice' ? '/pages/assessment/assessment' : path) }
 function completeReview(item: Parameters<typeof learning.complete>[0]): void {
   if (!item.completable || learning.busyItemId === item.queueItemId) return
@@ -88,32 +101,139 @@ function hashQueryValue(key: string): string {
   if (queryIndex < 0) return ''
   return new URLSearchParams(hash.slice(queryIndex + 1)).get(key)?.trim() ?? ''
 }
-async function loadContent(code: string): Promise<void> {
+function takeIntent(): { contentCode: string; taskId: string } | null {
+  const pending = consumePendingNavigationQuery('/pages/learn/learn')
+  if (pending.contentCode) {
+    initialConsumed = true
+    return { contentCode: pending.contentCode, taskId: pending.taskId ?? '' }
+  }
+  if (initialConsumed) return null
+  if (initialIntent) {
+    initialConsumed = true
+    return initialIntent
+  }
+  const code = hashContentCode()
+  if (!code) return null
+  initialConsumed = true
+  return { contentCode: code, taskId: hashQueryValue('taskId') }
+}
+async function loadContent(code: string, force = false): Promise<void> {
   const normalized = code.trim()
-  if (!normalized || (normalized === loadedContentCode && contentState.value !== 'error')) return
-  loadedContentCode = normalized
+  if (!normalized) return
+  if (!force && normalized === loadedContentCode && contentState.value === 'ready' && content.value?.contentCode === normalized) return
+  const token = ++readSeq
+  const epoch = pageEpoch
+  const owner = currentOwner()
+  const current = (): boolean => pageVisible.value && gateReady.value && token === readSeq && epoch === pageEpoch && owner !== '' && owner === currentOwner()
   contentCode.value = normalized
+  content.value = null
   contentState.value = 'loading'
   contentError.value = null
   try {
-    content.value = await mobileLearnerContentApi.readContent(normalized)
+    const detail = await mobileLearnerContentApi.readContent(normalized)
+    if (!current()) return
+    content.value = detail
+    loadedContentCode = detail.contentCode || normalized
     contentState.value = 'ready'
   } catch (error) {
+    if (!current()) return
     content.value = null
+    loadedContentCode = ''
     contentState.value = 'error'
     contentError.value = error instanceof Error ? error.message : '课程内容暂时不可用。'
   }
 }
-function initializeContent(options?: Record<string, unknown>): void {
-  const pending = consumePendingNavigationQuery('/pages/learn/learn')
-  const optionCode = typeof options?.contentCode === 'string' ? options.contentCode : pending.contentCode ?? ''
-  const optionTask = typeof options?.taskId === 'string' ? options.taskId : pending.taskId ?? ''
-  taskId.value = optionTask || hashQueryValue('taskId')
-  void loadContent(optionCode || hashContentCode())
+function applyIntent(intent: { contentCode: string; taskId: string }): void {
+  // taskId belongs to this intent only; a new course without a task clears it.
+  taskId.value = intent.taskId || ''
+  void loadContent(intent.contentCode, true)
 }
-onLoad((options) => initializeContent(options as Record<string, unknown>))
-onMounted(() => initializeContent())
-onShow(async () => { await session.restore(); if (!session.isAuthenticated) { getUniRuntime().navigateTo({ url: '/pages/login/login' }); return }; void learning.load() })
+function failClosed(): void {
+  if (!pageVisible.value) return
+  gateReady.value = false
+  content.value = null
+  contentState.value = 'error'
+  contentError.value = null
+}
+function startSync(): void {
+  void syncPage().catch(() => { failClosed() })
+}
+async function syncPage(): Promise<void> {
+  if (!pageVisible.value) return
+  const attempt = ++activeSync
+  const epoch = ++pageEpoch
+  gateReady.value = false
+  readSeq += 1
+  let allowed = false
+  try {
+    await session.restore()
+    if (!pageVisible.value || attempt !== activeSync || epoch !== pageEpoch) return
+    if (!session.isAuthenticated) {
+      getUniRuntime().navigateTo({ url: '/pages/login/login' })
+      return
+    }
+    if (!currentOwner()) return
+    allowed = await ensureMobilePageAccess('/pages/learn/learn')
+  } catch {
+    if (pageVisible.value && attempt === activeSync && epoch === pageEpoch) failClosed()
+    return
+  }
+  if (!pageVisible.value || attempt !== activeSync || epoch !== pageEpoch) return
+  if (!allowed) { failClosed(); return }
+  if (!currentOwner()) return
+  gateReady.value = true
+  const intent = takeIntent()
+  if (intent?.contentCode) applyIntent(intent)
+  else if (contentCode.value) void loadContent(contentCode.value, true)
+  void learning.load()
+}
+function invalidateOwner(): void {
+  pageEpoch += 1
+  activeSync += 1
+  readSeq += 1
+  gateReady.value = false
+  content.value = null
+  contentState.value = 'idle'
+  contentError.value = null
+  contentCode.value = ''
+  taskId.value = ''
+  loadedContentCode = ''
+}
+onLoad((options) => {
+  if (initialConsumed) return
+  const optionCode = typeof options?.contentCode === 'string' ? options.contentCode.trim() : ''
+  if (optionCode) initialIntent = { contentCode: optionCode, taskId: typeof options?.taskId === 'string' ? options.taskId : '' }
+})
+onShow(() => { pageVisible.value = true; startSync() })
+onHide(() => {
+  pageVisible.value = false
+  gateReady.value = false
+  pageEpoch += 1
+  activeSync += 1
+  readSeq += 1
+})
+onBeforeUnmount(() => {
+  pageVisible.value = false
+  gateReady.value = false
+  pageEpoch += 1
+  activeSync += 1
+  readSeq += 1
+})
+watch(() => session.identityRevision, () => {
+  const subject = session.verifiedSubject
+  const switched = Boolean(subject && lastOwnerSubject && subject !== lastOwnerSubject)
+  if (subject) lastOwnerSubject = subject
+  // A real account change must not replay the previous owner's initial intent
+  // or taskId. A restoring session may briefly null the subject; keep the
+  // first-load intent until the page gate resolves it.
+  if (switched || (subject === null && session.status !== 'restoring')) {
+    initialIntent = null
+    initialConsumed = true
+    taskId.value = ''
+  }
+  invalidateOwner()
+  if (pageVisible.value) startSync()
+}, { flush: 'sync' })
 </script>
 
 <template>
@@ -124,8 +244,8 @@ onShow(async () => { await session.restore(); if (!session.isAuthenticated) { ge
       <view class="yx-card content-card card v2-learn-card v2-learn-content">
         <view class="eyebrow v2-learn-eyebrow"><AppIcon name="book" /><text>课程</text></view>
         <text class="b10-flow__title v2-learn-title v2-learn-h2">{{ contentCode ? '课程内容' : '选择课程' }}</text>
-        <text v-if="contentState === 'idle'" class="d v2-learn-desc v2-learn-fb">从首页选择一门课程。</text>
-        <text v-else-if="contentState === 'loading'" class="d v2-learn-desc v2-learn-fb">正在读取课程…</text>
+        <text v-if="contentState === 'loading' || (!gateReady && contentState !== 'error')" class="d v2-learn-desc v2-learn-fb">正在读取课程…</text>
+        <text v-else-if="contentState === 'idle'" class="d v2-learn-desc v2-learn-fb">从首页选择一门课程。</text>
         <template v-else-if="content">
           <text class="content-title v2-learn-title v2-learn-stem">{{ content.title }}</text>
           <text v-if="contentMeta" class="content-meta d v2-learn-desc">{{ contentMeta }}</text>
@@ -139,7 +259,7 @@ onShow(async () => { await session.restore(); if (!session.isAuthenticated) { ge
         </template>
         <template v-else-if="contentState === 'error'">
           <text class="review-error d v2-learn-desc v2-learn-fb" role="alert">{{ contentError || '课程暂不可用。' }}</text>
-          <button tabindex="0" role="button" class="yx-button yx-button--secondary btn opt v2-learn-btn v2-learn-opt" type="button" @click="loadContent(contentCode)">重试<AppIcon name="refresh" /></button>
+          <button tabindex="0" role="button" class="yx-button yx-button--secondary btn opt v2-learn-btn v2-learn-opt" type="button" @click="startSync">重试<AppIcon name="refresh" /></button>
         </template>
       </view>
       <view class="yx-card b10-flow card v2-learn-card v2-learn-practice">
