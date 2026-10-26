@@ -1,9 +1,9 @@
-# 交互链条文档 v2.0（优化修订稿）
+# 交互链条文档 v2.3（原型反推与二轮审批整改稿）
 
 **15 条主命名动线 + 4 个细分区｜111 个保留幕编号｜108 个非索引幕｜IC-002/003/004 仅为索引**  
 配套：[业务链条文档](business-chains.md) · [修订说明与待确认清单](revision-notes.md) · [结构校验结果](validation-report.md)
 
-> **使用状态：修订设计稿，不是界面已实现或已验收证明。** 保留 I1–I15 及 I3b/I4b/I5b/I6b 的原组织与全部 IC 编号。页面状态、文案、动作与恢复是本次修订设计；需要产品/隐私/接口负责人决定的事项使用与业务稿相同的 `DEC-xx`，不能当作已经批准。原业务门、技术约束和分期不因交互优化而被绕过。
+> **使用状态：原型反推修订设计稿。2026-10-02 两轮独立审批发现的文档偏离已修正文案，尚不代表全幕验收、产品签核或上线批准。** 保留全部 IC 编号和原组织。12 项 DEC 的新增差异与运行签收不由 Agent 代签，既有 canonical 业务不因本包待签收而自动失效；设计来源及冲突见 [设计来源追溯](design-source-traceability.md)，本轮整改见 revision-notes §21。页面状态与用户动作必须服从服务 owner、版本、角色、阶段和真实回执。
 >
 > 本文件描述“用户看见什么、能做什么、失败后去哪里”；业务真相以配套业务稿主表与 C1–C10 为准。两份文件不各自维护互相冲突的状态机。实际 UI 布局、接口响应和性能未在本次验证。
 
@@ -43,18 +43,18 @@ CLOSED：普通用户无入口；INTERNAL：仅获准测试者可用并标注；
 
 | 幕 | 页面/子状态 | 状态、文案与动作（本次修订设计） | 回指业务 |
 |---|---|---|---|
-| IC-001<a id="ic-001"></a> | 官网首页/课程/价格 | 说明当前已开放的真实学习范围；没有内容时“内容准备中”，可浏览介绍，不诱导“先定级占位”；无真实收费方案不展示购买按钮。 | [BC-001](business-chains.md#bc-001) |
-| IC-002<a id="ic-002"></a> | 注册/登录/重置/设备（索引幕） | 仅入口索引，不重复验收；实际分别见 IC-052/053/054/035；后台错误与身份校验仍遵循共用规则。 | [BC-002](business-chains.md#bc-002) / [BC-003](business-chains.md#bc-003) / [BC-004](business-chains.md#bc-004) / [BC-005](business-chains.md#bc-005) / [BC-012](business-chains.md#bc-012) |
-| IC-003<a id="ic-003"></a> | 成人门+三同意（索引幕） | 仅汇总导航；实际见 IC-055/056；未通过可使用账号/隐私等允许功能；同意撤回范围见 IC-008。 | [BC-006](business-chains.md#bc-006) / [BC-007](business-chains.md#bc-007) / [BC-008](business-chains.md#bc-008) / [BC-009](business-chains.md#bc-009) |
-| IC-004<a id="ic-004"></a> | 画像与入门（索引幕） | 实际表单见 IC-057；进度条来自已保存字段；定级/快速开始按实际门控显示，不写固定“3 击”。 | [BC-010](business-chains.md#bc-010) / [BC-011](business-chains.md#bc-011) / [BC-202](business-chains.md#bc-202) |
+| IC-001<a id="ic-001"></a> | 官网首页/课程/价格 | 说明当前已开放的真实学习范围；没有内容时“内容准备中”，可浏览介绍，不诱导“先定级占位”；无真实收费方案不展示购买按钮；原型无官网实现，#/about 外链仅只读投影入口。 | [BC-001](business-chains.md#bc-001) |
+| IC-002<a id="ic-002"></a> | 注册/登录/重置/设备（索引幕） | 仅入口索引，不重复验收；实际分别见 IC-052/053/054/035；后台错误与身份校验仍遵循共用规则；索引幕本身不设独立验收。 | [BC-002](business-chains.md#bc-002) / [BC-003](business-chains.md#bc-003) / [BC-004](business-chains.md#bc-004) / [BC-005](business-chains.md#bc-005) / [BC-012](business-chains.md#bc-012) |
+| IC-003<a id="ic-003"></a> | 成人门+三同意（索引幕） | 仅汇总导航；实际见 IC-055/056；未通过可使用账号/隐私等允许功能；同意撤回范围见 IC-008；索引幕本身不设独立验收。 | [BC-006](business-chains.md#bc-006) / [BC-007](business-chains.md#bc-007) / [BC-008](business-chains.md#bc-008) / [BC-009](business-chains.md#bc-009) |
+| IC-004<a id="ic-004"></a> | 画像与入门（索引幕） | 实际表单见 IC-057；进度条来自已保存字段；定级/快速开始按实际门控显示，不写固定“3 击”；索引幕本身不设独立验收。 | [BC-010](business-chains.md#bc-010) / [BC-011](business-chains.md#bc-011) / [BC-202](business-chains.md#bc-202) |
 | IC-005<a id="ic-005"></a> | 门被拒/受限说明 | “当前版本暂不能向你开放学习”，给查看说明、真实支持和退出；不提示修改年龄绕过；删除请求等必要账号功能仍可达。 | [BC-006](business-chains.md#bc-006) / [BC-007](business-chains.md#bc-007) / [BC-201](business-chains.md#bc-201) |
 | IC-006<a id="ic-006"></a> | 同意版本更新 | 展示哪些条目变更和受影响能力，逐项确认；不默认全选或一键替用户签全部；不相关功能按授权范围继续。 | [BC-008](business-chains.md#bc-008) / [BC-009](business-chains.md#bc-009) |
 | IC-007<a id="ic-007"></a> | 密码重置申请回执 | 固定“如果该账号可接收重置通知，我们会发送操作说明”；给返回登录/稍后重试；不根据文案透露是否存在账号。 | [BC-012](business-chains.md#bc-012) |
 | IC-008<a id="ic-008"></a> | 设置/设备/隐私总览 | 设备、授权、隐私请求分入口；撤回前说明影响和数据去向；撤权不强制无限登录；具体导出/删除见 IC-105/106。 | [BC-005](business-chains.md#bc-005) / [BC-009](business-chains.md#bc-009) / [BC-188](business-chains.md#bc-188) / [BC-189](business-chains.md#bc-189) / [BC-190](business-chains.md#bc-190) / [BC-192](business-chains.md#bc-192) |
-| IC-009<a id="ic-009"></a> | 首次学习引导条 | 未完成首次学习显示“继续设置，开始学习”；展示真实进度；完成后收起，不按注册超过 24h 自动丢失引导。 | [BC-011](business-chains.md#bc-011) / [BC-032](business-chains.md#bc-032) |
-| IC-010<a id="ic-010"></a> | 定级答题页 | 题干、题号、已保存进度；提交中防重复；断网保留当前页面选择并说明尚未提交；持久暂存按 DEC-05；跳过入口保持（现行），契约细节待 DEC-03。 | [BC-013](business-chains.md#bc-013) / [BC-017](business-chains.md#bc-017) / [BC-019](business-chains.md#bc-019) / [BC-022](business-chains.md#bc-022) |
-| IC-011<a id="ic-011"></a> | 定级提交反馈 | 行内即时反馈为现行方案（已验证）；是否改为“已保存”+进度、结束后解释待 DEC-04，确认前不改；冲突读最新进度，不能展示未答题标准答案。 | [BC-014](business-chains.md#bc-014) / [BC-015](business-chains.md#bc-015) / [BC-022](business-chains.md#bc-022) |
-| IC-012<a id="ic-012"></a> | 定级报告卡 | 正式报告显示分数、维度与依据充分的建议；主按钮“生成我的计划”；重测为次操作并说明计划影响；SKIPPED 不伪装正式报告。 | [BC-016](business-chains.md#bc-016) / [BC-018](business-chains.md#bc-018) / [BC-063](business-chains.md#bc-063) |
+| IC-009<a id="ic-009"></a> | 首次学习引导条 | 未完成首次学习显示“继续设置，开始学习”；展示真实进度；完成后收起，不按注册超过 24h 自动丢失引导；引导条只做提醒不替代首学任务本身。 | [BC-011](business-chains.md#bc-011) / [BC-032](business-chains.md#bc-032) |
+| IC-010<a id="ic-010"></a> | 定级答题页 | 题干、题号、已保存进度；提交中防重复；断网保留当前页面选择并说明尚未提交；持久暂存按 DEC-05；跳过入口保持（现行），契约细节待 DEC-03；单题跳过与整轮跳过分开说明，样例 5 题仅演示流程。 | [BC-013](business-chains.md#bc-013) / [BC-017](business-chains.md#bc-017) / [BC-019](business-chains.md#bc-019) / [BC-022](business-chains.md#bc-022) |
+| IC-011<a id="ic-011"></a> | 定级提交反馈 | 定级逐题仅反馈已保存与进度、结束统一讲评为演示方案，是否全量切换待 DEC-04 确认（DEC待确认）；冲突读最新进度，不能展示未答题标准答案。 | [BC-014](business-chains.md#bc-014) / [BC-015](business-chains.md#bc-015) / [BC-022](business-chains.md#bc-022) |
+| IC-012<a id="ic-012"></a> | 定级报告卡 | 正式报告显示分数、维度与依据充分的建议；样例报告须标样例起步参考及未测维度，全跳过判未定级；主按钮“生成我的计划”；重测为次操作并说明计划影响；SKIPPED 不伪装正式报告。 | [BC-016](business-chains.md#bc-016) / [BC-018](business-chains.md#bc-018) / [BC-063](business-chains.md#bc-063) |
 
 ## I2 计划与今日（IC-013…021）
 
@@ -62,15 +62,15 @@ CLOSED：普通用户无入口；INTERNAL：仅获准测试者可用并标注；
 
 | 幕 | 页面/子状态 | 状态、文案与动作（本次修订设计） | 回指业务 |
 |---|---|---|---|
-| IC-013<a id="ic-013"></a> | 计划生成/重排 | 按真实状态显示生成中；失败原输入重试、同键；缺目标回补目标，缺正式报告不否定有效快速开始来源；重排前说明影响。 | [BC-023](business-chains.md#bc-023) / [BC-024](business-chains.md#bc-024) / [BC-029](business-chains.md#bc-029) / [BC-031](business-chains.md#bc-031) |
+| IC-013<a id="ic-013"></a> | 计划生成/重排 | ASSESSED 或获准 SKIPPED 均能进入计划；快速开始明确“未测评的保守起步”，不要求伪造正式报告。按真实状态显示生成中；失败原输入同键查询/重试，缺目标回补目标；重排预览保留/顺延变化，取消不改有效计划，首次确认进入首学。DEC-03 只跟踪输入契约的兼容与运行签核，不否定上游已接受的跳过路径。 | [BC-023](business-chains.md#bc-023) / [BC-024](business-chains.md#bc-024) / [BC-029](business-chains.md#bc-029) / [BC-031](business-chains.md#bc-031) |
 | IC-014<a id="ic-014"></a> | 计划解释 | “根据你的目标和最近练习，这周安排……”；跳过定级写“先从这个难度开始，之后按练习调整”；不生成无依据的精准结论。 | [BC-026](business-chains.md#bc-026) |
-| IC-015<a id="ic-015"></a> | 今日任务流 | 任务卡给内容、预计用时、进度和一个主要动作；先续学，再呈现归并后的到期任务与新学；完整预算规则见 U3。 | [BC-027](business-chains.md#bc-027) / [BC-032](business-chains.md#bc-032) / [BC-056](business-chains.md#bc-056) |
-| IC-016<a id="ic-016"></a> | 今日空态分流 | 未建计划→开始设置；已完成→结束学习；暂无内容→看可用内容；无到期任务→新学或结束；加载失败→重试，不统一“再测一次”。 | [BC-028](business-chains.md#bc-028) / [BC-061](business-chains.md#bc-061) |
-| IC-017<a id="ic-017"></a> | 未完成任务安排 | “上次有一节未完成，继续或重新安排”；给预计用时，不用“欠账”施压；顺延不自动算错、不抹掉已完成进度。 | [BC-027](business-chains.md#bc-027) / [BC-029](business-chains.md#bc-029) / [BC-056](business-chains.md#bc-056) |
-| IC-018<a id="ic-018"></a> | 今日完成 | 先确认学习已保存，再展示完成反馈；可结束、查看回顾；明日内容仅在真实排定时预告；奖励仍处理中单独说明。 | [BC-027](business-chains.md#bc-027) / [BC-044](business-chains.md#bc-044) / [BC-103](business-chains.md#bc-103) |
+| IC-015<a id="ic-015"></a> | 今日任务流 | 卡片给内容、原因、预计用时、进度和一个主动作；所有时长档先续学，再到期验证/SRS、补救/目标关键项、新学。按 C4 冻结排序/去重/预算，同源不重复显示或计时；总安排、剩余预估和实际学习时长分开。未装入的到期项显示原因和剩余安排，不以 15/30 分钟模板漏掉到期队列；样例预估不声称完整引擎已实现，见 U3。 | [BC-027](business-chains.md#bc-027) / [BC-032](business-chains.md#bc-032) / [BC-056](business-chains.md#bc-056) |
+| IC-016<a id="ic-016"></a> | 今日空态分流 | 未建计划→开始设置；今日全部完成→结束学习；暂无内容→看可用内容；无到期任务→新学或结束；加载失败→重试，不统一“再测一次”；今日部分完成不归入本幕，按 IC-017 安排。 | [BC-028](business-chains.md#bc-028) / [BC-061](business-chains.md#bc-061) |
+| IC-017<a id="ic-017"></a> | 未完成任务安排 | “上次有一节未完成，继续或重新安排”；给预计用时及 C4 的总 cap/剩余安排解释，不用“欠账”施压。接回保留原题/草稿，任务身份与原安排日期分离；重排保留已完成及历史，只对获准非强制项显示延期动作，不让用户移动 SRS/验证 dueAt；取消调整不改有效计划。 | [BC-027](business-chains.md#bc-027) / [BC-029](business-chains.md#bc-029) / [BC-056](business-chains.md#bc-056) |
+| IC-018<a id="ic-018"></a> | 今日完成 | 全部任务完成后，先确认学习已保存，再展示完成反馈；可结束、查看回顾；明日内容仅在真实排定时预告；奖励仍处理中单独说明。 | [BC-027](business-chains.md#bc-027) / [BC-044](business-chains.md#bc-044) / [BC-103](business-chains.md#bc-103) |
 | IC-019<a id="ic-019"></a> | 今日断网/同步 | “暂时无法连接，已提交进度会保留”；本机草稿只在真的保存时标“已存本机，待同步”；不承诺未实现的离线任务。 | [BC-022](business-chains.md#bc-022) / [BC-027](business-chains.md#bc-027) / [BC-037](business-chains.md#bc-037) / [BC-102](business-chains.md#bc-102) |
 | IC-020<a id="ic-020"></a> | 学习首页 | 主区只突出“继续上次/开始今日”；计划解释、今日概览、书架为辅助；首次/进行中/完成/无内容分别展示，不堆未开放模块。 | [BC-025](business-chains.md#bc-025) / [BC-026](business-chains.md#bc-026) / [BC-028](business-chains.md#bc-028) / [BC-030](business-chains.md#bc-030) / [BC-199](business-chains.md#bc-199) |
-| IC-021<a id="ic-021"></a> | 首次学习专页 | 依据首次学习完成状态，不限定注册 24h；优先可完成的真实任务，退出后能续；任务不存在时给诚实说明。 | [BC-027](business-chains.md#bc-027) / [BC-032](business-chains.md#bc-032) / [BC-056](business-chains.md#bc-056) |
+| IC-021<a id="ic-021"></a> | 首次学习专页 | 依据首次学习完成状态，不限定注册 24h；优先可完成的真实任务，退出后能续；无可用任务时给诚实说明并保留引导条。 | [BC-027](business-chains.md#bc-027) / [BC-032](business-chains.md#bc-032) / [BC-056](business-chains.md#bc-056) |
 
 ## I3 练习与判分（IC-022…024）
 
@@ -78,8 +78,8 @@ CLOSED：普通用户无入口；INTERNAL：仅获准测试者可用并标注；
 
 | 幕 | 页面/子状态 | 状态、文案与动作（本次修订设计） | 回指业务 |
 |---|---|---|---|
-| IC-022<a id="ic-022"></a> | 练题（语法/阅读行内判分） | 已保存后展示“正确/需要再练”与解释，明确下一题；错题生成中不显示提交失败；重复/并发不重复推进。 | [BC-033](business-chains.md#bc-033) / [BC-034](business-chains.md#bc-034) / [BC-035](business-chains.md#bc-035) / [BC-036](business-chains.md#bc-036) / [BC-039](business-chains.md#bc-039) / [BC-041](business-chains.md#bc-041) / [BC-203](business-chains.md#bc-203) |
-| IC-023<a id="ic-023"></a> | 会话与检查点 | “上次学到第 N 题，继续”；只用服务端已确认位置；内容普通升级续旧版，强制下线说明并退出到可用内容。 | [BC-037](business-chains.md#bc-037) / [BC-038](business-chains.md#bc-038) / [BC-040](business-chains.md#bc-040) / [BC-200](business-chains.md#bc-200) |
+| IC-022<a id="ic-022"></a> | 练题（语法/阅读行内判分） | 已保存后展示“正确/需要再练”与解释，明确下一题；错题生成中不显示提交失败；重复/并发及重复查看不重复推进；查看旧结果不提交，重练新开轮次；未答全不交卷，各任务进度独立；定级反馈时点待 DEC-04 确认，普通练习保留即时反馈。 | [BC-033](business-chains.md#bc-033) / [BC-034](business-chains.md#bc-034) / [BC-035](business-chains.md#bc-035) / [BC-036](business-chains.md#bc-036) / [BC-039](business-chains.md#bc-039) / [BC-041](business-chains.md#bc-041) / [BC-203](business-chains.md#bc-203) |
+| IC-023<a id="ic-023"></a> | 会话与检查点 | “上次学到第 N 题，继续”；只用已确认位置并按任务恢复、切换前保存；章节完成幂等同步今日/顺延；内容普通升级续旧版，强制下线说明并退出到可用内容；本机暂存待 DEC-05 确认。 | [BC-037](business-chains.md#bc-037) / [BC-038](business-chains.md#bc-038) / [BC-040](business-chains.md#bc-040) / [BC-200](business-chains.md#bc-200) |
 | IC-024<a id="ic-024"></a> | 词汇/听说写入口总览 | 仅展示已可用模块；未开放旧链接给原因与返回；无可用替代不造“文字版”；不暴露 M8 等内部词。 | [BC-042](business-chains.md#bc-042) / [BC-043](business-chains.md#bc-043) |
 
 ## I3b 内容细屏（IC-025…029）
@@ -88,10 +88,10 @@ CLOSED：普通用户无入口；INTERNAL：仅获准测试者可用并标注；
 
 | 幕 | 页面/子状态 | 状态、文案与动作（本次修订设计） | 回指业务 |
 |---|---|---|---|
-| IC-025<a id="ic-025"></a> | 词汇详情 | 释义、例句与真实发音资源；缺项写暂无并隐藏无效播放；键盘可操作，音频失败给重试而非静默播放空内容。 | [BC-042](business-chains.md#bc-042) |
-| IC-026<a id="ic-026"></a> | 听力 | 版权/音频不可用则说明；仅在确有可用文本时给文本替代，否则返回其他练习；不把缺资源判断成用户能力不足。 | [BC-043](business-chains.md#bc-043) |
-| IC-027<a id="ic-027"></a> | 口语 | 未开放默认不出现主入口；旧链接“跟读功能暂未开放，可以先做其他练习”；无已确认日期不写开放时间。 | [BC-043](business-chains.md#bc-043) |
-| IC-028<a id="ic-028"></a> | 写作 | 只有真实写作题目且提交链可用才开始；缺题目时说明暂无并返回可用练习，不提供无法保存的空白编辑器。 | [BC-043](business-chains.md#bc-043) |
+| IC-025<a id="ic-025"></a> | 词汇详情 | 释义、例句与真实发音资源；缺项写暂无并隐藏无效播放；键盘可操作，音频失败给重试；刷词选择后锁定，错题只登记一次，测验与自评分别显示。 | [BC-042](business-chains.md#bc-042) |
+| IC-026<a id="ic-026"></a> | 听力 | 版权/音频不可用则说明；仅在确有可用文本时给文本替代，否则返回其他练习；已开放时须答完全部题目方可提交，部分选择独立保存；原型演示 TTS 非真音已声明；不把缺资源判断成用户能力不足。 | [BC-043](business-chains.md#bc-043) |
+| IC-027<a id="ic-027"></a> | 口语 | 未开放默认不出现主入口；旧链接“跟读功能暂未开放，可以先做其他练习”；无已确认日期不写开放时间；按稳定轮次区分查看已有结果与开始新一轮。 | [BC-043](business-chains.md#bc-043) |
+| IC-028<a id="ic-028"></a> | 写作 | 只有真实写作题目且提交链可用才开始；缺题目时说明暂无并返回可用练习，不提供无法保存的空白编辑器；原型缺题空态已符合；按任务独立草稿、未知结果只保存一次、跨日分离，本机边界待 DEC-05 确认。 | [BC-043](business-chains.md#bc-043) |
 | IC-029<a id="ic-029"></a> | 书架续学 | 内容可学时“一键继续上次”；无历史显示开始；无内容/加载失败分开；被强制下线的旧内容不能靠续学进入。 | [BC-199](business-chains.md#bc-199) / [BC-200](business-chains.md#bc-200) |
 
 ## I4 复盘（IC-030…033）
@@ -100,10 +100,10 @@ CLOSED：普通用户无入口；INTERNAL：仅获准测试者可用并标注；
 
 | 幕 | 页面/子状态 | 状态、文案与动作（本次修订设计） | 回指业务 |
 |---|---|---|---|
-| IC-030<a id="ic-030"></a> | 错题与补救 | 错误来源、补救任务、变式一条可返回的路径；无错题区分尚未练习/已全对；更新中可稍后刷新，不要求重答；恢复同一补救任务。 | [BC-045](business-chains.md#bc-045) / [BC-046](business-chains.md#bc-046) / [BC-047](business-chains.md#bc-047) / [BC-048](business-chains.md#bc-048) / [BC-052](business-chains.md#bc-052) / [BC-053](business-chains.md#bc-053) / [BC-054](business-chains.md#bc-054) / [BC-203](business-chains.md#bc-203) |
-| IC-031<a id="ic-031"></a> | 掌握度/弱点 | 只显示有依据的状态；给一项可执行建议；数据不足明确说明；D+1/D+7 任务与到期复习归并，不多开重复入口。 | [BC-049](business-chains.md#bc-049) / [BC-050](business-chains.md#bc-050) / [BC-051](business-chains.md#bc-051) |
-| IC-032<a id="ic-032"></a> | 到期复习（SRS） | 用户看到“待复习/本次完成”，不用理解 stage/SM2 参数；无到期任务可结束；仅可信作答推进，重复请求不重复计次。 | [BC-055](business-chains.md#bc-055) / [BC-056](business-chains.md#bc-056) / [BC-057](business-chains.md#bc-057) / [BC-058](business-chains.md#bc-058) / [BC-059](business-chains.md#bc-059) / [BC-060](business-chains.md#bc-060) / [BC-061](business-chains.md#bc-061) / [BC-062](business-chains.md#bc-062) / [BC-203](business-chains.md#bc-203) |
-| IC-033<a id="ic-033"></a> | 日报/周报 | 显示统计区间、更新时间、新学/复习与有效时长；空/生成中/失败分开；建议有依据；分享前预览公开字段并可撤销。 | [BC-064](business-chains.md#bc-064) / [BC-065](business-chains.md#bc-065) / [BC-066](business-chains.md#bc-066) / [BC-067](business-chains.md#bc-067) / [BC-068](business-chains.md#bc-068) / [BC-069](business-chains.md#bc-069) / [BC-070](business-chains.md#bc-070) |
+| IC-030<a id="ic-030"></a> | 错题与补救 | 错误来源、补救任务、变式一条可返回的路径；无错题区分尚未练习/已全对；更新中可稍后刷新，不要求重答；自评/本次修复/延迟验证分别记录，未到期禁用提交，缺变式保留待补救；恢复同一补救任务。 | [BC-045](business-chains.md#bc-045) / [BC-046](business-chains.md#bc-046) / [BC-047](business-chains.md#bc-047) / [BC-048](business-chains.md#bc-048) / [BC-052](business-chains.md#bc-052) / [BC-053](business-chains.md#bc-053) / [BC-054](business-chains.md#bc-054) / [BC-203](business-chains.md#bc-203) |
+| IC-031<a id="ic-031"></a> | 掌握度/弱点 | 只显示有证据的状态与一项可执行建议，数据不足明确说明；按 BC-048/C4 冻结的学习日/时区显示 D1/D7 排定日期、到期状态及必要的顺延解释，未到期不允许提交。候选归并保留来源，不把同一动作冒充所有验证通过；缺合法变式显示等待内容，演示计数不称正式等级。 | [BC-049](business-chains.md#bc-049) / [BC-050](business-chains.md#bc-050) / [BC-051](business-chains.md#bc-051) |
+| IC-032<a id="ic-032"></a> | 到期复习（SRS） | 显示“待复习/本次完成”和服务端下次日期，不要求用户理解 stage/公式；无到期任务可结束；可信作答按已冻结 SM2_Q03_V1/时区推进，重复请求不重复计次。多批展示来源；本机撤销只演示本次评分来源重算，正式不可变记录不删除，新增撤销权限/补偿命令/窗口待 DEC-07，不能重选算法或客户端伪造权威日期。 | [BC-055](business-chains.md#bc-055) / [BC-056](business-chains.md#bc-056) / [BC-057](business-chains.md#bc-057) / [BC-058](business-chains.md#bc-058) / [BC-059](business-chains.md#bc-059) / [BC-060](business-chains.md#bc-060) / [BC-061](business-chains.md#bc-061) / [BC-062](business-chains.md#bc-062) / [BC-203](business-chains.md#bc-203) |
+| IC-033<a id="ic-033"></a> | 日报/周报 | 显示区间、更新时间、新学/复习与 accepted creditedSeconds/60，客户端计时/任务预估不计有效时长；与 BC-064/C4、回顾/历史同源。空/生成中/失败分开，缺水位指标为 null，迟到事实显示新报告版本；建议有依据；分享前预览公开字段并可撤销。新增统计/补偿政策才待 DEC-07。 | [BC-064](business-chains.md#bc-064) / [BC-065](business-chains.md#bc-065) / [BC-066](business-chains.md#bc-066) / [BC-067](business-chains.md#bc-067) / [BC-068](business-chains.md#bc-068) / [BC-069](business-chains.md#bc-069) / [BC-070](business-chains.md#bc-070) |
 
 ## I4b 学习端周边（IC-034…039）
 
@@ -111,11 +111,11 @@ CLOSED：普通用户无入口；INTERNAL：仅获准测试者可用并标注；
 
 | 幕 | 页面/子状态 | 状态、文案与动作（本次修订设计） | 回指业务 |
 |---|---|---|---|
-| IC-034<a id="ic-034"></a> | 设置（偏好/主题/语言） | 保存中/已保存/部分失败明确；失败保留用户选择并可重试；缺少翻译或渠道能力时说明，不显示虚假成功。 | [BC-096](business-chains.md#bc-096) / [BC-097](business-chains.md#bc-097) |
-| IC-035<a id="ic-035"></a> | 设备管理 | 标当前设备和最近活动；踢出确认后更新；被踢设备解释已退出，不能静默恢复被撤销会话。 | [BC-005](business-chains.md#bc-005) |
-| IC-036<a id="ic-036"></a> | 隐私中心 | 说明授权、导出、账号删除、音频策略与当前处理能力；导出/删除按真实进度展示，不再误链到客服或原生端。 | [BC-009](business-chains.md#bc-009) / [BC-188](business-chains.md#bc-188) / [BC-189](business-chains.md#bc-189) / [BC-190](business-chains.md#bc-190) / [BC-191](business-chains.md#bc-191) / [BC-192](business-chains.md#bc-192) |
-| IC-037<a id="ic-037"></a> | 学习端客服入口 | 有可用工单闭环才提供提交；否则只给已配置且可用的支持途径；不虚构邮箱/处理时效；进入 IC-103/104。 | [BC-185](business-chains.md#bc-185) / [BC-186](business-chains.md#bc-186) / [BC-187](business-chains.md#bc-187) |
-| IC-038<a id="ic-038"></a> | 商城未开放边界 | 不占主导航；旧链接“当前版本暂不支持购买”，返回可用学习；不把课程暂无和付款失败混为一谈。 | [BC-111](business-chains.md#bc-111) |
+| IC-034<a id="ic-034"></a> | 设置（偏好/主题/语言） | 保存中/已保存/部分失败明确；失败保留用户选择并可重试；缺少翻译或渠道能力时说明；原型本机偏好非服务端版本写回，失败保留选择，不显示虚假成功。 | [BC-096](business-chains.md#bc-096) / [BC-097](business-chains.md#bc-097) |
+| IC-035<a id="ic-035"></a> | 设备管理 | 标当前设备和最近活动；踢出确认后更新；原型踢出仅预览确认，不连真实会话；被踢设备解释已退出，不能静默恢复被撤销会话。 | [BC-005](business-chains.md#bc-005) |
+| IC-036<a id="ic-036"></a> | 隐私中心 | 说明授权、learner-service.privacy 导出、IAM 删除/168 小时冷静期/撤回与音频策略；状态以 C7 既有接口读回，处理中和最终回执分开，不误链客服/原生端。本机导出未生成真实文件、删除未执行真实 worker 要明确标示；新增保留政策与运行 GAP 仍见 DEC-09。 | [BC-009](business-chains.md#bc-009) / [BC-188](business-chains.md#bc-188) / [BC-189](business-chains.md#bc-189) / [BC-190](business-chains.md#bc-190) / [BC-191](business-chains.md#bc-191) / [BC-192](business-chains.md#bc-192) |
+| IC-037<a id="ic-037"></a> | 学习端客服入口 | 按 C7 的 canonical 安全内容引用提供获准工单入口；已有引用设计不重新待 DEC-06 批准。真实发送和触达未验证时明确可用边界，只给已配置且可用的支持途径；本机正文声明未发送并转义，不虚构邮箱/时效。进入 IC-103/104；新增采集或保留变化才待签收。 | [BC-185](business-chains.md#bc-185) / [BC-186](business-chains.md#bc-186) / [BC-187](business-chains.md#bc-187) |
+| IC-038<a id="ic-038"></a> | 商城未开放边界 | 不占主导航；旧链接“当前版本暂不支持购买”，返回可用学习；原型沙盒标记已符合，正式购买待 DEC-01/DEC-10；不把课程暂无和付款失败混为一谈。 | [BC-111](business-chains.md#bc-111) |
 | IC-039<a id="ic-039"></a> | 书架搜索 | 展示查询条件；无结果可清空/换词并浏览真实目录；空目录不提示无限换词；请求失败重试，结果不含无权内容。 | [BC-199](business-chains.md#bc-199) |
 
 ## I5 内容后台（IC-040…042）
@@ -125,8 +125,8 @@ CLOSED：普通用户无入口；INTERNAL：仅获准测试者可用并标注；
 | 幕 | 页面/子状态 | 状态、文案与动作（本次修订设计） | 回指业务 |
 |---|---|---|---|
 | IC-040<a id="ic-040"></a> | 内容列表/建稿 | 草稿、处理中、待审、已发布分开；版本冲突保留本地修改供对比；保存成功读回版本；无权限先解释而非空白。 | [BC-071](business-chains.md#bc-071) / [BC-072](business-chains.md#bc-072) / [BC-073](business-chains.md#bc-073) / [BC-081](business-chains.md#bc-081) |
-| IC-041<a id="ic-041"></a> | 送审/简审/双签 | 明确当前审核模式；缺项一次列齐并定位字段；简审不显示假双签；发布中与目录已可见分开，必要媒体条件真实。 | [BC-074](business-chains.md#bc-074) / [BC-075](business-chains.md#bc-075) / [BC-076](business-chains.md#bc-076) / [BC-077](business-chains.md#bc-077) / [BC-082](business-chains.md#bc-082) / [BC-084](business-chains.md#bc-084) / [BC-207](business-chains.md#bc-207) |
-| IC-042<a id="ic-042"></a> | 发布/下架/回滚 | 操作前展示版本、影响范围；普通下架与强制下线分开确认；回滚先校验旧版仍可供给；提供目录同步状态。 | [BC-078](business-chains.md#bc-078) / [BC-079](business-chains.md#bc-079) / [BC-080](business-chains.md#bc-080) / [BC-200](business-chains.md#bc-200) |
+| IC-041<a id="ic-041"></a> | 送审/简审/双签 | 显示版本/hash、申请人、模式、L1/L2 阶段、reviewVersion 与历史决定；批准/要求修改/驳回均有获准动作，后两项要求有效原因并读回审核备注与通知结果。作者从结果页进入新 DRAFT 版本修订，重校验/送审，旧决定保留且不转移批准；L2 只在同版本 L1 已批后开放。正式四主体分离，批准不等于发布；简审显著标“仅本机演示，正式例外待签收”，模式/昵称不绕约束。 | [BC-074](business-chains.md#bc-074) / [BC-075](business-chains.md#bc-075) / [BC-076](business-chains.md#bc-076) / [BC-077](business-chains.md#bc-077) / [BC-082](business-chains.md#bc-082) / [BC-084](business-chains.md#bc-084) / [BC-207](business-chains.md#bc-207) |
+| IC-042<a id="ic-042"></a> | 发布/下架/回滚 | 草稿与独立在架快照分开；获准发布者且签核有效才执行 PUBLISH，发布事实/目录同步各保存读回。普通下架与强制禁供分开确认；强停先选/填有效原因，缺原因禁提交，成功后详情展示原因、目标版本、命令/主体/时间及审计；不露普通恢复。回滚只含有资格的不同历史已发布版本，空列表无候选；选中展示影响并查询实际命令/同步结果。 | [BC-078](business-chains.md#bc-078) / [BC-079](business-chains.md#bc-079) / [BC-080](business-chains.md#bc-080) / [BC-200](business-chains.md#bc-200) |
 
 ## I5b 管理后台（IC-043…049）
 
@@ -135,11 +135,11 @@ CLOSED：普通用户无入口；INTERNAL：仅获准测试者可用并标注；
 | 幕 | 页面/子状态 | 状态、文案与动作（本次修订设计） | 回指业务 |
 |---|---|---|---|
 | IC-043<a id="ic-043"></a> | 管理登录 | 失败不枚举；成功回到有权且安全的原页；可续期静默处理，失效才重登；不回到内容建稿冒充登录验收。 | [BC-204](business-chains.md#bc-204) |
-| IC-044<a id="ic-044"></a> | 管理仪表盘 | 每项显示口径/时间/更新时间；零、暂无、计算中、读取失败分开；不填示例数当真实数据。 | [BC-205](business-chains.md#bc-205) |
+| IC-044<a id="ic-044"></a> | 管理仪表盘 | 在架/待审/待建档按 BC-205 的来源和时点存量口径计算；显示授权范围、查询时点、来源水位及更新时间，不把存量叫今日新增。零、暂无、计算中和局部读取失败分开；示例数据标演示，文案和数字都不作上位指标定义。 | [BC-205](business-chains.md#bc-205) |
 | IC-045<a id="ic-045"></a> | 媒体与上传 | 未接字节时显示功能边界；可上传后有进度、校验、失败重试及绑定结果；发布所需媒体未满足不能显示可发布。 | [BC-207](business-chains.md#bc-207) |
-| IC-046<a id="ic-046"></a> | 权限只读页 | 分页、筛选、空/错/无权状态齐全；只读不露写动作；给回到有权页面，不通过重新登录绕过权限。 | [BC-206](business-chains.md#bc-206) |
-| IC-047<a id="ic-047"></a> | 客服后台 | 指向真实工单列表/详情与接单回复；hash-only 记录显示信息不足；必要正文方案未批准，不展示看不到问题却“已解决”的流程。 | [BC-185](business-chains.md#bc-185) / [BC-186](business-chains.md#bc-186) / [BC-187](business-chains.md#bc-187) |
-| IC-048<a id="ic-048"></a> | 商城后台 | 订单资金状态、权益状态与差异分列；沙盒显著标记；只读与写权限分开；对账以订单/渠道/权益为准，不只看回调。 | [BC-168](business-chains.md#bc-168) / [BC-171](business-chains.md#bc-171) / [BC-172](business-chains.md#bc-172) / [BC-173](business-chains.md#bc-173) / [BC-174](business-chains.md#bc-174) / [BC-175](business-chains.md#bc-175) |
+| IC-046<a id="ic-046"></a> | 权限只读页 | 展示获准管理角色/资源/owner/阶段范围，来源 ARCH-IAM-002/PAGE-P1-ADMIN-PERMISSIONS，不与学习端设备授权混用；分页、筛选、空/错/无权齐全，只读不露写动作。给有权返回页，不通过重登绕权；演示身份选择不证明真实 IAM/PEP 验收。 | [BC-206](business-chains.md#bc-206) |
+| IC-047<a id="ic-047"></a> | 客服后台 | 正常工单仅显示本人权限内 CLEAN 的服务端脱敏 safePreviewRef；旧 hash-only 标信息不足，无回复/关闭，只可获准升级/安全补正。升级弹窗选择授权接收方并填原因，缺任一项不能提交；详情/列表显示 assignment 版本、目标、原因和“待接收/已接收”实际结果，刷新保留，不能把发出请求称交接完成。正文草稿/消息提交/触达分开；无权角色不通过通用按钮处置，不假解决。 | [BC-185](business-chains.md#bc-185) / [BC-186](business-chains.md#bc-186) / [BC-187](business-chains.md#bc-187) |
+| IC-048<a id="ic-048"></a> | 商城后台 | 订单资金状态、权益状态与差异分列；沙盒显著标记；只读与写权限分开；对账以订单/渠道/权益为准，不只看回调；退款单显示两名审批人且同一人不可兼第二审，开票状态另列，单人简化待 DEC-10。 | [BC-168](business-chains.md#bc-168) / [BC-171](business-chains.md#bc-171) / [BC-172](business-chains.md#bc-172) / [BC-173](business-chains.md#bc-173) / [BC-174](business-chains.md#bc-174) / [BC-175](business-chains.md#bc-175) |
 | IC-049<a id="ic-049"></a> | 审计列表 | 分页、过滤与脱敏；内部导出单独鉴权；用户支持编号可定位但不泄漏 token、密钥或完整私有内容。 | [BC-208](business-chains.md#bc-208) |
 
 ## I6 治理风控（IC-050…051）
@@ -148,8 +148,8 @@ CLOSED：普通用户无入口；INTERNAL：仅获准测试者可用并标注；
 
 | 幕 | 页面/子状态 | 状态、文案与动作（本次修订设计） | 回指业务 |
 |---|---|---|---|
-| IC-050<a id="ic-050"></a> | 治理页风险区 | 真案件列表与允许的建档；未开放处置隐藏按钮；升级/隔离/关闭各有实际回执；加载失败不显示无风险。 | [BC-085](business-chains.md#bc-085) / [BC-086](business-chains.md#bc-086) / [BC-087](business-chains.md#bc-087) / [BC-088](business-chains.md#bc-088) / [BC-089](business-chains.md#bc-089) / [BC-090](business-chains.md#bc-090) / [BC-091](business-chains.md#bc-091) / [BC-092](business-chains.md#bc-092) |
-| IC-051<a id="ic-051"></a> | 举报队列 | 匿名登录提示、无权说明、队列空、加载失败分开；只读阶段无处置按钮；隐私字段脱敏。 | [BC-093](business-chains.md#bc-093) / [BC-094](business-chains.md#bc-094) |
+| IC-050<a id="ic-050"></a> | 治理页风险区 | 真案件列表与允许的建档；R1 只读建档，升级/隔离/关闭按钮隐藏；未开放处置隐藏按钮；升级/隔离/关闭各有实际回执；加载失败不显示无风险。 | [BC-085](business-chains.md#bc-085) / [BC-086](business-chains.md#bc-086) / [BC-087](business-chains.md#bc-087) / [BC-088](business-chains.md#bc-088) / [BC-089](business-chains.md#bc-089) / [BC-090](business-chains.md#bc-090) / [BC-091](business-chains.md#bc-091) / [BC-092](business-chains.md#bc-092) |
+| IC-051<a id="ic-051"></a> | 举报队列 | 匿名登录提示、无权说明、队列空、加载失败分开；只读阶段无处置按钮，处置启用待 DEC-01；隐私字段脱敏。 | [BC-093](business-chains.md#bc-093) / [BC-094](business-chains.md#bc-094) |
 
 ## I6b 入门细分（IC-052…059）
 
@@ -158,13 +158,13 @@ CLOSED：普通用户无入口；INTERNAL：仅获准测试者可用并标注；
 | 幕 | 页面/子状态 | 状态、文案与动作（本次修订设计） | 回指业务 |
 |---|---|---|---|
 | IC-052<a id="ic-052"></a> | 注册表单 | 字段即时校验不枚举账号；显示必要规则与提交中；失败保留非敏感字段，成功进入受限账号下一步，不直接越过学习门。 | [BC-002](business-chains.md#bc-002) / [BC-003](business-chains.md#bc-003) |
-| IC-053<a id="ic-053"></a> | 学习端登录 | 凭据失效才回登录；回跳到安全且有权页面；已删除/删除处理中不循环重登；撤回授权引导授权说明而非改密码。 | [BC-004](business-chains.md#bc-004) / [BC-192](business-chains.md#bc-192) |
+| IC-053<a id="ic-053"></a> | 学习端登录 | 凭据失效才回登录，回跳安全有权页面；删除冷静期给获准状态查询/二次认证撤回入口，执行/恢复/完成态不循环重登继续学习。取消后读 IAM 最新资格与会话决定，不能恢复已撤销 token；撤回同意引导授权说明而非改密码。 | [BC-004](business-chains.md#bc-004) / [BC-192](business-chains.md#bc-192) |
 | IC-054<a id="ic-054"></a> | 重置表单 | 申请回执见 IC-007；重置链接失效只说明需重新申请；成功给返回登录；不因账号存在性改变申请反馈。 | [BC-012](business-chains.md#bc-012) |
-| IC-055<a id="ic-055"></a> | 成人门说明/提交 | 解释为什么需要出生年份与确认；不额外采集原文未要求的完整生日；未通过有清楚出口并保留允许的账号功能。 | [BC-006](business-chains.md#bc-006) / [BC-007](business-chains.md#bc-007) / [BC-201](business-chains.md#bc-201) |
-| IC-056<a id="ic-056"></a> | 同意逐项查看 | 逐项展示用途、版本及必要性（待 DEC-02）；可选项不预勾；拒绝后的影响清楚，不默认拦截所有无关功能。 | [BC-008](business-chains.md#bc-008) / [BC-009](business-chains.md#bc-009) |
-| IC-057<a id="ic-057"></a> | 画像字段与草稿 | 目标、每天时长先完成；标签可后补为修订建议；已保存值回填，草稿保存范围如实；下一步可定级，快速开始为现行次入口。 | [BC-010](business-chains.md#bc-010) / [BC-011](business-chains.md#bc-011) / [BC-202](business-chains.md#bc-202) |
-| IC-058<a id="ic-058"></a> | 定级引导 | 显示“共 10 道题”和测评目的；预计时间仅有实测时展示；主按钮开始，快速开始为现行次入口（契约细节待 DEC-03）；不承诺“3 分钟必完成”。 | [BC-013](business-chains.md#bc-013) / [BC-017](business-chains.md#bc-017) |
-| IC-059<a id="ic-059"></a> | 定级冲突/失败恢复 | 区分网络未达、服务已收但回执丢失、版本冲突；先查最新 checkpoint 再决定重试；不无条件新开 session。 | [BC-014](business-chains.md#bc-014) / [BC-022](business-chains.md#bc-022) |
+| IC-055<a id="ic-055"></a> | 成人门说明/提交 | 解释为什么需要出生年份与确认；原型完整日期为本机演示，正式仍只收年份（DEC待确认）；不额外采集原文未要求的完整生日；未通过有清楚出口并保留允许的账号功能。 | [BC-006](business-chains.md#bc-006) / [BC-007](business-chains.md#bc-007) / [BC-201](business-chains.md#bc-201) |
+| IC-056<a id="ic-056"></a> | 同意逐项查看 | 逐项展示用途、版本、必要性与来源记录（待 DEC-02）；可选项不预勾；拒绝后的影响清楚，不默认拦截所有无关功能。 | [BC-008](business-chains.md#bc-008) / [BC-009](business-chains.md#bc-009) |
+| IC-057<a id="ic-057"></a> | 画像字段与草稿 | 目标、每天时长先完成；标签可后补为修订建议；已保存值回填；标签留空不阻塞保存，必填性以接口契约为准；草稿保存范围如实；下一步可定级，快速开始为现行次入口。 | [BC-010](business-chains.md#bc-010) / [BC-011](business-chains.md#bc-011) / [BC-202](business-chains.md#bc-202) |
+| IC-058<a id="ic-058"></a> | 定级引导 | 正式显示共 10 道题和测评目的；原型 5 样例须标样例测评不替代正式考试；预计时间仅有实测时展示，样例时长不计实测；主按钮开始，快速开始为现行次入口（契约细节待 DEC-03）；不承诺“3 分钟必完成”。 | [BC-013](business-chains.md#bc-013) / [BC-017](business-chains.md#bc-017) |
+| IC-059<a id="ic-059"></a> | 定级冲突/失败恢复 | 区分网络未达、服务已收但回执丢失、版本冲突；先查最新 checkpoint 再决定重试，不无条件新开 session；身份改变取消旧回调。 | [BC-014](business-chains.md#bc-014) / [BC-022](business-chains.md#bc-022) |
 
 ## I7 消息与同步（IC-060…062）
 
@@ -172,9 +172,9 @@ CLOSED：普通用户无入口；INTERNAL：仅获准测试者可用并标注；
 
 | 幕 | 页面/子状态 | 状态、文案与动作（本次修订设计） | 回指业务 |
 |---|---|---|---|
-| IC-060<a id="ic-060"></a> | 消息列表 | 真实消息、未读状态及时间；已读失败可重试；无消息与网络失败分开；通知深链失效时给可用返回出口。 | [BC-095](business-chains.md#bc-095) / [BC-099](business-chains.md#bc-099) |
-| IC-061<a id="ic-061"></a> | 通知偏好与免打扰 | 只开放实际可用渠道；部分失败指出具体项；退出/切号清理；未开放推送不展示“开启成功”。 | [BC-096](business-chains.md#bc-096) / [BC-097](business-chains.md#bc-097) / [BC-098](business-chains.md#bc-098) / [BC-100](business-chains.md#bc-100) |
-| IC-062<a id="ic-062"></a> | 离线包 | 未开放下载时隐藏下载按钮并说明，不保留可点的必败 404；有包才展示版本、大小及状态；安装 PWA 不等于离线可学。 | [BC-101](business-chains.md#bc-101) / [BC-102](business-chains.md#bc-102) |
+| IC-060<a id="ic-060"></a> | 消息列表 | 真实消息、未读状态及时间；原型演示来源已标识，定级时长无实测不展示；已读失败可重试；无消息与网络失败分开；通知深链失效时给可用返回出口。 | [BC-095](business-chains.md#bc-095) / [BC-099](business-chains.md#bc-099) |
+| IC-061<a id="ic-061"></a> | 通知偏好与免打扰 | 只开放实际可用渠道；部分失败指出具体项；退出/切号清理；未开放推送不展示“开启成功”；R3 三方演示不开，开放待 DEC-01。 | [BC-096](business-chains.md#bc-096) / [BC-097](business-chains.md#bc-097) / [BC-098](business-chains.md#bc-098) / [BC-100](business-chains.md#bc-100) |
+| IC-062<a id="ic-062"></a> | 离线包 | 未开放下载时隐藏下载按钮并说明，不保留可点的必败 404；原型大小“—”与 PWA≠离线可学已符合，R3 待 DEC-01；有包才展示版本、大小及状态；安装 PWA 不等于离线可学。 | [BC-101](business-chains.md#bc-101) / [BC-102](business-chains.md#bc-102) |
 
 ## I8 成长与商城（IC-063…065）
 
@@ -182,9 +182,9 @@ CLOSED：普通用户无入口；INTERNAL：仅获准测试者可用并标注；
 
 | 幕 | 页面/子状态 | 状态、文案与动作（本次修订设计） | 回指业务 |
 |---|---|---|---|
-| IC-063<a id="ic-063"></a> | 成长（XP/打卡/成就） | 来源可信才显示奖励；处理中不预加余额；无领取写链隐藏领取；日历基于真实学习日，不与首页主要学习动作抢位。 | [BC-103](business-chains.md#bc-103) / [BC-104](business-chains.md#bc-104) / [BC-105](business-chains.md#bc-105) / [BC-106](business-chains.md#bc-106) / [BC-107](business-chains.md#bc-107) |
-| IC-064<a id="ic-064"></a> | 世界/装扮/社交入口 | 已开放能力才露入口；未开放旧链接解释并回学习；进入各细幕，不以空房间或未确认日期制造期待。 | [BC-108](business-chains.md#bc-108) / [BC-109](business-chains.md#bc-109) / [BC-110](business-chains.md#bc-110) / [BC-117](business-chains.md#bc-117) |
-| IC-065<a id="ic-065"></a> | 商城入口/沙盒 | 用户端购买关闭；沙盒仅测试者可见且标 SANDBOX，不发真实权益；正式购买另见 I13。 | [BC-111](business-chains.md#bc-111) / [BC-112](business-chains.md#bc-112) |
+| IC-063<a id="ic-063"></a> | 成长（XP/打卡/成就） | 来源可信才显示奖励；原型本地 XP 与只看不动账仅演示，待 DEC-12；处理中不预加余额；无领取写链隐藏领取；日历基于真实学习日，不与首页主要学习动作抢位。 | [BC-103](business-chains.md#bc-103) / [BC-104](business-chains.md#bc-104) / [BC-105](business-chains.md#bc-105) / [BC-106](business-chains.md#bc-106) / [BC-107](business-chains.md#bc-107) |
+| IC-064<a id="ic-064"></a> | 世界/装扮/社交入口 | 已开放能力才露入口；未开放旧链接解释并回学习；原型目录可点仅设计稿，待 DEC-12；进入各细幕，不以空房间或未确认日期制造期待。 | [BC-108](business-chains.md#bc-108) / [BC-109](business-chains.md#bc-109) / [BC-110](business-chains.md#bc-110) / [BC-117](business-chains.md#bc-117) |
+| IC-065<a id="ic-065"></a> | 商城入口/沙盒 | 用户端购买关闭；沙盒仅测试者可见且标 SANDBOX，不发真实权益；原型沙盒可见且标 SANDBOX，真通道待 DEC-10；正式购买另见 I13。 | [BC-111](business-chains.md#bc-111) / [BC-112](business-chains.md#bc-112) |
 
 ## I9 世界成长（IC-066…075，R2）
 
@@ -192,15 +192,15 @@ CLOSED：普通用户无入口；INTERNAL：仅获准测试者可用并标注；
 
 | 幕 | 页面/子状态 | 状态、文案与动作（本次修订设计） | 回指业务 |
 |---|---|---|---|
-| IC-066<a id="ic-066"></a> | 个人空间参观 | 实际开放且有空间才进入；空空间说明暂无布置；未开放返回学习，不承诺“即将开放”日期。 | [BC-117](business-chains.md#bc-117) |
-| IC-067<a id="ic-067"></a> | 房间加入/席位 | 仅统一准入后开放；满员可找其他真实房间；加入中避免重复提交；断线先读本人席位，再恢复/重新申请。 | [BC-118](business-chains.md#bc-118) |
+| IC-066<a id="ic-066"></a> | 个人空间参观 | 实际开放且有空间才进入；空空间说明暂无布置；原型演示布置仅占位，待 DEC-12；未开放返回学习，不承诺“即将开放”日期。 | [BC-117](business-chains.md#bc-117) |
+| IC-067<a id="ic-067"></a> | 房间加入/席位 | 仅统一准入后开放；满员可找其他真实房间；加入中避免重复提交；断线先读本人席位，原型满员/不占两席规则仅演示，准入待 DEC-12，再恢复/重新申请。 | [BC-118](business-chains.md#bc-118) |
 | IC-068<a id="ic-068"></a> | 专注/互动 | 连接、待审、已发布、未通过分开；未通过可查看原因与真实支持；治理链不可用不让用户提交注定无人处理的互动。 | [BC-119](business-chains.md#bc-119) |
-| IC-069<a id="ic-069"></a> | 排行榜 | 赛季未开始、当前无上榜和读取失败分别写清；只展示真实得分与获准公开身份；不填机器人占位伪装真实玩家。 | [BC-120](business-chains.md#bc-120) |
-| IC-070<a id="ic-070"></a> | 服装目录与试穿 | 试穿不改变实际装备；清楚标返回原装；兑换未开放不作为主要操作，有开放时间仅采用已确认信息。 | [BC-121](business-chains.md#bc-121) |
+| IC-069<a id="ic-069"></a> | 排行榜 | 赛季未开始、当前无上榜和读取失败分别写清；只展示真实得分与获准公开身份；原型演示榜已声明，真榜待 DEC-12；不填机器人占位伪装真实玩家。 | [BC-120](business-chains.md#bc-120) |
+| IC-070<a id="ic-070"></a> | 服装目录与试穿 | 试穿不改变实际装备；清楚标返回原装；原型试穿不落库、本机降级已符合；兑换未开放不作为主要操作，有开放时间仅采用已确认信息。 | [BC-121](business-chains.md#bc-121) |
 | IC-071<a id="ic-071"></a> | 兑换/装备 | 确认花费与获得物；成功读回权属再允许装备；失败/结果未知给查结果，不诱导再次扣费；无权属与未开放分开。 | [BC-122](business-chains.md#bc-122) / [BC-123](business-chains.md#bc-123) |
 | IC-072<a id="ic-072"></a> | 宝箱规则/领取 | 来源和规则先可读；有资格才有领取按钮；到账确认后展示动画；重复点击显示已领取，不多发奖励。 | [BC-124](business-chains.md#bc-124) / [BC-125](business-chains.md#bc-125) |
-| IC-073<a id="ic-073"></a> | 赛季 | 显示确定的规则与起止信息；尚未定稿不开放领取；结算中与已到账分开。 | [BC-126](business-chains.md#bc-126) |
-| IC-074<a id="ic-074"></a> | 小游戏目录 | 仅真正可玩项目进入主列表；原 6 款关闭规划放开发清单或次级预告，不让用户连续点进“敬请期待”。 | [BC-127](business-chains.md#bc-127) |
+| IC-073<a id="ic-073"></a> | 赛季 | 显示确定的规则与起止信息；原型 S3 字样仅占位不作承诺，待 DEC-12；尚未定稿不开放领取；结算中与已到账分开。 | [BC-126](business-chains.md#bc-126) |
+| IC-074<a id="ic-074"></a> | 小游戏目录 | 仅真正可玩项目进入主列表；原型 6 卡主列表仅设计全量稿，上线门隐藏，待 DEC-12；原 6 款关闭规划放开发清单或次级预告，不让用户连续点进“敬请期待”。 | [BC-127](business-chains.md#bc-127) |
 | IC-075<a id="ic-075"></a> | 小游戏对局 | 服务端开局，结束展示核验中/已确认；网络异常不直接判作弊；确认违规按规则解释并给实际可用的申诉出口。 | [BC-128](business-chains.md#bc-128) / [BC-129](business-chains.md#bc-129) / [BC-130](business-chains.md#bc-130) |
 
 ## I10 AI 伴学（IC-076…084，P2，开门后）
@@ -209,7 +209,7 @@ CLOSED：普通用户无入口；INTERNAL：仅获准测试者可用并标注；
 
 | 幕 | 页面/子状态 | 状态、文案与动作（本次修订设计） | 回指业务 |
 |---|---|---|---|
-| IC-076<a id="ic-076"></a> | AI 入口关闭边界 | P1 保持无 CTA；未准入深链同样拦截并返回普通学习，不能仅藏按钮。 | [BC-143](business-chains.md#bc-143) |
+| IC-076<a id="ic-076"></a> | AI 入口关闭边界 | P1 保持无 CTA；原型可点方案仅设计稿，P1 按关闭，待 DEC-11；未准入深链同样拦截并返回普通学习，不能仅藏按钮。 | [BC-143](business-chains.md#bc-143) |
 | IC-077<a id="ic-077"></a> | AI Gate 说明 | 逐项解释未满足条件：阶段、资格、授权、预算或服务状态；不是所有限制都写“需付费开通”；给真实可行的下一步。 | [BC-131](business-chains.md#bc-131) |
 | IC-078<a id="ic-078"></a> | AI 输入/授权 | 说明将发送的数据范围；授权与输入用途对应；可取消回普通学习；未批准存储策略时不暗示会永久保存历史。 | [BC-132](business-chains.md#bc-132) |
 | IC-079<a id="ic-079"></a> | AI 预检 | 实际检查时显示检查中；被拦截解释可调整项；可返回修改输入；不无限转圈或伪造通过。 | [BC-133](business-chains.md#bc-133) |
@@ -225,10 +225,10 @@ CLOSED：普通用户无入口；INTERNAL：仅获准测试者可用并标注；
 
 | 幕 | 页面/子状态 | 状态、文案与动作（本次修订设计） | 回指业务 |
 |---|---|---|---|
-| IC-085<a id="ic-085"></a> | 语音入口与预检 | 实际需要时申请麦克风；未授权/设备不可用/弱网分别提示；用户拒绝可回其他练习；通过前不显示正在录音。 | [BC-145](business-chains.md#bc-145) |
+| IC-085<a id="ic-085"></a> | 语音入口与预检 | 实际需要时申请麦克风；未授权/设备不可用/弱网分别提示；原型跳过设备检查与演示波形仅占位，真链待 DEC-11；用户拒绝可回其他练习；通过前不显示正在录音。 | [BC-145](business-chains.md#bc-145) |
 | IC-086<a id="ic-086"></a> | 对讲中 | 连接、重连、录音/播放状态可感知；停止/打断可键盘操作；断开后不继续播放过期分片。 | [BC-146](business-chains.md#bc-146) / [BC-147](business-chains.md#bc-147) |
-| IC-087<a id="ic-087"></a> | 发音评分 | 有可信评分才给维度与具体练习建议；录音不足/噪声/服务失败不伪造零分，允许重新录制或退出。 | [BC-148](business-chains.md#bc-148) / [BC-151](business-chains.md#bc-151) |
-| IC-088<a id="ic-088"></a> | 录音授权与保留 | 说明用途、可见范围、批准的保留期和撤回出口；策略未定不填任意天数，不默认长期保留原始录音。 | [BC-149](business-chains.md#bc-149) / [BC-190](business-chains.md#bc-190) |
+| IC-087<a id="ic-087"></a> | 发音评分 | 有可信评分才给维度与具体练习建议；原型演示分不计可信评分，待 DEC-11；录音不足/噪声/服务失败不伪造零分，允许重新录制或退出。 | [BC-148](business-chains.md#bc-148) / [BC-151](business-chains.md#bc-151) |
+| IC-088<a id="ic-088"></a> | 录音授权与保留 | 说明用途、可见范围、批准的保留期和撤回出口；期限待 DEC-09/DEC-11 确认前不填天数，不默认长期保留原始录音。 | [BC-149](business-chains.md#bc-149) / [BC-190](business-chains.md#bc-190) |
 | IC-089<a id="ic-089"></a> | 语音失败恢复 | “连接中断，已完成的进度会保留”；跟读真的可用才推荐，否则回文字练习；不给必然失败的替代入口。 | [BC-150](business-chains.md#bc-150) / [BC-151](business-chains.md#bc-151) |
 
 ## I12 K12（IC-090…096，P3，上锁）
@@ -237,9 +237,9 @@ CLOSED：普通用户无入口；INTERNAL：仅获准测试者可用并标注；
 
 | 幕 | 页面/子状态 | 状态、文案与动作（本次修订设计） | 回指业务 |
 |---|---|---|---|
-| IC-090<a id="ic-090"></a> | K12 关闭门 | P1/P2 “当前版本仅服务成人”，给退出或允许的账号服务；不能借切换主题绕过服务门。 | [BC-153](business-chains.md#bc-153) / [BC-154](business-chains.md#bc-154) |
+| IC-090<a id="ic-090"></a> | K12 关闭门 | P1/P2 “当前版本仅服务成人”，给退出或允许的账号服务；原型角色链仅设计稿，上线门 CLOSED，待 DEC-01；不能借切换主题绕过服务门。 | [BC-153](business-chains.md#bc-153) / [BC-154](business-chains.md#bc-154) |
 | IC-091<a id="ic-091"></a> | 监护授权 | 仅 K12 准入后展示经确认的校验/签署方式；关系失败明确说明，不默认家长扫码即已获全部权限。 | [BC-155](business-chains.md#bc-155) |
-| IC-092<a id="ic-092"></a> | 教材与专项内容 | 年级、地区、授权范围与可用版本一致；暂无合法可用内容给说明，不先收用户付费再展示空目录。 | [BC-157](business-chains.md#bc-157) / [BC-158](business-chains.md#bc-158) / [BC-162](business-chains.md#bc-162) |
+| IC-092<a id="ic-092"></a> | 教材与专项内容 | 年级、地区、授权范围与可用版本一致；原型全正版字样仅占位，版权待验见 DEC-08；暂无合法可用内容给说明，不先收用户付费再展示空目录。 | [BC-157](business-chains.md#bc-157) / [BC-158](business-chains.md#bc-158) / [BC-162](business-chains.md#bc-162) |
 | IC-093<a id="ic-093"></a> | K12 学习 | 与成人权限和数据隔离；显示适龄任务与真实进度；任何账号切换都重验主体，不能只换主题。 | [BC-159](business-chains.md#bc-159) / [BC-165](business-chains.md#bc-165) |
 | IC-094<a id="ic-094"></a> | 时长/时段限制 | 按已批准策略说明“本次学习已结束，可在允许时段继续”；不能伪造法定时长；各端以同一服务端结果为准。 | [BC-160](business-chains.md#bc-160) |
 | IC-095<a id="ic-095"></a> | 家长撤回/隐私 | 解释停止哪些功能、数据如何处理；撤销回执与处理完成分开；不把撤回提示做成诱导留存弹窗。 | [BC-161](business-chains.md#bc-161) / [BC-163](business-chains.md#bc-163) |
@@ -251,25 +251,25 @@ CLOSED：普通用户无入口；INTERNAL：仅获准测试者可用并标注；
 
 | 幕 | 页面/子状态 | 状态、文案与动作（本次修订设计） | 回指业务 |
 |---|---|---|---|
-| IC-097<a id="ic-097"></a> | 商品/订阅价格 | 显示产品、周期、币种、权益与适用价格；有续费展示下次扣款说明；价格来自锁定快照，不用外部未核实费率。 | [BC-167](business-chains.md#bc-167) |
-| IC-098<a id="ic-098"></a> | 下单/订阅确认 | 确认总价、周期与自动续费；提供清楚取消操作；重复点击同一订单；订阅管理与取消续订可回到此幕分支。 | [BC-168](business-chains.md#bc-168) / [BC-172](business-chains.md#bc-172) |
-| IC-099<a id="ic-099"></a> | 收银台 | 按实际渠道安全流程跳转；返回后先查订单；不靠 URL“success”给权益；不保存支付卡号等敏感资料。 | [BC-170](business-chains.md#bc-170) / [BC-171](business-chains.md#bc-171) |
-| IC-100<a id="ic-100"></a> | 付款结果/订阅权益 | 展示未支付、取消/失败、确认中、已付待开通、已开通；待开通不让再付款；恢复购买、续费失败与到期走状态分支，见 U7。 | [BC-171](business-chains.md#bc-171) / [BC-172](business-chains.md#bc-172) / [BC-173](business-chains.md#bc-173) |
-| IC-101<a id="ic-101"></a> | 退款/开票 | 申请、处理、完成、失败进度可查；取消续订不等于退款；退款到账与权益变化分开；能开何种票据按渠道确定。 | [BC-174](business-chains.md#bc-174) / [BC-175](business-chains.md#bc-175) |
+| IC-097<a id="ic-097"></a> | 商品/订阅价格 | 显示产品、周期、币种、权益与适用价格；原型演示价为本机快照，口径待 DEC-10；有续费展示下次扣款说明；价格来自锁定快照，不用外部未核实费率。 | [BC-167](business-chains.md#bc-167) |
+| IC-098<a id="ic-098"></a> | 下单/订阅确认 | 确认总价、周期与自动续费；原型重试保原快照，真规则待 DEC-10；提供清楚取消操作；重复点击同一订单；订阅管理与取消续订可回到此幕分支。 | [BC-168](business-chains.md#bc-168) / [BC-172](business-chains.md#bc-172) |
+| IC-099<a id="ic-099"></a> | 收银台 | 按实际渠道安全流程跳转；原型沙盒确认不扣真款，重复确认不建单，真通道待 DEC-10；返回后先查订单；不靠 URL“success”给权益；不保存支付卡号等敏感资料。 | [BC-170](business-chains.md#bc-170) / [BC-171](business-chains.md#bc-171) |
+| IC-100<a id="ic-100"></a> | 付款结果/订阅权益 | 展示未支付、取消/失败、确认中、已付待开通、已开通；原型已付待开通不让再付款已符合，待 DEC-10；恢复购买、续费失败与到期走状态分支，见 U7。 | [BC-171](business-chains.md#bc-171) / [BC-172](business-chains.md#bc-172) / [BC-173](business-chains.md#bc-173) |
+| IC-101<a id="ic-101"></a> | 退款/开票 | 申请、处理、完成、失败进度可查；原型两请求独立保存且未签发真实票据，待 DEC-10；取消续订不等于退款；退款到账与权益变化分开；能开何种票据按渠道确定。 | [BC-174](business-chains.md#bc-174) / [BC-175](business-chains.md#bc-175) |
 | IC-102<a id="ic-102"></a> | 原生/PWA/桌面壳 | 同业务身份、同服务器进度，各端独立安全会话；登录与购买恢复按实际渠道；PWA 安装、stub 通知不冒充完整原生能力。 | [BC-177](business-chains.md#bc-177) / [BC-178](business-chains.md#bc-178) / [BC-179](business-chains.md#bc-179) / [BC-180](business-chains.md#bc-180) / [BC-181](business-chains.md#bc-181) / [BC-182](business-chains.md#bc-182) / [BC-183](business-chains.md#bc-183) / [BC-184](business-chains.md#bc-184) |
 
 ## I14 隐私客服（IC-103…108）
 
-> 工单正文改变原隐私边界，需 DEC-06；删除申请与实际删除、普通退出与账号注销分开表达。
+> 工单采用已冻结安全内容引用；扩大采集/保留才待 DEC-06。导出与 IAM 删除生命周期沿用 C7，删除冷静期、撤回、执行、回执及普通退出分别表达，不把 D2 规则当运行成功。
 
 | 幕 | 页面/子状态 | 状态、文案与动作（本次修订设计） | 回指业务 |
 |---|---|---|---|
-| IC-103<a id="ic-103"></a> | 工单提交 | 受控正文方案待 DEC-06；开放后收必要描述并提示别填密码等秘密；未批准前关闭该提交或用已经验证的支持方式，不假装 hash 能描述问题。 | [BC-185](business-chains.md#bc-185) |
-| IC-104<a id="ic-104"></a> | 工单列表/详情 | 本人可查受理、处理中、待补充、已回复、已关闭；后台实无回复不伪造；仅 hash 老单注明需安全补充信息。 | [BC-186](business-chains.md#bc-186) / [BC-187](business-chains.md#bc-187) |
-| IC-105<a id="ic-105"></a> | 本人导出 | 身份确认后显示请求编号与实际进度；部分失败可重试；可下载链接受本人权限和有效期控制；无 worker 不显示全部完成。 | [BC-188](business-chains.md#bc-188) / [BC-191](business-chains.md#bc-191) |
-| IC-106<a id="ic-106"></a> | 账号删除 | 二次认证、影响说明和请求回执；若付费订阅仍有效说明需按渠道处理；申请已受理不等于数据全部删除；不给强行挽留话术。 | [BC-189](business-chains.md#bc-189) / [BC-191](business-chains.md#bc-191) / [BC-192](business-chains.md#bc-192) |
+| IC-103<a id="ic-103"></a> | 工单提交 | 按七类分类收获准问题描述，提示别填密码/秘密；正式提交由服务端创建脱敏安全内容引用，原文/裸 URL 不进入 ticket/event/log，未知扫描结果拒绝可读预览。本机文字转义且标未发送；真实能力不足给经过验证的支持方式。既有引用设计不重新待批，新增采集/保留变化才待 DEC-06。 | [BC-185](business-chains.md#bc-185) |
+| IC-104<a id="ic-104"></a> | 工单列表/详情 | 同一 ticketId/state/message/assignment 版本映射受理、接单、待用户/内部处理、解决、关闭、重开；消息与触达结果分开，不伪造客服回复。CLEAN 安全预览按本人权限显示；旧 hash 单需安全补正。升级目标/原因、待接收/已接收、处理 receipt 和冲突可读回；本机样例明确未发送。 | [BC-186](business-chains.md#bc-186) / [BC-187](business-chains.md#bc-187) |
+| IC-105<a id="ic-105"></a> | 本人导出 | 二次认证后从 learner-service.privacy 读请求编号、REQUESTED/COLLECTING/ASSEMBLING/READY 等实际状态及最小化 receipt；FAILED/RECOVERY_REQUIRED 给获准恢复动作，EXPIRED 无下载。READY 才申请本人一次性短时 no-store grant，不公开永久链接；本机未生成真实文件及 worker GAP 明示。 | [BC-188](business-chains.md#bc-188) / [BC-191](business-chains.md#bc-191) |
+| IC-106<a id="ic-106"></a> | 账号删除 | 二次认证、影响/渠道订阅说明后显示 IAM 请求回执与服务端 168 小时冷静期/预计执行时间；PENDING_COOLING_OFF 提供二次认证撤回及状态查询，成功为 CANCELLED 并给获准返回路径。EXECUTING 后撤回不可用；RECOVERY_REQUIRED 显示仍待处理，receipt/撤销对账完成才 ANONYMIZED；受理不等于全删，不用挽留话术阻碍操作。 | [BC-189](business-chains.md#bc-189) / [BC-191](business-chains.md#bc-191) / [BC-192](business-chains.md#bc-192) |
 | IC-107<a id="ic-107"></a> | 音频保留说明 | 显示经批准的保留范围、期限和删除入口；策略未确认不采集长期原始音频；不能写“删除成功”却仍可下载原音频。 | [BC-190](business-chains.md#bc-190) / [BC-191](business-chains.md#bc-191) |
-| IC-108<a id="ic-108"></a> | 账号删除后/普通退出分流 | 普通退出可重新登录；删除请求处理中给安全状态查询方式；删除完成给完成说明，不再“登录继续学习”；旧会话均不可用。 | [BC-189](business-chains.md#bc-189) / [BC-191](business-chains.md#bc-191) / [BC-192](business-chains.md#bc-192) |
+| IC-108<a id="ic-108"></a> | 账号删除后/冷静期撤回/普通退出分流 | 普通退出可重登；冷静期可按 IAM 入口查询/二次认证撤回，CANCELLED 后读最新主体资格和会话决定，显示获准账号/学习出口。执行或恢复态只能查询实际进度，完成说明显示最小范围/依法保留 receipt，不再“登录继续学习”；不恢复任何已撤销会话或客户端猜状态。 | [BC-189](business-chains.md#bc-189) / [BC-191](business-chains.md#bc-191) / [BC-192](business-chains.md#bc-192) |
 
 ## I15 无障碍（IC-109…111）
 
@@ -277,7 +277,7 @@ CLOSED：普通用户无入口；INTERNAL：仅获准测试者可用并标注；
 
 | 幕 | 页面/子状态 | 状态、文案与动作（本次修订设计） | 回指业务 |
 |---|---|---|---|
-| IC-109<a id="ic-109"></a> | 高对比与键盘访问 | 跟随系统+手动档；关键状态有文字，不仅靠颜色；键盘可完成主学习链、焦点可见；书架/练习为抽验而非全部范围。 | [BC-199](business-chains.md#bc-199) / [BC-033](business-chains.md#bc-033) |
+| IC-109<a id="ic-109"></a> | 高对比与键盘访问 | 跟随系统+手动档；关键状态有文字，不仅靠颜色；键盘可完成主学习链、焦点可见；原型即时持久化与本机降级已符合，抽验非全量；书架/练习为抽验而非全部范围。 | [BC-199](business-chains.md#bc-199) / [BC-033](business-chains.md#bc-033) |
 | IC-110<a id="ic-110"></a> | 字体与布局放大 | 保留三档字号与 320 宽度验收；主动作不溢出/遮挡，文字放大后可滚动读完；弹层和键盘不盖住确认按钮。 | [BC-199](business-chains.md#bc-199) / [BC-033](business-chains.md#bc-033) |
 | IC-111<a id="ic-111"></a> | 减少动效与反馈可感知 | 关闭动效后仍能看见保存/完成/出错；焦点与读屏反馈可用；小游戏未开放时用真实学习页抽验，不为验动效开放小游戏。 | [BC-127](business-chains.md#bc-127) / [BC-199](business-chains.md#bc-199) / [BC-036](business-chains.md#bc-036) |
 
@@ -293,7 +293,7 @@ CLOSED：普通用户无入口；INTERNAL：仅获准测试者可用并标注；
   → 注册/登录
   → 成人门与已明确必要的授权
   → 目标 + 每日时长
-  → 正式定级 / 快速开始（仅 DEC-03 已通过）
+  → 正式定级 / 已获准的 SKIPPED 保守快速开始（契约与运行签核见 DEC-03）
   → 一项真实可完成的首学任务
 ```
 
@@ -336,7 +336,9 @@ CLOSED：普通用户无入口；INTERNAL：仅获准测试者可用并标注；
 | 搜索无结果 | “没有找到匹配内容” | 清空条件/换词 | 浏览全部可用内容 |
 | 读取失败 | “暂时没能加载学习安排” | 重试 | 返回/复制支持编号 |
 
-未完成任务不使用“欠账”；可以继续或重新安排。多个学习来源归并与预算由业务 C4 决定，交互不再各拉一份到期任务造成重复。显示的预计用时应包含归并后所有任务；没有依据就不显示精确数字。明日预告必须来自真实排定内容。
+未完成任务不使用“欠账”；可以继续或对获准非强制项重新安排。多个来源统一使用业务 C4 的候选池、去重/稳定排序与冻结预算，各端不另拉一份重复到期卡片。5/15/30/45 分钟预览都先考虑恢复、到期验证/SRS，再补救/目标与新学；预计总量以 totalCap=ceil(quota×1.10) 解释，名义 15 分钟的合法 cap 为 17 分钟，不把 16 分钟误判超限。不能装入的到期项显示原因、仍待处理数及后续安排，保留 dueAt；CATCH_UP 与延期范围按 C4，不把积压藏到 45 分钟档最后才出现。
+
+样例候选、固定预计分钟和本机日期只能演示这些交互，需明确“演示安排”；无法证明完整 pin、分 lane、CATCH_UP、DST、服务端 accepted activity 或算法运行已完成。显示的预计用时包含归并后全部安排，不等于 accepted 实际时长；无依据不显示精确数字，明日预告来自真实排定内容。新增撤销补偿/兼容签收仍在 DEC-07，既有日期/预算/公式不重新待选。
 
 <a id="u4"></a>
 
@@ -346,26 +348,33 @@ CLOSED：普通用户无入口；INTERNAL：仅获准测试者可用并标注；
 
 送审一次列出全部缺项并定位字段；需要媒体但上传未开时，说明实际依赖，而不是引导用户反复点击“送审”。版本冲突时保留自己的未提交修改供对照；不会默认覆盖别人的更新。
 
-简审页明确“当前为简审模式”，双签页明确 L1/L2 与角色限制。下架确认要说明是停止新目录分发，还是必须停止所有后续访问；在学者受影响时给清楚提示。回滚前校验目标版本仍允许分发，不只弹一句“确定回滚？”就直接恢复。
+简审页明确“仅本机演示，正式例外待 DEC-01/08 签收”；正式页区分作者、L1、L2 和发布者身份及权限，不用模式按钮覆盖角色约束。两级审核均提供批准/要求修改/驳回，负向决定必须有原因和历史读回/通知；修订从新 DRAFT 版本进入，重新校验/送审，不能把旧决定改成新批准或只做正向演示。修改草稿不改变在架快照，版本/hash 改变使旧签核失效。发布事实与同步任务分别保存，晚回调只更新对应版本/命令。
+
+强制禁供弹窗要求选择或填写原因，空原因禁提交，详情及审计读回目标版本、command、主体/时间与该原因；普通恢复不能清除禁供。合法历史版本列表为空时无回滚动作，回滚复核权利/媒体/阶段/签核与影响。
 
 <a id="u5"></a>
 
 ## U5. 客服、导出、删除（新增交互契约）
 
-客服入口应回答用户能否真的提交一个可理解的问题。原 hash-only 不提供这种能力；DEC-06 未批准时不能把“提交编号”包装成“客服已获得问题”。替代邮箱/热线/表单只能使用已经配置且验证可用的实际渠道，不在开发中编造。
+客服入口采用 C7 已冻结的安全内容引用与七类分类，仅 CLEAN 的服务端脱敏预览对获准主体可读，原文/裸 URL 不进入 ticket/event/log。旧 hash-only 单仍标信息不足且无回复/关闭；本机文字保存不称实际已发送，真实采集/触达未验证不假闭环。DEC-06 只待新增采集/保留政策与运行签收，不能让已批准引用设计重新待定。替代邮箱/热线/表单必须是已配置且验证可用的实际渠道。
 
-导出与删除分别展示阶段与结果。建议文案：
+后台升级先选授权接收方并填原因，缺任一项阻断；列表/详情刷新读回 assignment 版本、目标、原因与待接收/实际接收结果。未接收不称交接完成；后续领域恢复经 owner 命令及 reconciliation receipt，解决/关闭不能替代数据修复，SLA/保留 policy 与状态版本可追。
+
+导出由 learner-service.privacy、删除由 IAM 提供既有 status/receipt；workflow 只编排。页面按[隐私生命周期 D2](../phase1-business-operation/m1-017-privacy-lifecycle-contract.md) 分别展示阶段与结果：
 
 | 状态 | 对用户说什么 | 不能说什么 |
 |---|---|---|
-| 删除请求受理 | “已收到删除请求，正在按说明处理” | “所有数据已删除” |
-| 跨服务部分失败 | “部分数据仍在处理中，可查看进度” | 用一个成功图标掩盖失败 |
-| 已按策略完成 | 显示完成时间、范围及经批准须保留项说明 | 保留项不明却承诺任何副本均已销毁 |
-| 导出排队 | “导出请求已提交” | “文件已准备好” |
-| 导出可下载 | 显示有效期、下载动作与本人授权要求 | 公开永久链接或他人可访问链接 |
+| PENDING_COOLING_OFF | “请求已受理，冷静期为 168 小时”；显示服务端预计执行时间、状态查询、二次认证撤回 | “所有数据已删除”，或无查询/撤回出口 |
+| CANCELLED | “删除请求已撤回”；读 IAM 最新资格/会话结果，提供获准返回路径 | 恢复已撤销 token，或仍迫使用户留在删除流程 |
+| EXECUTING | “正在按已批准策略处理”；撤回不可用，允许获准状态查询 | 允许过期撤回，或显示所有数据已删 |
+| RECOVERY_REQUIRED | “部分数据仍在处理中，可查看进度”；保留失败/恢复结果 | 用一个成功图标掩盖失败 |
+| ANONYMIZED | 显示对账后完成时间/范围及最小化依法保留 receipt | 保留项不明却承诺任何副本均已销毁 |
+| REQUESTED/COLLECTING/ASSEMBLING | “导出请求已提交/正在整理”与请求编号 | “文件已准备好” |
+| READY/DOWNLOAD_ISSUED | 本人获准一次性短时 no-store grant，显示期限及最小化 receipt | 公开永久链接、复制 grant 到普通日志/事件或他人可访问 |
+| FAILED/RECOVERY_REQUIRED/EXPIRED（导出） | 说明失败/恢复/到期，按既有接口给获准动作，到期无下载 | 本机未生成文件却显示可下载 |
 | 普通退出登录 | “已退出，可重新登录” | 把它称作“账号已永久删除” |
 
-删除确认显示会影响的账号/学习数据，以及是否仍有需要到实际支付渠道管理的有效订阅。不用挽留话术阻碍用户，但也不假设删除账号已经取消外部自动续费。删除后安全进度查询方式需要 DEC-09 定稿，不临时使用仍有完整学习权限的旧 token。
+删除确认显示影响及需到实际支付渠道管理的有效订阅，不以挽留话术阻碍操作，也不假设账号删除已取消外部续费。冷静期/撤回/查询/执行的 owner、权限和状态已有契约；各端不得临时借仍有完整学习权限的旧 token 查询或让客户端提交 executeAt/owner/权威状态。ANONYMIZED 以预期 owner receipt 及全部会话/设备撤销对账为前提；保留政策数值、实际 workers/事件/Saga/恢复证据继续待 DEC-09，不重新审批 168 小时冷静期或撤回能力。
 
 <a id="u6"></a>
 
@@ -409,7 +418,7 @@ CLOSED 的模块不在主导航、首页推荐、通知跳转里诱导点击；I
 
 ## U8. AI 与语音可中止、可恢复（新增，待 DEC-11）
 
-流式输出不等于未审核内容可以先给用户看。只在确定的展示前/分段检查策略下增量展示；结构合法后才显示可信评分或学习建议。用户停止后暂停旧输出追加，保留状态为部分完成/已停止，不自动改成一条完整结果。
+流式输出不等于未审核内容可以先给用户看。只在确定的展示前/分段检查策略下增量展示；结构合法后才显示可信评分或学习建议。用户停止后暂停旧输出追加，保留状态为部分完成/已停止，不自动改成一条完整结果；停止不等于免费与历史永久保存，成本与保留以业务稿 C10 为准（DEC-11）。
 
 优先动作是继续学习，重做为次级并说明已确定的消耗政策；超时可转普通练习，但对应内容必须存在。成本、取消与保留策略由业务稿决定，不由前端文案自行宣称“停止免费”或“历史永久保存”。
 
@@ -434,7 +443,7 @@ CLOSED 的模块不在主导航、首页推荐、通知跳转里诱导点击；I
 | D3 定级单轨 | IC-010/011/012/058/059，业务 BC-013…022；快速开始是来源分支，不恢复 B25 写口 |
 | D4 动态版本 | IC-006/056/057 与通用版本/冲突规则；版本号不写死 |
 | D5 空态有出口 | IC-016/020/024/030/032/033/062/064/065；完成态允许结束，不一律强迫新任务 |
-| D6 简审档（原文已批） | IC-041；保留单人可发、留痕可撤，双签模式另按权限执行 |
+| D6 简审档（历史提案，仅本机演示） | IC-041；正式作者/L1/L2/发布者四主体分离继续生效，单人可发只供本机演示；正式例外须 DEC-01/08 和变更单签收，不凭历史“已批”或模式切换放行 |
 
 原文附录标题只写 D1–D5 但实际含 D6，本版按实际内容修正。D 的其他外部细节未随文件提供，不据此声明上位文档已经同步。
 
@@ -443,4 +452,3 @@ CLOSED 的模块不在主导航、首页推荐、通知跳转里诱导点击；I
 沿业务稿 AC-01…18 执行，同时对每条动线核对：入口真实可达、角色正确、主操作清楚、成功有证据、空态有原因、错误有出口、中断可恢复、跨端不串数据、键盘/字号/动效可用。
 
 111 个编号全部保留；IC-002/003/004 仅为索引，其他 108 个是具体幕编号，**不代表已开放 108 个页面，也不代表已通过 108 项验收**。关闭能力的幕用于规划和隔离测试，不能计入用户可用功能数。
-
