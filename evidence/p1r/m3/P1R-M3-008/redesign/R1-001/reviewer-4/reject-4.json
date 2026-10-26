@@ -1,0 +1,81 @@
+{
+  "taskId": "R1-001",
+  "action": "reject",
+  "expectedRevision": 13,
+  "specSha256": "57726738acaac54eac1bedf2b69b97205d4e1933019781747f1b907294fadd52",
+  "actor": "root-reviewer",
+  "role": "reviewer",
+  "reviewerThreadId": "01a0cb93-8791-7ee2-b453-8e8752b2553f",
+  "note": "delivery-4定向复核38项通过、旧SKU不复活；已知pricing错误被恢复覆盖，实际采集器负例/精确目标与真实输入仍需补齐，限定下一组三项，不放行002。",
+  "findings": [
+    {
+      "id": "F12",
+      "priority": "P2",
+      "path": "apps/official-site/server/api/public-projection.get.ts",
+      "line": 262,
+      "problem": "F10旧套餐已不复活，但恢复缓存回填把已知pricing error/PUBLIC_COMMERCE_DEGRADED无条件改为recovery/PUBLIC_PROJECTION_STALE，并把commerceState/Error同步覆盖。既有价格读取失败原因和独立facet语义丢失；新连续测试只检查SKU与课程，没断言第三步的状态/原因。",
+      "fix": "在缓存回填中保留已知不可读facet的状态及原因；对此前成功取得的可读缓存才标stale/recovery。同步commerceState/commerceErrorCode与pricing facet，保持无旧SKU、TTL、权限及并发作废规则。给failed连续序列补第三步状态/错误码断言。",
+      "retestCaseIds": [
+        "R1-001-TC02"
+      ]
+    },
+    {
+      "id": "F11",
+      "priority": "P2",
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/work/negative-control-4.cjs",
+      "line": 1,
+      "problem": "HTTP真实状态与基础assert已补，但negative-control是另一个独立assert脚本，未调用r1-001-sweep-4，无法证明实际采集器在缺CTA时非零。实际采集器仍只接受href含/register和web|mobile，错误域名/端口或双视口都走Web也会通过；h1 attached+固定2秒不证明hydration；website mapping把未点击的retry列PASS。",
+      "fix": "新建版本采集器，精确断言设备对应origin/port/path与安全returnTo及locale/theme；等待可见页面和预期设备CTA。用相同采集器入口在隔离受控样本注入非200/缺CTA/错误目标等，保存子进程退出码与失败项。真实未执行的重试/主题维度只标PARTIAL/未跑，不擅自把必测项判不适用；固定脚本、输入、日志与输出哈希。",
+      "retestCaseIds": [
+        "R1-001-TC01",
+        "R1-001-TC03"
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-4/cache.log",
+      "sha256": "d00558ffaf67b33d3db27b6ef6f9e2e5fa0cb96ba4ee13a89d76206d9a43c5b2"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-4/facet-probe.mjs",
+      "sha256": "de4bd7bedcae5a17d82f4c30a16273502a16a26159a085de2aa605edcd12a1f4"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-4/facet.json",
+      "sha256": "e66334633202e9f51d5e00ef3b19d6c3b6928f71684865c006ed93f40c901a7d"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-4/facet.log",
+      "sha256": "9f5bd6f071ba3c21ba45150fe6dbeb470a6f0322404ce6e663538c7cbf7f55c2"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-4/findings.json",
+      "sha256": "ce10fdfedd684aa4ba625d91d8ec9950b9d273058c07d50a860eb85c38f4214a"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-4/precheck.json",
+      "sha256": "63cc6770000a92d25abf20d6dea5d2910431d7852ce9f06094b886afcc9231a3"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-4/precheck.mjs",
+      "sha256": "fcecabf0d8483e1b1bad232290a9d7c8734229318b534e3311ee68a1c81f7dd6"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-4/record.mjs",
+      "sha256": "a6259deffb53abc24908b12276e5b21da4a1a5a55f4699b64d7ab6fc5b0d3e8d"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-4/review.md",
+      "sha256": "8a195fcd2220a3941b56413978c7599983ae86f29528b62a535d12d67ef5d555"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-4/state-boundary.mjs",
+      "sha256": "5633ca23816fa71fbaf10cd62953f85fc022b88d6be01b993ac2ec2ee48c3435"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-4/unit.log",
+      "sha256": "62eca55a71bd47042518f6a1de0992efa8e3e873b3fcac84e406cba4368a9145"
+    }
+  ]
+}

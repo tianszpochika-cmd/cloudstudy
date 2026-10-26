@@ -1,0 +1,60 @@
+{
+  "reviewDate": "2026-10-02",
+  "branch": "dev-redesign",
+  "head": "3d11be3337accd32afbdbe13a218bca38c786043",
+  "scope": "Second round readonly design/prototype review; development plans excluded",
+  "sources": [
+    {
+      "path": "docs/06-design/v2-980plus/redesign/business-chains.md",
+      "sha256": "edc788c31f4cc7d97d7d2b79ffacff10b052a4e4df715d24104b2960e9c96872"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+      "sha256": "3d88275665d8ccf3d9e8ebb81a09528267603679c1b0f794c947284fbaa83aa8"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/redesign/design-source-traceability.md",
+      "sha256": "e86749ea9f7bef85e852a67a2974b304a40d98ae6b399001eac49df2878a8b74"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/redesign/revision-notes.md",
+      "sha256": "103f14e3e32e5c334c792b527a4ac629b25fa23547fcb52eb5f6805face111ae"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/redesign/mockups/admin/app.js",
+      "sha256": "ad4ba44ac305aba22a503d91b00a23c3a2aeca5f03ec6365657069241ecbe467"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/redesign/mockups/admin/model.js",
+      "sha256": "1881ffe732fdbdb70915119ce67b12893f5d49da229103edaeb4a9a79343082f"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/redesign/mockups/mobile/learning.js",
+      "sha256": "0266147fb34899f6d5ab4c0d65885ef837d560f4ca794ba208fe847348a4b5cf"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/phase1-business-operation/04-学习机制与学习引擎规则.md",
+      "sha256": "f88882d32b56bbc31b3ffa553f5f83dd2a687c2caedc0d5aaadb9d120f8222bc"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/phase1-business-operation/05-后台内容运营与客服业务流程.md",
+      "sha256": "438f65d34e129d3e89dcd08f1cb20081d00f79551c690c9feb9f961130a040bc"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/phase1-business-operation/m1-017-privacy-lifecycle-contract.md",
+      "sha256": "088b5716fda6a416df2c23635958feac6bb30051be3c1d78fe5649dfd40685e0"
+    },
+    {
+      "path": "config/p1r-notification-sync-support-contract.v1.json",
+      "sha256": "5e65244538d2df344e09ea8609146eff4ebd757b398a5f0c1e977df42420d0e2"
+    },
+    {
+      "path": "requirements/product-requirements.md",
+      "sha256": "c38034e8728741991cd4fd5b86f38e30f13a11e5bf2a182d5f10de37b963b84d"
+    },
+    {
+      "path": "requirements/feature-matrix.md",
+      "sha256": "0c2feaf86d0c6fc6391c6acd22eea52b614f09670f33bb8b6221b0fd1c6d8fc8"
+    }
+  ]
+}

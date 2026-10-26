@@ -1,0 +1,7 @@
+{
+  "startedAt": "2026-10-03T07:12:35.1159449Z",
+  "finishedAt": "2026-10-03T07:12:52.0489201Z",
+  "logPath": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-2/build.log",
+  "exitCode": 0,
+  "command": "pnpm --dir apps/official-site build"
+}

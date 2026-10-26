@@ -1,0 +1,124 @@
+{
+  "startedAt": "2026-10-04T23:44:48.939Z",
+  "origin": "http://127.0.0.1:18182",
+  "scenario": "empty",
+  "mocked": false,
+  "checks": [
+    {
+      "name": "375x812 mounted-course-chain",
+      "result": "FAIL",
+      "error": "375x812 invalid generatedAt"
+    }
+  ],
+  "pages": [
+    {
+      "label": "375x812",
+      "route": "/courses",
+      "navigationStatus": 200,
+      "mountedResponse": {
+        "url": "http://127.0.0.1:18182/api/public-projection?locale=zh-CN",
+        "status": 200,
+        "body": {
+          "projection": {
+            "schemaVersion": "public-site-v1",
+            "uiLocale": "zh-CN",
+            "contentLocale": "en-US",
+            "generatedAt": null,
+            "courses": [],
+            "pricingPlans": [],
+            "skus": [],
+            "campaigns": [],
+            "downloadChannels": [],
+            "announcements": [],
+            "complianceNotices": []
+          },
+          "state": "empty",
+          "stale": false,
+          "source": "gateway",
+          "errorCode": null,
+          "facets": {
+            "courses": {
+              "state": "empty",
+              "updatedAt": "2026-10-04T23:44:51.720453Z",
+              "errorCode": null,
+              "stale": false
+            },
+            "pricing": {
+              "state": "ready",
+              "updatedAt": "2026-10-04T23:44:51.720453Z",
+              "errorCode": null,
+              "stale": false
+            },
+            "download": {
+              "state": "empty",
+              "updatedAt": "2026-10-04T23:44:51.720453Z",
+              "errorCode": null,
+              "stale": false
+            },
+            "announcements": {
+              "state": "empty",
+              "updatedAt": "2026-10-04T23:44:51.720453Z",
+              "errorCode": null,
+              "stale": false
+            },
+            "compliance": {
+              "state": "empty",
+              "updatedAt": "2026-10-04T23:44:51.720453Z",
+              "errorCode": null,
+              "stale": false
+            }
+          },
+          "commerceState": "ready",
+          "commerceErrorCode": null
+        }
+      },
+      "checkedAt": "2026-10-04T23:44:51.787Z"
+    }
+  ],
+  "screenshots": [],
+  "upstreamReceipt": {
+    "url": "http://127.0.0.1:18070/api/v1/public/site/projection?uiLocale=zh-CN",
+    "status": 200,
+    "body": {
+      "data": {
+        "generatedAt": "2026-10-04T23:44:48.965438100Z",
+        "projectionVersion": 1,
+        "contentEpoch": 1,
+        "courses": [],
+        "pricing": [],
+        "downloads": [],
+        "announcements": [],
+        "compliance": []
+      },
+      "meta": {
+        "projectionVersion": 1,
+        "contentEpoch": 1,
+        "generatedAt": "2026-10-04T23:44:48.965438100Z",
+        "source": "CONTENT_SERVICE",
+        "stale": false,
+        "traceId": "9d16dd3a386b49d4a6908dcb6b1d7edc"
+      }
+    },
+    "requestId": "req-0e2c1ba71ea5425f9a4c1f9ec33d5b91",
+    "traceId": "9d16dd3a386b49d4a6908dcb6b1d7edc"
+  },
+  "commerceReceipt": {
+    "url": "http://127.0.0.1:18070/api/v1/public/commerce/catalog",
+    "status": 200,
+    "body": {
+      "catalogVersion": "commerce-public-v1",
+      "uiLocale": "zh-CN",
+      "contentLocale": "en-US",
+      "plans": [],
+      "publishedAt": "2026-10-04T23:44:49.002578Z",
+      "checkoutPath": "/pricing",
+      "productionPaymentEnabled": false,
+      "autoRenewalEnabled": false
+    },
+    "requestId": "req-33ae23a406274f2a9b1ab2ca463731f2",
+    "traceId": "831421af05214a3e9bc973d3ffc8b19f"
+  },
+  "result": "FAIL",
+  "failure": "375x812 invalid generatedAt",
+  "finishedAt": "2026-10-04T23:44:51.833Z"
+}

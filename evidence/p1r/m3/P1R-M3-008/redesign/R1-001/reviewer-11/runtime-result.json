@@ -1,0 +1,138 @@
+{
+  "startedAt": "2026-10-05T02:19:02.209Z",
+  "browserPath": "Browser plugin not available; regular Playwright",
+  "runs": [
+    {
+      "name": "units",
+      "command": "node --test apps/official-site/tests/public-projection-bff.test.mjs apps/official-site/tests/b13-official-site.test.mjs apps/official-site/tests/b14-fe-005.test.mjs apps/official-site/tests/website-entry.test.mjs",
+      "startedAt": "2026-10-05T02:19:02.221Z",
+      "logPath": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11/units.log",
+      "exitCode": 0,
+      "finishedAt": "2026-10-05T02:19:03.726Z"
+    },
+    {
+      "name": "negative",
+      "command": "node evidence/p1r/m3/P1R-M3-008/redesign/R1-001/work/negative-sweep-11.cjs evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11/negative",
+      "startedAt": "2026-10-05T02:19:03.726Z",
+      "logPath": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11/negative.log",
+      "exitCode": 0,
+      "finishedAt": "2026-10-05T02:20:34.228Z"
+    },
+    {
+      "name": "empty-chain",
+      "command": "node evidence/p1r/m3/P1R-M3-008/redesign/R1-001/work/real-upstream-10.cjs evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11/empty-chain",
+      "startedAt": "2026-10-05T02:21:01.064Z",
+      "logPath": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11/empty-chain.log",
+      "exitCode": 0,
+      "finishedAt": "2026-10-05T02:21:05.528Z"
+    },
+    {
+      "name": "sweep",
+      "command": "node evidence/p1r/m3/P1R-M3-008/redesign/R1-001/work/r1-001-sweep-11.cjs evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11/sweep",
+      "startedAt": "2026-10-05T02:21:05.528Z",
+      "logPath": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11/sweep.log",
+      "exitCode": 0,
+      "finishedAt": "2026-10-05T02:21:29.752Z"
+    },
+    {
+      "name": "security",
+      "command": "node evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11/browser-security.cjs evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11/security",
+      "startedAt": "2026-10-05T02:21:29.752Z",
+      "logPath": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11/security.log",
+      "exitCode": 0,
+      "finishedAt": "2026-10-05T02:21:39.417Z"
+    },
+    {
+      "name": "retry",
+      "command": "node evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11/browser-retry.cjs evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11/retry",
+      "startedAt": "2026-10-05T02:21:54.304Z",
+      "logPath": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11/retry.log",
+      "exitCode": 1,
+      "finishedAt": "2026-10-05T02:22:05.260Z"
+    }
+  ],
+  "processes": [
+    {
+      "name": "gateway",
+      "pid": 31588,
+      "startedAt": "2026-10-05T02:20:34.236Z",
+      "java": {
+        "service": "api-gateway",
+        "pid": 35748,
+        "port": 18070
+      },
+      "stopRequestedAt": "2026-10-05T02:22:09.771Z"
+    },
+    {
+      "name": "commerce",
+      "pid": 28780,
+      "startedAt": "2026-10-05T02:20:34.245Z",
+      "java": {
+        "service": "commerce-service",
+        "pid": 30676,
+        "port": 18096
+      },
+      "stopRequestedAt": "2026-10-05T02:22:08.942Z"
+    },
+    {
+      "name": "official-site",
+      "pid": 37712,
+      "startedAt": "2026-10-05T02:20:34.258Z",
+      "stopRequestedAt": "2026-10-05T02:21:42.875Z"
+    },
+    {
+      "name": "learner-web",
+      "pid": 29812,
+      "startedAt": "2026-10-05T02:20:34.274Z",
+      "stopRequestedAt": "2026-10-05T02:22:08.089Z"
+    },
+    {
+      "name": "mobile",
+      "pid": 3876,
+      "startedAt": "2026-10-05T02:20:34.287Z",
+      "stopRequestedAt": "2026-10-05T02:22:07.147Z"
+    },
+    {
+      "name": "empty-content",
+      "pid": 30536,
+      "startedAt": "2026-10-05T02:20:34.297Z",
+      "stopRequestedAt": "2026-10-05T02:21:40.506Z"
+    },
+    {
+      "name": "official-site-fresh",
+      "pid": 31912,
+      "startedAt": "2026-10-05T02:21:44.101Z",
+      "stopRequestedAt": "2026-10-05T02:22:06.233Z"
+    }
+  ],
+  "checks": [],
+  "result": "FAIL",
+  "failure": "retry failed\n\n1 !== 0\n",
+  "finalPorts": [
+    {
+      "port": 18070,
+      "free": true
+    },
+    {
+      "port": 18089,
+      "free": true
+    },
+    {
+      "port": 18096,
+      "free": true
+    },
+    {
+      "port": 18182,
+      "free": true
+    },
+    {
+      "port": 18180,
+      "free": true
+    },
+    {
+      "port": 18183,
+      "free": true
+    }
+  ],
+  "finishedAt": "2026-10-05T02:22:10.785Z"
+}

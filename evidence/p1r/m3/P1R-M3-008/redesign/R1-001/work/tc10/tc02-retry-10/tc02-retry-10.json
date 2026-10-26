@@ -1,0 +1,25 @@
+{
+  "startedAt": "2026-10-05T00:19:05.583Z",
+  "scope": "TC02 recovery: real click retry after content restore",
+  "steps": [
+    {
+      "step": "375x812 retry-visible",
+      "ok": false,
+      "detail": {
+        "retryVisible": false
+      }
+    },
+    {
+      "step": "1440x900 retry-visible",
+      "ok": false,
+      "detail": {
+        "retryVisible": false
+      }
+    }
+  ],
+  "failedChecks": [
+    "375x812 retry-visible",
+    "1440x900 retry-visible"
+  ],
+  "finishedAt": "2026-10-05T00:19:11.019Z"
+}

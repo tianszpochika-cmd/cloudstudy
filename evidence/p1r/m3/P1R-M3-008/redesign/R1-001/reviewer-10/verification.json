@@ -1,0 +1,138 @@
+{
+  "checkedAt": "2026-10-05T00:47:39.359Z",
+  "state": {
+    "revision": 23,
+    "state": "REVIEW"
+  },
+  "receipt": {
+    "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/delivery-7.json",
+    "sha256": "8b9e1de382dd8b5fbee22f8712b731eeae758b52fe6373d7813e9c7827f04d94"
+  },
+  "verified": {
+    "artifacts": 28,
+    "evidence": 33,
+    "productFilesUnchanged": 24,
+    "units": 38,
+    "unitExit": 0
+  },
+  "probes": [
+    {
+      "name": "hidden",
+      "mocked": true,
+      "expectedAccepted": false,
+      "actualAccepted": true,
+      "result": {
+        "h1": "Fixture",
+        "entries": 1,
+        "operable": 0,
+        "sample": "http://127.0.0.1:18180/register?returnTo=%2Fhome&uiLocale=zh-CN&theme=system",
+        "visibleCount": 0
+      },
+      "error": null
+    },
+    {
+      "name": "disabled",
+      "mocked": true,
+      "expectedAccepted": false,
+      "actualAccepted": true,
+      "result": {
+        "h1": "Fixture",
+        "entries": 1,
+        "operable": 0,
+        "sample": "http://127.0.0.1:18180/register?returnTo=%2Fhome&uiLocale=zh-CN&theme=system",
+        "visibleCount": 0
+      },
+      "error": null
+    }
+  ],
+  "falsePassPages": [
+    "375x812 r1-001 /download",
+    "375x812 r1-001 /announcements",
+    "375x812 r1-001 /compliance",
+    "375x812 r1-001 /status",
+    "375x812 r1-001 /privacy",
+    "375x812 r1-001 /terms",
+    "375x812 r1-001 /minors"
+  ],
+  "replacedPreparationSources": [
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/work/real-upstream-10.cjs",
+      "original": "4b9259935d2db756e51bed944413f91f0e7ba47b7e35e1868efe460fefd74aec",
+      "current": "a6e37723714200d449cc97b7e2feadb2485d0c59daa9e57a937a22b806a36b82",
+      "includedInDelivery": true
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/work/real-chain-assert-10.cjs",
+      "original": "946336130a6597161e8df393ab9640fe2b5ab39c82e1f865711215798cf974c5",
+      "current": "3dc8997bc6baf8f5989e98f8f625d715aa6d3fbae4ff66504368461b640735d9",
+      "includedInDelivery": true
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/work/r1-001-sweep-7.cjs",
+      "original": "25857d5db83e2e75e7ee8df083532df087c85487e6389bc8d39192a501a0ab4e",
+      "current": "ec31100acad96d42d4b80bbf4d2d78838678f82c730b0cacd13d28680e74cf19",
+      "includedInDelivery": true
+    }
+  ],
+  "screenshots": [
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/work/tc10/real-empty-10c/courses-empty-375x812.png",
+      "sha256": "d8aee3428f7291226b34ea2d0d74b0fe2de5fb0bda76ff587bb639d1f0a3508e"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/work/tc10/real-empty-10c/courses-empty-1440x900.png",
+      "sha256": "de65c66d7ba421246cf1a4222039455ee14d9013d1bef5c318322802c1511d8b"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/work/tc10/sweep-empty-10/r1-001-375x812.png",
+      "sha256": "d8aee3428f7291226b34ea2d0d74b0fe2de5fb0bda76ff587bb639d1f0a3508e"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/work/tc10/sweep-empty-10/r1-001-1440x900.png",
+      "sha256": "de65c66d7ba421246cf1a4222039455ee14d9013d1bef5c318322802c1511d8b"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/work/tc10/tc02-fail-10/courses-fail-375x812.png",
+      "sha256": "d8aee3428f7291226b34ea2d0d74b0fe2de5fb0bda76ff587bb639d1f0a3508e"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/work/tc10/tc02-fail-10/courses-fail-1440x900.png",
+      "sha256": "de65c66d7ba421246cf1a4222039455ee14d9013d1bef5c318322802c1511d8b"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/work/tc10/tc02-retry-10b/courses-retry-375x812.png",
+      "sha256": "d8aee3428f7291226b34ea2d0d74b0fe2de5fb0bda76ff587bb639d1f0a3508e"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/work/tc10/tc02-retry-10b/courses-retry-1440x900.png",
+      "sha256": "de65c66d7ba421246cf1a4222039455ee14d9013d1bef5c318322802c1511d8b"
+    }
+  ],
+  "ports": [
+    {
+      "port": 18070,
+      "state": "CLOSED"
+    },
+    {
+      "port": 18089,
+      "state": "CLOSED"
+    },
+    {
+      "port": 18096,
+      "state": "CLOSED"
+    },
+    {
+      "port": 18182,
+      "state": "CLOSED"
+    },
+    {
+      "port": 18180,
+      "state": "CLOSED"
+    },
+    {
+      "port": 18183,
+      "state": "CLOSED"
+    }
+  ],
+  "scope": "Independent receipt/snapshot/source review and synthetic collector probes; no service/database/browser started. Screenshot inspection performed separately."
+}

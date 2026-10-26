@@ -1,0 +1,199 @@
+{
+  "startedAt": "2026-10-04T23:13:08.998Z",
+  "checks": [
+    {
+      "name": "terminal-probe valid",
+      "accepted": true,
+      "expected": true,
+      "matched": true,
+      "mocked": true
+    },
+    {
+      "name": "terminal-probe loading",
+      "accepted": false,
+      "expected": false,
+      "matched": true,
+      "mocked": true
+    },
+    {
+      "name": "terminal-probe recovery",
+      "accepted": false,
+      "expected": false,
+      "matched": true,
+      "mocked": true
+    },
+    {
+      "name": "terminal-probe invalid-time",
+      "accepted": false,
+      "expected": false,
+      "matched": true,
+      "mocked": true
+    },
+    {
+      "name": "canonical-copy c52c0deec1",
+      "result": "PASS"
+    },
+    {
+      "name": "canonical-copy c7be801719",
+      "result": "PASS"
+    }
+  ],
+  "runs": [
+    {
+      "name": "syntax-r1-001-content-empty-10.cjs",
+      "exitCode": 0,
+      "log": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-9-prep/syntax-r1-001-content-empty-10.cjs.log"
+    },
+    {
+      "name": "syntax-real-chain-assert-10.cjs",
+      "exitCode": 0,
+      "log": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-9-prep/syntax-real-chain-assert-10.cjs.log"
+    },
+    {
+      "name": "syntax-real-upstream-10.cjs",
+      "exitCode": 0,
+      "log": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-9-prep/syntax-real-upstream-10.cjs.log"
+    },
+    {
+      "name": "syntax-r1-001-safe-run-10.cjs",
+      "exitCode": 0,
+      "log": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-9-prep/syntax-r1-001-safe-run-10.cjs.log"
+    },
+    {
+      "name": "units",
+      "exitCode": 0,
+      "log": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-9-prep/units.log"
+    }
+  ],
+  "limitations": [
+    "No browser or service started; input preparation only"
+  ],
+  "delivery6": {
+    "artifacts": 24,
+    "evidence": 14,
+    "unchanged": true
+  },
+  "readySources": [
+    {
+      "path": "docs/06-design/v2-980plus/redesign/task-specs/R1-001-041.json",
+      "unchanged": true
+    },
+    {
+      "path": "AGENTS.md",
+      "unchanged": true
+    },
+    {
+      "path": "docs/06-design/v2-980plus/redesign/dev-plan-R1.md",
+      "unchanged": true
+    },
+    {
+      "path": "docs/06-design/v2-980plus/redesign/business-chains.md",
+      "unchanged": true
+    },
+    {
+      "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+      "unchanged": true
+    },
+    {
+      "path": "docs/06-design/v2-980plus/08-980plus-功能点设计登记册.md",
+      "unchanged": true
+    },
+    {
+      "path": "packages/contracts/fragments/b9/b9-content.openapi.json",
+      "unchanged": true
+    },
+    {
+      "path": "config/local-ports.json",
+      "unchanged": true
+    },
+    {
+      "path": "config/toolchain-baseline.json",
+      "unchanged": true
+    },
+    {
+      "path": "apps/official-site/nuxt.config.ts",
+      "unchanged": true
+    },
+    {
+      "path": "apps/official-site/plugins/foundation.ts",
+      "unchanged": true
+    },
+    {
+      "path": "apps/official-site/components/PublicStatus.vue",
+      "unchanged": true
+    },
+    {
+      "path": "packages/contracts/openapi/v1/openapi.json",
+      "unchanged": true
+    },
+    {
+      "path": "packages/contracts/generated/openapi.ts",
+      "unchanged": true
+    },
+    {
+      "path": "docs/06-design/v2-980plus/redesign/input-gates.md",
+      "unchanged": true
+    },
+    {
+      "path": "docs/06-design/v2-980plus/redesign/execution-handbook.md",
+      "unchanged": true
+    },
+    {
+      "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+      "unchanged": true
+    },
+    {
+      "path": "docs/06-design/v2-980plus/phase1-business-operation/02-端到端业务旅程台账.md",
+      "unchanged": true
+    },
+    {
+      "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+      "unchanged": true
+    },
+    {
+      "path": "docs/06-design/v2-980plus/phase1-business-operation/08-验收与追溯规范.md",
+      "unchanged": true
+    },
+    {
+      "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+      "unchanged": true
+    },
+    {
+      "path": "packages/contracts/fragments/b13/b13-commerce-admin-analytics.openapi.json",
+      "unchanged": true
+    }
+  ],
+  "ports": [
+    {
+      "port": 18070,
+      "state": "CLOSED"
+    },
+    {
+      "port": 18089,
+      "state": "CLOSED"
+    },
+    {
+      "port": 18096,
+      "state": "CLOSED"
+    },
+    {
+      "port": 18182,
+      "state": "CLOSED"
+    },
+    {
+      "port": 18180,
+      "state": "CLOSED"
+    },
+    {
+      "port": 18183,
+      "state": "CLOSED"
+    }
+  ],
+  "state": {
+    "revision": 20,
+    "task": "BLOCKED",
+    "nextTask": "PLANNED"
+  },
+  "finishedAt": "2026-10-04T23:13:10.190Z",
+  "result": "PASS"
+}

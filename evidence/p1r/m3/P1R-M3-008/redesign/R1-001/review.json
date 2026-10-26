@@ -1,0 +1,29 @@
+{
+  "taskId": "R1-001",
+  "decision": "ACCEPTED",
+  "scope": "R1 child delivery only",
+  "reviewedAt": "2026-10-05T02:32:38.399Z",
+  "sourceCommit": "3d11be3337accd32afbdbe13a218bca38c786043",
+  "dirtyDiffSha256": "71ecf647807de2bfae02c193222891d6935eb68c74539fe4d0540f8b8a1ed8a6",
+  "submission": {
+    "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/delivery-8.json",
+    "sha256": "97b7fec966ea86622bc8250e10491b62e095ddebc3a84f985e13d090da774c7a"
+  },
+  "report": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11/review.md",
+  "approvalReceipt": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11/approve-8.json",
+  "canonicalParentPromotion": false,
+  "results": [
+    {
+      "id": "R1-001-TC01",
+      "result": "PASS"
+    },
+    {
+      "id": "R1-001-TC02",
+      "result": "PASS"
+    },
+    {
+      "id": "R1-001-TC03",
+      "result": "PASS"
+    }
+  ]
+}

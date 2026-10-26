@@ -1,0 +1,280 @@
+{
+  "startedAt": "2026-10-05T02:21:30.164Z",
+  "browserPath": "Browser plugin not available; regular Playwright",
+  "mocked": false,
+  "checks": [
+    {
+      "name": "375x812 reject unsafe returnTo",
+      "input": "https://evil.invalid",
+      "result": "PASS",
+      "entry": {
+        "h1": "找到今天想学的内容。",
+        "entries": 3,
+        "operable": 1,
+        "visibleCount": 1,
+        "menuOpened": false,
+        "sample": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=system&returnTo=%2Fpages%2Fhome%2Fhome"
+      }
+    },
+    {
+      "name": "375x812 reject unsafe returnTo",
+      "input": "//evil.invalid",
+      "result": "PASS",
+      "entry": {
+        "h1": "找到今天想学的内容。",
+        "entries": 3,
+        "operable": 1,
+        "visibleCount": 1,
+        "menuOpened": false,
+        "sample": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=system&returnTo=%2Fpages%2Fhome%2Fhome"
+      }
+    },
+    {
+      "name": "375x812 reject unsafe returnTo",
+      "input": "%2F%2Fevil.invalid",
+      "result": "PASS",
+      "entry": {
+        "h1": "找到今天想学的内容。",
+        "entries": 3,
+        "operable": 1,
+        "visibleCount": 1,
+        "menuOpened": false,
+        "sample": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=system&returnTo=%2Fpages%2Fhome%2Fhome"
+      }
+    },
+    {
+      "name": "375x812 reject unsafe returnTo",
+      "input": "javascript:alert(1)",
+      "result": "PASS",
+      "entry": {
+        "h1": "找到今天想学的内容。",
+        "entries": 3,
+        "operable": 1,
+        "visibleCount": 1,
+        "menuOpened": false,
+        "sample": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=system&returnTo=%2Fpages%2Fhome%2Fhome"
+      }
+    },
+    {
+      "name": "375x812 real rapid click and fixed landing",
+      "result": "PASS",
+      "navigations": 3,
+      "entry": {
+        "h1": "找到今天想学的内容。",
+        "entries": 3,
+        "operable": 1,
+        "visibleCount": 1,
+        "menuOpened": false,
+        "sample": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=system&returnTo=%2Fpages%2Fhome%2Fhome"
+      }
+    },
+    {
+      "name": "1440x900 reject unsafe returnTo",
+      "input": "https://evil.invalid",
+      "result": "PASS",
+      "entry": {
+        "h1": "找到今天想学的内容。",
+        "entries": 3,
+        "operable": 2,
+        "visibleCount": 2,
+        "menuOpened": false,
+        "sample": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=system&returnTo=%2Fhome"
+      }
+    },
+    {
+      "name": "1440x900 reject unsafe returnTo",
+      "input": "//evil.invalid",
+      "result": "PASS",
+      "entry": {
+        "h1": "找到今天想学的内容。",
+        "entries": 3,
+        "operable": 2,
+        "visibleCount": 2,
+        "menuOpened": false,
+        "sample": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=system&returnTo=%2Fhome"
+      }
+    },
+    {
+      "name": "1440x900 reject unsafe returnTo",
+      "input": "%2F%2Fevil.invalid",
+      "result": "PASS",
+      "entry": {
+        "h1": "找到今天想学的内容。",
+        "entries": 3,
+        "operable": 2,
+        "visibleCount": 2,
+        "menuOpened": false,
+        "sample": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=system&returnTo=%2Fhome"
+      }
+    },
+    {
+      "name": "1440x900 reject unsafe returnTo",
+      "input": "javascript:alert(1)",
+      "result": "PASS",
+      "entry": {
+        "h1": "找到今天想学的内容。",
+        "entries": 3,
+        "operable": 2,
+        "visibleCount": 2,
+        "menuOpened": false,
+        "sample": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=system&returnTo=%2Fhome"
+      }
+    },
+    {
+      "name": "1440x900 real rapid click and fixed landing",
+      "result": "PASS",
+      "navigations": 3,
+      "entry": {
+        "h1": "找到今天想学的内容。",
+        "entries": 3,
+        "operable": 2,
+        "visibleCount": 2,
+        "menuOpened": false,
+        "sample": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=system&returnTo=%2Fhome"
+      }
+    }
+  ],
+  "pages": [
+    {
+      "label": "375x812",
+      "landed": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=system&returnTo=%2Fpages%2Fhome%2Fhome",
+      "title": "注册",
+      "registrationSubmitted": false
+    },
+    {
+      "label": "1440x900",
+      "landed": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=system&returnTo=%2Fhome",
+      "title": "语学星",
+      "registrationSubmitted": false
+    }
+  ],
+  "storage": [
+    {
+      "label": "375x812 before navigation",
+      "origin": "http://127.0.0.1:18182",
+      "stores": [
+        {
+          "name": "localStorage",
+          "keys": []
+        },
+        {
+          "name": "sessionStorage",
+          "keys": []
+        }
+      ],
+      "cookieNames": [
+        "yx.public.locale",
+        "yx.public.theme"
+      ],
+      "readSucceeded": true,
+      "valuesRead": false
+    },
+    {
+      "label": "375x812 after return",
+      "origin": "http://127.0.0.1:18182",
+      "stores": [
+        {
+          "name": "localStorage",
+          "keys": []
+        },
+        {
+          "name": "sessionStorage",
+          "keys": []
+        }
+      ],
+      "cookieNames": [
+        "yx.public.locale",
+        "yx.public.theme"
+      ],
+      "readSucceeded": true,
+      "valuesRead": false
+    },
+    {
+      "label": "375x812 after rapid return",
+      "origin": "http://127.0.0.1:18182",
+      "stores": [
+        {
+          "name": "localStorage",
+          "keys": []
+        },
+        {
+          "name": "sessionStorage",
+          "keys": []
+        }
+      ],
+      "cookieNames": [
+        "yx.public.locale",
+        "yx.public.theme"
+      ],
+      "readSucceeded": true,
+      "valuesRead": false
+    },
+    {
+      "label": "1440x900 before navigation",
+      "origin": "http://127.0.0.1:18182",
+      "stores": [
+        {
+          "name": "localStorage",
+          "keys": []
+        },
+        {
+          "name": "sessionStorage",
+          "keys": []
+        }
+      ],
+      "cookieNames": [
+        "yx.public.locale",
+        "yx.public.theme"
+      ],
+      "readSucceeded": true,
+      "valuesRead": false
+    },
+    {
+      "label": "1440x900 after return",
+      "origin": "http://127.0.0.1:18182",
+      "stores": [
+        {
+          "name": "localStorage",
+          "keys": []
+        },
+        {
+          "name": "sessionStorage",
+          "keys": []
+        }
+      ],
+      "cookieNames": [
+        "yx.public.locale",
+        "yx.public.theme"
+      ],
+      "readSucceeded": true,
+      "valuesRead": false
+    },
+    {
+      "label": "1440x900 after rapid return",
+      "origin": "http://127.0.0.1:18182",
+      "stores": [
+        {
+          "name": "localStorage",
+          "keys": []
+        },
+        {
+          "name": "sessionStorage",
+          "keys": []
+        }
+      ],
+      "cookieNames": [
+        "yx.public.locale",
+        "yx.public.theme"
+      ],
+      "readSucceeded": true,
+      "valuesRead": false
+    }
+  ],
+  "screenshots": [
+    "evidence\\p1r\\m3\\P1R-M3-008\\redesign\\R1-001\\reviewer-11\\security\\returned-375x812.png",
+    "evidence\\p1r\\m3\\P1R-M3-008\\redesign\\R1-001\\reviewer-11\\security\\returned-1440x900.png"
+  ],
+  "errors": [],
+  "result": "PASS",
+  "finishedAt": "2026-10-05T02:21:39.391Z"
+}

@@ -1,0 +1,128 @@
+{
+  "at": "2026-10-05T06:43:32.228Z",
+  "decision": "PREPARATION_RECEIVED_NOT_READY",
+  "statusRevision": 27,
+  "R1001": {
+    "state": "ACCEPTED",
+    "issues": []
+  },
+  "R1002": {
+    "state": "PLANNED",
+    "issues": []
+  },
+  "filesMatched": 16,
+  "scopeFilesMatched": 4,
+  "specSha256": "768a23c3fb6662693f9ff1ce9ab93391aca3019252d95d9a51eb39967690f96d",
+  "snapshot": {
+    "sourceCommit": "3d11be3337accd32afbdbe13a218bca38c786043",
+    "dirtyDiffSha256": "d5dab72b98b5fcaae945a9d2cc3a4c35b2ee5ebd5d05daee76a260b898f09612",
+    "files": [
+      {
+        "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/PasswordAccountService.java",
+        "sha256": "919426fa9da4c48beea7f5d08d3a2e5a5694024c804ea66eb6032547720ca2b1"
+      },
+      {
+        "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/SessionService.java",
+        "sha256": "5f208d93f9cf7e51fdd8d3ac73195b0de8f448374c5e752fe14616819670deaa"
+      },
+      {
+        "path": "services/iam-service/src/main/java/com/englishflow/iam/web/IamProviderBoundaryController.java",
+        "sha256": "5df5c5de541a594251c04171f08810cd52f26140718b1bf6ae34e02a2c976a67"
+      },
+      {
+        "path": "services/iam-service/src/test/java/com/englishflow/iam/PasswordAccountConcurrencySecurityTest.java",
+        "sha256": "8ba00b654167626cb2d84f0125db8ec841c061616bd74de779eafd7079e13e4e"
+      }
+    ]
+  },
+  "preparedFiles": [
+    {
+      "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/prep-report.md",
+      "sha256": "faea2885c35bca8d77dabc5f5dc4e67d6a92c403a9cb45b7ab2cd7cac15e477a"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/source-and-inputs.json",
+      "sha256": "7ccd3fedd24212f69a903c4302e226559da8009d5306735279f47b36233bf4cf"
+    }
+  ],
+  "jar": {
+    "bytes": 43852295,
+    "path": "services/iam-service/target/iam-service-0.1.0-SNAPSHOT.jar",
+    "sha256": "5d3fcdf828d91fe8793002d99ce1ddbdca484762d84be925e408de4bd0221f3f",
+    "sourceBuildNotProven": true
+  },
+  "sourceEvidence": [
+    {
+      "path": "services/iam-service/src/main/java/com/englishflow/iam/auth/JwtTokenService.java",
+      "sha256": "b631fcf65fdb08253befc6824334c93f3946941029227698917317bc5b694f4b"
+    },
+    {
+      "path": "services/iam-service/src/main/java/com/englishflow/iam/config/IamRuntimeConfiguration.java",
+      "sha256": "eaedacd9cdeac288f393c2ae4d28880e68493cd33ca92848fce75c2993b111c3"
+    },
+    {
+      "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/JdbcConsentPolicy.java",
+      "sha256": "f37aac4fd563ea14c7a3d06078a6b698ae6d315f47056935670639c27eed4de9"
+    },
+    {
+      "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/ConsentService.java",
+      "sha256": "ed9673e8a8b1e42e320a33b4052a86c65db08104454fb6b8a77c192c4ff41995"
+    },
+    {
+      "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/JdbcIdempotencyStore.java",
+      "sha256": "f3e8d5cbd0d6903957533080fa0bd2cff48cd704fd31976763ad7e5ee713f2dd"
+    },
+    {
+      "path": "services/iam-service/src/main/resources/application-local.yaml",
+      "sha256": "794a221236e2e226b5619f5ec1f5e552294ff2412b7f32538a5d7ae4427d5bd8"
+    },
+    {
+      "path": "packages/contracts/events/v1/fragments/m1-018-iam-v2.events.json",
+      "sha256": "323c1614f04301b74f568610add6ca922f34f43ece7340ba4a2922738164f989"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/phase1-business-operation/06-业务联调矩阵.md",
+      "sha256": "36deaf9bf227d7565e69ec3dbd5f6655bcdc690789a949be194f48836365e3ba"
+    },
+    {
+      "path": "scripts/database/reconcile-iam-schema.mjs",
+      "sha256": "504539400b42ca186b232725fc5c81d5b806126b797912b667f340de7d0f80a7"
+    },
+    {
+      "path": "scripts/runtime/run-v2-services.mjs",
+      "sha256": "cb8ec8b66575051e69afac941e2d58f17e9caa88bb514a143a9555d10daa84dc"
+    }
+  ],
+  "versionsObservedThisTurn": {
+    "node": "20.19.5",
+    "pnpm": "10.19.0",
+    "java": "25.0.4.1"
+  },
+  "portsObservedThisTurn": {
+    "notListening": [
+      18087,
+      18070,
+      18090
+    ],
+    "listening": [
+      13306,
+      16379,
+      19092
+    ]
+  },
+  "closedReadOnlyQuestions": [
+    "E1 jar identity collected",
+    "G1/G2 current permission restriction source identified",
+    "C1 default password min12/current validator source identified"
+  ],
+  "pendingInputs": [
+    "E2 dedicated IAM migration/runtime identities and real migration history",
+    "E3 published synthetic policy fixtures with zero personal eligibility facts",
+    "effective runtime/TLS/Secure and real domain PEP route inputs",
+    "canonical bootstrap Outbox file scope and deterministic real transaction failure plan"
+  ],
+  "implementationTestsRun": 0,
+  "backendProcessesStarted": 0,
+  "databaseOperations": 0,
+  "credentialsCollected": false
+}

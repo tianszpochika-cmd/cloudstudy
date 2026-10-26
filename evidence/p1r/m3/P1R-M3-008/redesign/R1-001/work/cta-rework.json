@@ -1,0 +1,117 @@
+{
+  "base": "http://127.0.0.1:18182",
+  "checkedAt": "2026-10-03T06:46:44.390Z",
+  "note": "SSR desktop UA: web entries expected; mobile verified via useLearningDevice unit path and registerLink(mobile) builder output",
+  "rows": [
+    {
+      "page": "/",
+      "status": 200,
+      "bytes": 35029,
+      "dataLearningEntryWeb": 5,
+      "dataLearningEntryMobile": 0,
+      "dataLearningEntryLegacy": 0,
+      "facetMarks": 0,
+      "checkedAt": "2026-10-03T06:46:43.185Z"
+    },
+    {
+      "page": "/courses",
+      "status": 200,
+      "bytes": 22302,
+      "dataLearningEntryWeb": 3,
+      "dataLearningEntryMobile": 0,
+      "dataLearningEntryLegacy": 0,
+      "facetMarks": 0,
+      "checkedAt": "2026-10-03T06:46:44.167Z"
+    },
+    {
+      "page": "/pricing",
+      "status": 200,
+      "bytes": 17145,
+      "dataLearningEntryWeb": 3,
+      "dataLearningEntryMobile": 0,
+      "dataLearningEntryLegacy": 0,
+      "facetMarks": 0,
+      "checkedAt": "2026-10-03T06:46:44.214Z"
+    },
+    {
+      "page": "/download",
+      "status": 200,
+      "bytes": 16798,
+      "dataLearningEntryWeb": 2,
+      "dataLearningEntryMobile": 0,
+      "dataLearningEntryLegacy": 0,
+      "facetMarks": 0,
+      "checkedAt": "2026-10-03T06:46:44.258Z"
+    },
+    {
+      "page": "/announcements",
+      "status": 200,
+      "bytes": 16875,
+      "dataLearningEntryWeb": 2,
+      "dataLearningEntryMobile": 0,
+      "dataLearningEntryLegacy": 0,
+      "facetMarks": 0,
+      "checkedAt": "2026-10-03T06:46:44.278Z"
+    },
+    {
+      "page": "/about",
+      "status": 200,
+      "bytes": 16468,
+      "dataLearningEntryWeb": 3,
+      "dataLearningEntryMobile": 0,
+      "dataLearningEntryLegacy": 0,
+      "facetMarks": 0,
+      "checkedAt": "2026-10-03T06:46:44.297Z"
+    },
+    {
+      "page": "/compliance",
+      "status": 200,
+      "bytes": 18336,
+      "dataLearningEntryWeb": 2,
+      "dataLearningEntryMobile": 0,
+      "dataLearningEntryLegacy": 0,
+      "facetMarks": 0,
+      "checkedAt": "2026-10-03T06:46:44.313Z"
+    },
+    {
+      "page": "/status",
+      "status": 200,
+      "bytes": 15989,
+      "dataLearningEntryWeb": 2,
+      "dataLearningEntryMobile": 0,
+      "dataLearningEntryLegacy": 0,
+      "facetMarks": 0,
+      "checkedAt": "2026-10-03T06:46:44.340Z"
+    },
+    {
+      "page": "/privacy",
+      "status": 200,
+      "bytes": 17030,
+      "dataLearningEntryWeb": 2,
+      "dataLearningEntryMobile": 0,
+      "dataLearningEntryLegacy": 0,
+      "facetMarks": 0,
+      "checkedAt": "2026-10-03T06:46:44.355Z"
+    },
+    {
+      "page": "/terms",
+      "status": 200,
+      "bytes": 17020,
+      "dataLearningEntryWeb": 2,
+      "dataLearningEntryMobile": 0,
+      "dataLearningEntryLegacy": 0,
+      "facetMarks": 0,
+      "checkedAt": "2026-10-03T06:46:44.367Z"
+    },
+    {
+      "page": "/minors",
+      "status": 200,
+      "bytes": 17024,
+      "dataLearningEntryWeb": 2,
+      "dataLearningEntryMobile": 0,
+      "dataLearningEntryLegacy": 0,
+      "facetMarks": 0,
+      "checkedAt": "2026-10-03T06:46:44.379Z"
+    }
+  ]
+}

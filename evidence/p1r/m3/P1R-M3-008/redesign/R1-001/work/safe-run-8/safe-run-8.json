@@ -1,0 +1,42 @@
+{
+  "checkedAt": "2026-10-04T15:11:44.867Z",
+  "scope": "R1-001 read-only safe start; child-process env only; no backend launch in --validate",
+  "safeEnv": {
+    "CONTENT_EVENT_RELAY_ENABLED": "false",
+    "CONTENT_EVENT_CONSUMER_ENABLED": "false",
+    "CONTENT_SCHEDULE_ENABLED": "false",
+    "CONTENT_FLYWAY_ENABLED": "false",
+    "COMMERCE_FLYWAY_ENABLED": "false",
+    "SPRING_FLYWAY_ENABLED": "false"
+  },
+  "fixedPorts": {
+    "api-gateway": 18070,
+    "content-service": 18089,
+    "commerce-service": 18096,
+    "official-site-dev": 18182,
+    "learner-web-dev": 18180,
+    "mobile-h5-dev": 18183
+  },
+  "jars": [
+    {
+      "path": "services/content-service/target/content-service-0.1.0-SNAPSHOT.jar",
+      "bytes": 63760208,
+      "mtime": "2026-09-28T00:25:22.444Z",
+      "sha256": "feafab1459ce422d90bc9c3672f0f6732db963544d3abedb3f2d3f397b6d798a"
+    },
+    {
+      "path": "services/commerce-service/target/commerce-service-0.1.0-SNAPSHOT.jar",
+      "bytes": 41501716,
+      "mtime": "2026-09-27T15:15:25.689Z",
+      "sha256": "317af7b79b58ec28f9a53a33077a8decacce33a9ec9fef34b81e8643f140d340"
+    },
+    {
+      "path": "services/api-gateway/target/api-gateway-0.1.0-SNAPSHOT.jar",
+      "bytes": 73129664,
+      "mtime": "2026-09-27T18:03:31.825Z",
+      "sha256": "f1bb808859a146064d1479859531e83836a129a2d3f4c1f5ac27a7eefdf02e20"
+    }
+  ],
+  "callerEnvPreserved": true,
+  "effectiveCheck": "READY 后子进程执行 env | Select-String CONTENT_|COMMERCE_|SPRING_FLYWAY 核对上述六项为 false（不输出 *_PASSWORD）"
+}

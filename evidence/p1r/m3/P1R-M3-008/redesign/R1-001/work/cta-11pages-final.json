@@ -1,0 +1,143 @@
+{
+  "base": "http://127.0.0.1:18182",
+  "checkedAt": "2026-10-03T04:17:12.916Z",
+  "rows": [
+    {
+      "page": "/",
+      "status": 200,
+      "bytes": 34540,
+      "ctaTags": 5,
+      "hrefs": [
+        "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=system&returnTo=%2Fhome",
+        "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=system&returnTo=%2Fhome",
+        "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=system&returnTo=%2Fhome",
+        "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=system&returnTo=%2Fhome"
+      ],
+      "hasStartFallback": true,
+      "checkedAt": "2026-10-03T04:17:11.781Z"
+    },
+    {
+      "page": "/courses",
+      "status": 200,
+      "bytes": 22076,
+      "ctaTags": 3,
+      "hrefs": [
+        "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=system&returnTo=%2Fhome",
+        "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=system&returnTo=%2Fhome",
+        "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=system&returnTo=%2Fhome"
+      ],
+      "hasStartFallback": true,
+      "checkedAt": "2026-10-03T04:17:12.706Z"
+    },
+    {
+      "page": "/pricing",
+      "status": 200,
+      "bytes": 16833,
+      "ctaTags": 3,
+      "hrefs": [
+        "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=system&returnTo=%2Fhome",
+        "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=system&returnTo=%2Fhome",
+        "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=system&returnTo=%2Fhome"
+      ],
+      "hasStartFallback": true,
+      "checkedAt": "2026-10-03T04:17:12.750Z"
+    },
+    {
+      "page": "/download",
+      "status": 200,
+      "bytes": 16578,
+      "ctaTags": 2,
+      "hrefs": [
+        "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=system&returnTo=%2Fhome",
+        "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=system&returnTo=%2Fhome"
+      ],
+      "hasStartFallback": true,
+      "checkedAt": "2026-10-03T04:17:12.783Z"
+    },
+    {
+      "page": "/announcements",
+      "status": 200,
+      "bytes": 16655,
+      "ctaTags": 2,
+      "hrefs": [
+        "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=system&returnTo=%2Fhome",
+        "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=system&returnTo=%2Fhome"
+      ],
+      "hasStartFallback": true,
+      "checkedAt": "2026-10-03T04:17:12.801Z"
+    },
+    {
+      "page": "/about",
+      "status": 200,
+      "bytes": 16163,
+      "ctaTags": 3,
+      "hrefs": [
+        "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=system&returnTo=%2Fhome",
+        "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=system&returnTo=%2Fhome",
+        "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=system&returnTo=%2Fhome"
+      ],
+      "hasStartFallback": true,
+      "checkedAt": "2026-10-03T04:17:12.819Z"
+    },
+    {
+      "page": "/compliance",
+      "status": 200,
+      "bytes": 18123,
+      "ctaTags": 2,
+      "hrefs": [
+        "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=system&returnTo=%2Fhome",
+        "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=system&returnTo=%2Fhome"
+      ],
+      "hasStartFallback": true,
+      "checkedAt": "2026-10-03T04:17:12.838Z"
+    },
+    {
+      "page": "/status",
+      "status": 200,
+      "bytes": 15776,
+      "ctaTags": 2,
+      "hrefs": [
+        "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=system&returnTo=%2Fhome",
+        "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=system&returnTo=%2Fhome"
+      ],
+      "hasStartFallback": true,
+      "checkedAt": "2026-10-03T04:17:12.867Z"
+    },
+    {
+      "page": "/privacy",
+      "status": 200,
+      "bytes": 16817,
+      "ctaTags": 2,
+      "hrefs": [
+        "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=system&returnTo=%2Fhome",
+        "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=system&returnTo=%2Fhome"
+      ],
+      "hasStartFallback": true,
+      "checkedAt": "2026-10-03T04:17:12.881Z"
+    },
+    {
+      "page": "/terms",
+      "status": 200,
+      "bytes": 16807,
+      "ctaTags": 2,
+      "hrefs": [
+        "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=system&returnTo=%2Fhome",
+        "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=system&returnTo=%2Fhome"
+      ],
+      "hasStartFallback": true,
+      "checkedAt": "2026-10-03T04:17:12.892Z"
+    },
+    {
+      "page": "/minors",
+      "status": 200,
+      "bytes": 16811,
+      "ctaTags": 2,
+      "hrefs": [
+        "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=system&returnTo=%2Fhome",
+        "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=system&returnTo=%2Fhome"
+      ],
+      "hasStartFallback": true,
+      "checkedAt": "2026-10-03T04:17:12.905Z"
+    }
+  ]
+}

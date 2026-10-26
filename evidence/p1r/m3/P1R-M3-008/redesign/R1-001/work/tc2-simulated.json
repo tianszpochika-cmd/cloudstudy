@@ -1,0 +1,34 @@
+{
+  "checkedAt": "2026-10-03T09:12:25.020Z",
+  "scope": "simulated upstream 503 -> page failure -> simulated recovery -> retry reload (MOCKED fetch, not real Gateway)",
+  "fail": {
+    "state": "error",
+    "courses": 0,
+    "facetsCourses": "error",
+    "cache": "no-store"
+  },
+  "recovery": {
+    "state": "recovery",
+    "stale": true,
+    "errorCode": "PUBLIC_PROJECTION_STALE",
+    "courses": 1,
+    "generatedAt": "2026-10-03T00:00:00Z",
+    "facet": {
+      "state": "recovery",
+      "updatedAt": "2026-10-03T00:00:00Z",
+      "errorCode": "PUBLIC_PROJECTION_STALE",
+      "stale": true
+    },
+    "headers": {
+      "cache-control": "no-store",
+      "vary": "Accept-Language",
+      "x-public-projection-commerce": "gateway",
+      "x-public-projection-source": "gateway"
+    }
+  },
+  "retry": {
+    "state": "recovery",
+    "courses": 1,
+    "generatedAt": "2026-10-03T00:00:00Z"
+  }
+}

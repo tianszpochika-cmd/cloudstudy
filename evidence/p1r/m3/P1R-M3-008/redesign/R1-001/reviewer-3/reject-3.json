@@ -1,0 +1,205 @@
+{
+  "taskId": "R1-001",
+  "action": "reject",
+  "expectedRevision": 10,
+  "specSha256": "57726738acaac54eac1bedf2b69b97205d4e1933019781747f1b907294fadd52",
+  "actor": "root-reviewer",
+  "role": "reviewer",
+  "reviewerThreadId": "01a0cb93-8791-7ee2-b453-8e8752b2553f",
+  "note": "delivery-3恢复数据修复通过，35项及构建0；补验两端注册/返回/双击。连续故障复活旧价格与证据采集口径需整改，真实上游仍缺，不放行002。",
+  "evidence": [
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-3/build-result.json",
+      "sha256": "54159d2711c120e0e66dee0c58ca5980ca0d8f4be4fe7ddbb2323ea6b20fa8d5"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-3/build.log",
+      "sha256": "abf3eed79701fadc2feb85417e947863c4caf7cdb97551959c089e5bff4f6c09"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-3/cache-and-http.json",
+      "sha256": "9093d498c09cb58d26d578b39d83a02578f34d4ca8faf8ca94e11c3dfe136538"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-3/cache-and-http.mjs",
+      "sha256": "2ea8d6c552c88f4189a60db1b6ef86b742b2e8d695882d732dd8389cad15f804"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-3/cache-probe.log",
+      "sha256": "cc58c4944dcbd2a61ad35e55dc04f177ae01c09fc7d0256698ea2340305edb0d"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-3/cache-probe.mjs",
+      "sha256": "c9542b906ceb8621f3ba31b3757b95e1d791fcb06ac7f04cf2ae44786235021c"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-3/desktop-rapid.json",
+      "sha256": "02fb3dc201c68acf13f80456d3af92d22a4f0eec373d8538472934365080cd36"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-3/findings.json",
+      "sha256": "ae884ffff1c270ecdd3798d59df5e0e1f1ec8c9d25b2adae7aa6a59a4327c281"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-3/hashes.json",
+      "sha256": "02a6216d65cbf2607e275a5080f97e05291f978362e64d4c4f19972cb175fbdb"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-3/historical-review-integrity.json",
+      "sha256": "98c60e8590c506704da499101dce72795c83cda59af06f4994547192e6f29bf3"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-3/negative-entry-browser.json",
+      "sha256": "20cd756122671e93453a74b78f377cb74258bfc9d509ba514fb70097075e37d1"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-3/negative-entry-recheck.dom.txt",
+      "sha256": "24d185c32ac7d7c11406ccba0b4c3f1cbfc2574a35b2bffb42d1ead1a9bf3135"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-3/negative-entry-recheck.json",
+      "sha256": "864570c896b2268a2822feb6c4ae62b090a9481122111cd3828053c6f9f5e442"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-3/nuxt-input-shim.d.ts",
+      "sha256": "995163db7ec8ebd87cca577cde2f32fa173155555a5f72d7305c0884ea850732"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-3/record-review.mjs",
+      "sha256": "9a0328a75d5cf4733be3fc08ca7c236e731f3810162d1b89ed253b5c413cbc0e"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-3/register-desktop-rapid.dom.txt",
+      "sha256": "24d185c32ac7d7c11406ccba0b4c3f1cbfc2574a35b2bffb42d1ead1a9bf3135"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-3/register-desktop-rapid.png",
+      "sha256": "3761278809ff57f990b64d4c5640525a9098349e2d10dfc1ac5e2c8be987a705"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-3/register-desktop-ready.dom.txt",
+      "sha256": "24d185c32ac7d7c11406ccba0b4c3f1cbfc2574a35b2bffb42d1ead1a9bf3135"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-3/register-desktop-ready.png",
+      "sha256": "012b8ef64d45c688b82b9b41bd5a69bd67d5dd423252856eb50270d15688754c"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-3/register-desktop.dom.txt",
+      "sha256": "3f329a9b8419e5e3d43aa49c0d6f1540b97b769afb3572b9bb3feb52fce3f522"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-3/register-desktop.png",
+      "sha256": "11b88a97d2a5a1d042dc9b6ec71648df94596fc2c8e6996ee63f732a105f5556"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-3/register-mobile-rapid.dom.txt",
+      "sha256": "5fef79518f4256e2bcac9beaf039ce219079313d9abf0e719f606f886b4fff41"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-3/register-mobile.dom.txt",
+      "sha256": "5fef79518f4256e2bcac9beaf039ce219079313d9abf0e719f606f886b4fff41"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-3/register-mobile.png",
+      "sha256": "b46bccf5859f5cfe23a326795cd3f8dd6e51ce322cd2163d9db12572221ced46"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-3/register-navigation.json",
+      "sha256": "d5cc928886fc57a06cc6a0e0bab1fe5b5f18ff39343d76d71e7727e6cee75985"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-3/return-desktop.dom.txt",
+      "sha256": "ce0487cb5304a2b5cf32f1c9a530321c7e2746d267315f8c5b4c45e5ad3cd2f1"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-3/return-mobile.dom.txt",
+      "sha256": "00670f0d72e832bfe8322d4798a19946585ba93bb7e89dd458fd8006d31a7ef6"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-3/review.md",
+      "sha256": "8694b3a51c4b6c4a83bc7c612f048625f0d5400e5eb14b240b16985e1ffbe554"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-3/rollback-check.mjs",
+      "sha256": "c4b524c57f7cf6f439cc8e1bb1a7ae135f61466a782140ed49cfc4a624b2c818"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-3/rollback-first-result.json",
+      "sha256": "dadc71f762423d79040a20f72e0d5af31633f11489887f828589675555aeb005"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-3/rollback-old-bff.log",
+      "sha256": "c1bb0a48d3cede038192182b1f8f0321db6bc85f29dbdb92e8517e96d71fb48e"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-3/rollback-result.json",
+      "sha256": "f70805846afce4d4184590232b575641c9517e4c65a62dde145b4d6dc2fcd43d"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-3/rollback-second-result.json",
+      "sha256": "50bfea8d827b0dc21f46cdad0f29a6d9c610e77f92bd1203da0440b4d66276a1"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-3/rollback-third-result.json",
+      "sha256": "bf203a0aae71379d9f2f12612ccbbc4a646fc081ad1bc028161a60cdc70544b6"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-3/runtime-inputs.json",
+      "sha256": "edc9bbad1629c0343d15979c1fe47fe36643155946232085a1abc7a7d898e4c7"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-3/scope.patch",
+      "sha256": "bfde84f408e50957383e6bb432efe15a1525e7498fefe3f086bb99654591da85"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-3/semantic-probe.log",
+      "sha256": "b6ab1843b31254841e4804f9b50e7792a6f9d227f31c829653df0b90bace35df"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-3/semantic-probe.mjs",
+      "sha256": "90bc4d0e5819a5ec65eb90a9b1c0abd25a42799b4644f5dcecdd69fc1ee579a4"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-3/unit-rerun.log",
+      "sha256": "1825321c5c9e7dc3298f8a2f41053ffe8bb8ac3e7eeb66c34c0648ade9e818a1"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-3/verification-run.mjs",
+      "sha256": "7c716b3b8870309e57482b1d13bd8c40a89baeafe54c09096353592b118f4354"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-3/verification.json",
+      "sha256": "5742c5f97e68050fef86bd93d38d5efaba589c02017d4b5a384133128ebea801"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-3/verify.mjs",
+      "sha256": "f80e857aa51212338487ef5da460277340a867f37b31f781a1021a1a641e91df"
+    }
+  ],
+  "findings": [
+    {
+      "id": "F10",
+      "priority": "P2",
+      "path": "apps/official-site/server/api/public-projection.get.ts",
+      "line": 228,
+      "problem": "recovery完全跳过缓存作废，保留旧content+commerce。正常响应缓存旧SKU后，recovery+commerce权威空/变更/失败当前已清空或替换价格，但紧接网络故障又从memory-cache复活旧SKU。主审三个顺序组合均复现。",
+      "fix": "继续保留F07的合法恢复内容，但按facet更新/作废旧commerce事实，或采用已有模型内保守缓存失效；权威空、方案变化或失败后的网络故障不得复活被清空/替换的旧套餐。不得把recovery当新成功刷新60秒TTL。补ready→recovery+commerce(empty/changed/failed)→outage，以及过期和并发撤回的连续测试。",
+      "retestCaseIds": [
+        "R1-001-TC02"
+      ]
+    },
+    {
+      "id": "F11",
+      "priority": "P2",
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/work/tc3-sweep.cjs",
+      "line": 22,
+      "problem": "扫描脚本const status=200不是实际响应状态，入口/溢出/错误等仅采集，没有assert，异常值仍可exit0；因此其22页200/逐项适用断言已覆盖的表述超出证据。summary最终32与实际35不同，HEAD回退旧BFF18与基线12不同，也缺原始回退日志。",
+      "fix": "新建版本化采集脚本，读取真实响应status、等待明确hydration/可见条件，对所声称通过的状态/所有CTA/布局/Console逐项断言，并用受控失败验证脚本会非零退出。新报告summary-4/commands-4纠正35项和HEAD12项，引用主审新证据或补真实原始日志及命令/起止时间，不覆盖已固定旧文件。浏览器套件逐项映射已跑/未跑，不以DONE当PASS。",
+      "retestCaseIds": [
+        "R1-001-TC01",
+        "R1-001-TC03"
+      ]
+    }
+  ]
+}

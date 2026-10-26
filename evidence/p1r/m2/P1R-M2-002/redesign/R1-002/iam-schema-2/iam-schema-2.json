@@ -1,0 +1,349 @@
+{
+  "checkedAt": "2026-10-05T07:23:02.929Z",
+  "mode": "apply",
+  "schema": "r1_002_iam_t2e",
+  "migrator": "r1_002_migrator_t2e",
+  "runner": "r1_002_runner_t2e",
+  "host": "127.0.0.1",
+  "port": "13306",
+  "migrations": [
+    {
+      "name": "V1__create_iam_service_schema.sql",
+      "version": 1,
+      "checksum": "7f6b53749a6546d1d0479b96b3e7c0d370928f2ede803fa7ce1e267c9723e828"
+    },
+    {
+      "name": "V3__seed_b30_policy_version.sql",
+      "version": 3,
+      "checksum": "a9ecb96233d934c46dc3a6bd617431f7876a226e896fc898bba36787bceb1858"
+    },
+    {
+      "name": "V4__preserve_iam_consent_history.sql",
+      "version": 4,
+      "checksum": "ffba958ccfe4aa3de3f7d58eb7548853056c95c86d8b65146a3d456915a00373"
+    },
+    {
+      "name": "V5__create_self_owned_jwt_auth_schema.sql",
+      "version": 5,
+      "checksum": "2c3b4f4b4c3bc72caeb3f10d03be106a0eb0d125ee398c0c5c71073554d000a4"
+    },
+    {
+      "name": "V6__create_password_reset_challenges.sql",
+      "version": 6,
+      "checksum": "ba57134e77313e2510546a928f2636f9cb3565bcc862847648d29c21800afbfc"
+    },
+    {
+      "name": "V7__create_iam_idempotency_record.sql",
+      "version": 7,
+      "checksum": "3bda77c8d0fcfeda5751e7d98a4a25ebffbd6ff444ff00ff1e88f3ea61f1c9e1"
+    },
+    {
+      "name": "V8__create_iam_rate_limit.sql",
+      "version": 8,
+      "checksum": "c598aada47852427839478ee6248c4438e849b10cf17fa4fdd78b42eb5cd6d0c"
+    },
+    {
+      "name": "V9__encrypt_idempotency_response_snapshots.sql",
+      "version": 9,
+      "checksum": "c968e0adbb25e30e731cde528dc425b8a8348dabb2f6056f5406a8a6b749e6f6"
+    },
+    {
+      "name": "V10__create_iam_policy_control_plane.sql",
+      "version": 10,
+      "checksum": "ea1cabefd5d49de243b319a57f421f3914db214e8da334b6ef6539746716351a"
+    },
+    {
+      "name": "V11__extend_iam_consent_facts.sql",
+      "version": 11,
+      "checksum": "af1bf4e1f99aa914d8afef3ca11858620952931ae7d0b46ea824a8924fbaf92e"
+    },
+    {
+      "name": "V12__normalize_iam_consent_withdrawal_facts.sql",
+      "version": 12,
+      "checksum": "fb9342323e0080bcd3deb55242387cb0723f8848f8c0cf696d11861be12f9c9d"
+    },
+    {
+      "name": "V13__key_and_version_idempotency_request_hashes.sql",
+      "version": 13,
+      "checksum": "6cfb4ca903dce6b942a9f0e86fdf317f4b2b0d215ba243d258170ca9c59c85e8"
+    },
+    {
+      "name": "V14__create_iam_consent_document_control.sql",
+      "version": 14,
+      "checksum": "bbe3deefb752defe92c85593cea32d12deaf2b286f1feeeccd4409b0a39a332d"
+    },
+    {
+      "name": "V15__create_account_deletion.sql",
+      "version": 15,
+      "checksum": "6f370ba65cf0fdf6504430358c083ae5ecbf441aeae0556dd425c102a4af47ec"
+    },
+    {
+      "name": "V16__grant_canonical_placement_permissions_to_learners.sql",
+      "version": 16,
+      "checksum": "5eb22a4f7a6d97cf9ff04b7828c2a923d301735e49842be7dd0f71a71d3cf2b9"
+    },
+    {
+      "name": "V17__grant_canonical_b12_learner_permissions.sql",
+      "version": 17,
+      "checksum": "5b524e31e175d5ee4ead9183a957b803b7d22c167721a2131a020411a412bc09"
+    },
+    {
+      "name": "V18__grant_canonical_notification_preference_permissions.sql",
+      "version": 18,
+      "checksum": "2e6c47673cd15179dba936af68bbf072559e709b1c33dc19d0cf123b63aad28e"
+    }
+  ],
+  "steps": [
+    {
+      "step": "migration-files",
+      "ok": true,
+      "detail": {
+        "count": 17,
+        "versions": "1,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18"
+      }
+    },
+    {
+      "step": "v13-present",
+      "ok": true,
+      "detail": {
+        "note": "one-way cutover; new empty schema has no old writer"
+      }
+    },
+    {
+      "step": "schema-absent",
+      "ok": true,
+      "detail": {
+        "schema": "r1_002_iam_t2e"
+      }
+    },
+    {
+      "step": "schema-created",
+      "ok": true,
+      "detail": {
+        "schema": "r1_002_iam_t2e"
+      }
+    },
+    {
+      "step": "identities-created",
+      "ok": true,
+      "detail": {
+        "migrator": "r1_002_migrator_t2e",
+        "runner": "r1_002_runner_t2e",
+        "runnerGrants": "SELECT,INSERT,UPDATE,DELETE on new schema only"
+      }
+    },
+    {
+      "step": "migrate-V1",
+      "ok": true,
+      "detail": {
+        "checksum": "7f6b53749a6546d1"
+      }
+    },
+    {
+      "step": "migrate-V3",
+      "ok": true,
+      "detail": {
+        "checksum": "a9ecb96233d934c4"
+      }
+    },
+    {
+      "step": "migrate-V4",
+      "ok": true,
+      "detail": {
+        "checksum": "ffba958ccfe4aa3d"
+      }
+    },
+    {
+      "step": "migrate-V5",
+      "ok": true,
+      "detail": {
+        "checksum": "2c3b4f4b4c3bc72c"
+      }
+    },
+    {
+      "step": "migrate-V6",
+      "ok": true,
+      "detail": {
+        "checksum": "ba57134e77313e25"
+      }
+    },
+    {
+      "step": "migrate-V7",
+      "ok": true,
+      "detail": {
+        "checksum": "3bda77c8d0fcfeda"
+      }
+    },
+    {
+      "step": "migrate-V8",
+      "ok": true,
+      "detail": {
+        "checksum": "c598aada47852427"
+      }
+    },
+    {
+      "step": "migrate-V9",
+      "ok": true,
+      "detail": {
+        "checksum": "c968e0adbb25e30e"
+      }
+    },
+    {
+      "step": "migrate-V10",
+      "ok": true,
+      "detail": {
+        "checksum": "ea1cabefd5d49de2"
+      }
+    },
+    {
+      "step": "migrate-V11",
+      "ok": true,
+      "detail": {
+        "checksum": "af1bf4e1f99aa914"
+      }
+    },
+    {
+      "step": "migrate-V12",
+      "ok": true,
+      "detail": {
+        "checksum": "fb9342323e0080bc"
+      }
+    },
+    {
+      "step": "migrate-V13",
+      "ok": true,
+      "detail": {
+        "checksum": "6cfb4ca903dce6b9"
+      }
+    },
+    {
+      "step": "migrate-V14",
+      "ok": true,
+      "detail": {
+        "checksum": "bbe3deefb752defe"
+      }
+    },
+    {
+      "step": "migrate-V15",
+      "ok": true,
+      "detail": {
+        "checksum": "6f370ba65cf0fdf6"
+      }
+    },
+    {
+      "step": "migrate-V16",
+      "ok": true,
+      "detail": {
+        "checksum": "5eb22a4f7a6d97cf"
+      }
+    },
+    {
+      "step": "migrate-V17",
+      "ok": true,
+      "detail": {
+        "checksum": "5b524e31e175d5ee"
+      }
+    },
+    {
+      "step": "migrate-V18",
+      "ok": true,
+      "detail": {
+        "checksum": "2e6c47673cd15179"
+      }
+    },
+    {
+      "step": "history-complete",
+      "ok": true,
+      "detail": {
+        "history": "1\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\n14\n15\n16\n17\n18"
+      }
+    },
+    {
+      "step": "baseline-zero-accounts",
+      "ok": true,
+      "detail": {
+        "counts": [
+          {
+            "table": "iam_principal",
+            "rows": 0
+          },
+          {
+            "table": "iam_account",
+            "rows": 0
+          },
+          {
+            "table": "iam_device",
+            "rows": 0
+          },
+          {
+            "table": "iam_session",
+            "rows": 0
+          },
+          {
+            "table": "iam_consent",
+            "rows": 0
+          }
+        ]
+      }
+    },
+    {
+      "step": "seed-recorded",
+      "ok": true,
+      "detail": {
+        "seedCounts": [
+          {
+            "table": "iam_role",
+            "rows": 1
+          },
+          {
+            "table": "iam_permission",
+            "rows": 30
+          },
+          {
+            "table": "iam_consent_document_version",
+            "rows": 0
+          }
+        ]
+      }
+    }
+  ],
+  "failedChecks": [],
+  "baselineCounts": [
+    {
+      "table": "iam_principal",
+      "rows": 0
+    },
+    {
+      "table": "iam_account",
+      "rows": 0
+    },
+    {
+      "table": "iam_device",
+      "rows": 0
+    },
+    {
+      "table": "iam_session",
+      "rows": 0
+    },
+    {
+      "table": "iam_consent",
+      "rows": 0
+    }
+  ],
+  "seedCounts": [
+    {
+      "table": "iam_role",
+      "rows": 1
+    },
+    {
+      "table": "iam_permission",
+      "rows": 30
+    },
+    {
+      "table": "iam_consent_document_version",
+      "rows": 0
+    }
+  ],
+  "credentialNote": "migrator/runner 密码仅本次子进程内存，不落盘；runner 密码需主审签收后由启动脚本单独注入",
+  "finishedAt": "2026-10-05T07:23:09.683Z"
+}

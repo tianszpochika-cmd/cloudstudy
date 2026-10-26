@@ -1,0 +1,70 @@
+{
+  "checkedAt": "2026-10-03T09:32:47.850Z",
+  "scope": "actual official CTA navigation with hostile returnTo input, no registration submission",
+  "cases": [
+    {
+      "viewport": "375x812",
+      "input": "https://evil.invalid",
+      "href": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=light&returnTo=%2Fpages%2Fhome%2Fhome",
+      "landing": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=light&returnTo=%2Fpages%2Fhome%2Fhome",
+      "registerPageVisible": true,
+      "back": "http://127.0.0.1:18182/courses?returnTo=https://evil.invalid"
+    },
+    {
+      "viewport": "375x812",
+      "input": "//evil.invalid",
+      "href": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=light&returnTo=%2Fpages%2Fhome%2Fhome",
+      "landing": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=light&returnTo=%2Fpages%2Fhome%2Fhome",
+      "registerPageVisible": true,
+      "back": "http://127.0.0.1:18182/courses?returnTo=//evil.invalid"
+    },
+    {
+      "viewport": "375x812",
+      "input": "%2F%2Fevil.invalid",
+      "href": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=light&returnTo=%2Fpages%2Fhome%2Fhome",
+      "landing": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=light&returnTo=%2Fpages%2Fhome%2Fhome",
+      "registerPageVisible": true,
+      "back": "http://127.0.0.1:18182/courses?returnTo=%252F%252Fevil.invalid"
+    },
+    {
+      "viewport": "375x812",
+      "input": "javascript:alert(1)",
+      "href": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=light&returnTo=%2Fpages%2Fhome%2Fhome",
+      "landing": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=light&returnTo=%2Fpages%2Fhome%2Fhome",
+      "registerPageVisible": true,
+      "back": "http://127.0.0.1:18182/courses?returnTo=javascript:alert(1)"
+    },
+    {
+      "viewport": "1440x900",
+      "input": "https://evil.invalid",
+      "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+      "landing": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+      "registerPageVisible": true,
+      "back": "http://127.0.0.1:18182/courses?returnTo=https://evil.invalid"
+    },
+    {
+      "viewport": "1440x900",
+      "input": "//evil.invalid",
+      "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+      "landing": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+      "registerPageVisible": false,
+      "back": "http://127.0.0.1:18182/courses?returnTo=//evil.invalid"
+    },
+    {
+      "viewport": "1440x900",
+      "input": "%2F%2Fevil.invalid",
+      "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+      "landing": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+      "registerPageVisible": true,
+      "back": "http://127.0.0.1:18182/courses?returnTo=%252F%252Fevil.invalid"
+    },
+    {
+      "viewport": "1440x900",
+      "input": "javascript:alert(1)",
+      "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+      "landing": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+      "registerPageVisible": true,
+      "back": "http://127.0.0.1:18182/courses?returnTo=javascript:alert(1)"
+    }
+  ]
+}

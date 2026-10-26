@@ -1,0 +1,254 @@
+{
+  "reviewedAt": "2026-10-02T18:27:22.627Z",
+  "reviewerThreadId": "01a0cb93-8791-7ee2-b453-8e8752b2553f",
+  "branch": "dev-redesign",
+  "sourceCommit": "3d11be3337accd32afbdbe13a218bca38c786043",
+  "dirtyDiffSha256": "83ef67844c369472898cfb1fdeb0f22e3f6b971ac7650f95b90903214bf72de2",
+  "contracts": [
+    {
+      "fragment": "packages/contracts/fragments/b9/b9-content.openapi.json",
+      "method": "GET",
+      "path": "/api/v1/public/site/projection",
+      "operationId": "getB9OfficialSiteProjection",
+      "security": [],
+      "sourceMatchesCanonical": true,
+      "generatedTypePresent": true,
+      "runtimeVerified": false
+    },
+    {
+      "fragment": "packages/contracts/fragments/b9/b9-content.openapi.json",
+      "method": "GET",
+      "path": "/api/v1/public/content/catalog",
+      "operationId": "listB9PublicContentCatalog",
+      "security": [],
+      "sourceMatchesCanonical": true,
+      "generatedTypePresent": true,
+      "runtimeVerified": false
+    },
+    {
+      "fragment": "packages/contracts/fragments/b13/b13-commerce-admin-analytics.openapi.json",
+      "method": "GET",
+      "path": "/api/v1/public/commerce/catalog",
+      "operationId": "getB13PublicCommerceCatalog",
+      "security": [],
+      "sourceMatchesCanonical": true,
+      "generatedTypePresent": true,
+      "runtimeVerified": false
+    }
+  ],
+  "sourceArtifacts": [
+    {
+      "path": "docs/06-design/v2-980plus/redesign/task-specs/R1-001-041.json",
+      "sha256": "797240e525519a643349a24bc3c793eb730e42efdd7efb98fc8c5bde32f16306"
+    },
+    {
+      "path": "AGENTS.md",
+      "sha256": "1029a788919c5151a6b7193f29afbdaedbca67d30bbc2ced59bbe74d7c619e53"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/redesign/dev-plan-R1.md",
+      "sha256": "609162eccbdee5f5a072ffa7e77ab3c7d163442a22cc592d34b9cd314f81a27c"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/redesign/business-chains.md",
+      "sha256": "f37907af051ab0b644654153f8b365a228451151fbb27527c53e43b8b714c637"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+      "sha256": "37548c077648a633f821b83c73bfd4f66b93d710dc5bd5ccf57d32a24b596bdf"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/08-980plus-功能点设计登记册.md",
+      "sha256": "c96f3587c7e825c4d961cc56a44a15e5f198c59f8bdaa9cea11ba105956b526c"
+    },
+    {
+      "path": "packages/contracts/fragments/b9/b9-content.openapi.json",
+      "sha256": "0eec642468783d3db7070a0b8ab2e74a291d11339b17c178afed7f0cff2d111c"
+    },
+    {
+      "path": "config/local-ports.json",
+      "sha256": "0a6b43d35379fed2e679961b34a0ad0e9ec1888dfb7d1a2c76eed20706e5ca95"
+    },
+    {
+      "path": "config/toolchain-baseline.json",
+      "sha256": "a9825edb7c58c4178e8423ba6f839eed54fb6fb135f86a026b43038d79eef867"
+    },
+    {
+      "path": "apps/official-site/nuxt.config.ts",
+      "sha256": "b334ce1a11abe2002d30ff6b90c96307e97010899d20035e261a134591f32bb1"
+    },
+    {
+      "path": "apps/official-site/plugins/foundation.ts",
+      "sha256": "09b86a851ab192637cccfd8f96073e029c6363711c7436694d13eca2b39a3e45"
+    },
+    {
+      "path": "apps/official-site/components/PublicStatus.vue",
+      "sha256": "1fd360e513110e3b8dfb9da22e53d640b0aff9a5c81aa0edac383b9bdb6281a9"
+    },
+    {
+      "path": "packages/contracts/openapi/v1/openapi.json",
+      "sha256": "0f241f060f6d45856c8df5de9ffaef3e2f762fc669e417ac6322cf93cb7af9d7"
+    },
+    {
+      "path": "packages/contracts/generated/openapi.ts",
+      "sha256": "92a7ad369c64cb8d0033c6186d3e00eba9620e83ca0e1b9c32ce02807b078c72"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/redesign/input-gates.md",
+      "sha256": "5778937db94ef5edb86c0d2fc9246602290f8547c235c50f16629feee4f458d1"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/redesign/execution-handbook.md",
+      "sha256": "5dd9c5b894cd4bfa08754c61b95b83308a7509cd722b6ede5d731e0d64214c88"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+      "sha256": "d2a11d8e542373441683368b6af180c7bbbf2cf654399df574eb78d664474c7c"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/phase1-business-operation/02-端到端业务旅程台账.md",
+      "sha256": "28fee299ff0eb8eb17b5eccc83555395964e978481979931f29fe4b6dc32ab38"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+      "sha256": "49dec04b396cdb732c61c210b6d4473dc37dedef21c8620bf4b59f1c39356625"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/phase1-business-operation/08-验收与追溯规范.md",
+      "sha256": "68094074693b8143669332e6412f93061f58b790cb06601caebcfdec093bf403"
+    },
+    {
+      "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+      "sha256": "61e6826d6994f94cd6829da2873500b942bdad2b493e10ea7d754905377750dc"
+    },
+    {
+      "path": "packages/contracts/fragments/b13/b13-commerce-admin-analytics.openapi.json",
+      "sha256": "c9f865a14e5dc36084e283f33fe2d84e465e1f54b5854859cd1e173a6c94bf21"
+    },
+    {
+      "path": "apps/official-site/utils/public-projection.ts",
+      "sha256": "43dbe878288dccda4a99334422bed07d693d02167a34eee94ce5ffd34aa4c3c0"
+    },
+    {
+      "path": "apps/official-site/utils/public-links.mjs",
+      "sha256": "94abc4fd69d51bf6964fcfa93f6e8a6a044141a54359603205b930de5ff9e3e6"
+    },
+    {
+      "path": "apps/official-site/server/api/public-projection.get.ts",
+      "sha256": "1d2ef1ca85737bc589e2edaf2834afc61aa83b214ebb1cf4637eb7b6935fff7b"
+    },
+    {
+      "path": "apps/official-site/pages/index.vue",
+      "sha256": "cb52d704bc53f6810483b22580815f43eaee91360ce976ee0f3d07b3b98baef5"
+    },
+    {
+      "path": "apps/official-site/pages/courses/index.vue",
+      "sha256": "d2bb4d7622573c08e553b1adea4431565ff661a3fb42748e072f0619339a5742"
+    },
+    {
+      "path": "apps/official-site/pages/pricing.vue",
+      "sha256": "1f73880a488b95ac560579c2cf40bb5c08d09d24422b649a9c6706ffbbb8afa5"
+    },
+    {
+      "path": "apps/official-site/pages/download.vue",
+      "sha256": "1f73880a488b95ac560579c2cf40bb5c08d09d24422b649a9c6706ffbbb8afa5"
+    },
+    {
+      "path": "apps/official-site/pages/announcements.vue",
+      "sha256": "9d675a1796994af1e87959894de3203821b013f0fb11bd84159a38512572781c"
+    },
+    {
+      "path": "apps/official-site/pages/about.vue",
+      "sha256": "d70cac5f7c6f4c9dacfc84cc94d90cd51792cdf63222025322c9f73151c6f5e1"
+    },
+    {
+      "path": "apps/official-site/pages/compliance.vue",
+      "sha256": "07a2425381a9c04ad40aa51c815c5fb7e2fca938cfb2a3922ac2e7d0a3604561"
+    },
+    {
+      "path": "apps/official-site/pages/status.vue",
+      "sha256": "f85952587dc38b4799dd3aaea76c971fb6635ca43b1e508c5de8d519b1add355"
+    },
+    {
+      "path": "apps/official-site/pages/privacy.vue",
+      "sha256": "72562ecc8f4a38d00d5af7eccc736d715ba48f96dd3d8ac6f07d1b05ba61cf9f"
+    },
+    {
+      "path": "apps/official-site/pages/terms.vue",
+      "sha256": "5e6b4c8c59d3cae277d6bd63ed6255d4366eba4358b7a3b182313cdbab70f44b"
+    },
+    {
+      "path": "apps/official-site/pages/minors.vue",
+      "sha256": "d17a1f687e4502122bfaa6fa92b1ebfa5de1759343918a0a75624ff227b528f2"
+    },
+    {
+      "path": "apps/official-site/tests/public-projection-bff.test.mjs",
+      "sha256": "dd2802e7a8bfb8edb76537bc8efd077c605e1562214c0d00b883566ea23b3675"
+    },
+    {
+      "path": "apps/official-site/components/SiteStartButton.vue",
+      "sha256": "e966175babbfa7c1f3cda300f81f69a07df4a827a31c4b2d0c8d89c363936a5f"
+    },
+    {
+      "path": "apps/official-site/composables/useOfficialSiteLinks.ts",
+      "sha256": "efa0830ae0c5b3150e441def1e45ed4b3f5c2d873a3b739efbabcd4e253b3cc2"
+    },
+    {
+      "path": "packages/i18n/src/official-site.ts",
+      "sha256": "5889d1a4a1e36820a333435d8ea78170606926751e0795f7d3a93a0a6c8c906a"
+    },
+    {
+      "path": "apps/official-site/utils/site-content.mjs",
+      "sha256": "33553a4cb0f3e8c49c1c19821056f3cfa927052f2d3700fa83f08e08b6b2c7ff"
+    },
+    {
+      "path": "apps/official-site/tests/b13-official-site.test.mjs",
+      "sha256": "cb4639aea81aee747e148572a931718e021c96a76e7df2a837be9f381cc315ee"
+    },
+    {
+      "path": "apps/official-site/tests/b14-fe-005.test.mjs",
+      "sha256": "19eedcbe12d8f58fa7f79aa5594f176b7d3ae45b913b42b57c4d267a09ca14b3"
+    },
+    {
+      "path": "apps/official-site/tests/website-entry.test.mjs",
+      "sha256": "c48b4d7ce788352a67e0ca8130d648801225fe8f0951bc24c9874221da0160a0"
+    },
+    {
+      "path": "apps/official-site/tests/browser/website-runtime.cjs",
+      "sha256": "29e55520e88bde65e6c31262de582c0ff78858b298a5606ebed94007d383e915"
+    }
+  ],
+  "supplementalSources": [
+    {
+      "path": "apps/official-site/utils/v2-foundation.ts",
+      "sha256": "e167bc404c029bcf036de0f56c185446dfb97b215fd078bf9e95197e583ccc5b"
+    },
+    {
+      "path": "services/content-service/src/main/java/com/englishflow/content/security/ContentSecurityConfiguration.java",
+      "sha256": "92c95fd68c6a51518c55206c0f20628f632ec5f2b1aaa3bae05e78ce02a5b711"
+    },
+    {
+      "path": "services/content-service/src/main/java/com/englishflow/content/web/ContentHttpController.java",
+      "sha256": "4f45bbf8e006e4ac79f539d357321feb10faf68356ab9e9a7f343ce441fdc4b6"
+    },
+    {
+      "path": "services/api-gateway/src/main/java/com/englishflow/gateway/policy/GatewayRouteExecutionPolicy.java",
+      "sha256": "8521ef4dff41cdc783c1b354f48f436a719c8adfb7f27fa7ead24cfed718c9a5"
+    },
+    {
+      "path": "apps/official-site/server/api/public-projection.get.ts",
+      "sha256": "1d2ef1ca85737bc589e2edaf2834afc61aa83b214ebb1cf4637eb7b6935fff7b"
+    }
+  ],
+  "scope": "read-only public frontend/BFF implementation preparation; source review plus current static/unit/VM preflight",
+  "noBusinessImplementationByReviewer": true,
+  "noDatabaseWrites": true,
+  "noServiceRestart": true,
+  "productCasesExecuted": [],
+  "currentRuntimeUpstreamVerified": false,
+  "pendingDelivery": [
+    "R1-001-TC01",
+    "R1-001-TC02",
+    "R1-001-TC03"
+  ]
+}

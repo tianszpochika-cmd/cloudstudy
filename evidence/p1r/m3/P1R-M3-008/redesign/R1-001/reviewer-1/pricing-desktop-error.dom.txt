@@ -1,0 +1,76 @@
+- link "跳到主要内容":
+  - /url: "#main-content"
+- banner:
+  - link "语学星首页":
+    - /url: /
+    - text: 语学星
+  - navigation "主导航":
+    - link "学习内容":
+      - /url: /courses
+    - link "学习世界":
+      - /url: /world
+    - link "怎么学":
+      - /url: /method
+    - link "常见问题":
+      - /url: /help
+  - button "切换为深色模式":
+  - link "查看开放情况":
+    - /url: http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome
+    - text: 查看开放情况
+- main:
+  - navigation "当前位置":
+    - link "首页":
+      - /url: /
+    - generic: 学习内容
+  - generic: 学习内容
+  - heading "价格方案" [level=1]
+  - paragraph: 公开价格以服务端发布为准；当前没有可购买的付费套餐。
+  - alert:
+    - heading "公开内容暂时无法加载" [level=2]
+    - paragraph: 学习方式介绍仍可浏览，也可以稍后再试。
+    - button "重新加载":
+      - text: 重新加载
+  - paragraph:
+    - text: 不必先选套餐。
+    - link "查看开放情况":
+      - /url: http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome
+      - text: 查看开放情况
+- contentinfo:
+  - link "语学星首页":
+    - /url: /
+    - text: 语学星
+  - paragraph:
+    - text: 让英语，回到你的日常。
+    - text: 一点一点，学得更从容。
+  - text: LEARN A LITTLE. EVERY DAY.
+  - heading "学习方式" [level=3]
+  - link "学习内容":
+    - /url: /courses
+  - link "怎么学":
+    - /url: /method
+  - link "学习世界":
+    - /url: /world
+  - link "查看开放情况":
+    - /url: /start
+  - heading "了解更多" [level=3]
+  - link "常见问题":
+    - /url: /help
+  - link "关于语学星":
+    - /url: /about
+  - link "服务公告":
+    - /url: /announcements
+  - link "服务状态":
+    - /url: /status
+  - heading "公开信息" [level=3]
+  - link "隐私与数据":
+    - /url: /privacy
+  - link "使用说明":
+    - /url: /terms
+  - link "成人使用范围":
+    - /url: /minors
+  - link "公开信息":
+    - /url: /compliance
+  - button "显示与语言":
+    - text: 显示与语言
+  - generic: © 2026 语学星
+  - generic: 面向 18 岁以上成人与大学生 · 学习账号暂不可用

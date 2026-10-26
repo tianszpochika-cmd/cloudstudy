@@ -1,0 +1,116 @@
+{
+  "taskId": "R1-001",
+  "action": "block",
+  "expectedRevision": 19,
+  "specSha256": "57726738acaac54eac1bedf2b69b97205d4e1933019781747f1b907294fadd52",
+  "actor": "root-reviewer",
+  "role": "reviewer",
+  "reviewerThreadId": "01a0cb93-8791-7ee2-b453-8e8752b2553f",
+  "note": "delivery-6严格URL已修，24+14一致、38/38；运行仍开启共享写后台任务，先BLOCKED并提交解阻准备包，不放行002。",
+  "condition": "安全只读运行Gate未满足：relay/consumer=true连接共享owner schema；合法空事实/真实503恢复尚缺，采集器设备可见性和报告证据仍需补。禁止按默认配置继续启后台。",
+  "unblockEvidence": "提交禁用写后台任务/迁移seed的本卡启动配置与可验证有效配置/owner输入，合法空事实和Gateway恢复策略；补共享采集断言与真实链/可见空态/Cookie口径，固定脚本日志截图；主审核对并登记READY后再运行终验。",
+  "findings": [
+    {
+      "id": "F11",
+      "priority": "P2",
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/work/r1-001-sweep-6.cjs",
+      "line": 61,
+      "problem": "按DOM自身target选期望，未校验可见性；真实collectFromPage三个错设备/全隐藏样本误通过。URL严格路径已修，不重报。",
+      "fix": "设备/可见性/HTTP共享事实断言，实际采集和测试替身同调；等待hydration及可操作设备入口，菜单先打开。",
+      "retestCaseIds": [
+        "R1-001-TC01",
+        "R1-001-TC03"
+      ]
+    },
+    {
+      "id": "F13",
+      "priority": "P2",
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/work/real-upstream-6.cjs",
+      "line": 61,
+      "problem": "Gateway/BFF存档ID时间匹配，但DOM仅比数量、emptyNote未入PASS，报告Cookie0无代码/字段，截图未固定。",
+      "fix": "可见空说明/状态与真实链DOM对应作为PASS；Cookie真实补采或改未执行；固定当轮脚本输入日志截图。",
+      "retestCaseIds": [
+        "R1-001-TC01",
+        "R1-001-TC03"
+      ]
+    },
+    {
+      "id": "F14",
+      "priority": "P1",
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/delivery-6.json",
+      "line": 1,
+      "problem": "继续以relay/consumer=true连接共享owner schema，安全只读运行输入未满足；未确认实际写库。",
+      "fix": "先提交禁用写后台任务/迁移seed的安全启动配置和预检，owner合法空输入与恢复步骤，主审签READY前不再启动后台。",
+      "retestCaseIds": [
+        "R1-001-TC01",
+        "R1-001-TC02"
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-6/precheck.mjs",
+      "sha256": "b56a45d6bc095b5a4e514fbc152df38cf7d7f046a97aba01cf90329093f72d47"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-6/precheck.json",
+      "sha256": "c7a8bc3cce444cca04b92a2b7da23a460e4f92338c1118dbf83166bdf6055747"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-6/unit.log",
+      "sha256": "806718acdb29a1bffda968b881564ef71c5378a12ddfc31962f22f66798c72b4"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-6/facet.json",
+      "sha256": "df163feb7afa33537e1101d2ce500cffdd6a38347983b01221b4d7ef73b73fd6"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-6/state-boundary.mjs",
+      "sha256": "5633ca23816fa71fbaf10cd62953f85fc022b88d6be01b993ac2ec2ee48c3435"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-6/facet-probe.mjs",
+      "sha256": "de4bd7bedcae5a17d82f4c30a16273502a16a26159a085de2aa605edcd12a1f4"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-6/collector-probe.mjs",
+      "sha256": "fb6fde0683096a024a32709eec9f2fc874165b917dd437c347f7ced3a8e63431"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-6/collector-probe.json",
+      "sha256": "5ff1574a7f70bdeaf26ca2e00f088aa4dc56fdbeb5520d96f8f947c5d93adafc"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-6/real-evidence-check.mjs",
+      "sha256": "aa71ad09af9247e42bc7853b40d321d328251df17db227d4de8755dbc8490d83"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-6/real-evidence-check.json",
+      "sha256": "205c87293067fe11a969170a81365748a43fbf6c01fb257274d11da2693b8de9"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-6/evidence-check.mjs",
+      "sha256": "d2a99eadea672b120655a4ee106d2fca1105d09669b7e6885515dc02106831fb"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-6/evidence-check.json",
+      "sha256": "03d55504f005fb8a9d7816248f9a080eb9694a84e67b463e6d6ce7029111f2de"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-6/negative/negative-6.json",
+      "sha256": "5ad4788b0db45b90327077befd643454aac3ae94d44e925b10cba9de2318aaba"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-6/findings.json",
+      "sha256": "befe0fe7ee8d02a40911779022e3c0dc0ea273af0029ecf8318f6e2af6adc414"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-6/review.md",
+      "sha256": "1d61eb131f4b1282458f0a0a37007b340e807aa83833aababf1a8338fe04df09"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-6/record.mjs",
+      "sha256": "b6c3f4586089af3f7927e25242d2deb58cd16349bec216f32d0a25c70a18327a"
+    }
+  ]
+}

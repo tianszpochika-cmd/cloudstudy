@@ -1,0 +1,11 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import {spawnSync} from 'node:child_process';
+import {fileURLToPath} from 'node:url';
+const dir=path.dirname(fileURLToPath(import.meta.url));
+const source=fs.readFileSync(path.join(dir,'../reviewer-3/cache-probe.mjs'),'utf8').replace('pricingFacet:b.facets.pricing.state,','pricingFacet:b.facets.pricing.state,pricingError:b.facets.pricing.errorCode,commerceState:b.commerceState,commerceError:b.commerceErrorCode,');
+const target=path.join(dir,'facet-probe.mjs');fs.writeFileSync(target,source);
+const run=spawnSync(process.execPath,[target],{cwd:process.cwd(),encoding:'utf8',windowsHide:true});
+fs.writeFileSync(path.join(dir,'facet.log'),(run.stdout||'')+(run.stderr||''));
+const result={checkedAt:new Date().toISOString(),exitCode:run.status,scope:'synthetic current BFF state transition, not actual upstream',data:run.status===0?JSON.parse(run.stdout):run.stderr};
+fs.writeFileSync(path.join(dir,'facet.json'),JSON.stringify(result,null,2));console.log(JSON.stringify(result));

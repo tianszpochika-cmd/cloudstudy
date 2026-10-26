@@ -1,0 +1,132 @@
+{
+  "checkedAt": "2026-10-04T05:08:56.156Z",
+  "origin": "http://127.0.0.1:18182",
+  "scope": "real Gateway18070+content/commerce upstream with version/ID/trace linkage",
+  "viewports": [
+    {
+      "check": "375x812 courses-success-linked",
+      "ok": true,
+      "detail": {
+        "cards": 7,
+        "upstreamCount": 7,
+        "emptyCopy": 0,
+        "titles": [
+          "Demo present simple",
+          "Demo listening minute",
+          "Demo morning routine"
+        ]
+      }
+    },
+    {
+      "check": "375x812 pricing-authoritative-empty",
+      "ok": true,
+      "detail": {
+        "priceCards": 0,
+        "purchaseLinks": 0,
+        "purchaseButtons": 0,
+        "emptyNote": true,
+        "bffPricingFacet": {
+          "state": "ready",
+          "updatedAt": "2026-09-27T17:05:36.703141Z",
+          "errorCode": null,
+          "stale": false
+        },
+        "bffPlans": 0
+      }
+    },
+    {
+      "check": "375x812 console-clean",
+      "ok": true,
+      "detail": {
+        "errors": []
+      }
+    },
+    {
+      "check": "1440x900 courses-success-linked",
+      "ok": true,
+      "detail": {
+        "cards": 7,
+        "upstreamCount": 7,
+        "emptyCopy": 0,
+        "titles": [
+          "Demo present simple",
+          "Demo listening minute",
+          "Demo morning routine"
+        ]
+      }
+    },
+    {
+      "check": "1440x900 pricing-authoritative-empty",
+      "ok": true,
+      "detail": {
+        "priceCards": 0,
+        "purchaseLinks": 0,
+        "purchaseButtons": 0,
+        "emptyNote": true,
+        "bffPricingFacet": {
+          "state": "ready",
+          "updatedAt": "2026-09-27T17:05:36.703141Z",
+          "errorCode": null,
+          "stale": false
+        },
+        "bffPlans": 0
+      }
+    },
+    {
+      "check": "1440x900 console-clean",
+      "ok": true,
+      "detail": {
+        "errors": []
+      }
+    }
+  ],
+  "failedChecks": [],
+  "upstream": {
+    "status": 200,
+    "requestIdPresent": true,
+    "traceIdPresent": true,
+    "courseCount": 7,
+    "courseIds": [
+      "DEMO-P5-GRAMMAR-A1",
+      "DEMO-P5-LISTEN-A2",
+      "DEMO-P5-READ-A2",
+      "DEMO-P5-SENT-B1",
+      "DEMO-P5-VOCAB-A1",
+      "DEMO-P5-VOCAB-A2",
+      "sg-live-muk2ku9a"
+    ],
+    "projectionVersion": 4,
+    "contentEpoch": 4,
+    "generatedAt": "2026-09-27T17:05:36.703141Z"
+  },
+  "commerce": {
+    "status": 200,
+    "plans": 0,
+    "catalogVersion": "commerce-public-v1",
+    "productionPaymentEnabled": false
+  },
+  "bff": {
+    "status": 200,
+    "state": "ready",
+    "source": "gateway",
+    "courses": [
+      "DEMO-P5-GRAMMAR-A1",
+      "DEMO-P5-LISTEN-A2",
+      "DEMO-P5-READ-A2",
+      "DEMO-P5-SENT-B1",
+      "DEMO-P5-VOCAB-A1",
+      "DEMO-P5-VOCAB-A2",
+      "sg-live-muk2ku9a"
+    ],
+    "generatedAt": "2026-09-27T17:05:36.703141Z",
+    "pricingFacet": {
+      "state": "ready",
+      "updatedAt": "2026-09-27T17:05:36.703141Z",
+      "errorCode": null,
+      "stale": false
+    },
+    "pricingPlans": 0,
+    "skus": 0
+  },
+  "finishedAt": "2026-10-04T05:09:00.390Z"
+}

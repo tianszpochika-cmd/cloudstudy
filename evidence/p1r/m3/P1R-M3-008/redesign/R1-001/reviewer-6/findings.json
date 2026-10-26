@@ -1,0 +1,40 @@
+{
+  "findings": [
+    {
+      "id": "F11",
+      "priority": "P2",
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/work/r1-001-sweep-6.cjs",
+      "line": 61,
+      "problem": "按DOM自身target选期望，未校验可见性；真实collectFromPage三个错设备/全隐藏样本误通过。URL严格路径已修，不重报。",
+      "fix": "设备/可见性/HTTP共享事实断言，实际采集和测试替身同调；等待hydration及可操作设备入口，菜单先打开。",
+      "retestCaseIds": [
+        "R1-001-TC01",
+        "R1-001-TC03"
+      ]
+    },
+    {
+      "id": "F13",
+      "priority": "P2",
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/work/real-upstream-6.cjs",
+      "line": 61,
+      "problem": "Gateway/BFF存档ID时间匹配，但DOM仅比数量、emptyNote未入PASS，报告Cookie0无代码/字段，截图未固定。",
+      "fix": "可见空说明/状态与真实链DOM对应作为PASS；Cookie真实补采或改未执行；固定当轮脚本输入日志截图。",
+      "retestCaseIds": [
+        "R1-001-TC01",
+        "R1-001-TC03"
+      ]
+    },
+    {
+      "id": "F14",
+      "priority": "P1",
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/delivery-6.json",
+      "line": 1,
+      "problem": "继续以relay/consumer=true连接共享owner schema，安全只读运行输入未满足；未确认实际写库。",
+      "fix": "先提交禁用写后台任务/迁移seed的安全启动配置和预检，owner合法空输入与恢复步骤，主审签READY前不再启动后台。",
+      "retestCaseIds": [
+        "R1-001-TC01",
+        "R1-001-TC02"
+      ]
+    }
+  ]
+}

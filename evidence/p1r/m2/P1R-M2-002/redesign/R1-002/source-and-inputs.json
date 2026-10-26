@@ -1,0 +1,150 @@
+{
+  "taskId": "R1-002",
+  "checkedAt": "2026-10-05T03:01:04.896Z",
+  "sourceCommit": "3d11be3337accd32afbdbe13a218bca38c786043",
+  "statusRevision": 27,
+  "r1_001": {
+    "state": "ACCEPTED",
+    "receipt": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11/approve-8.json",
+    "decision": "ACCEPTED"
+  },
+  "r1_002": {
+    "state": "PLANNED",
+    "specSha256": "768a23c3fb6662693f9ff1ce9ab93391aca3019252d95d9a51eb39967690f96d"
+  },
+  "scopeSnapshot": {
+    "sourceCommit": "3d11be3337accd32afbdbe13a218bca38c786043",
+    "dirtyDiffSha256": "d5dab72b98b5fcaae945a9d2cc3a4c35b2ee5ebd5d05daee76a260b898f09612",
+    "files": [
+      {
+        "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/PasswordAccountService.java",
+        "sha256": "919426fa9da4c48beea7f5d08d3a2e5a5694024c804ea66eb6032547720ca2b1"
+      },
+      {
+        "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/SessionService.java",
+        "sha256": "5f208d93f9cf7e51fdd8d3ac73195b0de8f448374c5e752fe14616819670deaa"
+      },
+      {
+        "path": "services/iam-service/src/main/java/com/englishflow/iam/web/IamProviderBoundaryController.java",
+        "sha256": "5df5c5de541a594251c04171f08810cd52f26140718b1bf6ae34e02a2c976a67"
+      },
+      {
+        "path": "services/iam-service/src/test/java/com/englishflow/iam/PasswordAccountConcurrencySecurityTest.java",
+        "sha256": "8ba00b654167626cb2d84f0125db8ec841c061616bd74de779eafd7079e13e4e"
+      }
+    ]
+  },
+  "files": [
+    {
+      "path": "packages/contracts/fragments/b8/b8-auth-iam.openapi.json",
+      "sha256": "976b64118bae75093a37d20db1c2b09b697f8da9b5f95a0b255c142a88f2df5f"
+    },
+    {
+      "path": "packages/contracts/openapi/v1/openapi.json",
+      "sha256": "0f241f060f6d45856c8df5de9ffaef3e2f762fc669e417ac6322cf93cb7af9d7"
+    },
+    {
+      "path": "packages/contracts/generated/openapi.ts",
+      "sha256": "92a7ad369c64cb8d0033c6186d3e00eba9620e83ca0e1b9c32ce02807b078c72"
+    },
+    {
+      "path": "services/iam-service/src/main/java/com/englishflow/iam/web/IamProviderBoundaryController.java",
+      "sha256": "5df5c5de541a594251c04171f08810cd52f26140718b1bf6ae34e02a2c976a67"
+    },
+    {
+      "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/PasswordAccountService.java",
+      "sha256": "919426fa9da4c48beea7f5d08d3a2e5a5694024c804ea66eb6032547720ca2b1"
+    },
+    {
+      "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/SessionService.java",
+      "sha256": "5f208d93f9cf7e51fdd8d3ac73195b0de8f448374c5e752fe14616819670deaa"
+    },
+    {
+      "path": "services/iam-service/src/test/java/com/englishflow/iam/PasswordAccountConcurrencySecurityTest.java",
+      "sha256": "8ba00b654167626cb2d84f0125db8ec841c061616bd74de779eafd7079e13e4e"
+    },
+    {
+      "path": "services/iam-service/src/main/resources/application.yaml",
+      "sha256": "278b68b596c6dfbbcc7d1b101d190c57320b334f7a58fe8f74b02b0397b56c74"
+    },
+    {
+      "path": "config/local-ports.json",
+      "sha256": "0a6b43d35379fed2e679961b34a0ad0e9ec1888dfb7d1a2c76eed20706e5ca95"
+    },
+    {
+      "path": "config/toolchain-baseline.json",
+      "sha256": "a9825edb7c58c4178e8423ba6f839eed54fb6fb135f86a026b43038d79eef867"
+    },
+    {
+      "path": "config/v2-runtime-services.json",
+      "sha256": "e4d8f5b2c498b1812e1beda74498a2bac320169d8079577b055828560acc5011"
+    },
+    {
+      "path": "config/b17-runtime-services.json",
+      "sha256": "1753cd3a877cf7875fef3532bb47c2aa27f3ea246c9733b36d3e4168e8aa458f"
+    },
+    {
+      "path": "AGENTS.md",
+      "sha256": "1029a788919c5151a6b7193f29afbdaedbca67d30bbc2ced59bbe74d7c619e53"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/redesign/dev-plan-R1.md",
+      "sha256": "ad61c8b2c4114e0d70af301bc92d3d851b0d62d8310a2d72473ec53a64f70b49"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/redesign/business-chains.md",
+      "sha256": "f37907af051ab0b644654153f8b365a228451151fbb27527c53e43b8b714c637"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+      "sha256": "37548c077648a633f821b83c73bfd4f66b93d710dc5bd5ccf57d32a24b596bdf"
+    }
+  ],
+  "gates": {
+    "G-ENV": {
+      "scope": "IAM 18087/Gateway 18070固定端口；Node/pnpm/Java版本；iam_service schema+svc_iam+DML-only；RS256密钥注入；隔离验收schema待建",
+      "evidence": [
+        "config/local-ports.json",
+        "config/toolchain-baseline.json",
+        "services/iam-service/src/main/resources/application.yaml",
+        "scripts/runtime/run-v2-services.mjs"
+      ],
+      "result": "PREP-ONLY-NOT-READY"
+    },
+    "G-CONTRACT": {
+      "scope": "registerB8Account/getB8Principal/getB8Permissions；Idempotency-Key必填；201仅账号+受限会话；transport双态",
+      "evidence": [
+        "packages/contracts/fragments/b8/b8-auth-iam.openapi.json"
+      ],
+      "result": "PREP-ONLY-NOT-READY"
+    },
+    "G-PLATFORM": {
+      "scope": "iam-service唯一owner/schema/事务/Flyway；Outbox/Kafka；Gateway公开路由；无官网业务写入，不操作共享服务",
+      "evidence": [
+        "config/b17-runtime-services.json",
+        "services/iam-service/src/main/resources/db/migration"
+      ],
+      "result": "PREP-ONLY-NOT-READY"
+    },
+    "G-FRONTEND": {
+      "scope": "受控注册链接/共享i18n基础（R1-001 ACCEPTED复用）；本卡无新增UI；严格设备入口沿用",
+      "evidence": [
+        "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11/approve-8.json"
+      ],
+      "result": "PREP-ONLY-NOT-READY"
+    }
+  },
+  "testCases": [
+    "R1-002-TC01",
+    "R1-002-TC02",
+    "R1-002-TC03"
+  ],
+  "gaps": [
+    "E1 iam jar身份未采",
+    "E2 IAM隔离schema+身份未建",
+    "E3 合成fixture基线未确认",
+    "C1 密码/claims逐断言待终验",
+    "G1/G2 受限语义待终核"
+  ],
+  "secrets": "none-collected"
+}

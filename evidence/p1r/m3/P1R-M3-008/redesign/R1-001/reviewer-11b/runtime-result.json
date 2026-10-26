@@ -1,0 +1,100 @@
+{
+  "startedAt": "2026-10-05T02:24:58.832Z",
+  "browserPath": "Browser plugin not available; regular Playwright",
+  "runs": [
+    {
+      "name": "retry",
+      "command": "node evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11/browser-retry-v2.cjs evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11b/retry",
+      "startedAt": "2026-10-05T02:25:16.054Z",
+      "logPath": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11b/retry.log",
+      "exitCode": 0,
+      "finishedAt": "2026-10-05T02:25:36.145Z"
+    },
+    {
+      "name": "normal-chain",
+      "command": "node evidence/p1r/m3/P1R-M3-008/redesign/R1-001/work/real-upstream-10.cjs evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11b/normal-chain",
+      "startedAt": "2026-10-05T02:25:42.395Z",
+      "logPath": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11b/normal-chain.log",
+      "exitCode": 0,
+      "finishedAt": "2026-10-05T02:25:47.172Z"
+    },
+    {
+      "name": "website",
+      "command": "node apps/official-site/tests/browser/website-runtime.cjs",
+      "startedAt": "2026-10-05T02:25:47.172Z",
+      "logPath": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11b/website.log",
+      "exitCode": 0,
+      "finishedAt": "2026-10-05T02:28:09.718Z"
+    }
+  ],
+  "processes": [
+    {
+      "name": "gateway",
+      "pid": 41108,
+      "startedAt": "2026-10-05T02:24:58.845Z",
+      "java": {
+        "service": "api-gateway",
+        "pid": 40244,
+        "port": 18070
+      },
+      "stopRequestedAt": "2026-10-05T02:28:13.613Z"
+    },
+    {
+      "name": "commerce",
+      "pid": 30592,
+      "startedAt": "2026-10-05T02:24:58.853Z",
+      "java": {
+        "service": "commerce-service",
+        "pid": 37468,
+        "port": 18096
+      },
+      "stopRequestedAt": "2026-10-05T02:28:12.460Z"
+    },
+    {
+      "name": "official-site",
+      "pid": 39568,
+      "startedAt": "2026-10-05T02:24:58.862Z",
+      "stopRequestedAt": "2026-10-05T02:28:11.461Z"
+    },
+    {
+      "name": "normal-content",
+      "pid": 21896,
+      "startedAt": "2026-10-05T02:25:36.158Z",
+      "java": {
+        "service": "content-service",
+        "pid": 35260,
+        "port": 18089
+      },
+      "stopRequestedAt": "2026-10-05T02:28:10.544Z"
+    }
+  ],
+  "checks": [],
+  "result": "PASS",
+  "finalPorts": [
+    {
+      "port": 18070,
+      "free": true
+    },
+    {
+      "port": 18089,
+      "free": true
+    },
+    {
+      "port": 18096,
+      "free": true
+    },
+    {
+      "port": 18182,
+      "free": true
+    },
+    {
+      "port": 18180,
+      "free": true
+    },
+    {
+      "port": 18183,
+      "free": true
+    }
+  ],
+  "finishedAt": "2026-10-05T02:28:14.627Z"
+}

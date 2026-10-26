@@ -1,0 +1,237 @@
+{
+  "startedAt": "2026-10-05T02:21:54.716Z",
+  "mocked": false,
+  "steps": [
+    {
+      "label": "375x812",
+      "mode": "error",
+      "result": "PASS",
+      "samePage": true,
+      "action": "button.click",
+      "gateway": {
+        "status": 503,
+        "errorCode": "SERVICE_UNAVAILABLE",
+        "requestId": "req-c334dc64463d4de9b7c59a08f70b4426",
+        "traceId": "a366a2c4429c4b228a0f2b96f59d705b"
+      },
+      "initialResponse": {
+        "projection": {
+          "schemaVersion": "public-site-v1",
+          "uiLocale": "zh-CN",
+          "contentLocale": "en-US",
+          "generatedAt": null,
+          "courses": [],
+          "pricingPlans": [],
+          "skus": [],
+          "campaigns": [],
+          "downloadChannels": [],
+          "announcements": [],
+          "complianceNotices": []
+        },
+        "state": "error",
+        "stale": false,
+        "source": "empty-fallback",
+        "errorCode": "PUBLIC_PROJECTION_UNAVAILABLE",
+        "facets": {
+          "courses": {
+            "state": "error",
+            "updatedAt": null,
+            "errorCode": "PUBLIC_PROJECTION_UNAVAILABLE",
+            "stale": false
+          },
+          "pricing": {
+            "state": "error",
+            "updatedAt": null,
+            "errorCode": "PUBLIC_PROJECTION_UNAVAILABLE",
+            "stale": false
+          },
+          "download": {
+            "state": "error",
+            "updatedAt": null,
+            "errorCode": "PUBLIC_PROJECTION_UNAVAILABLE",
+            "stale": false
+          },
+          "announcements": {
+            "state": "error",
+            "updatedAt": null,
+            "errorCode": "PUBLIC_PROJECTION_UNAVAILABLE",
+            "stale": false
+          },
+          "compliance": {
+            "state": "error",
+            "updatedAt": null,
+            "errorCode": "PUBLIC_PROJECTION_UNAVAILABLE",
+            "stale": false
+          }
+        },
+        "commerceState": "error",
+        "commerceErrorCode": "PUBLIC_PROJECTION_UNAVAILABLE"
+      },
+      "clickedResponse": {
+        "projection": {
+          "schemaVersion": "public-site-v1",
+          "uiLocale": "zh-CN",
+          "contentLocale": "en-US",
+          "generatedAt": "2026-09-27T17:05:36.703141Z",
+          "courses": [
+            {
+              "id": "DEMO-P5-GRAMMAR-A1",
+              "eyebrow": "GRAMMAR",
+              "title": "Demo present simple",
+              "description": "Subject plus base verb for habits.",
+              "level": "A1",
+              "duration": "",
+              "tags": []
+            },
+            {
+              "id": "DEMO-P5-LISTEN-A2",
+              "eyebrow": "COURSE_UNIT",
+              "title": "Demo listening minute",
+              "description": "One minute of scripted audio text.",
+              "level": "A2",
+              "duration": "",
+              "tags": []
+            },
+            {
+              "id": "DEMO-P5-READ-A2",
+              "eyebrow": "COURSE_UNIT",
+              "title": "Demo morning routine",
+              "description": "A short graded paragraph.",
+              "level": "A2",
+              "duration": "",
+              "tags": []
+            },
+            {
+              "id": "DEMO-P5-SENT-B1",
+              "eyebrow": "SENTENCE",
+              "title": "Demo sentence train",
+              "description": "Build one sentence at a time.",
+              "level": "B1",
+              "duration": "",
+              "tags": []
+            },
+            {
+              "id": "DEMO-P5-VOCAB-A1",
+              "eyebrow": "VOCABULARY",
+              "title": "Demo A1 daily words",
+              "description": "Five starter words with meanings and examples.",
+              "level": "A1",
+              "duration": "",
+              "tags": []
+            },
+            {
+              "id": "DEMO-P5-VOCAB-A2",
+              "eyebrow": "VOCABULARY",
+              "title": "Demo A2 daily words",
+              "description": "Five elementary words with meanings and examples.",
+              "level": "A2",
+              "duration": "",
+              "tags": []
+            },
+            {
+              "id": "sg-live-muk2ku9a",
+              "eyebrow": "COURSE_UNIT",
+              "title": "submission gate lesson",
+              "description": "",
+              "level": "A1",
+              "duration": "",
+              "tags": []
+            }
+          ],
+          "pricingPlans": [],
+          "skus": [],
+          "campaigns": [],
+          "downloadChannels": [
+            {
+              "id": "学习 Web",
+              "name": "学习 Web",
+              "platform": "WEB",
+              "description": "",
+              "availability": "unavailable",
+              "action": "暂未开放",
+              "href": null
+            },
+            {
+              "id": "移动 App（iOS / Android / iPad）",
+              "name": "移动 App（iOS / Android / iPad）",
+              "platform": "IOS",
+              "description": "",
+              "availability": "coming-soon",
+              "action": "暂未开放",
+              "href": null
+            },
+            {
+              "id": "微信小程序（条件编译目标）",
+              "name": "微信小程序（条件编译目标）",
+              "platform": "WECHAT_MINI_PROGRAM",
+              "description": "",
+              "availability": "coming-soon",
+              "action": "暂未开放",
+              "href": null
+            }
+          ],
+          "announcements": [],
+          "complianceNotices": []
+        },
+        "state": "ready",
+        "stale": false,
+        "source": "gateway",
+        "errorCode": null,
+        "facets": {
+          "courses": {
+            "state": "ready",
+            "updatedAt": "2026-09-27T17:05:36.703141Z",
+            "errorCode": null,
+            "stale": false
+          },
+          "pricing": {
+            "state": "ready",
+            "updatedAt": "2026-09-27T17:05:36.703141Z",
+            "errorCode": null,
+            "stale": false
+          },
+          "download": {
+            "state": "ready",
+            "updatedAt": "2026-09-27T17:05:36.703141Z",
+            "errorCode": null,
+            "stale": false
+          },
+          "announcements": {
+            "state": "empty",
+            "updatedAt": "2026-09-27T17:05:36.703141Z",
+            "errorCode": null,
+            "stale": false
+          },
+          "compliance": {
+            "state": "empty",
+            "updatedAt": "2026-09-27T17:05:36.703141Z",
+            "errorCode": null,
+            "stale": false
+          }
+        },
+        "commerceState": "ready",
+        "commerceErrorCode": null
+      },
+      "responseStatus": 200,
+      "bannerRemoved": true,
+      "retryHidden": true,
+      "errors": []
+    }
+  ],
+  "processes": [
+    {
+      "pid": 40016,
+      "startedAt": "2026-10-05T02:21:55.870Z",
+      "safeFlags": "relay/consumer/schedule/content-Flyway/commerce-Flyway/SPRING-Flyway=false, P1R_DIAG=0",
+      "javaPid": 41468,
+      "healthyAt": "2026-10-05T02:22:01.090Z"
+    }
+  ],
+  "screenshots": [
+    "evidence\\p1r\\m3\\P1R-M3-008\\redesign\\R1-001\\reviewer-11\\retry\\before-375x812.png",
+    "evidence\\p1r\\m3\\P1R-M3-008\\redesign\\R1-001\\reviewer-11\\retry\\after-375x812.png"
+  ],
+  "result": "FAIL",
+  "failure": "locator.waitFor: Error: strict mode violation: locator('.published-courses').getByRole('button', { name: '重新加载', exact: true }) resolved to 2 elements:\n    1) <button type=\"button\" class=\"btn btn-outline\">重新加载</button> aka getByRole('button', { name: '重新加载' }).first()\n    2) <button class=\"btn btn-outline\">…</button> aka getByRole('button', { name: '重新加载' }).nth(1)\n\nCall log:\n\u001b[2m  - waiting for locator('.published-courses').getByRole('button', { name: '重新加载', exact: true }) to be visible\u001b[22m\n",
+  "finishedAt": "2026-10-05T02:22:05.239Z"
+}

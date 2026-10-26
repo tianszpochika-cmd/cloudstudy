@@ -1,0 +1,116 @@
+{
+  "startedAt": "2026-10-05T01:58:52.883Z",
+  "scope": "TC03-11 anonymous official storage key allowlist; names/categories/counts only",
+  "allowlist": [
+    {
+      "prefix": "yx.public.locale",
+      "category": "official-locale-pref"
+    },
+    {
+      "prefix": "yx.public.theme",
+      "category": "official-theme-pref"
+    },
+    {
+      "prefix": "yx.official.performance",
+      "category": "official-performance-pref"
+    },
+    {
+      "prefix": "official:mobile-device",
+      "category": "official-device-state"
+    },
+    {
+      "prefix": "official:preferences",
+      "category": "official-preferences-state"
+    },
+    {
+      "prefix": "official:resolved-theme",
+      "category": "official-theme-state"
+    }
+  ],
+  "steps": [
+    {
+      "step": "375x812 no-evil-reflection",
+      "ok": true,
+      "detail": {
+        "count": 3
+      }
+    },
+    {
+      "step": "375x812 cta-href-fixed",
+      "ok": true,
+      "detail": {
+        "href": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=system&returnTo=%2Fpages%2Fhome%2Fhome",
+        "menuOpened": true
+      }
+    },
+    {
+      "step": "375x812 dblclick-no-submit",
+      "ok": true,
+      "detail": {
+        "note": "no registration submitted; landing verified via href origin only (targets not started)"
+      }
+    },
+    {
+      "step": "375x812 cookie-no-business",
+      "ok": true,
+      "detail": {
+        "total": 2,
+        "businessHits": 0,
+        "storageChecked": "see-storage-step"
+      }
+    },
+    {
+      "step": "375x812 storage-allowlist",
+      "ok": true,
+      "detail": {
+        "total": 0,
+        "byCategory": [],
+        "unknownKeys": [],
+        "unknownCount": 0
+      }
+    },
+    {
+      "step": "1440x900 no-evil-reflection",
+      "ok": true,
+      "detail": {
+        "count": 3
+      }
+    },
+    {
+      "step": "1440x900 cta-href-fixed",
+      "ok": true,
+      "detail": {
+        "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=system&returnTo=%2Fhome",
+        "menuOpened": false
+      }
+    },
+    {
+      "step": "1440x900 dblclick-no-submit",
+      "ok": true,
+      "detail": {
+        "note": "no registration submitted; landing verified via href origin only (targets not started)"
+      }
+    },
+    {
+      "step": "1440x900 cookie-no-business",
+      "ok": true,
+      "detail": {
+        "total": 2,
+        "businessHits": 0,
+        "storageChecked": "see-storage-step"
+      }
+    },
+    {
+      "step": "1440x900 storage-allowlist",
+      "ok": true,
+      "detail": {
+        "total": 0,
+        "byCategory": [],
+        "unknownKeys": [],
+        "unknownCount": 0
+      }
+    }
+  ],
+  "failedChecks": [],
+  "finishedAt": "2026-10-05T01:59:05.642Z"
+}

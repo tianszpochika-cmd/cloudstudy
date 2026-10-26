@@ -1,0 +1,12 @@
+{
+  "result": "PASS",
+  "algorithm": "SHA256(JSON.stringify(JSON.parse(ports)))",
+  "currentCanonical": "28d84de5a93c65dd3e13b5d5dd99d455f8516975a2257bcb0462024f458c21da",
+  "expectedAfterRepair": "28d84de5a93c65dd3e13b5d5dd99d455f8516975a2257bcb0462024f458c21da",
+  "priorExpected": "8022df585efdf12f124e8747be7f3a2e52dc323b9a919502c9cb4e62eaa8e493",
+  "registeredWorkflowPort": 18071,
+  "registrationCommit": "fbcbe2b77df0244ca2fd1982a48a17262042f5bd",
+  "currentPortsByteEqualGitHead": true,
+  "portNumbersChangedByReview": false,
+  "rootCause": "workflow-service registration was committed without synchronizing toolchain baseline hash"
+}

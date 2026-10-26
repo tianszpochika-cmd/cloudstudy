@@ -1,0 +1,63 @@
+{
+  "checkedAt": "2026-10-04T03:14:39.151Z",
+  "origin": "http://127.0.0.1:18182",
+  "scope": "real Gateway18070+content/commerce upstream, success-state rendering",
+  "viewports": [
+    {
+      "check": "375x812 courses-success",
+      "ok": true,
+      "detail": {
+        "cards": 7,
+        "emptyCopy": 0,
+        "titles": [
+          "Demo present simple",
+          "Demo listening minute",
+          "Demo morning routine"
+        ]
+      }
+    },
+    {
+      "check": "375x812 pricing-empty-honest",
+      "ok": true,
+      "detail": {
+        "purchase": 0
+      }
+    },
+    {
+      "check": "375x812 console-clean",
+      "ok": true,
+      "detail": {
+        "errors": []
+      }
+    },
+    {
+      "check": "1440x900 courses-success",
+      "ok": true,
+      "detail": {
+        "cards": 7,
+        "emptyCopy": 0,
+        "titles": [
+          "Demo present simple",
+          "Demo listening minute",
+          "Demo morning routine"
+        ]
+      }
+    },
+    {
+      "check": "1440x900 pricing-empty-honest",
+      "ok": true,
+      "detail": {
+        "purchase": 0
+      }
+    },
+    {
+      "check": "1440x900 console-clean",
+      "ok": true,
+      "detail": {
+        "errors": []
+      }
+    }
+  ],
+  "failedChecks": [],
+  "finishedAt": "2026-10-04T03:14:45.045Z"
+}

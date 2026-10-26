@@ -1,0 +1,172 @@
+{
+  "checkedAt": "2026-10-04T21:58:22.941Z",
+  "schema": "r1_001_empty_20261005_t9b",
+  "reader": "r1_001_reader_t9b",
+  "host": "127.0.0.1",
+  "port": "13306",
+  "steps": [
+    {
+      "step": "schema-absent",
+      "ok": true,
+      "detail": {
+        "schema": "r1_001_empty_20261005_t9b"
+      }
+    },
+    {
+      "step": "schema-created",
+      "ok": true,
+      "detail": {
+        "schema": "r1_001_empty_20261005_t9b"
+      }
+    },
+    {
+      "step": "structure-copied",
+      "ok": true,
+      "detail": {
+        "tables": [
+          "content_definition",
+          "content_version",
+          "content_public_projection",
+          "content_outbox_event",
+          "content_idempotency_record",
+          "content_cache_invalidation",
+          "content_version_id_sequence"
+        ]
+      }
+    },
+    {
+      "step": "structure-receipt",
+      "ok": true,
+      "detail": {
+        "count": 7
+      }
+    },
+    {
+      "step": "tables-empty",
+      "ok": true,
+      "detail": {
+        "counts": [
+          {
+            "table": "content_definition",
+            "rows": 0
+          },
+          {
+            "table": "content_version",
+            "rows": 0
+          },
+          {
+            "table": "content_public_projection",
+            "rows": 0
+          },
+          {
+            "table": "content_outbox_event",
+            "rows": 0
+          },
+          {
+            "table": "content_idempotency_record",
+            "rows": 0
+          },
+          {
+            "table": "content_cache_invalidation",
+            "rows": 0
+          },
+          {
+            "table": "content_version_id_sequence",
+            "rows": 0
+          }
+        ]
+      }
+    },
+    {
+      "step": "shared-untouched",
+      "ok": true,
+      "detail": {
+        "sharedDemoCourses": 6
+      }
+    },
+    {
+      "step": "reader-select-only",
+      "ok": true,
+      "detail": {
+        "grants": [
+          "GRANT USAGE ON *.* TO `r1_001_reader_t9b`@`%`",
+          "GRANT SELECT ON `r1_001_empty_20261005_t9b`.* TO `r1_001_reader_t9b`@`%`"
+        ]
+      }
+    },
+    {
+      "step": "reader-readback",
+      "ok": true,
+      "detail": {
+        "rows": 0
+      }
+    }
+  ],
+  "failedChecks": [],
+  "structures": [
+    {
+      "table": "content_definition",
+      "sha256": "6a3fad103fe4549cdc55955f4e52561f7e5462e674c24ac37931e1c461dadab2"
+    },
+    {
+      "table": "content_version",
+      "sha256": "9a1a6928cf46e44fa0ae3ee7f6372145e2ebf3de81a40bde7f804d592943af89"
+    },
+    {
+      "table": "content_public_projection",
+      "sha256": "80585cb99bf65a7f02be24bbebbe3f505e917c5caba49d61b842a35b8886383a"
+    },
+    {
+      "table": "content_outbox_event",
+      "sha256": "e74d58e27514a9b367ca9ef81a715338d69d9122c6c8d73f25c6de2b37ab307a"
+    },
+    {
+      "table": "content_idempotency_record",
+      "sha256": "7db6a1cab672b73cd15403540e6111cefe6ab1c6930c1023a4f2144237edd9a6"
+    },
+    {
+      "table": "content_cache_invalidation",
+      "sha256": "4c455a5f61018c4331308456513d313a596ed819381c39bab932c808ac356914"
+    },
+    {
+      "table": "content_version_id_sequence",
+      "sha256": "14faeaa77df43ac96ecf5302e39890eaecbd2b35ad56aa66127e718ef3656b35"
+    }
+  ],
+  "emptyCounts": [
+    {
+      "table": "content_definition",
+      "rows": 0
+    },
+    {
+      "table": "content_version",
+      "rows": 0
+    },
+    {
+      "table": "content_public_projection",
+      "rows": 0
+    },
+    {
+      "table": "content_outbox_event",
+      "rows": 0
+    },
+    {
+      "table": "content_idempotency_record",
+      "rows": 0
+    },
+    {
+      "table": "content_cache_invalidation",
+      "rows": 0
+    },
+    {
+      "table": "content_version_id_sequence",
+      "rows": 0
+    }
+  ],
+  "sharedDemoCourses": 6,
+  "readerGrants": [
+    "GRANT USAGE ON *.* TO `r1_001_reader_t9b`@`%`",
+    "GRANT SELECT ON `r1_001_empty_20261005_t9b`.* TO `r1_001_reader_t9b`@`%`"
+  ],
+  "finishedAt": "2026-10-04T21:58:27.810Z"
+}

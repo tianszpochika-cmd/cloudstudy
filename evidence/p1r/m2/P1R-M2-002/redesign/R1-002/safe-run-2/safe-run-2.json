@@ -1,0 +1,47 @@
+{
+  "checkedAt": "2026-10-05T07:25:12.292Z",
+  "scope": "R1-002 isolated IAM start config; static validate only, no backend launch",
+  "schema": "r1_002_iam_t2e",
+  "safeEnv": {
+    "IAM_PERSISTENCE_ENABLED": "true",
+    "IAM_FLYWAY_ENABLED": "true",
+    "SPRING_FLYWAY_ENABLED": "true",
+    "IAM_PERSISTENCE_JDBCURL": "jdbc:mysql://127.0.0.1:13306/r1_002_iam_t2e?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC&useSSL=false&allowPublicKeyRetrieval=true",
+    "IAM_PERSISTENCE_USERNAME": "r1_002_runner_t2e",
+    "IAM_PERSISTENCE_SCHEMA": "r1_002_iam_t2e",
+    "IAM_CONSENT_POLICY_SOURCE": "control-plane",
+    "IAM_PASSWORD_MIN_LENGTH": "12",
+    "IAM_JWT_ISSUER": "http://127.0.0.1:18087",
+    "IAM_JWT_AUDIENCE": "yuxuexing-api",
+    "IAM_JWT_ALGORITHM": "RS256",
+    "IAM_JWT_KEY_ID": "iam-local-2026-08",
+    "IAM_LOCAL_ADULT_GATE_ENABLED": "true",
+    "IAM_NATIVE_TRANSPORT_POLICY": "deny",
+    "P1R_DIAG": "0"
+  },
+  "ports": {
+    "iam-service": 18087,
+    "api-gateway": 18070,
+    "learning-service": 18090
+  },
+  "jars": {
+    "iam-service": {
+      "path": "services/iam-service/target/iam-service-0.1.0-SNAPSHOT.jar",
+      "bytes": 43852295,
+      "sha256": "5d3fcdf828d91fe8793002d99ce1ddbdca484762d84be925e408de4bd0221f3f"
+    }
+  },
+  "passwordPolicy": "IAM_PERSISTENCE_PASSWORD + replay/fingerprint secrets injected into child env only at start; never CLI/output/evidence",
+  "tls": {
+    "entry": "https://127.0.0.1:<TLS_PORT>/api/v1/auth/register (TLS_PORT pending owner input; default HTTP :18087 must NOT be used as TLS evidence)",
+    "secureCookie": "refresh-cookie-secure=true (application.yaml default; local profile false is NOT acceptance)",
+    "note": "JWT RSA signing key (IAM_JWT_PRIVATE_KEY_FILE) is not a TLS server certificate"
+  },
+  "pep403": {
+    "route": "GET http://127.0.0.1:18090/api/v1/learning/today via Gateway /api/v1/learning/today",
+    "expect": "403 learning access is not granted (never 401/404/503 substitute)",
+    "reason": "restricted JWT lacks PASSED/GRANTED/learning.* (LearningHttpPrincipals:50-55)"
+  },
+  "failedChecks": [],
+  "effectiveCheck": "READY 后子进程 env 逐键核对上述白名单（密钥类仅核存在性，不输出值）+ /actuator/health/readiness + 公开 GET"
+}

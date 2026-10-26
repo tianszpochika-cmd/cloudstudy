@@ -1,0 +1,110 @@
+{
+  "taskId": "R1-001",
+  "action": "reject",
+  "expectedRevision": 16,
+  "specSha256": "57726738acaac54eac1bedf2b69b97205d4e1933019781747f1b907294fadd52",
+  "actor": "root-reviewer",
+  "role": "reviewer",
+  "reviewerThreadId": "01a0cb93-8791-7ee2-b453-8e8752b2553f",
+  "note": "delivery-5定向复核24+12一致，38/38，F12已修；采集器错path误过、真实空态/链路与隔离运行证据需补，下一组仅验收收尾四项，不放行002。",
+  "findings": [
+    {
+      "id": "F11",
+      "priority": "P2",
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/work/r1-001-sweep-5.cjs",
+      "line": 31,
+      "problem": "checkHref用href.includes放宽路径，主审同函数三个错误path均误通过；negative-sweep只跑不可达origin，bad.html未供采集器使用，缺CTA/错path同入口负例仍缺。",
+      "fix": "版本6精确解析pathname/hash route并独立比对query；通过相同采集器或同实际校验模块运行合法与非200/缺CTA/错origin/错path/错设备样本，固定退出码与失败项，明确MOCKED只证明采集器。",
+      "retestCaseIds": [
+        "R1-001-TC01",
+        "R1-001-TC03"
+      ]
+    },
+    {
+      "id": "F13",
+      "priority": "P2",
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/work/real-upstream-5.cjs",
+      "line": 42,
+      "problem": "pricing-empty只验购买button=0，error页或错误价格链接也可通过；未固定同轮上游到BFF/DOM事实和核心脚本/截图；website映射2true/3PARTIAL/6false与摘要统计不一致。",
+      "fix": "真实请求回执关联版本/ID/source/trace与DOM，断言合法空facet/空说明/无价格及购买链接，固定脚本输入日志截图哈希；映射按实际子断言计数，缺项保留PARTIAL。",
+      "retestCaseIds": [
+        "R1-001-TC01",
+        "R1-001-TC02"
+      ]
+    },
+    {
+      "id": "F14",
+      "priority": "P2",
+      "path": "scripts/runtime/run-v2-services.mjs",
+      "line": 197,
+      "problem": "启动器默认开启有写库能力的relay/consumer并连接既有owner schema，报告自有隔离只读和schemas=[]缺实际运行配置证明；未据此断言本次写库。运行输入Gate仍阻塞。",
+      "fix": "不修改后台实现；归档无秘密的有效profile/schema/后台开关/实例PID/jar信息并如实更正报告；后续显式停用写库后台任务与迁移seed，合法空事实从owner隔离输入取得，缺输入保持BLOCKED，不清共享库。",
+      "retestCaseIds": [
+        "R1-001-TC01",
+        "R1-001-TC02"
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-5/cache.log",
+      "sha256": "f90e6838f513f5f53b18979f6ea18144806c2e79345ba454fdb21e97cf67fe1f"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-5/collector-probe.json",
+      "sha256": "eec774340ea6cf4ec204e1937c04296f4095eef538978835ca5519290a356d33"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-5/collector-probe.mjs",
+      "sha256": "55f151ffafe161b7c053d3cad2789ab10e5e90891752445b4aaeda50fb616927"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-5/evidence-check.json",
+      "sha256": "0a18f51ecd1edf342cde046e9e902324584543bc694fa868c91a4037eb394d91"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-5/evidence-check.mjs",
+      "sha256": "509bc012fa2e223d39ed53024b4d48322d9c90621416b8d42df41ac15d826e84"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-5/facet-probe.mjs",
+      "sha256": "de4bd7bedcae5a17d82f4c30a16273502a16a26159a085de2aa605edcd12a1f4"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-5/facet.json",
+      "sha256": "a76b5b831337a63122bb2058aa516e22c69edc206addd764d163661d67bc5562"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-5/facet.log",
+      "sha256": "71c7a41fe35a192cdc6ab88947bd502e54578ef8198ebcabcfb4c088a08bf266"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-5/findings.json",
+      "sha256": "f3f025ab0de65f1a7f7fd502ff265ca0b3c2d192295bcd0896127ac9cb49440b"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-5/precheck.json",
+      "sha256": "a9407e6091cb59c81f39439259138039faa0198aad670bdfdc0db8d032fecbae"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-5/precheck.mjs",
+      "sha256": "1cb934265ff2d7621833c69ad20078a48ca5d92cc595762232da37fb8f212788"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-5/record.mjs",
+      "sha256": "3b87b635361479d903ae12a073fac4945119b5bd335c9404b555fb5342f3ac28"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-5/review.md",
+      "sha256": "40b8d846b658b712b1a8fced4be5216c4dc9fe02a648daef78a92c345e0811ff"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-5/state-boundary.mjs",
+      "sha256": "5633ca23816fa71fbaf10cd62953f85fc022b88d6be01b993ac2ec2ee48c3435"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-5/unit.log",
+      "sha256": "23d29c70f0829980603de68d3fb0ad8199834afada804a90ccbff07abf5151c8"
+    }
+  ]
+}

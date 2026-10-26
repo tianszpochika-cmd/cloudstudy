@@ -1,0 +1,160 @@
+{
+  "checkedAt": "2026-10-03T04:49:21.245Z",
+  "runs": [
+    {
+      "command": "C:\\Users\\Administrator\\Tools\\node-v20.19.5-win-x64\\node.exe C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\evidence\\p1r\\m3\\P1R-M3-008\\redesign\\R1-001\\reviewer-1\\semantic-probe.mjs",
+      "startedAt": "2026-10-03T04:49:19.346Z",
+      "finishedAt": "2026-10-03T04:49:19.887Z",
+      "exitCode": 0,
+      "log": "semantic-probe.log"
+    },
+    {
+      "command": "C:\\Users\\Administrator\\Tools\\node-v20.19.5-win-x64\\node.exe --test apps/official-site/tests/public-projection-bff.test.mjs apps/official-site/tests/b13-official-site.test.mjs apps/official-site/tests/b14-fe-005.test.mjs apps/official-site/tests/website-entry.test.mjs",
+      "startedAt": "2026-10-03T04:49:19.887Z",
+      "finishedAt": "2026-10-03T04:49:20.714Z",
+      "exitCode": 0,
+      "log": "unit-rerun.log"
+    }
+  ],
+  "semanticExit": 0,
+  "unitExit": 0,
+  "semantic": {
+    "scope": "VM semantic reproduction with synthetic fetch; NOT actual upstream integration",
+    "maintenance": {
+      "global": "maintenance",
+      "pricingFacet": "ready",
+      "pricingCount": 0
+    },
+    "empty": {
+      "global": "empty",
+      "courseFacet": "empty",
+      "courseCount": 0,
+      "updatedAt": "2026-10-03T00:00:00Z",
+      "courseTitleConditionReadyOnly": true,
+      "homeEmptyConditionReadyOnly": true
+    },
+    "recovery": {
+      "global": "recovery",
+      "downloadFacet": "recovery",
+      "stale": true,
+      "downloadCount": 1,
+      "downloadPageShowsOldCards": true,
+      "downloadRecoveryNoticePresent": false,
+      "pricingRecoveryNoticePresent": false
+    }
+  },
+  "http": [
+    {
+      "route": "/",
+      "status": 200
+    },
+    {
+      "route": "/courses",
+      "status": 200
+    },
+    {
+      "route": "/pricing",
+      "status": 200
+    },
+    {
+      "route": "/download",
+      "status": 200
+    },
+    {
+      "route": "/announcements",
+      "status": 200
+    },
+    {
+      "route": "/about",
+      "status": 200
+    },
+    {
+      "route": "/compliance",
+      "status": 200
+    },
+    {
+      "route": "/status",
+      "status": 200
+    },
+    {
+      "route": "/privacy",
+      "status": 200
+    },
+    {
+      "route": "/terms",
+      "status": 200
+    },
+    {
+      "route": "/minors",
+      "status": 200
+    }
+  ],
+  "actualLocalBff": {
+    "projection": {
+      "schemaVersion": "public-site-v1",
+      "uiLocale": "zh-CN",
+      "contentLocale": "en-US",
+      "generatedAt": null,
+      "courses": [],
+      "pricingPlans": [],
+      "skus": [],
+      "campaigns": [],
+      "downloadChannels": [],
+      "announcements": [],
+      "complianceNotices": []
+    },
+    "state": "error",
+    "stale": false,
+    "source": "empty-fallback",
+    "errorCode": "PUBLIC_PROJECTION_UNAVAILABLE",
+    "facets": {
+      "courses": {
+        "state": "error",
+        "updatedAt": null,
+        "errorCode": "PUBLIC_PROJECTION_UNAVAILABLE",
+        "stale": false
+      },
+      "pricing": {
+        "state": "error",
+        "updatedAt": null,
+        "errorCode": "PUBLIC_PROJECTION_UNAVAILABLE",
+        "stale": false
+      },
+      "download": {
+        "state": "error",
+        "updatedAt": null,
+        "errorCode": "PUBLIC_PROJECTION_UNAVAILABLE",
+        "stale": false
+      },
+      "announcements": {
+        "state": "error",
+        "updatedAt": null,
+        "errorCode": "PUBLIC_PROJECTION_UNAVAILABLE",
+        "stale": false
+      },
+      "compliance": {
+        "state": "error",
+        "updatedAt": null,
+        "errorCode": "PUBLIC_PROJECTION_UNAVAILABLE",
+        "stale": false
+      }
+    },
+    "commerceState": "error",
+    "commerceErrorCode": "PUBLIC_PROJECTION_UNAVAILABLE"
+  },
+  "typeDiagnostics": [
+    {
+      "file": "apps/official-site/composables/usePublicProjection.ts",
+      "line": 23,
+      "code": 2739,
+      "message": "Type '{ projection: PublicProjection; state: \"loading\"; stale: false; source: \"empty-fallback\"; errorCode: null; }' is missing the following properties from type 'PublicProjectionResponse': facets, commerceState, commerceErrorCode"
+    },
+    {
+      "file": "apps/official-site/composables/usePublicProjection.ts",
+      "line": 43,
+      "code": 2739,
+      "message": "Type '{ projection: PublicProjection; state: \"error\"; stale: false; source: \"empty-fallback\"; errorCode: string; }' is missing the following properties from type 'PublicProjectionResponse': facets, commerceState, commerceErrorCode"
+    }
+  ],
+  "scope": "independent code/unit/VM/HTTP evidence; real domain upstream still absent"
+}

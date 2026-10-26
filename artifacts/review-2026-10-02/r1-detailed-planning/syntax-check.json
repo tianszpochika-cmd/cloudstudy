@@ -1,0 +1,40 @@
+{
+  "result": "PASS",
+  "results": [
+    {
+      "file": "scripts/generate-redesign-dev-plan-index.cjs",
+      "exitCode": 0,
+      "output": ""
+    },
+    {
+      "file": "scripts/check-redesign-dev-plan.mjs",
+      "exitCode": 0,
+      "output": ""
+    },
+    {
+      "file": "scripts/redesign-task-state.mjs",
+      "exitCode": 0,
+      "output": ""
+    },
+    {
+      "file": "scripts/test-redesign-task-state.mjs",
+      "exitCode": 0,
+      "output": ""
+    },
+    {
+      "file": "scripts/lib/redesign-task-state.mjs",
+      "exitCode": 0,
+      "output": ""
+    },
+    {
+      "file": "scripts/lib/redesign-task-wall.mjs",
+      "exitCode": 0,
+      "output": ""
+    },
+    {
+      "file": "scripts/lib/render-redesign-task-cards.cjs",
+      "exitCode": 0,
+      "output": ""
+    }
+  ]
+}

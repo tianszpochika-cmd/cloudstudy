@@ -1,0 +1,909 @@
+{
+  "startedAt": "2026-10-05T00:12:00.429Z",
+  "origin": "http://127.0.0.1:18182",
+  "scenario": "nonempty",
+  "mocked": false,
+  "checks": [
+    {
+      "name": "375x812 mounted-course-chain",
+      "result": "PASS"
+    },
+    {
+      "name": "375x812 nonempty-course-dom",
+      "result": "PASS"
+    },
+    {
+      "name": "375x812 course-updated-date",
+      "result": "PASS"
+    },
+    {
+      "name": "375x812 mounted-commerce-pricing",
+      "result": "PASS"
+    },
+    {
+      "name": "375x812 visible-authoritative-price-empty",
+      "result": "PASS"
+    },
+    {
+      "name": "375x812 no-business-cookie",
+      "result": "PASS"
+    },
+    {
+      "name": "375x812 console-clean",
+      "result": "PASS"
+    },
+    {
+      "name": "1440x900 mounted-course-chain",
+      "result": "PASS"
+    },
+    {
+      "name": "1440x900 nonempty-course-dom",
+      "result": "PASS"
+    },
+    {
+      "name": "1440x900 course-updated-date",
+      "result": "PASS"
+    },
+    {
+      "name": "1440x900 mounted-commerce-pricing",
+      "result": "PASS"
+    },
+    {
+      "name": "1440x900 visible-authoritative-price-empty",
+      "result": "PASS"
+    },
+    {
+      "name": "1440x900 no-business-cookie",
+      "result": "PASS"
+    },
+    {
+      "name": "1440x900 console-clean",
+      "result": "PASS"
+    }
+  ],
+  "pages": [
+    {
+      "label": "375x812",
+      "route": "/courses",
+      "navigationStatus": 200,
+      "mountedResponse": {
+        "url": "http://127.0.0.1:18182/api/public-projection?locale=zh-CN",
+        "status": 200,
+        "body": {
+          "projection": {
+            "schemaVersion": "public-site-v1",
+            "uiLocale": "zh-CN",
+            "contentLocale": "en-US",
+            "generatedAt": "2026-09-27T17:05:36.703141Z",
+            "courses": [
+              {
+                "id": "DEMO-P5-GRAMMAR-A1",
+                "eyebrow": "GRAMMAR",
+                "title": "Demo present simple",
+                "description": "Subject plus base verb for habits.",
+                "level": "A1",
+                "duration": "",
+                "tags": []
+              },
+              {
+                "id": "DEMO-P5-LISTEN-A2",
+                "eyebrow": "COURSE_UNIT",
+                "title": "Demo listening minute",
+                "description": "One minute of scripted audio text.",
+                "level": "A2",
+                "duration": "",
+                "tags": []
+              },
+              {
+                "id": "DEMO-P5-READ-A2",
+                "eyebrow": "COURSE_UNIT",
+                "title": "Demo morning routine",
+                "description": "A short graded paragraph.",
+                "level": "A2",
+                "duration": "",
+                "tags": []
+              },
+              {
+                "id": "DEMO-P5-SENT-B1",
+                "eyebrow": "SENTENCE",
+                "title": "Demo sentence train",
+                "description": "Build one sentence at a time.",
+                "level": "B1",
+                "duration": "",
+                "tags": []
+              },
+              {
+                "id": "DEMO-P5-VOCAB-A1",
+                "eyebrow": "VOCABULARY",
+                "title": "Demo A1 daily words",
+                "description": "Five starter words with meanings and examples.",
+                "level": "A1",
+                "duration": "",
+                "tags": []
+              },
+              {
+                "id": "DEMO-P5-VOCAB-A2",
+                "eyebrow": "VOCABULARY",
+                "title": "Demo A2 daily words",
+                "description": "Five elementary words with meanings and examples.",
+                "level": "A2",
+                "duration": "",
+                "tags": []
+              },
+              {
+                "id": "sg-live-muk2ku9a",
+                "eyebrow": "COURSE_UNIT",
+                "title": "submission gate lesson",
+                "description": "",
+                "level": "A1",
+                "duration": "",
+                "tags": []
+              }
+            ],
+            "pricingPlans": [],
+            "skus": [],
+            "campaigns": [],
+            "downloadChannels": [
+              {
+                "id": "学习 Web",
+                "name": "学习 Web",
+                "platform": "WEB",
+                "description": "",
+                "availability": "unavailable",
+                "action": "暂未开放",
+                "href": null
+              },
+              {
+                "id": "移动 App（iOS / Android / iPad）",
+                "name": "移动 App（iOS / Android / iPad）",
+                "platform": "IOS",
+                "description": "",
+                "availability": "coming-soon",
+                "action": "暂未开放",
+                "href": null
+              },
+              {
+                "id": "微信小程序（条件编译目标）",
+                "name": "微信小程序（条件编译目标）",
+                "platform": "WECHAT_MINI_PROGRAM",
+                "description": "",
+                "availability": "coming-soon",
+                "action": "暂未开放",
+                "href": null
+              }
+            ],
+            "announcements": [],
+            "complianceNotices": []
+          },
+          "state": "ready",
+          "stale": false,
+          "source": "gateway",
+          "errorCode": null,
+          "facets": {
+            "courses": {
+              "state": "ready",
+              "updatedAt": "2026-09-27T17:05:36.703141Z",
+              "errorCode": null,
+              "stale": false
+            },
+            "pricing": {
+              "state": "ready",
+              "updatedAt": "2026-09-27T17:05:36.703141Z",
+              "errorCode": null,
+              "stale": false
+            },
+            "download": {
+              "state": "ready",
+              "updatedAt": "2026-09-27T17:05:36.703141Z",
+              "errorCode": null,
+              "stale": false
+            },
+            "announcements": {
+              "state": "empty",
+              "updatedAt": "2026-09-27T17:05:36.703141Z",
+              "errorCode": null,
+              "stale": false
+            },
+            "compliance": {
+              "state": "empty",
+              "updatedAt": "2026-09-27T17:05:36.703141Z",
+              "errorCode": null,
+              "stale": false
+            }
+          },
+          "commerceState": "ready",
+          "commerceErrorCode": null
+        }
+      },
+      "checkedAt": "2026-10-05T00:12:03.059Z",
+      "dom": {
+        "cards": 7,
+        "titles": [
+          "Demo present simple",
+          "Demo listening minute",
+          "Demo morning routine",
+          "Demo sentence train",
+          "Demo A1 daily words",
+          "Demo A2 daily words",
+          "submission gate lesson"
+        ]
+      }
+    },
+    {
+      "label": "375x812",
+      "route": "/pricing",
+      "navigationStatus": 200,
+      "mountedResponse": {
+        "url": "http://127.0.0.1:18182/api/public-projection?locale=zh-CN",
+        "status": 200,
+        "body": {
+          "projection": {
+            "schemaVersion": "public-site-v1",
+            "uiLocale": "zh-CN",
+            "contentLocale": "en-US",
+            "generatedAt": "2026-09-27T17:05:36.703141Z",
+            "courses": [
+              {
+                "id": "DEMO-P5-GRAMMAR-A1",
+                "eyebrow": "GRAMMAR",
+                "title": "Demo present simple",
+                "description": "Subject plus base verb for habits.",
+                "level": "A1",
+                "duration": "",
+                "tags": []
+              },
+              {
+                "id": "DEMO-P5-LISTEN-A2",
+                "eyebrow": "COURSE_UNIT",
+                "title": "Demo listening minute",
+                "description": "One minute of scripted audio text.",
+                "level": "A2",
+                "duration": "",
+                "tags": []
+              },
+              {
+                "id": "DEMO-P5-READ-A2",
+                "eyebrow": "COURSE_UNIT",
+                "title": "Demo morning routine",
+                "description": "A short graded paragraph.",
+                "level": "A2",
+                "duration": "",
+                "tags": []
+              },
+              {
+                "id": "DEMO-P5-SENT-B1",
+                "eyebrow": "SENTENCE",
+                "title": "Demo sentence train",
+                "description": "Build one sentence at a time.",
+                "level": "B1",
+                "duration": "",
+                "tags": []
+              },
+              {
+                "id": "DEMO-P5-VOCAB-A1",
+                "eyebrow": "VOCABULARY",
+                "title": "Demo A1 daily words",
+                "description": "Five starter words with meanings and examples.",
+                "level": "A1",
+                "duration": "",
+                "tags": []
+              },
+              {
+                "id": "DEMO-P5-VOCAB-A2",
+                "eyebrow": "VOCABULARY",
+                "title": "Demo A2 daily words",
+                "description": "Five elementary words with meanings and examples.",
+                "level": "A2",
+                "duration": "",
+                "tags": []
+              },
+              {
+                "id": "sg-live-muk2ku9a",
+                "eyebrow": "COURSE_UNIT",
+                "title": "submission gate lesson",
+                "description": "",
+                "level": "A1",
+                "duration": "",
+                "tags": []
+              }
+            ],
+            "pricingPlans": [],
+            "skus": [],
+            "campaigns": [],
+            "downloadChannels": [
+              {
+                "id": "学习 Web",
+                "name": "学习 Web",
+                "platform": "WEB",
+                "description": "",
+                "availability": "unavailable",
+                "action": "暂未开放",
+                "href": null
+              },
+              {
+                "id": "移动 App（iOS / Android / iPad）",
+                "name": "移动 App（iOS / Android / iPad）",
+                "platform": "IOS",
+                "description": "",
+                "availability": "coming-soon",
+                "action": "暂未开放",
+                "href": null
+              },
+              {
+                "id": "微信小程序（条件编译目标）",
+                "name": "微信小程序（条件编译目标）",
+                "platform": "WECHAT_MINI_PROGRAM",
+                "description": "",
+                "availability": "coming-soon",
+                "action": "暂未开放",
+                "href": null
+              }
+            ],
+            "announcements": [],
+            "complianceNotices": []
+          },
+          "state": "ready",
+          "stale": false,
+          "source": "gateway",
+          "errorCode": null,
+          "facets": {
+            "courses": {
+              "state": "ready",
+              "updatedAt": "2026-09-27T17:05:36.703141Z",
+              "errorCode": null,
+              "stale": false
+            },
+            "pricing": {
+              "state": "ready",
+              "updatedAt": "2026-09-27T17:05:36.703141Z",
+              "errorCode": null,
+              "stale": false
+            },
+            "download": {
+              "state": "ready",
+              "updatedAt": "2026-09-27T17:05:36.703141Z",
+              "errorCode": null,
+              "stale": false
+            },
+            "announcements": {
+              "state": "empty",
+              "updatedAt": "2026-09-27T17:05:36.703141Z",
+              "errorCode": null,
+              "stale": false
+            },
+            "compliance": {
+              "state": "empty",
+              "updatedAt": "2026-09-27T17:05:36.703141Z",
+              "errorCode": null,
+              "stale": false
+            }
+          },
+          "commerceState": "ready",
+          "commerceErrorCode": null
+        }
+      },
+      "checkedAt": "2026-10-05T00:12:03.589Z",
+      "dom": {
+        "priceCards": 0,
+        "purchaseLinks": 0,
+        "purchaseButtons": 0,
+        "emptyNoteVisible": true,
+        "recoveryCount": 0,
+        "errorCount": 0,
+        "pricingFacet": {
+          "state": "ready",
+          "updatedAt": "2026-09-27T17:05:36.703141Z",
+          "errorCode": null,
+          "stale": false
+        },
+        "bffPlans": 0
+      }
+    },
+    {
+      "label": "375x812",
+      "scope": "anonymous official-site context only",
+      "cookieProof": {
+        "total": 2,
+        "official": [
+          "yx.public.locale",
+          "yx.public.theme"
+        ],
+        "officialCount": 2,
+        "businessHits": 0
+      },
+      "storageChecked": false
+    },
+    {
+      "label": "1440x900",
+      "route": "/courses",
+      "navigationStatus": 200,
+      "mountedResponse": {
+        "url": "http://127.0.0.1:18182/api/public-projection?locale=zh-CN",
+        "status": 200,
+        "body": {
+          "projection": {
+            "schemaVersion": "public-site-v1",
+            "uiLocale": "zh-CN",
+            "contentLocale": "en-US",
+            "generatedAt": "2026-09-27T17:05:36.703141Z",
+            "courses": [
+              {
+                "id": "DEMO-P5-GRAMMAR-A1",
+                "eyebrow": "GRAMMAR",
+                "title": "Demo present simple",
+                "description": "Subject plus base verb for habits.",
+                "level": "A1",
+                "duration": "",
+                "tags": []
+              },
+              {
+                "id": "DEMO-P5-LISTEN-A2",
+                "eyebrow": "COURSE_UNIT",
+                "title": "Demo listening minute",
+                "description": "One minute of scripted audio text.",
+                "level": "A2",
+                "duration": "",
+                "tags": []
+              },
+              {
+                "id": "DEMO-P5-READ-A2",
+                "eyebrow": "COURSE_UNIT",
+                "title": "Demo morning routine",
+                "description": "A short graded paragraph.",
+                "level": "A2",
+                "duration": "",
+                "tags": []
+              },
+              {
+                "id": "DEMO-P5-SENT-B1",
+                "eyebrow": "SENTENCE",
+                "title": "Demo sentence train",
+                "description": "Build one sentence at a time.",
+                "level": "B1",
+                "duration": "",
+                "tags": []
+              },
+              {
+                "id": "DEMO-P5-VOCAB-A1",
+                "eyebrow": "VOCABULARY",
+                "title": "Demo A1 daily words",
+                "description": "Five starter words with meanings and examples.",
+                "level": "A1",
+                "duration": "",
+                "tags": []
+              },
+              {
+                "id": "DEMO-P5-VOCAB-A2",
+                "eyebrow": "VOCABULARY",
+                "title": "Demo A2 daily words",
+                "description": "Five elementary words with meanings and examples.",
+                "level": "A2",
+                "duration": "",
+                "tags": []
+              },
+              {
+                "id": "sg-live-muk2ku9a",
+                "eyebrow": "COURSE_UNIT",
+                "title": "submission gate lesson",
+                "description": "",
+                "level": "A1",
+                "duration": "",
+                "tags": []
+              }
+            ],
+            "pricingPlans": [],
+            "skus": [],
+            "campaigns": [],
+            "downloadChannels": [
+              {
+                "id": "学习 Web",
+                "name": "学习 Web",
+                "platform": "WEB",
+                "description": "",
+                "availability": "unavailable",
+                "action": "暂未开放",
+                "href": null
+              },
+              {
+                "id": "移动 App（iOS / Android / iPad）",
+                "name": "移动 App（iOS / Android / iPad）",
+                "platform": "IOS",
+                "description": "",
+                "availability": "coming-soon",
+                "action": "暂未开放",
+                "href": null
+              },
+              {
+                "id": "微信小程序（条件编译目标）",
+                "name": "微信小程序（条件编译目标）",
+                "platform": "WECHAT_MINI_PROGRAM",
+                "description": "",
+                "availability": "coming-soon",
+                "action": "暂未开放",
+                "href": null
+              }
+            ],
+            "announcements": [],
+            "complianceNotices": []
+          },
+          "state": "ready",
+          "stale": false,
+          "source": "gateway",
+          "errorCode": null,
+          "facets": {
+            "courses": {
+              "state": "ready",
+              "updatedAt": "2026-09-27T17:05:36.703141Z",
+              "errorCode": null,
+              "stale": false
+            },
+            "pricing": {
+              "state": "ready",
+              "updatedAt": "2026-09-27T17:05:36.703141Z",
+              "errorCode": null,
+              "stale": false
+            },
+            "download": {
+              "state": "ready",
+              "updatedAt": "2026-09-27T17:05:36.703141Z",
+              "errorCode": null,
+              "stale": false
+            },
+            "announcements": {
+              "state": "empty",
+              "updatedAt": "2026-09-27T17:05:36.703141Z",
+              "errorCode": null,
+              "stale": false
+            },
+            "compliance": {
+              "state": "empty",
+              "updatedAt": "2026-09-27T17:05:36.703141Z",
+              "errorCode": null,
+              "stale": false
+            }
+          },
+          "commerceState": "ready",
+          "commerceErrorCode": null
+        }
+      },
+      "checkedAt": "2026-10-05T00:12:04.397Z",
+      "dom": {
+        "cards": 7,
+        "titles": [
+          "Demo present simple",
+          "Demo listening minute",
+          "Demo morning routine",
+          "Demo sentence train",
+          "Demo A1 daily words",
+          "Demo A2 daily words",
+          "submission gate lesson"
+        ]
+      }
+    },
+    {
+      "label": "1440x900",
+      "route": "/pricing",
+      "navigationStatus": 200,
+      "mountedResponse": {
+        "url": "http://127.0.0.1:18182/api/public-projection?locale=zh-CN",
+        "status": 200,
+        "body": {
+          "projection": {
+            "schemaVersion": "public-site-v1",
+            "uiLocale": "zh-CN",
+            "contentLocale": "en-US",
+            "generatedAt": "2026-09-27T17:05:36.703141Z",
+            "courses": [
+              {
+                "id": "DEMO-P5-GRAMMAR-A1",
+                "eyebrow": "GRAMMAR",
+                "title": "Demo present simple",
+                "description": "Subject plus base verb for habits.",
+                "level": "A1",
+                "duration": "",
+                "tags": []
+              },
+              {
+                "id": "DEMO-P5-LISTEN-A2",
+                "eyebrow": "COURSE_UNIT",
+                "title": "Demo listening minute",
+                "description": "One minute of scripted audio text.",
+                "level": "A2",
+                "duration": "",
+                "tags": []
+              },
+              {
+                "id": "DEMO-P5-READ-A2",
+                "eyebrow": "COURSE_UNIT",
+                "title": "Demo morning routine",
+                "description": "A short graded paragraph.",
+                "level": "A2",
+                "duration": "",
+                "tags": []
+              },
+              {
+                "id": "DEMO-P5-SENT-B1",
+                "eyebrow": "SENTENCE",
+                "title": "Demo sentence train",
+                "description": "Build one sentence at a time.",
+                "level": "B1",
+                "duration": "",
+                "tags": []
+              },
+              {
+                "id": "DEMO-P5-VOCAB-A1",
+                "eyebrow": "VOCABULARY",
+                "title": "Demo A1 daily words",
+                "description": "Five starter words with meanings and examples.",
+                "level": "A1",
+                "duration": "",
+                "tags": []
+              },
+              {
+                "id": "DEMO-P5-VOCAB-A2",
+                "eyebrow": "VOCABULARY",
+                "title": "Demo A2 daily words",
+                "description": "Five elementary words with meanings and examples.",
+                "level": "A2",
+                "duration": "",
+                "tags": []
+              },
+              {
+                "id": "sg-live-muk2ku9a",
+                "eyebrow": "COURSE_UNIT",
+                "title": "submission gate lesson",
+                "description": "",
+                "level": "A1",
+                "duration": "",
+                "tags": []
+              }
+            ],
+            "pricingPlans": [],
+            "skus": [],
+            "campaigns": [],
+            "downloadChannels": [
+              {
+                "id": "学习 Web",
+                "name": "学习 Web",
+                "platform": "WEB",
+                "description": "",
+                "availability": "unavailable",
+                "action": "暂未开放",
+                "href": null
+              },
+              {
+                "id": "移动 App（iOS / Android / iPad）",
+                "name": "移动 App（iOS / Android / iPad）",
+                "platform": "IOS",
+                "description": "",
+                "availability": "coming-soon",
+                "action": "暂未开放",
+                "href": null
+              },
+              {
+                "id": "微信小程序（条件编译目标）",
+                "name": "微信小程序（条件编译目标）",
+                "platform": "WECHAT_MINI_PROGRAM",
+                "description": "",
+                "availability": "coming-soon",
+                "action": "暂未开放",
+                "href": null
+              }
+            ],
+            "announcements": [],
+            "complianceNotices": []
+          },
+          "state": "ready",
+          "stale": false,
+          "source": "gateway",
+          "errorCode": null,
+          "facets": {
+            "courses": {
+              "state": "ready",
+              "updatedAt": "2026-09-27T17:05:36.703141Z",
+              "errorCode": null,
+              "stale": false
+            },
+            "pricing": {
+              "state": "ready",
+              "updatedAt": "2026-09-27T17:05:36.703141Z",
+              "errorCode": null,
+              "stale": false
+            },
+            "download": {
+              "state": "ready",
+              "updatedAt": "2026-09-27T17:05:36.703141Z",
+              "errorCode": null,
+              "stale": false
+            },
+            "announcements": {
+              "state": "empty",
+              "updatedAt": "2026-09-27T17:05:36.703141Z",
+              "errorCode": null,
+              "stale": false
+            },
+            "compliance": {
+              "state": "empty",
+              "updatedAt": "2026-09-27T17:05:36.703141Z",
+              "errorCode": null,
+              "stale": false
+            }
+          },
+          "commerceState": "ready",
+          "commerceErrorCode": null
+        }
+      },
+      "checkedAt": "2026-10-05T00:12:04.820Z",
+      "dom": {
+        "priceCards": 0,
+        "purchaseLinks": 0,
+        "purchaseButtons": 0,
+        "emptyNoteVisible": true,
+        "recoveryCount": 0,
+        "errorCount": 0,
+        "pricingFacet": {
+          "state": "ready",
+          "updatedAt": "2026-09-27T17:05:36.703141Z",
+          "errorCode": null,
+          "stale": false
+        },
+        "bffPlans": 0
+      }
+    },
+    {
+      "label": "1440x900",
+      "scope": "anonymous official-site context only",
+      "cookieProof": {
+        "total": 2,
+        "official": [
+          "yx.public.locale",
+          "yx.public.theme"
+        ],
+        "officialCount": 2,
+        "businessHits": 0
+      },
+      "storageChecked": false
+    }
+  ],
+  "screenshots": [
+    {
+      "path": "evidence\\p1r\\m3\\P1R-M3-008\\redesign\\R1-001\\work\\tc10\\real-nonempty-10\\courses-nonempty-375x812.png",
+      "sha256": "d8aee3428f7291226b34ea2d0d74b0fe2de5fb0bda76ff587bb639d1f0a3508e"
+    },
+    {
+      "path": "evidence\\p1r\\m3\\P1R-M3-008\\redesign\\R1-001\\work\\tc10\\real-nonempty-10\\courses-nonempty-1440x900.png",
+      "sha256": "de65c66d7ba421246cf1a4222039455ee14d9013d1bef5c318322802c1511d8b"
+    }
+  ],
+  "upstreamReceipt": {
+    "url": "http://127.0.0.1:18070/api/v1/public/site/projection?uiLocale=zh-CN",
+    "status": 200,
+    "body": {
+      "data": {
+        "generatedAt": "2026-09-27T17:05:36.703141Z",
+        "projectionVersion": 4,
+        "contentEpoch": 4,
+        "courses": [
+          {
+            "contentCode": "DEMO-P5-GRAMMAR-A1",
+            "contentType": "GRAMMAR",
+            "title": "Demo present simple",
+            "summary": "Subject plus base verb for habits.",
+            "contentLocale": "en-US",
+            "targetLevel": "A1",
+            "contentVersionId": 265103,
+            "availability": "PUBLISHED"
+          },
+          {
+            "contentCode": "DEMO-P5-LISTEN-A2",
+            "contentType": "COURSE_UNIT",
+            "title": "Demo listening minute",
+            "summary": "One minute of scripted audio text.",
+            "contentLocale": "en-US",
+            "targetLevel": "A2",
+            "contentVersionId": 265105,
+            "availability": "PUBLISHED"
+          },
+          {
+            "contentCode": "DEMO-P5-READ-A2",
+            "contentType": "COURSE_UNIT",
+            "title": "Demo morning routine",
+            "summary": "A short graded paragraph.",
+            "contentLocale": "en-US",
+            "targetLevel": "A2",
+            "contentVersionId": 265104,
+            "availability": "PUBLISHED"
+          },
+          {
+            "contentCode": "DEMO-P5-SENT-B1",
+            "contentType": "SENTENCE",
+            "title": "Demo sentence train",
+            "summary": "Build one sentence at a time.",
+            "contentLocale": "en-US",
+            "targetLevel": "B1",
+            "contentVersionId": 265106,
+            "availability": "PUBLISHED"
+          },
+          {
+            "contentCode": "DEMO-P5-VOCAB-A1",
+            "contentType": "VOCABULARY",
+            "title": "Demo A1 daily words",
+            "summary": "Five starter words with meanings and examples.",
+            "contentLocale": "en-US",
+            "targetLevel": "A1",
+            "contentVersionId": 265101,
+            "availability": "PUBLISHED"
+          },
+          {
+            "contentCode": "DEMO-P5-VOCAB-A2",
+            "contentType": "VOCABULARY",
+            "title": "Demo A2 daily words",
+            "summary": "Five elementary words with meanings and examples.",
+            "contentLocale": "en-US",
+            "targetLevel": "A2",
+            "contentVersionId": 265102,
+            "availability": "PUBLISHED"
+          },
+          {
+            "contentCode": "sg-live-muk2ku9a",
+            "contentType": "COURSE_UNIT",
+            "title": "submission gate lesson",
+            "summary": "",
+            "contentLocale": "en-US",
+            "targetLevel": "A1",
+            "contentVersionId": 261160,
+            "availability": "PUBLISHED"
+          }
+        ],
+        "pricing": [],
+        "downloads": [
+          {
+            "platform": "WEB",
+            "channel": "学习 Web",
+            "status": "UNAVAILABLE"
+          },
+          {
+            "platform": "IOS",
+            "channel": "移动 App（iOS / Android / iPad）",
+            "status": "COMING_SOON"
+          },
+          {
+            "platform": "WECHAT_MINI_PROGRAM",
+            "channel": "微信小程序（条件编译目标）",
+            "status": "COMING_SOON"
+          }
+        ],
+        "announcements": [],
+        "compliance": []
+      },
+      "meta": {
+        "projectionVersion": 4,
+        "contentEpoch": 4,
+        "generatedAt": "2026-09-27T17:05:36.703141Z",
+        "source": "CONTENT_SERVICE",
+        "stale": false,
+        "traceId": "fcbce50a97da48a3856c95ea6a9cdbd7"
+      }
+    },
+    "requestId": "req-04c091c2559c4ed0824f343812a94479",
+    "traceId": "fcbce50a97da48a3856c95ea6a9cdbd7"
+  },
+  "commerceReceipt": {
+    "url": "http://127.0.0.1:18070/api/v1/public/commerce/catalog",
+    "status": 200,
+    "body": {
+      "catalogVersion": "commerce-public-v1",
+      "uiLocale": "zh-CN",
+      "contentLocale": "en-US",
+      "plans": [],
+      "publishedAt": "2026-10-05T00:12:00.627955800Z",
+      "checkoutPath": "/pricing",
+      "productionPaymentEnabled": false,
+      "autoRenewalEnabled": false
+    },
+    "requestId": "req-a30a20ff68954a04918730238649bfb3",
+    "traceId": "86c79f6ea7c141189513cf240a37f083"
+  },
+  "result": "PASS",
+  "finishedAt": "2026-10-05T00:12:04.891Z"
+}

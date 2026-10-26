@@ -1,0 +1,22 @@
+{
+  "checkedAt": "2026-10-04T21:59:35.991Z",
+  "scope": "own content launcher for isolated empty schema; child-process env only",
+  "schema": "r1_001_empty_20261005_t9b",
+  "host": "127.0.0.1",
+  "port": 18089,
+  "jar": {
+    "path": "services/content-service/target/content-service-0.1.0-SNAPSHOT.jar",
+    "bytes": 63760208,
+    "mtime": "2026-09-28T00:25:22.444Z",
+    "sha256": "feafab1459ce422d90bc9c3672f0f6732db963544d3abedb3f2d3f397b6d798a"
+  },
+  "safeEnv": {
+    "CONTENT_EVENT_RELAY_ENABLED": "false",
+    "CONTENT_EVENT_CONSUMER_ENABLED": "false",
+    "CONTENT_SCHEDULE_ENABLED": "false",
+    "CONTENT_FLYWAY_ENABLED": "false",
+    "SPRING_FLYWAY_ENABLED": "false"
+  },
+  "passwordPolicy": "CONTENT_JDBC_PASSWORD injected into child env only (from MYSQL_OWNER_PASSWORD at start time); never on command line, never in reports",
+  "desensitizedJdbc": "jdbc:mysql://127.0.0.1:13306/r1_001_empty_20261005_t9b?... (user=svc_content)"
+}

@@ -1,0 +1,22 @@
+{
+  "checkedAt": "2026-10-03T09:11:44.413Z",
+  "origin": "http://127.0.0.1:18182",
+  "note": "empty-state branch only: upstream unavailable so BFF returns error; empty copy verified at unit level + error-state DOM. Success-state rendering stays BLOCKED (no real upstream).",
+  "viewports": [
+    {
+      "viewport": "375x812",
+      "coursesRetryVisible": true,
+      "coursesEmptyCopyCount": 0,
+      "pricingPurchaseControls": 0,
+      "consoleErrors": []
+    },
+    {
+      "viewport": "1440x900",
+      "coursesRetryVisible": true,
+      "coursesEmptyCopyCount": 0,
+      "pricingPurchaseControls": 0,
+      "consoleErrors": []
+    }
+  ],
+  "result": "DONE"
+}

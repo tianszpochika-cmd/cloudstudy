@@ -1,0 +1,4 @@
+- status:
+  - generic: ✦
+  - heading "语学星" [level=1]
+  - paragraph: 正在恢复安全会话并准备学习空间…

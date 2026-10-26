@@ -1,0 +1,20 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import assert from 'node:assert/strict';
+import {fileURLToPath} from 'node:url';
+const dir=path.dirname(fileURLToPath(import.meta.url));
+const base='evidence/p1r/m3/P1R-M3-008/redesign/R1-001/';
+const real=JSON.parse(fs.readFileSync(base+'work/real-upstream-6/real-upstream-6.json','utf8'));
+assert.deepEqual(real.upstream.courseIds,real.bff.courses);
+assert.equal(real.upstream.generatedAt,real.bff.generatedAt);
+assert.equal(real.upstream.status,200);assert.equal(real.commerce.status,200);assert.equal(real.bff.status,200);
+const source=fs.readFileSync(base+'work/real-upstream-6.cjs','utf8');
+const sweep=fs.readFileSync(base+'work/r1-001-sweep-6.cjs','utf8');
+const sweepOutput=JSON.parse(fs.readFileSync(base+'work/r1-001-sweep-6/r1-001-sweep-6.json','utf8'));
+// Execute the exact current PASS expression with controlled scalar facts.
+const priceMatch=source.match(/record\(label \+ " pricing-authoritative-empty", (.*?), \{ priceCards/);
+if(!priceMatch)throw Error('Cannot identify current expression');
+const check=new Function('priceCards','purchaseLinks','purchaseButtons','facetOk','emptyNote',`return ${priceMatch[1]};`);
+const missingEmptyNoteAccepted=check(0,0,0,true,false);
+const result={checkedAt:new Date().toISOString(),scope:'Pinned executor response readback and synthetic current scalar PASS expression; no real browser rerun',recordedGatewayBffIdsMatch:true,recordedGeneratedAtMatch:true,recordedStatuses200:true,missingEmptyNoteAccepted,domIdsCollectedButNotRecordedOrCompared:source.includes('const domIds =')&&!source.includes('domIds,'),cookieCollectionCodePresent:/\.cookies\s*\(|cookie|Cookie/.test(sweep),cookieFieldsPresent:/cookie/i.test(JSON.stringify(sweepOutput)),screenshotsPinned:JSON.parse(fs.readFileSync(base+'delivery-6.json','utf8')).evidence.some(a=>a.path.endsWith('.png'))};
+fs.writeFileSync(path.join(dir,'real-evidence-check.json'),JSON.stringify(result,null,2));console.log(JSON.stringify(result));

@@ -1,0 +1,88 @@
+{
+  "checkedAt": "2026-10-05T07:26:45.146Z",
+  "schema": "r1_002_iam_t2e",
+  "policySource": "control-plane",
+  "purpose": "本地合成测试用途，不冒充正式法务签收",
+  "docs": [
+    {
+      "type": "TERMS_OF_SERVICE",
+      "document_version": "b30-consent-v1",
+      "policy_version": "b30-consent-policy-v1",
+      "requirement": "BASE_REQUIRED",
+      "capabilities": [
+        "ACCOUNT",
+        "LEARNING"
+      ],
+      "published_at": "2026-08-30 00:00:00.000000",
+      "policy_ref": "iam://consent/ACCOUNT_TERMS",
+      "document_digest": "eb74b7254589589f...",
+      "policy_digest": "718e235dab2c1854..."
+    },
+    {
+      "type": "PRIVACY_NOTICE",
+      "document_version": "b30-consent-v1",
+      "policy_version": "b30-consent-policy-v1",
+      "requirement": "BASE_REQUIRED",
+      "capabilities": [
+        "ACCOUNT",
+        "LEARNING"
+      ],
+      "published_at": "2026-08-30 00:00:00.000000",
+      "policy_ref": "iam://consent/PRIVACY_NOTICE",
+      "document_digest": "4ab15e31c11c9ef9...",
+      "policy_digest": "718e235dab2c1854..."
+    },
+    {
+      "type": "ADULT_LEARNING",
+      "document_version": "b30-consent-v1",
+      "policy_version": "b30-consent-policy-v1",
+      "requirement": "LEARNING_REQUIRED",
+      "capabilities": [
+        "LEARNING"
+      ],
+      "published_at": "2026-08-30 00:00:00.000000",
+      "policy_ref": "iam://consent/ADULT_LEARNING_ELIGIBILITY",
+      "document_digest": "9702cd4fe3e50613...",
+      "policy_digest": "718e235dab2c1854..."
+    }
+  ],
+  "steps": [
+    {
+      "step": "fixture-inserted",
+      "ok": true,
+      "detail": {
+        "count": 3
+      }
+    },
+    {
+      "step": "fixture-readback",
+      "ok": true,
+      "detail": {
+        "rows": "ADULT_LEARNING\tb30-consent-v1\tACTIVE\nPRIVACY_NOTICE\tb30-consent-v1\tACTIVE\nTERMS_OF_SERVICE\tb30-consent-v1\tACTIVE"
+      }
+    },
+    {
+      "step": "user-baseline-zero",
+      "ok": true,
+      "detail": {
+        "counts": [
+          0,
+          0,
+          0
+        ]
+      }
+    }
+  ],
+  "failedChecks": [],
+  "readback": [
+    "ADULT_LEARNING\tb30-consent-v1\tACTIVE",
+    "PRIVACY_NOTICE\tb30-consent-v1\tACTIVE",
+    "TERMS_OF_SERVICE\tb30-consent-v1\tACTIVE"
+  ],
+  "userBaseline": [
+    0,
+    0,
+    0
+  ],
+  "finishedAt": "2026-10-05T07:26:45.535Z"
+}

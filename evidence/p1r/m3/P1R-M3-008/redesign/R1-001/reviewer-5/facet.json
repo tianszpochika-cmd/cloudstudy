@@ -1,0 +1,140 @@
+{
+  "checkedAt": "2026-10-04T03:37:42.918Z",
+  "exitCode": 0,
+  "scope": "synthetic current BFF state transition, not actual upstream",
+  "data": {
+    "scope": "synthetic sequential current BFF VM execution, not actual integration",
+    "rows": [
+      {
+        "nextCatalog": "empty",
+        "first": {
+          "state": "ready",
+          "source": "gateway",
+          "pricingFacet": "ready",
+          "pricingError": null,
+          "commerceState": "ready",
+          "commerceError": null,
+          "skus": [
+            "withdrawn"
+          ],
+          "courses": [
+            "course-1"
+          ]
+        },
+        "afterAuthoritativeRead": {
+          "state": "recovery",
+          "source": "gateway",
+          "pricingFacet": "ready",
+          "pricingError": null,
+          "commerceState": "ready",
+          "commerceError": null,
+          "skus": [],
+          "courses": [
+            "current-course"
+          ]
+        },
+        "afterOutage": {
+          "state": "recovery",
+          "source": "memory-cache",
+          "pricingFacet": "recovery",
+          "pricingError": "PUBLIC_PROJECTION_STALE",
+          "commerceState": "recovery",
+          "commerceError": "PUBLIC_PROJECTION_STALE",
+          "skus": [],
+          "courses": [
+            "current-course"
+          ]
+        },
+        "oldSkuRevived": false
+      },
+      {
+        "nextCatalog": "changed",
+        "first": {
+          "state": "ready",
+          "source": "gateway",
+          "pricingFacet": "ready",
+          "pricingError": null,
+          "commerceState": "ready",
+          "commerceError": null,
+          "skus": [
+            "withdrawn"
+          ],
+          "courses": [
+            "course-1"
+          ]
+        },
+        "afterAuthoritativeRead": {
+          "state": "recovery",
+          "source": "gateway",
+          "pricingFacet": "ready",
+          "pricingError": null,
+          "commerceState": "ready",
+          "commerceError": null,
+          "skus": [
+            "new-plan"
+          ],
+          "courses": [
+            "current-course"
+          ]
+        },
+        "afterOutage": {
+          "state": "recovery",
+          "source": "memory-cache",
+          "pricingFacet": "recovery",
+          "pricingError": "PUBLIC_PROJECTION_STALE",
+          "commerceState": "recovery",
+          "commerceError": "PUBLIC_PROJECTION_STALE",
+          "skus": [
+            "new-plan"
+          ],
+          "courses": [
+            "current-course"
+          ]
+        },
+        "oldSkuRevived": false
+      },
+      {
+        "nextCatalog": "failed",
+        "first": {
+          "state": "ready",
+          "source": "gateway",
+          "pricingFacet": "ready",
+          "pricingError": null,
+          "commerceState": "ready",
+          "commerceError": null,
+          "skus": [
+            "withdrawn"
+          ],
+          "courses": [
+            "course-1"
+          ]
+        },
+        "afterAuthoritativeRead": {
+          "state": "recovery",
+          "source": "gateway",
+          "pricingFacet": "error",
+          "pricingError": "PUBLIC_COMMERCE_DEGRADED",
+          "commerceState": "error",
+          "commerceError": "PUBLIC_COMMERCE_DEGRADED",
+          "skus": [],
+          "courses": [
+            "current-course"
+          ]
+        },
+        "afterOutage": {
+          "state": "recovery",
+          "source": "memory-cache",
+          "pricingFacet": "error",
+          "pricingError": "PUBLIC_COMMERCE_DEGRADED",
+          "commerceState": "error",
+          "commerceError": "PUBLIC_COMMERCE_DEGRADED",
+          "skus": [],
+          "courses": [
+            "current-course"
+          ]
+        },
+        "oldSkuRevived": false
+      }
+    ]
+  }
+}

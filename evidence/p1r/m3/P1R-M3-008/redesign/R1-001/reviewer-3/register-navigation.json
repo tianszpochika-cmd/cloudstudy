@@ -1,0 +1,16 @@
+{
+  "checkedAt": "2026-10-03T09:32:06.197Z",
+  "scope": "existing Web/mobile register page landing and browser history return only; no registration submission, no IAM auth or business acceptance",
+  "desktopLanded": true,
+  "desktopReturnUrl": "http://127.0.0.1:18182/courses",
+  "mobileLanded": true,
+  "mobileLandingUrl": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=light&returnTo=%2Fpages%2Fhome%2Fhome",
+  "mobileReturnUrl": "http://127.0.0.1:18182/courses",
+  "rapidClick": {
+    "gesture": "dblclick on official course CTA",
+    "viewport": "375x812",
+    "result": "landed",
+    "url": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=light&returnTo=%2Fpages%2Fhome%2Fhome"
+  },
+  "console": []
+}

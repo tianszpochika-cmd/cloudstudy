@@ -1,0 +1,22 @@
+{
+  "at": "2026-10-05T02:26:55.992Z",
+  "state": "REVIEW",
+  "revision": 26,
+  "taskId": "R1-001",
+  "specSha256": "57726738acaac54eac1bedf2b69b97205d4e1933019781747f1b907294fadd52",
+  "receipt": {
+    "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/delivery-8.json",
+    "sha256": "97b7fec966ea86622bc8250e10491b62e095ddebc3a84f985e13d090da774c7a"
+  },
+  "artifactsMatched": 28,
+  "evidenceMatched": 53,
+  "sourceCommit": "3d11be3337accd32afbdbe13a218bca38c786043",
+  "dirtyDiffSha256": "71ecf647807de2bfae02c193222891d6935eb68c74539fe4d0540f8b8a1ed8a6",
+  "changesSinceDelivery7": [
+    {
+      "path": "apps/official-site/tests/browser/website-runtime.cjs",
+      "sha256": "9104af6d5f26581eb15c1f1d5d4aeaf097d8946500097e744092d5740570fb4b"
+    }
+  ],
+  "otherScopeDrift": false
+}

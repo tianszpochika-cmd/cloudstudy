@@ -1,0 +1,176 @@
+{
+  "taskId": "R1-001",
+  "action": "ready",
+  "expectedRevision": 0,
+  "specSha256": "2239d56b70f60aea8874abd1f6267cdf377bc2531a1b43bc84278c8742999fff",
+  "actor": "root-reviewer",
+  "note": "REPLACE-with-concrete-result",
+  "role": "reviewer",
+  "reviewerThreadId": "01a0cb93-8791-7ee2-b453-8e8752b2553f",
+  "sourceArtifacts": [
+    {
+      "path": "docs/06-design/v2-980plus/redesign/task-specs/R1-001-041.json",
+      "sha256": "37e8764bbae26066859515022c98682b7d778f5abd3f7cede5cd2b495b0e56fe"
+    },
+    {
+      "path": "AGENTS.md",
+      "sha256": "1029a788919c5151a6b7193f29afbdaedbca67d30bbc2ced59bbe74d7c619e53"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/redesign/dev-plan-R1.md",
+      "sha256": "a9f9eaedc7817ae143920f82a98c9eb2ada9f24388a5aaeed5b53f9421fd3311"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/redesign/business-chains.md",
+      "sha256": "f37907af051ab0b644654153f8b365a228451151fbb27527c53e43b8b714c637"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+      "sha256": "37548c077648a633f821b83c73bfd4f66b93d710dc5bd5ccf57d32a24b596bdf"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/08-980plus-功能点设计登记册.md",
+      "sha256": "c96f3587c7e825c4d961cc56a44a15e5f198c59f8bdaa9cea11ba105956b526c"
+    },
+    {
+      "path": "packages/contracts/fragments/b9/b9-content.openapi.json",
+      "sha256": "0eec642468783d3db7070a0b8ab2e74a291d11339b17c178afed7f0cff2d111c"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+      "sha256": "d2a11d8e542373441683368b6af180c7bbbf2cf654399df574eb78d664474c7c"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/phase1-business-operation/02-端到端业务旅程台账.md",
+      "sha256": "28fee299ff0eb8eb17b5eccc83555395964e978481979931f29fe4b6dc32ab38"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+      "sha256": "49dec04b396cdb732c61c210b6d4473dc37dedef21c8620bf4b59f1c39356625"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/phase1-business-operation/08-验收与追溯规范.md",
+      "sha256": "68094074693b8143669332e6412f93061f58b790cb06601caebcfdec093bf403"
+    },
+    {
+      "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+      "sha256": "61e6826d6994f94cd6829da2873500b942bdad2b493e10ea7d754905377750dc"
+    },
+    {
+      "path": "apps/official-site/utils/public-projection.ts",
+      "sha256": "43dbe878288dccda4a99334422bed07d693d02167a34eee94ce5ffd34aa4c3c0"
+    },
+    {
+      "path": "apps/official-site/utils/public-links.mjs",
+      "sha256": "94abc4fd69d51bf6964fcfa93f6e8a6a044141a54359603205b930de5ff9e3e6"
+    },
+    {
+      "path": "apps/official-site/server/api/public-projection.get.ts",
+      "sha256": "1d2ef1ca85737bc589e2edaf2834afc61aa83b214ebb1cf4637eb7b6935fff7b"
+    },
+    {
+      "path": "apps/official-site/pages/index.vue",
+      "sha256": "cb52d704bc53f6810483b22580815f43eaee91360ce976ee0f3d07b3b98baef5"
+    },
+    {
+      "path": "apps/official-site/pages/courses/index.vue",
+      "sha256": "d2bb4d7622573c08e553b1adea4431565ff661a3fb42748e072f0619339a5742"
+    },
+    {
+      "path": "apps/official-site/pages/pricing.vue",
+      "sha256": "1f73880a488b95ac560579c2cf40bb5c08d09d24422b649a9c6706ffbbb8afa5"
+    },
+    {
+      "path": "apps/official-site/pages/download.vue",
+      "sha256": "1f73880a488b95ac560579c2cf40bb5c08d09d24422b649a9c6706ffbbb8afa5"
+    },
+    {
+      "path": "apps/official-site/pages/announcements.vue",
+      "sha256": "9d675a1796994af1e87959894de3203821b013f0fb11bd84159a38512572781c"
+    },
+    {
+      "path": "apps/official-site/pages/about.vue",
+      "sha256": "d70cac5f7c6f4c9dacfc84cc94d90cd51792cdf63222025322c9f73151c6f5e1"
+    },
+    {
+      "path": "apps/official-site/pages/compliance.vue",
+      "sha256": "07a2425381a9c04ad40aa51c815c5fb7e2fca938cfb2a3922ac2e7d0a3604561"
+    },
+    {
+      "path": "apps/official-site/pages/status.vue",
+      "sha256": "f85952587dc38b4799dd3aaea76c971fb6635ca43b1e508c5de8d519b1add355"
+    },
+    {
+      "path": "apps/official-site/pages/privacy.vue",
+      "sha256": "72562ecc8f4a38d00d5af7eccc736d715ba48f96dd3d8ac6f07d1b05ba61cf9f"
+    },
+    {
+      "path": "apps/official-site/pages/terms.vue",
+      "sha256": "5e6b4c8c59d3cae277d6bd63ed6255d4366eba4358b7a3b182313cdbab70f44b"
+    },
+    {
+      "path": "apps/official-site/pages/minors.vue",
+      "sha256": "d17a1f687e4502122bfaa6fa92b1ebfa5de1759343918a0a75624ff227b528f2"
+    },
+    {
+      "path": "apps/official-site/tests/public-projection-bff.test.mjs",
+      "sha256": "dd2802e7a8bfb8edb76537bc8efd077c605e1562214c0d00b883566ea23b3675"
+    }
+  ],
+  "parentClaim": {
+    "taskId": "P1R-M3-008",
+    "confirmed": false,
+    "owner": "REPLACE-with-confirmed-P1R-owner",
+    "canonicalLedgerSha256": "1059491ba35133bef925a083eb5a3b7be8e78cec0ae6198a6a6e998fbaa89925"
+  },
+  "gates": [
+    {
+      "id": "G-ENV",
+      "result": "PENDING",
+      "scope": "REPLACE-with-actual-input-scope-and-pending-card-output-boundary",
+      "evidencePaths": [
+        "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/REPLACE-with-proof-file"
+      ]
+    },
+    {
+      "id": "G-CONTRACT",
+      "result": "PENDING",
+      "scope": "REPLACE-with-actual-input-scope-and-pending-card-output-boundary",
+      "evidencePaths": [
+        "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/REPLACE-with-proof-file"
+      ]
+    },
+    {
+      "id": "G-PLATFORM",
+      "result": "PENDING",
+      "scope": "REPLACE-with-actual-input-scope-and-pending-card-output-boundary",
+      "evidencePaths": [
+        "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/REPLACE-with-proof-file"
+      ]
+    },
+    {
+      "id": "G-FRONTEND",
+      "result": "PENDING",
+      "scope": "REPLACE-with-actual-input-scope-and-pending-card-output-boundary",
+      "evidencePaths": [
+        "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/REPLACE-with-proof-file"
+      ]
+    }
+  ],
+  "blockerDecisions": [
+    {
+      "id": "CURRENT-APPLICABLE-GATES",
+      "disposition": "PENDING",
+      "reason": "本卡适用G-ENV/G-CONTRACT/G-PLATFORM/G-CONTENT/G-FRONTEND或P1R父依赖没有当前源码证据时不能READY；仅阻塞受影响执行分支，不要求预先通过本卡后置终验。",
+      "evidencePaths": [
+        "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/REPLACE-with-proof-file"
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/REPLACE-with-proof-file",
+      "sha256": "REPLACE-with-actual-sha256"
+    }
+  ]
+}

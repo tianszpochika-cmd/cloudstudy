@@ -1,0 +1,405 @@
+{
+  "taskId": "R1-001",
+  "action": "approve",
+  "expectedRevision": 26,
+  "specSha256": "57726738acaac54eac1bedf2b69b97205d4e1933019781747f1b907294fadd52",
+  "actor": "root-reviewer",
+  "role": "reviewer",
+  "reviewerThreadId": "01a0cb93-8791-7ee2-b453-8e8752b2553f",
+  "decision": "ACCEPTED",
+  "note": "Independent current-snapshot real browser/upstream acceptance; root supplements storage and actual navigation evidence without another product rework cycle.",
+  "evidence": [
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/review.json",
+      "sha256": "2cb74f24be4ab18365b46a0ae4f27c1392b76fb9dbf28a9847d8da44f917688f"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11/browser-all-entry.cjs",
+      "sha256": "5c77bc1bf0e37d724da75edbb107edac016da0e11a8a23fe2719ec52b04223b8"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11/browser-retry-v2.cjs",
+      "sha256": "23532833ad9c1ae459d939949e418dc3fba0fb0beb01265c102260a6e7790ce8"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11/browser-retry.cjs",
+      "sha256": "7406554c5b199cfad6916f482d0b7bee6bcea64f0d504f14854a97706d38dbcd"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11/browser-security.cjs",
+      "sha256": "7d4d5b98f10965d569422c1aad5073cb2169c8e937d983b100fee0aa352d7221"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11/current-snapshot.json",
+      "sha256": "ae176885a91abc0544d11cd7e3c8d50f03d1878891b05edb4cdafa22684e4a36"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11/empty-chain.log",
+      "sha256": "63a58086930a7b5b2c8345fc56b5c7dd7b438a170b23879fb427094c5a3b5aa3"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11/empty-chain/courses-empty-1440x900.png",
+      "sha256": "de65c66d7ba421246cf1a4222039455ee14d9013d1bef5c318322802c1511d8b"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11/empty-chain/courses-empty-375x812.png",
+      "sha256": "d8aee3428f7291226b34ea2d0d74b0fe2de5fb0bda76ff587bb639d1f0a3508e"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11/empty-chain/result.json",
+      "sha256": "360d55d87c09c1c8c42e9fd6b1e03255d96cb02b8c21f498df89b08ad444a485"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11/empty-process/content-empty-10-process.json",
+      "sha256": "91c6f3f3e555a94965066e260d7920043050253f1a98a58cfc31b2149cdd46d8"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11/empty-process/content-empty-10.json",
+      "sha256": "375bbcd178573a9fa4f740cdc5b57d048a7b9cf4f535b5624cab35006d7996c5"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11/finalize.mjs",
+      "sha256": "7bba67f4a46013588aa5fddbe0ff16bbf3e9dea1538dfd483210a09f4f4440d7"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11/negative.log",
+      "sha256": "2e2f5996fa0bba12f85ebd97aa45952e05c209ff79b1d6edd16b102cd9c4137c"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11/negative/negative-11.json",
+      "sha256": "5bed0280b1aed9d4d57abf76f2ea40d4f83aee400509ef30c9a15eaec6b18ded"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11/next-group.md",
+      "sha256": "973a692b9db8e5e4433fe65903b6e5e778c9c84d611af836f4cd1323f31b453a"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11/parent-manifest-before.json",
+      "sha256": "f5dd38c6ffd86df56cbc1cf2a1af517073a3760fa9bd274d9fffa663db209754"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11/parent-reference.json",
+      "sha256": "061c1d8c862efe57879276da2ab46ac85f20bf13df7c4be2137d61373ce6236a"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11/retry.log",
+      "sha256": "c35fb0519843540697515b56c0c26fc9f21b748c067014598d9712659a570fc2"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11/retry/after-375x812.png",
+      "sha256": "1b304b89cdb0e9159bb335e3038260daed1bd563b54a3fe072d9adc07e30ffa6"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11/retry/before-375x812.png",
+      "sha256": "90cd61c516baa9d22fff2ec07a47ef24591e5cf2f6531cabd1f8a900003a16c9"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11/retry/result.json",
+      "sha256": "c9e3647f3c54d58e36cfda3cbc412a7bec11d68cec40a4023b75afc6d41867a2"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11/review.md",
+      "sha256": "2047353fe73d4bd6a5b36a0261127e504417d94efb971f4c4e2c6ac03185ca71"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11/runtime-continuation.cjs",
+      "sha256": "75c75c65e942a49dd83906ce5a05e120a208ddcc88d5db58fae491db3a1e4bbd"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11/runtime-navigation.cjs",
+      "sha256": "a2c3290076729c28f47c48139b152fb0f82205a529f4f47dbdf88ab0a3a1aa8d"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11/runtime-result.json",
+      "sha256": "2b043a9e7ff117af9cf038c925b3b62b932dc92c13ba27395f294353f43cdcbe"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11/runtime-review.cjs",
+      "sha256": "9ee985680a0df5285ceaf0d174fdbe1888edd5f77fba0262d55e7610eec7736c"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11/security.log",
+      "sha256": "b61f622a1ef58aa9082929cbd983184c49244807d80b0e7a626077ec88a52acc"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11/security/result.json",
+      "sha256": "5c66586905004acba6d23672d7b9ad49c7265030d642a3c1fea7c61d65f87984"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11/security/returned-1440x900.png",
+      "sha256": "de65c66d7ba421246cf1a4222039455ee14d9013d1bef5c318322802c1511d8b"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11/security/returned-375x812.png",
+      "sha256": "8187a809d2fea6e3994ac1f22a3381071fdf0e6ffef0701981cb8ab5a87775e4"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11/sweep.log",
+      "sha256": "c99564b982a5ec40aac41b7610525a0d96adc2a1572b96ba6519beab37b990aa"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11/sweep/courses-region-1440x900.png",
+      "sha256": "94507f47c5908943e04c189f077592074279a6237ad5b7be76df4c4c5da34c72"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11/sweep/courses-region-375x812.png",
+      "sha256": "6274e9de150d5f00f71c8024541958474d8eeef35eb408ad5960e5142816aca3"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11/sweep/menu-375x812.png",
+      "sha256": "7afcdd9687b10c5b43223df33b45a1332769639d361b63b8a331d475de9167d9"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11/sweep/r1-001-sweep-11.json",
+      "sha256": "355405a4a3a9696010dcbd8c8af3fdf76763ce198e8a3d33aef2e9d1e8eeb92f"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11/units.log",
+      "sha256": "31980aa01f6150899074866527df9006b4924b3eb7da68b52e55ad2265358b2d"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11b/normal-chain.log",
+      "sha256": "8e4d87acec004e37576b599cc00d696d875b2f368498a2457cf8bed040c5e6b4"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11b/normal-chain/courses-nonempty-1440x900.png",
+      "sha256": "de65c66d7ba421246cf1a4222039455ee14d9013d1bef5c318322802c1511d8b"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11b/normal-chain/courses-nonempty-375x812.png",
+      "sha256": "d8aee3428f7291226b34ea2d0d74b0fe2de5fb0bda76ff587bb639d1f0a3508e"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11b/normal-chain/result.json",
+      "sha256": "4d4d35c9c5000f28ef8572ddc751da539128daf5660062e61dea0bdcda898116"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11b/retry.log",
+      "sha256": "a60e375d82a85b7906ce83700b48ee89b4cfed07680182f8dfb03b41e9c27185"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11b/retry/after-1440x900.png",
+      "sha256": "3e17c7168c0a5592e49e8b8c35cdd76b63707070a90271ea144e1e3e37c5988f"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11b/retry/after-375x812.png",
+      "sha256": "1b304b89cdb0e9159bb335e3038260daed1bd563b54a3fe072d9adc07e30ffa6"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11b/retry/before-1440x900.png",
+      "sha256": "f9d1d38863f670970ea237ea4c141a15ed6533155c2275ad862e932966065143"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11b/retry/before-375x812.png",
+      "sha256": "90cd61c516baa9d22fff2ec07a47ef24591e5cf2f6531cabd1f8a900003a16c9"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11b/retry/result.json",
+      "sha256": "87ae5528425a391eafa629389b80f874738ebd41d96133a84545332084111473"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11b/runtime-result.json",
+      "sha256": "03b9e3269e6986e6f8d582301483e3fbc825a2cfbecc74b5ff37c0c69be7f678"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11b/website.log",
+      "sha256": "c89dfae4d6cc7f5dff7e15843447a586fec5d513c74121662e7f97277848fa52"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11b/website/browser-checks.json",
+      "sha256": "1fc343649abf9e4b282e4bce770282593fd0122c14e7ff2c357f691f447b94ff"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11b/website/home-desktop-light.png",
+      "sha256": "3ab148ebfb726e1482b48bd8fd53d85eab6f6aa2f431a5a1d544f889690aa674"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11b/website/home-mobile-dark.png",
+      "sha256": "2248be5139fa8dd6905a49cf22fc6829ccf6000f8d9b073d81341228299ee2a7"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11b/website/home-mobile-light.png",
+      "sha256": "69e2f2327171856bc3e4f0658f20c9845e5cfe78ac246c3a2b6ddfb559a56aa8"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11b/website/world-mobile-game.png",
+      "sha256": "e162182f20d684507c98ba352e1151eff5757d722b2b10e7c9d881c43ee8c504"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11b/website/world-wall-desktop.png",
+      "sha256": "d369774bb9c458a3529fafad5d3708ec8aa923a26fdbbe82ce58923478ff663a"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11c/all-entry.log",
+      "sha256": "90145a3b0460c8514f92116603aa19a93dc4eda39125c21d40bb3b47646449f2"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11c/all-entry/result.json",
+      "sha256": "0547de90ecf7ffc1fc28be773df339caf3887ce5078b4233e7c108c7104c53ad"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11c/runtime-result.json",
+      "sha256": "8f1fe6fac884cd9b89320404fce39a0c37c519a67b948e4d1c692e370385ead2"
+    }
+  ],
+  "results": [
+    {
+      "id": "R1-001-TC01",
+      "result": "PASS",
+      "actual": "合法空与正常事实、22页可操作入口和实际注册落地/返回、完整官网11/152通过。",
+      "evidencePaths": [
+        "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11/empty-chain/result.json",
+        "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11/sweep/r1-001-sweep-11.json",
+        "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11b/normal-chain/result.json",
+        "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11c/all-entry/result.json",
+        "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11b/website/browser-checks.json"
+      ]
+    },
+    {
+      "id": "R1-001-TC02",
+      "result": "PASS",
+      "actual": "真实503及缓存recovery，同页点击恢复，7课程/更新时间/旧提示消失通过。",
+      "evidencePaths": [
+        "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11b/retry/result.json"
+      ]
+    },
+    {
+      "id": "R1-001-TC03",
+      "result": "PASS",
+      "actual": "8恶意输入、真实双击/返回、官网origin六次storage读取及Cookie白名单通过。",
+      "evidencePaths": [
+        "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11/security/result.json",
+        "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11c/all-entry/result.json"
+      ]
+    }
+  ],
+  "stepChecks": [
+    {
+      "order": 1,
+      "result": "PASS",
+      "actual": "当前认领/READY、限定快照与专用空输入/固定端口核验。",
+      "evidencePaths": [
+        "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11/current-snapshot.json"
+      ]
+    },
+    {
+      "order": 2,
+      "result": "PASS",
+      "actual": "38/38覆盖全局/facet/缓存/失败与权限边界，真实空/正常/恢复响应对应。",
+      "evidencePaths": [
+        "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11/units.log",
+        "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11b/retry/result.json"
+      ]
+    },
+    {
+      "order": 3,
+      "result": "PASS",
+      "actual": "双视口11页、权威空价格/课程、区域截图及完整官网回归。",
+      "evidencePaths": [
+        "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11/empty-chain/result.json",
+        "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11/sweep/r1-001-sweep-11.json",
+        "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11b/normal-chain/result.json",
+        "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11c/all-entry/result.json",
+        "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11b/website/browser-checks.json"
+      ]
+    },
+    {
+      "order": 4,
+      "result": "PASS",
+      "actual": "逐页真实注册点击返回、恶意输入/双击和官网storage/Cookie检查。",
+      "evidencePaths": [
+        "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11/security/result.json",
+        "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11c/all-entry/result.json"
+      ]
+    },
+    {
+      "order": 5,
+      "result": "PASS",
+      "actual": "主审三个TC独立PASS，局部父manifest证据引用保留原父状态。",
+      "evidencePaths": [
+        "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/review.json",
+        "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11/parent-reference.json",
+        "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11/review.md"
+      ]
+    }
+  ],
+  "runs": [
+    {
+      "name": "units",
+      "command": "node --test apps/official-site/tests/public-projection-bff.test.mjs apps/official-site/tests/b13-official-site.test.mjs apps/official-site/tests/b14-fe-005.test.mjs apps/official-site/tests/website-entry.test.mjs",
+      "startedAt": "2026-10-05T02:19:02.221Z",
+      "logPath": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11/units.log",
+      "exitCode": 0,
+      "finishedAt": "2026-10-05T02:19:03.726Z"
+    },
+    {
+      "name": "negative",
+      "command": "node evidence/p1r/m3/P1R-M3-008/redesign/R1-001/work/negative-sweep-11.cjs evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11/negative",
+      "startedAt": "2026-10-05T02:19:03.726Z",
+      "logPath": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11/negative.log",
+      "exitCode": 0,
+      "finishedAt": "2026-10-05T02:20:34.228Z"
+    },
+    {
+      "name": "empty-chain",
+      "command": "node evidence/p1r/m3/P1R-M3-008/redesign/R1-001/work/real-upstream-10.cjs evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11/empty-chain",
+      "startedAt": "2026-10-05T02:21:01.064Z",
+      "logPath": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11/empty-chain.log",
+      "exitCode": 0,
+      "finishedAt": "2026-10-05T02:21:05.528Z"
+    },
+    {
+      "name": "sweep",
+      "command": "node evidence/p1r/m3/P1R-M3-008/redesign/R1-001/work/r1-001-sweep-11.cjs evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11/sweep",
+      "startedAt": "2026-10-05T02:21:05.528Z",
+      "logPath": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11/sweep.log",
+      "exitCode": 0,
+      "finishedAt": "2026-10-05T02:21:29.752Z"
+    },
+    {
+      "name": "security",
+      "command": "node evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11/browser-security.cjs evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11/security",
+      "startedAt": "2026-10-05T02:21:29.752Z",
+      "logPath": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11/security.log",
+      "exitCode": 0,
+      "finishedAt": "2026-10-05T02:21:39.417Z"
+    },
+    {
+      "name": "retry",
+      "command": "node evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11/browser-retry-v2.cjs evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11b/retry",
+      "startedAt": "2026-10-05T02:25:16.054Z",
+      "logPath": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11b/retry.log",
+      "exitCode": 0,
+      "finishedAt": "2026-10-05T02:25:36.145Z"
+    },
+    {
+      "name": "normal-chain",
+      "command": "node evidence/p1r/m3/P1R-M3-008/redesign/R1-001/work/real-upstream-10.cjs evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11b/normal-chain",
+      "startedAt": "2026-10-05T02:25:42.395Z",
+      "logPath": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11b/normal-chain.log",
+      "exitCode": 0,
+      "finishedAt": "2026-10-05T02:25:47.172Z"
+    },
+    {
+      "name": "website",
+      "command": "node apps/official-site/tests/browser/website-runtime.cjs",
+      "startedAt": "2026-10-05T02:25:47.172Z",
+      "logPath": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11b/website.log",
+      "exitCode": 0,
+      "finishedAt": "2026-10-05T02:28:09.718Z"
+    },
+    {
+      "name": "all-entry",
+      "command": "node evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11/browser-all-entry.cjs evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11c/all-entry",
+      "startedAt": "2026-10-05T02:29:11.435Z",
+      "logPath": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11c/all-entry.log",
+      "exitCode": 0,
+      "finishedAt": "2026-10-05T02:29:37.507Z"
+    }
+  ],
+  "findings": [],
+  "resolvedEvidenceCaveats": [
+    "executor tc03 storage/rapid-click output superseded by independent origin-verified real browser results",
+    "first reviewer retry failed due ambiguous locator; preserved; second version successful"
+  ]
+}

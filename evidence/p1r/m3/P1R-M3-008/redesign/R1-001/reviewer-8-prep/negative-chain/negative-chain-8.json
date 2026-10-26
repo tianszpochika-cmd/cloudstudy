@@ -1,0 +1,113 @@
+{
+  "checkedAt": "2026-10-04T21:51:55.329Z",
+  "mocked": true,
+  "scope": "same real-chain-assert-8 module; synthetic facts only, no browser/backend",
+  "rows": [
+    {
+      "name": "valid-chain",
+      "expectedAccepted": true,
+      "accepted": true,
+      "matchesExpectation": true,
+      "error": null
+    },
+    {
+      "name": "non-200-upstream",
+      "expectedAccepted": false,
+      "accepted": false,
+      "matchesExpectation": true,
+      "error": "t upstream http=503\n\n503 !== 200\n"
+    },
+    {
+      "name": "non-200-bff",
+      "expectedAccepted": false,
+      "accepted": false,
+      "matchesExpectation": true,
+      "error": "t bff http=502\n\n502 !== 200\n"
+    },
+    {
+      "name": "wrong-course-ids",
+      "expectedAccepted": false,
+      "accepted": false,
+      "matchesExpectation": true,
+      "error": "t bff/upstream courseIds mismatch\n+ actual - expected\n\n  [\n+   'WRONG-ID'\n-   'DEMO-P5-GRAMMAR-A1',\n-   'DEMO-P5-LISTEN-A2'\n  ]"
+    },
+    {
+      "name": "wrong-generatedAt",
+      "expectedAccepted": false,
+      "accepted": false,
+      "matchesExpectation": true,
+      "error": "t generatedAt mismatch\n+ actual - expected\n\n+ '2026-01-01T00:00:00Z'\n- '2026-09-27T17:05:36.703141Z'\n         ^"
+    },
+    {
+      "name": "wrong-bff-state",
+      "expectedAccepted": false,
+      "accepted": false,
+      "matchesExpectation": true,
+      "error": "t bff state=error\n+ actual - expected\n\n+ 'error'\n- 'ready'"
+    },
+    {
+      "name": "dom-titles-match",
+      "expectedAccepted": true,
+      "accepted": true,
+      "matchesExpectation": true,
+      "error": null
+    },
+    {
+      "name": "dom-titles-mismatch",
+      "expectedAccepted": false,
+      "accepted": false,
+      "matchesExpectation": true,
+      "error": "t dom/bff titles mismatch\n+ actual - expected\n\n  [\n    'A',\n+   'X'\n-   'B'\n  ]"
+    },
+    {
+      "name": "price-valid",
+      "expectedAccepted": true,
+      "accepted": true,
+      "matchesExpectation": true,
+      "error": null
+    },
+    {
+      "name": "price-missing-note",
+      "expectedAccepted": false,
+      "accepted": false,
+      "matchesExpectation": true,
+      "error": "t empty-note not visible in pricing region\n\nfalse !== true\n"
+    },
+    {
+      "name": "price-recovery-present",
+      "expectedAccepted": false,
+      "accepted": false,
+      "matchesExpectation": true,
+      "error": "t recovery present\n\n1 !== 0\n"
+    },
+    {
+      "name": "price-error-present",
+      "expectedAccepted": false,
+      "accepted": false,
+      "matchesExpectation": true,
+      "error": "t error present\n\n1 !== 0\n"
+    },
+    {
+      "name": "cookie-clean-pass",
+      "expectedAccepted": true,
+      "accepted": true,
+      "matchesExpectation": true,
+      "error": null
+    },
+    {
+      "name": "cookie-business-fail",
+      "expectedAccepted": false,
+      "accepted": false,
+      "matchesExpectation": true,
+      "error": "t business-cookie-hit=session-id\n\n1 !== 0\n"
+    },
+    {
+      "name": "cookie-token-fail",
+      "expectedAccepted": false,
+      "accepted": false,
+      "matchesExpectation": true,
+      "error": "t business-cookie-hit=auth-token\n\n1 !== 0\n"
+    }
+  ],
+  "failedChecks": []
+}

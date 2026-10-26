@@ -1,0 +1,38 @@
+{
+  "taskId": "R1-001",
+  "action": "submit",
+  "expectedRevision": 0,
+  "specSha256": "2239d56b70f60aea8874abd1f6267cdf377bc2531a1b43bc84278c8742999fff",
+  "actor": "REPLACE-with-executor",
+  "note": "REPLACE-with-concrete-result",
+  "completedSteps": [
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "sourceCommit": "3d11be3337accd32afbdbe13a218bca38c786043",
+  "dirtyDiffSha256": "993338963f97c900408b4217d04bd37d9e56425f1f3e69d9e23de3f2d0734063",
+  "artifacts": [
+    {
+      "path": "REPLACE-with-current-delivery-path",
+      "sha256": "REPLACE-with-actual-sha256"
+    }
+  ],
+  "deletedArtifacts": [],
+  "evidence": [
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/REPLACE-with-proof-file",
+      "sha256": "REPLACE-with-actual-sha256"
+    }
+  ],
+  "environment": {
+    "kind": "REPLACE-with-isolated-environment",
+    "ports": [],
+    "schemas": [],
+    "fixtureDigest": "REPLACE"
+  },
+  "knownGaps": [],
+  "rollback": "REPLACE-with-scoped-rollback-and-evidence"
+}

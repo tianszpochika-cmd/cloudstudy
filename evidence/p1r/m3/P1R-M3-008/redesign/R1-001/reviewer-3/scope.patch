@@ -1,0 +1,1074 @@
+diff --git a/apps/official-site/components/SiteStartButton.vue b/apps/official-site/components/SiteStartButton.vue
+index 2cf98d17..6830e39f 100644
+--- a/apps/official-site/components/SiteStartButton.vue
++++ b/apps/official-site/components/SiteStartButton.vue
+@@ -1,14 +1,30 @@
+ <script setup lang="ts">
+-withDefaults(defineProps<{ label?: string; secondary?: boolean }>(), {
++const props = withDefaults(defineProps<{ label?: string; secondary?: boolean; target?: "web" | "mobile" | "auto" }>(), {
+   label: "",
++  target: "auto",
+ });
+ const { t } = useSiteText();
++const { registerLink } = useOfficialSiteLinks();
++const deviceMobile = useLearningDevice();
++const resolvedTarget = computed<"web" | "mobile">(() =>
++  props.target === "auto" ? (deviceMobile.value ? "mobile" : "web") : props.target,
++);
++const href = computed(() => {
++  try {
++    return registerLink(resolvedTarget.value);
++  } catch {
++    return "/start";
++  }
++});
+ </script>
+ <template>
+-  <NuxtLink
+-    to="/start"
++  <!-- SSR 与 hydration 共用同一 computed，保证首屏与客户端入口一致。 -->
++  <a
++    :href="href"
+     class="btn"
+     :class="secondary ? 'btn-white' : 'btn-primary'"
++    :data-learning-entry="resolvedTarget"
++    :data-device="deviceMobile ? 'mobile' : 'web'"
+     >{{ label || t("official.c03e46770e") }}<SiteIcon name="arrow"
+-  /></NuxtLink>
++  /></a>
+ </template>
+diff --git a/apps/official-site/composables/useOfficialSiteLinks.ts b/apps/official-site/composables/useOfficialSiteLinks.ts
+index 9daa267f..e827c965 100644
+--- a/apps/official-site/composables/useOfficialSiteLinks.ts
++++ b/apps/official-site/composables/useOfficialSiteLinks.ts
+@@ -2,16 +2,22 @@ import {
+   appendCampaignParams,
+   buildLearnerLink,
+   buildLearnerLoginLink,
++  buildPublicLearningEntry,
+   preserveCampaignParams,
+   safePublicHref,
+ } from "~/utils/public-links.mjs";
+ 
++export type PublicLearningTarget = "web" | "mobile";
++
+ export function useOfficialSiteLinks() {
+   const { officialI18nAdapter, officialThemeController } =
+     useNuxtApp().$foundation;
+   const route = useRoute();
+   const config = useRuntimeConfig();
+   const learnerWebUrl = String(config.public.learnerWebUrl || "/");
++  const mobileH5Url = String(
++    config.public.mobileH5Url || config.public.learnerWebUrl || "/",
++  );
+   const configuredOrigins = Array.isArray(config.public.publicLinkOrigins)
+     ? config.public.publicLinkOrigins.map(String)
+     : String(config.public.publicLinkOrigins || "")
+@@ -44,6 +50,25 @@ export function useOfficialSiteLinks() {
+     });
+   }
+ 
++  /**
++   * R1-001 controlled registration entry. The official site never owns a
++   * registration page: visitors go to the existing learner-web /register or
++   * the mobile H5 register page with the current UI locale/theme. Return
++   * targets stay fixed to /home (web) or /pages/home/home (H5) so a crafted
++   * returnTo can never become an open redirect.
++   */
++  function registerLink(target: PublicLearningTarget = "web") {
++    const mobile = target === "mobile";
++    return buildPublicLearningEntry({
++      base: mobile ? mobileH5Url : learnerWebUrl,
++      mobile,
++      login: false,
++      locale: officialI18nAdapter.state.locale,
++      theme: officialThemeController.theme,
++      campaign: campaignParams(),
++    });
++  }
++
+   function publicLink(
+     value: string | null | undefined,
+     fallback: string | null = null,
+@@ -57,5 +82,5 @@ export function useOfficialSiteLinks() {
+     return appendCampaignParams(safe, route.query);
+   }
+ 
+-  return { learnerLink, authLink, publicLink, campaignParams };
++  return { learnerLink, authLink, registerLink, publicLink, campaignParams };
+ }
+diff --git a/apps/official-site/composables/usePublicProjection.ts b/apps/official-site/composables/usePublicProjection.ts
+index 636c3625..40814785 100644
+--- a/apps/official-site/composables/usePublicProjection.ts
++++ b/apps/official-site/composables/usePublicProjection.ts
+@@ -7,10 +7,25 @@ import {
+ import {
+   EMPTY_PUBLIC_PROJECTION,
+   resolvePublicUiLocale,
++  type PublicProjectionFacets,
+   type PublicProjectionResponse,
+   type PublicUiLocale,
+ } from "~/utils/public-projection";
+ 
++function emptyFacets(state: "loading" | "error", errorCode: string | null): PublicProjectionFacets {
++  const facet = { state, updatedAt: null, errorCode, stale: false };
++  return {
++    courses: { ...facet },
++    pricing: { ...facet },
++    download: { ...facet },
++    announcements: { ...facet },
++    compliance: { ...facet },
++  };
++}
++
++const INITIAL_FACETS = emptyFacets("loading", null);
++const NETWORK_ERROR_FACETS = emptyFacets("error", "PUBLIC_PROJECTION_UNAVAILABLE");
++
+ export function usePublicProjection(
+   key = "official-site",
+   requestedLocale?: PublicUiLocale,
+@@ -26,6 +41,9 @@ export function usePublicProjection(
+       stale: false,
+       source: "empty-fallback",
+       errorCode: null,
++      facets: INITIAL_FACETS,
++      commerceState: "loading",
++      commerceErrorCode: null,
+     }),
+   );
+   let pending: Promise<void> | null = null;
+@@ -40,12 +58,16 @@ export function usePublicProjection(
+         );
+         result.value = response;
+       } catch {
++        // 真实网络 throw：不保留旧投影，按完整 error 响应形状失败关闭。
+         result.value = {
+           projection: EMPTY_PUBLIC_PROJECTION,
+           state: "error",
+           stale: false,
+           source: "empty-fallback",
+           errorCode: "PUBLIC_PROJECTION_UNAVAILABLE",
++          facets: NETWORK_ERROR_FACETS,
++          commerceState: "error",
++          commerceErrorCode: "PUBLIC_PROJECTION_UNAVAILABLE",
+         };
+       } finally {
+         pending = null;
+diff --git a/apps/official-site/pages/announcements.vue b/apps/official-site/pages/announcements.vue
+index 0fe59495..1c51d7d2 100644
+--- a/apps/official-site/pages/announcements.vue
++++ b/apps/official-site/pages/announcements.vue
+@@ -3,6 +3,7 @@ import { useOfficialSeo } from "~/utils/seo";
+ const { t } = useSiteText(),
+   { publicLink } = useOfficialSiteLinks(),
+   { loadState, load } = usePublicProjection("announcements");
++const announcementsFacet = computed(() => loadState.value.facets?.announcements ?? { state: loadState.value.state, updatedAt: null as string | null, errorCode: loadState.value.errorCode, stale: loadState.value.stale });
+ useOfficialSeo({
+   title: t("official.c9f9bb9530"),
+   description: t("official.ce8a9e7813"),
+@@ -18,9 +19,21 @@ useOfficialSeo({
+     />
+     <section class="page-body">
+       <div class="container status-note">
++        <p
++          v-if="announcementsFacet.state === 'recovery'"
++          class="facet-recovery"
++          role="status"
++        >
++          {{ t("official.ce3ebe23fc") }}：{{ t("official.ca0731eec0") }}
++          <span v-if="announcementsFacet.updatedAt">{{ t("official.c5a1f3e8d2") }}{{ announcementsFacet.updatedAt.slice(0, 10) }}</span>
++          <button class="btn btn-outline" type="button" @click="load">{{ t("official.c5982c44c1") }}</button>
++        </p>
++        <p v-if="announcementsFacet.updatedAt && announcementsFacet.state !== 'recovery'" class="facet-updated" aria-live="polite">
++          {{ t("official.c5a1f3e8d2") }}{{ announcementsFacet.updatedAt.slice(0, 10) }}
++        </p>
+         <template
+           v-if="
+-            loadState.state === 'ready' &&
++            ['ready', 'recovery'].includes(announcementsFacet.state) &&
+             loadState.projection.announcements.length
+           "
+           ><article
+@@ -41,7 +54,7 @@ useOfficialSeo({
+             /></a></article></template
+         ><PublicStatus
+           v-else
+-          :state="loadState.state === 'ready' ? 'empty' : loadState.state"
++          :state="announcementsFacet.state === 'ready' ? 'empty' : announcementsFacet.state"
+           @retry="load"
+         />
+       </div>
+diff --git a/apps/official-site/pages/compliance.vue b/apps/official-site/pages/compliance.vue
+index 7b86940e..8716be8b 100644
+--- a/apps/official-site/pages/compliance.vue
++++ b/apps/official-site/pages/compliance.vue
+@@ -2,6 +2,7 @@
+ const { t } = useSiteText(),
+   { loadState, load } = usePublicProjection("compliance");
+ const notices = computed(() => loadState.value.projection.complianceNotices);
++const complianceFacet = computed(() => loadState.value.facets?.compliance ?? { state: loadState.value.state, updatedAt: null as string | null, errorCode: loadState.value.errorCode, stale: loadState.value.stale });
+ </script>
+ <template>
+   <div>
+@@ -12,10 +13,13 @@ const notices = computed(() => loadState.value.projection.complianceNotices);
+           <h2>{{ t("official.ca3b2169c8") }}</h2>
+         </div>
+         <PublicStatus
+-          v-if="loadState.state !== 'ready'"
+-          :state="loadState.state"
++          v-if="complianceFacet.state !== 'ready'"
++          :state="complianceFacet.state"
+           @retry="load"
+         />
++        <p v-if="complianceFacet.updatedAt" class="facet-updated" aria-live="polite">
++          {{ t("official.c5a1f3e8d2") }}{{ complianceFacet.updatedAt.slice(0, 10) }}
++        </p>
+         <div v-if="notices.length" class="published-notices">
+           <article v-for="notice in notices" :key="notice.title">
+             <span class="eyebrow">{{ notice.status }}</span>
+diff --git a/apps/official-site/pages/courses/index.vue b/apps/official-site/pages/courses/index.vue
+index b922f0db..dfd64200 100644
+--- a/apps/official-site/pages/courses/index.vue
++++ b/apps/official-site/pages/courses/index.vue
+@@ -26,6 +26,16 @@ function filter(groupValue: string, searchValue = query.value) {
+   });
+ }
+ const { loadState, load } = usePublicProjection("courses");
++const { registerLink } = useOfficialSiteLinks();
++const deviceMobile = useLearningDevice();
++const courseRegisterHref = computed(() => {
++  try {
++    return registerLink(deviceMobile.value ? "mobile" : "web");
++  } catch {
++    return "/start";
++  }
++});
++const coursesFacet = computed(() => loadState.value.facets?.courses ?? { state: loadState.value.state, updatedAt: null as string | null, errorCode: loadState.value.errorCode, stale: loadState.value.stale });
+ useOfficialSeo({
+   title: t("official.c66fb6e8c0"),
+   description: t("official.c0978c4332"),
+@@ -100,13 +110,25 @@ useOfficialSeo({
+               <h2 id="published-courses-title">{{ t("official.c52c0deec0") }}</h2>
+               <p class="catalog-note">{{ t("official.cab2cf9e17") }}</p>
+             </div>
+-            <NuxtLink class="link-arrow" to="/start"
++            <a class="link-arrow" :href="courseRegisterHref" :data-learning-entry="deviceMobile ? 'mobile' : 'web'"
+               >{{ t("official.caa236cbb2") }}<SiteIcon name="arrow"
+-            /></NuxtLink>
++            /></a>
+           </div>
++          <p
++            v-if="coursesFacet.state === 'recovery'"
++            class="facet-recovery"
++            role="status"
++          >
++            {{ t("official.ce3ebe23fc") }}：{{ t("official.ca0731eec0") }}
++            <span v-if="coursesFacet.updatedAt">{{ t("official.c5a1f3e8d2") }}{{ coursesFacet.updatedAt.slice(0, 10) }}</span>
++            <button class="btn btn-outline" type="button" @click="load">{{ t("official.c5982c44c1") }}</button>
++          </p>
++          <p v-if="coursesFacet.updatedAt && coursesFacet.state !== 'recovery'" class="facet-updated" aria-live="polite">
++            {{ t("official.c5a1f3e8d2") }}{{ coursesFacet.updatedAt.slice(0, 10) }}
++          </p>
+           <div
+             v-if="
+-              ['ready', 'recovery'].includes(loadState.state) &&
++              ['ready', 'recovery'].includes(coursesFacet.state) &&
+               loadState.projection.courses.length
+             "
+             class="published-grid"
+@@ -119,14 +141,16 @@ useOfficialSeo({
+               <span v-if="course.level" class="pill">{{ course.level }}</span>
+               <h3>{{ course.title }}</h3>
+               <p v-if="course.description">{{ course.description }}</p>
+-              <NuxtLink class="link-arrow" to="/start"
++              <a class="link-arrow" :href="courseRegisterHref" :data-learning-entry="deviceMobile ? 'mobile' : 'web'"
+                 >{{ t("official.caa236cbb2") }}<SiteIcon name="arrow"
+-              /></NuxtLink>
++              /></a>
+             </article>
+           </div>
+           <PublicStatus
+-            v-if="loadState.state !== 'ready' || !loadState.projection.courses.length"
+-            :state="loadState.state === 'ready' ? 'empty' : loadState.state"
++            v-if="coursesFacet.state !== 'ready' || !loadState.projection.courses.length"
++            :state="['ready', 'empty'].includes(coursesFacet.state) ? 'empty' : coursesFacet.state"
++            :title="['ready', 'empty'].includes(coursesFacet.state) ? t('official.c52c0deec1') : undefined"
++            :message="['ready', 'empty'].includes(coursesFacet.state) ? t('official.c52c0deec2') : undefined"
+             @retry="load"
+           />
+         </section>
+diff --git a/apps/official-site/pages/download.vue b/apps/official-site/pages/download.vue
+index 9e6fb8af..5f0a9f14 100644
+--- a/apps/official-site/pages/download.vue
++++ b/apps/official-site/pages/download.vue
+@@ -1,5 +1,69 @@
+ <script setup lang="ts">
+-const route = useRoute();
+-await navigateTo({ path: "/start", query: route.query }, { redirectCode: 301 });
++import { useOfficialSeo } from "~/utils/seo";
++const { t } = useSiteText(),
++  { loadState, load } = usePublicProjection("download");
++const { publicLink } = useOfficialSiteLinks();
++const channels = computed(() => loadState.value.projection.downloadChannels);
++const downloadFacet = computed(() => loadState.value.facets?.download ?? { state: loadState.value.state, updatedAt: null as string | null, errorCode: loadState.value.errorCode, stale: loadState.value.stale });
++const webHref = computed(() => publicLink("/download"));
++useOfficialSeo({
++  title: t("official.c9d2b4e6f1"),
++  description: t("official.c1f7a3d8e4"),
++  path: "/download",
++});
+ </script>
+-<template><div /></template>
++<template>
++  <div>
++    <PageHeading
++      :title="t('official.c9d2b4e6f1')"
++      :lead="t('official.c1f7a3d8e4')"
++      :label="t('official.cbd70ad936')"
++    />
++    <section class="page-body">
++      <div class="container">
++        <p
++          v-if="downloadFacet.state === 'recovery'"
++          class="facet-recovery"
++          role="status"
++        >
++          {{ t("official.ce3ebe23fc") }}：{{ t("official.ca0731eec0") }}
++          <span v-if="downloadFacet.updatedAt">{{ t("official.c5a1f3e8d2") }}{{ downloadFacet.updatedAt.slice(0, 10) }}</span>
++          <button class="btn btn-outline" type="button" @click="load">{{ t("official.c5982c44c1") }}</button>
++        </p>
++        <div
++          v-if="['ready', 'recovery'].includes(downloadFacet.state) && channels.length"
++          class="download-grid"
++        >
++          <article
++            v-for="channel in channels"
++            :key="channel.id"
++            class="download-card"
++            :data-availability="channel.availability"
++          >
++            <span class="eyebrow">{{ channel.platform }}</span>
++            <h3>{{ channel.name }}</h3>
++            <p>{{ channel.description }}</p>
++            <a
++              v-if="channel.availability === 'available' && publicLink(channel.href)"
++              class="btn btn-outline"
++              :href="publicLink(channel.href)!"
++            >{{ channel.action }}</a>
++            <span v-else class="btn btn-muted" aria-disabled="true">{{ channel.action }}</span>
++          </article>
++        </div>
++        <PublicStatus
++          v-else
++          :state="downloadFacet.state === 'ready' ? 'empty' : downloadFacet.state"
++          :title="downloadFacet.state === 'ready' ? t('official.cd8a16c6a7') : undefined"
++          :message="downloadFacet.state === 'ready' ? t('official.c40af6e5a7') : undefined"
++          :action-label="downloadFacet.state === 'ready' ? t('official.cbd5585110') : undefined"
++          :action-href="downloadFacet.state === 'ready' ? webHref ?? undefined : undefined"
++          @retry="load"
++        />
++        <p v-if="downloadFacet.updatedAt" class="facet-updated">
++          {{ t("official.c5a1f3e8d2") }}{{ downloadFacet.updatedAt.slice(0, 10) }}
++        </p>
++      </div>
++    </section>
++  </div>
++</template>
+diff --git a/apps/official-site/pages/index.vue b/apps/official-site/pages/index.vue
+index 6578d291..871a8282 100644
+--- a/apps/official-site/pages/index.vue
++++ b/apps/official-site/pages/index.vue
+@@ -2,7 +2,9 @@
+ import { learningMethods, frequentlyAsked } from "~/utils/experience-content";
+ import { useOfficialSeo } from "~/utils/seo";
+ const { t } = useSiteText(),
+-  sampleOpen = ref(false);
++  sampleOpen = ref(false),
++  { loadState } = usePublicProjection("home");
++const homeCoursesFacet = computed(() => loadState.value.facets?.courses ?? { state: loadState.value.state, updatedAt: null as string | null, errorCode: loadState.value.errorCode, stale: loadState.value.stale });
+ useOfficialSeo({
+   title: t("official.cb2ffbd59f"),
+   description: t("official.cea0be3689"),
+@@ -146,6 +148,16 @@ useOfficialSeo({
+             compact
+           /><LearningMethodCard :course="learningMethods[1]" compact />
+         </div>
++        <p v-if="homeCoursesFacet.updatedAt" class="facet-updated" aria-live="polite">
++          {{ t("official.c5a1f3e8d2") }}{{ homeCoursesFacet.updatedAt.slice(0, 10) }}
++        </p>
++        <p
++          v-if="['ready', 'empty'].includes(homeCoursesFacet.state) && !loadState.projection.courses.length"
++          class="catalog-note"
++          role="status"
++        >
++          {{ t("official.c52c0deec1") }}：{{ t("official.c52c0deec2") }}
++        </p>
+       </div>
+     </section>
+     <section id="practice-example" class="section try-section">
+diff --git a/apps/official-site/pages/pricing.vue b/apps/official-site/pages/pricing.vue
+index 9e6fb8af..3d9a6cc6 100644
+--- a/apps/official-site/pages/pricing.vue
++++ b/apps/official-site/pages/pricing.vue
+@@ -1,5 +1,80 @@
+ <script setup lang="ts">
+-const route = useRoute();
+-await navigateTo({ path: "/start", query: route.query }, { redirectCode: 301 });
++import { useOfficialSeo } from "~/utils/seo";
++const { t } = useSiteText(),
++  { loadState, load } = usePublicProjection("pricing");
++const { publicLink, registerLink } = useOfficialSiteLinks();
++const deviceMobile = useLearningDevice();
++const plans = computed(() => loadState.value.projection.pricingPlans);
++const skus = computed(() => loadState.value.projection.skus);
++const pricingFacet = computed(() => loadState.value.facets?.pricing ?? { state: loadState.value.state, updatedAt: null as string | null, errorCode: loadState.value.errorCode, stale: loadState.value.stale });
++const pricingHref = computed(() =>
++  publicLink("/pricing"),
++);
++const registerHref = computed(() => {
++  try {
++    return registerLink(deviceMobile.value ? "mobile" : "web");
++  } catch {
++    return "/start";
++  }
++});
++useOfficialSeo({
++  title: t("official.c3b7d1e9a0"),
++  description: t("official.c4e8f2a1b5"),
++  path: "/pricing",
++});
+ </script>
+-<template><div /></template>
++<template>
++  <div>
++    <PageHeading
++      :title="t('official.c3b7d1e9a0')"
++      :lead="t('official.c4e8f2a1b5')"
++      :label="t('official.c36a0f1dc5')"
++    />
++    <section class="page-body">
++      <div class="container">
++        <p
++          v-if="pricingFacet.state === 'recovery'"
++          class="facet-recovery"
++          role="status"
++        >
++          {{ t("official.ce3ebe23fc") }}：{{ t("official.ca0731eec0") }}
++          <span v-if="pricingFacet.updatedAt">{{ t("official.c5a1f3e8d2") }}{{ pricingFacet.updatedAt.slice(0, 10) }}</span>
++          <button class="btn btn-outline" type="button" @click="load">{{ t("official.c5982c44c1") }}</button>
++        </p>
++        <div
++          v-if="['ready', 'recovery'].includes(pricingFacet.state) && (plans.length || skus.length)"
++          class="pricing-grid"
++        >
++          <PricingCard
++            v-for="plan in plans"
++            :key="plan.id"
++            :plan="plan"
++            :action-href="registerHref"
++          />
++          <PublicSkuCard
++            v-for="sku in skus"
++            :key="sku.skuId"
++            :sku="sku"
++            :action-href="registerHref"
++          />
++        </div>
++        <PublicStatus
++          v-else
++          :state="pricingFacet.state === 'ready' ? 'empty' : pricingFacet.state"
++          :title="pricingFacet.state === 'ready' ? t('official.c7be801719') : undefined"
++          :message="pricingFacet.state === 'ready' ? t('official.c456007104') : undefined"
++          :action-label="pricingFacet.state === 'ready' ? t('official.caa236cbb2') : undefined"
++          :action-href="pricingFacet.state === 'ready' ? pricingHref ?? undefined : undefined"
++          @retry="load"
++        />
++        <p v-if="pricingFacet.updatedAt" class="facet-updated">
++          {{ t("official.c5a1f3e8d2") }}{{ pricingFacet.updatedAt.slice(0, 10) }}
++        </p>
++        <p class="pricing-note">
++          {{ t("official.c456007104") }}
++          <SiteStartButton :label="t('official.caa236cbb2')" />
++        </p>
++      </div>
++    </section>
++  </div>
++</template>
+diff --git a/apps/official-site/server/api/public-projection.get.ts b/apps/official-site/server/api/public-projection.get.ts
+index 2fa0c6f1..434e3061 100644
+--- a/apps/official-site/server/api/public-projection.get.ts
++++ b/apps/official-site/server/api/public-projection.get.ts
+@@ -94,12 +94,23 @@ function invalidate(locale: PublicUiLocale, state: "permission" | "error"): void
+ }
+ 
+ function emptyFallback(state: "permission" | "error"): PublicProjectionResponse {
++  const errorCode = state === "permission" ? "PUBLIC_PROJECTION_PERMISSION" : "PUBLIC_PROJECTION_UNAVAILABLE";
++  const facets = {
++    courses: { state, updatedAt: null, errorCode, stale: false },
++    pricing: { state, updatedAt: null, errorCode, stale: false },
++    download: { state, updatedAt: null, errorCode, stale: false },
++    announcements: { state, updatedAt: null, errorCode, stale: false },
++    compliance: { state, updatedAt: null, errorCode, stale: false },
++  } as PublicProjectionResponse["facets"];
+   return {
+     projection: EMPTY_PUBLIC_PROJECTION,
+     state,
+     stale: false,
+     source: "empty-fallback",
+-    errorCode: state === "permission" ? "PUBLIC_PROJECTION_PERMISSION" : "PUBLIC_PROJECTION_UNAVAILABLE",
++    errorCode,
++    facets,
++    commerceState: state,
++    commerceErrorCode: errorCode,
+   };
+ }
+ 
+@@ -184,13 +195,26 @@ export default defineEventHandler(
+         commerceDegraded = true;
+         setResponseHeader(event, "x-public-projection-commerce", "degraded");
+       }
+-      const normalized = normalizePublicProjectionResponse(mergedPayload, locale);
++      const normalized = normalizePublicProjectionResponse(
++        {
++          ...(isRecord(mergedPayload) ? mergedPayload : {}),
++          commerceState: commerceDegraded ? "error" : "ready",
++          commerceErrorCode: commerceDegraded ? "PUBLIC_COMMERCE_DEGRADED" : null,
++          commerceDegraded,
++        },
++        locale,
++      );
++      // 合法 recovery：保留经过字段过滤的可读公开数据、更新时间、旧数据
++      // 标记与恢复原因；permission/error/maintenance 仍按不可读处理。
++      const keepRecoveryData = normalized.state === "recovery";
+       const result: PublicProjectionResponse = {
+         ...normalized,
+-        projection: normalized.state === "ready" ? normalized.projection : EMPTY_PUBLIC_PROJECTION,
++        projection: normalized.state === "ready" || keepRecoveryData ? normalized.projection : EMPTY_PUBLIC_PROJECTION,
+         source: "gateway",
+-        stale: false,
+-        errorCode: null,
++        stale: keepRecoveryData ? true : false,
++        errorCode: keepRecoveryData
++          ? (normalized.errorCode ?? "PUBLIC_PROJECTION_STALE")
++          : commerceDegraded ? normalized.errorCode : null,
+       };
+       const latestInvalidation = invalidationByLocale.get(locale);
+       if ((latestInvalidation?.generation ?? 0) !== initialGeneration
+@@ -201,7 +225,7 @@ export default defineEventHandler(
+       latestAppliedRequestByLocale.set(locale, requestId);
+       if (result.state === "ready" && !commerceDegraded)
+         lastGoodProjectionByLocale.set(locale, { response: result, fetchedAt: Date.now() });
+-      else
++      else if (result.state !== "recovery")
+         invalidate(locale, result.state === "permission" ? "permission" : "error");
+       if (!commerceDegraded && (result.state === "ready" || result.state === "empty"))
+         setResponseHeader(
+@@ -225,17 +249,36 @@ export default defineEventHandler(
+           stale: true,
+           source: "memory-cache",
+           errorCode: "PUBLIC_PROJECTION_STALE",
++          facets: {
++            courses: { state: "recovery", updatedAt: lastGoodProjection.response.projection.generatedAt, errorCode: "PUBLIC_PROJECTION_STALE", stale: true },
++            pricing: { state: "recovery", updatedAt: lastGoodProjection.response.projection.generatedAt, errorCode: "PUBLIC_PROJECTION_STALE", stale: true },
++            download: { state: "recovery", updatedAt: lastGoodProjection.response.projection.generatedAt, errorCode: "PUBLIC_PROJECTION_STALE", stale: true },
++            announcements: { state: "recovery", updatedAt: lastGoodProjection.response.projection.generatedAt, errorCode: "PUBLIC_PROJECTION_STALE", stale: true },
++            compliance: { state: "recovery", updatedAt: lastGoodProjection.response.projection.generatedAt, errorCode: "PUBLIC_PROJECTION_STALE", stale: true },
++          },
++          commerceState: "recovery",
++          commerceErrorCode: "PUBLIC_PROJECTION_STALE",
+         };
+         setResponseHeader(event, "x-public-projection-source", "memory-cache");
+         return stale;
+       }
+       lastGoodProjectionByLocale.delete(locale);
++      const fallbackFacets = {
++        courses: { state: "error", updatedAt: null, errorCode: "PUBLIC_PROJECTION_UNAVAILABLE", stale: false },
++        pricing: { state: "error", updatedAt: null, errorCode: "PUBLIC_PROJECTION_UNAVAILABLE", stale: false },
++        download: { state: "error", updatedAt: null, errorCode: "PUBLIC_PROJECTION_UNAVAILABLE", stale: false },
++        announcements: { state: "error", updatedAt: null, errorCode: "PUBLIC_PROJECTION_UNAVAILABLE", stale: false },
++        compliance: { state: "error", updatedAt: null, errorCode: "PUBLIC_PROJECTION_UNAVAILABLE", stale: false },
++      } as PublicProjectionResponse["facets"];
+       const fallback: PublicProjectionResponse = {
+         projection: EMPTY_PUBLIC_PROJECTION,
+         state: "error",
+         stale: false,
+         source: "empty-fallback",
+         errorCode: "PUBLIC_PROJECTION_UNAVAILABLE",
++        facets: fallbackFacets,
++        commerceState: "error",
++        commerceErrorCode: "PUBLIC_PROJECTION_UNAVAILABLE",
+       };
+       setResponseHeader(event, "x-public-projection-source", "empty-fallback");
+       return fallback;
+diff --git a/apps/official-site/tests/b13-official-site.test.mjs b/apps/official-site/tests/b13-official-site.test.mjs
+index a53a7e84..ddf29866 100644
+--- a/apps/official-site/tests/b13-official-site.test.mjs
++++ b/apps/official-site/tests/b13-official-site.test.mjs
+@@ -131,7 +131,7 @@ test("B13 官网状态覆盖 loading/empty/error/permission/recovery/maintenance
+   );
+ });
+ 
+-test("官网保留公开投影兼容，但免费首发不展示套餐或购买入口", async () => {
++test("官网保留公开投影兼容，独立价格页只读公开价格并不展示购买入口", async () => {
+   const projection = await source("utils/public-projection.ts");
+   const pricing = await source("pages/pricing.vue");
+   const sku = await source("components/PublicSkuCard.vue");
+@@ -148,19 +148,50 @@ test("官网保留公开投影兼容，但免费首发不展示套餐或购买
+   ]) {
+     assert.match(projection, new RegExp(token));
+   }
+-  assert.match(pricing, /navigateTo/);
+-  assert.match(pricing, /\/start/);
+-  assert.match(pricing, /redirectCode: 301/);
++  assert.match(projection, /facets/);
++  assert.match(projection, /commerceState/);
++  assert.match(pricing, /usePublicProjection\("pricing"\)/);
++  assert.match(pricing, /pricingFacet/);
++  assert.match(pricing, /registerLink/);
++  assert.match(pricing, /PricingCard|PublicSkuCard/);
+   assert.match(sku, /entitlement-list/);
+   assert.match(campaign, /safe|publicLink|authLink/);
+-  assert.match(download, /\/start/);
+-  assert.doesNotMatch(pricing, /PublicSkuCard|jsonld-pricing-public-offers/);
++  assert.match(download, /usePublicProjection\("download"\)/);
++  assert.match(download, /downloadFacet/);
++  assert.doesNotMatch(pricing, /navigateTo\(\{ path: "\/start"/);
++  assert.doesNotMatch(download, /navigateTo\(\{ path: "\/start"/);
+   assert.doesNotMatch(
+     pricing,
+     /createOrder|\/orders|payment|entitlement\/write/i,
+   );
+ });
+ 
++test("B13 官网受控注册入口只通 learner 注册页，不在官网建立会话", async () => {
++  const button = await source("components/SiteStartButton.vue");
++  const links = await source("composables/useOfficialSiteLinks.ts");
++  const courseIndex = await source("pages/courses/index.vue");
++
++  assert.match(button, /registerLink/);
++  assert.match(button, /data-learning-entry/);
++  assert.match(button, /resolvedTarget/);
++  assert.match(button, /useLearningDevice/);
++  assert.doesNotMatch(button, /to="\/start"/);
++  assert.match(links, /registerLink/);
++  assert.match(links, /buildPublicLearningEntry/);
++  assert.match(links, /mobileH5Url/);
++  assert.match(courseIndex, /courseRegisterHref/);
++  assert.match(courseIndex, /data-learning-entry/);
++});
++
++test("recovery keeps stale cards visible with explicit notice, time and retry", async () => {
++  for (const page of ["pages/pricing.vue", "pages/download.vue", "pages/announcements.vue", "pages/courses/index.vue"]) {
++    const body = await source(page);
++    assert.match(body, /facet-recovery/);
++    assert.match(body, /c5982c44c1/);
++    assert.match(body, /@click="load"/);
++  }
++});
++
+ test("B13 官网只读取公开投影，不包含订单/支付/权益写接口或客户端事实写入", async () => {
+   const files = await collectSourceFiles(join(siteRoot, "pages"));
+   files.push(...(await collectSourceFiles(join(siteRoot, "composables"))));
+diff --git a/apps/official-site/tests/b14-fe-005.test.mjs b/apps/official-site/tests/b14-fe-005.test.mjs
+index 9952393d..919fec03 100644
+--- a/apps/official-site/tests/b14-fe-005.test.mjs
++++ b/apps/official-site/tests/b14-fe-005.test.mjs
+@@ -75,7 +75,7 @@ test("public learning entry exposes availability and no blocked account action",
+   assert.match(start, /role="status"[\s\S]*official\.c8a7b34f12/);
+   assert.equal((start.match(/official\.c8a7b34f12/g) || []).length, 1);
+   assert.match(start, /to="\/announcements"/);
+-  assert.doesNotMatch(start, /buildPublicLearningEntry|data-learning-entry|text-login|entry\(true\)/);
++  assert.doesNotMatch(start, /data-learning-entry/);
+   assert.match(home, /id="practice-example"/);
+   assert.match(copy, /学习账号注册与登录当前暂不可用/);
+   assert.match(copy, /cbd70ad936: "学习账号开放情况"/);
+@@ -86,10 +86,26 @@ test("public learning entry exposes availability and no blocked account action",
+   assert.match(copy, /c7044fa394: "界面示意"/);
+   assert.match(copy, /个人数据查看、导出和删除功能当前无法通过学习账号访问/);
+   assert.match(about, /official\.cd3b2479fd/);
+-  assert.match(courseIndex, /to="\/start"/);
++  assert.match(courseIndex, /courseRegisterHref/);
++  assert.match(courseIndex, /registerLink/);
++  assert.match(courseIndex, /c52c0deec1/);
++  assert.doesNotMatch(courseIndex, /to="\/start"/);
+   assert.doesNotMatch(copy, /初期免费开放|初期开放的学习功能免费使用|同一个账号登录即可查看已经保存/);
+ });
+ 
++test("official site controlled registration CTA points at learner register entries", async () => {
++  const button = await read("apps/official-site/components/SiteStartButton.vue");
++  const links = await read(
++    "apps/official-site/composables/useOfficialSiteLinks.ts",
++  );
++  assert.match(button, /registerLink/);
++  assert.match(button, /data-learning-entry/);
++  assert.match(button, /resolvedTarget/);
++  assert.doesNotMatch(button, /to="\/start"/);
++  assert.match(links, /registerLink/);
++  assert.match(links, /buildPublicLearningEntry/);
++});
++
+ test("official site exposes all eight state semantics without color-only status", async () => {
+   const state = await read("apps/official-site/utils/public-state.mjs");
+   const helper = await read("apps/official-site/utils/ui-state.mjs");
+diff --git a/apps/official-site/tests/browser/website-runtime.cjs b/apps/official-site/tests/browser/website-runtime.cjs
+index d9eec23e..e38cbf88 100644
+--- a/apps/official-site/tests/browser/website-runtime.cjs
++++ b/apps/official-site/tests/browser/website-runtime.cjs
+@@ -319,12 +319,19 @@ async function check(name, fn) {
+       },
+     );
+     await check(
+-      "legacy redirect, 404 and SSR preferences do not leak across visitors",
++      "independent pricing/download pages stay readable and keep registration entries",
+       async () => {
++        for (const path of ["/pricing", "/download"]) {
++          const response = await p.request.get(origin + path);
++          assert.equal(response.status(), 200);
++        }
+         await go("/pricing");
+-        assert.equal(new URL(p.url()).pathname, "/start");
++        assert.equal(new URL(p.url()).pathname, "/pricing");
++        assert.ok(
++          await p.locator('[data-learning-entry]').first().isVisible(),
++        );
+         await go("/download");
+-        assert.equal(new URL(p.url()).pathname, "/start");
++        assert.equal(new URL(p.url()).pathname, "/download");
+         const bad = await p.request.get(origin + "/does-not-exist");
+         assert.equal(bad.status(), 404);
+         const a = await p.request.get(origin + "/about", {
+diff --git a/apps/official-site/tests/public-projection-bff.test.mjs b/apps/official-site/tests/public-projection-bff.test.mjs
+index 24b95889..861f74f0 100644
+--- a/apps/official-site/tests/public-projection-bff.test.mjs
++++ b/apps/official-site/tests/public-projection-bff.test.mjs
+@@ -190,9 +190,24 @@ test("an in-flight older ready response cannot refill a revoked public snapshot"
+ 
+ test("browser network failure clears prior public facts and exposes only a controlled code", async () => {
+   const state = new Map();
++  const readyFacets = {
++    courses: { state: "ready", updatedAt: null, errorCode: null, stale: false },
++    pricing: { state: "ready", updatedAt: null, errorCode: null, stale: false },
++    download: { state: "ready", updatedAt: null, errorCode: null, stale: false },
++    announcements: { state: "ready", updatedAt: null, errorCode: null, stale: false },
++    compliance: { state: "ready", updatedAt: null, errorCode: null, stale: false },
++  };
++  const errorFacets = {
++    courses: { state: "error", updatedAt: null, errorCode: "PUBLIC_PROJECTION_UNAVAILABLE", stale: false },
++    pricing: { state: "error", updatedAt: null, errorCode: "PUBLIC_PROJECTION_UNAVAILABLE", stale: false },
++    download: { state: "error", updatedAt: null, errorCode: "PUBLIC_PROJECTION_UNAVAILABLE", stale: false },
++    announcements: { state: "error", updatedAt: null, errorCode: "PUBLIC_PROJECTION_UNAVAILABLE", stale: false },
++    compliance: { state: "error", updatedAt: null, errorCode: "PUBLIC_PROJECTION_UNAVAILABLE", stale: false },
++  };
+   let request = async () => ({
+     projection: projection.normalizePublicProjection(readyPayload),
+     state: "ready", stale: false, source: "gateway", errorCode: null,
++    facets: readyFacets, commerceState: "ready", commerceErrorCode: null,
+   });
+   const composable = loadTypeScript(composableSource, {
+     require: (name) => {
+@@ -212,14 +227,132 @@ test("browser network failure clears prior public facts and exposes only a contr
+   const page = composable.usePublicProjection("fail-closed");
+   await page.load();
+   assert.equal(page.projection.value.projection.courses.length, 1);
++  assert.equal(page.projection.value.facets.courses.state, "ready");
+   request = async () => { throw new Error("private upstream network detail"); };
+   await page.load();
+   assert.equal(page.projection.value.state, "error");
+   assert.equal(page.projection.value.projection.courses.length, 0);
+   assert.equal(page.projection.value.projection.pricingPlans.length, 0);
++  assert.equal(page.projection.value.facets.pricing.state, "error");
++  assert.equal(page.projection.value.facets.pricing.errorCode, "PUBLIC_PROJECTION_UNAVAILABLE");
++  assert.equal(page.projection.value.commerceState, "error");
+   assert.equal(page.projection.value.errorCode, "PUBLIC_PROJECTION_UNAVAILABLE");
+ });
+ 
++test("composable initial and thrown-network shapes carry complete facet state", async () => {
++  const fresh = new Map();
++  const probe = loadTypeScript(composableSource, {
++    require: (name) => {
++      if (name === "#imports") return {
++        onMounted: () => {}, onServerPrefetch: () => {},
++        useRequestFetch: () => async () => { throw new Error("probe network down"); },
++        useState: (key, initialize) => {
++          if (!fresh.has(key)) fresh.set(key, { value: initialize() });
++          return fresh.get(key);
++        },
++      };
++      if (name === "~/utils/public-projection") return projection;
++      throw new Error(`Unexpected import: ${name}`);
++    },
++    useRoute: () => ({ query: { locale: "zh-CN" } }),
++  });
++  const probePage = probe.usePublicProjection("shape-probe");
++  assert.equal(probePage.projection.value.state, "loading");
++  assert.equal(probePage.projection.value.facets.courses.state, "loading");
++  assert.equal(probePage.projection.value.commerceState, "loading");
++  await probePage.load();
++  assert.equal(probePage.projection.value.state, "error");
++  assert.equal(probePage.projection.value.facets.download.state, "error");
++  assert.equal(probePage.projection.value.commerceErrorCode, "PUBLIC_PROJECTION_UNAVAILABLE");
++  assert.equal(probePage.projection.value.projection.courses.length, 0);
++});
++
++test("BFF keeps legitimate recovery data, time, stale flag and reason", async () => {
++  const course = { id: "course-1", title: "基础英语" };
++  const app = harness();
++  app.setFetch(async (url) => ok(url.includes("/public/commerce/catalog")
++    ? { plans: [] }
++    : { state: "recovery", stale: true, errorCode: "PUBLIC_PROJECTION_STALE", data: { uiLocale: "zh-CN", generatedAt: "2026-10-03T00:00:00Z", courses: [course] } }));
++  const { body, headers } = await app.request();
++  assert.equal(body.state, "recovery");
++  assert.equal(body.stale, true);
++  assert.equal(body.errorCode, "PUBLIC_PROJECTION_STALE");
++  assert.equal(body.projection.courses.length, 1);
++  assert.equal(body.projection.courses[0].id, "course-1");
++  assert.equal(body.projection.generatedAt, "2026-10-03T00:00:00Z");
++  assert.equal(body.facets.courses.state, "recovery");
++  assert.equal(body.facets.courses.stale, true);
++  assert.equal(body.facets.courses.updatedAt, "2026-10-03T00:00:00Z");
++  assert.equal(body.facets.courses.errorCode, "PUBLIC_PROJECTION_STALE");
++  assert.equal(headers["cache-control"], "no-store");
++  assert.equal(headers["x-public-projection-source"], "gateway");
++});
++
++test("BFF recovery keeps fresh independent commerce state instead of forcing all facets", async () => {
++  const course = { id: "course-1", title: "基础英语" };
++  const plans = [{
++    skuId: "sku-valid", title: "月度方案", currency: "CNY", amountMinor: 1299,
++    billingPeriod: "MONTH", availability: "PUBLISHED",
++    entitlementCode: "learn.month", priceSnapshotId: "sku-valid-v1",
++  }];
++  const app = harness();
++  app.setFetch(async (url) => ok(url.includes("/public/commerce/catalog")
++    ? { plans }
++    : { state: "recovery", stale: true, errorCode: "PUBLIC_PROJECTION_STALE", data: { uiLocale: "zh-CN", generatedAt: "2026-10-03T00:00:00Z", courses: [course] } }));
++  const { body } = await app.request();
++  assert.equal(body.state, "recovery");
++  assert.equal(body.projection.courses.length, 1);
++  assert.equal(body.facets.pricing.state, "ready");
++  assert.equal(body.facets.pricing.errorCode, null);
++  assert.equal(body.projection.pricingPlans.length, 1);
++  assert.equal(body.facets.courses.state, "recovery");
++});
++
++test("BFF still clears permission/error/maintenance content while keeping commerce freshness honest", async () => {
++  for (const globalState of ["permission", "error", "maintenance"]) {
++    const app = harness();
++    app.setFetch(async (url) => ok(url.includes("/public/commerce/catalog")
++      ? { plans: [] }
++      : { state: globalState, errorCode: "UPSTREAM_DENIED", data: { uiLocale: "zh-CN", generatedAt: "2026-10-03T00:00:00Z", courses: [{ id: "course-1", title: "基础英语" }] } }));
++    const { body } = await app.request();
++    assert.equal(body.state, globalState);
++    assert.equal(body.projection.courses.length, 0);
++    assert.equal(body.projection.generatedAt, null);
++    assert.equal(body.stale, false);
++    assert.equal(body.facets.courses.updatedAt, globalState === "error" || globalState === "permission" ? null : body.facets.courses.updatedAt);
++  }
++});
++
++test("BFF exposes independent pricing facet state instead of hiding commerce failure", async () => {
++  const app = harness();
++  app.setFetch(async (url) => url.includes("/public/commerce/catalog")
++    ? { ok: false, status: 503, json: async () => ({}) }
++    : ok(readyPayload));
++  const degraded = await app.request();
++  assert.equal(degraded.body.state, "ready");
++  assert.equal(degraded.body.facets.pricing.state, "error");
++  assert.equal(degraded.body.facets.pricing.errorCode, "PUBLIC_COMMERCE_DEGRADED");
++  assert.equal(degraded.body.facets.courses.state, "ready");
++  assert.equal(degraded.headers["x-public-projection-commerce"], "degraded");
++  assert.equal(degraded.headers["cache-control"], "no-store");
++});
++
++test("global maintenance/permission/error wins over independent commerce success for pricing", async () => {
++  for (const globalState of ["maintenance", "permission", "error"]) {
++    const facets = projection.normalizePublicProjectionResponse(
++      {
++        data: { uiLocale: "zh-CN", generatedAt: "2026-10-03T00:00:00Z", courses: [], pricingPlans: [], skus: [], campaigns: [], downloadChannels: [], announcements: [], complianceNotices: [] },
++        state: globalState,
++        commerceState: "ready",
++        commerceErrorCode: null,
++      },
++      "zh-CN",
++    ).facets;
++    assert.equal(facets.pricing.state, globalState);
++    assert.equal(facets.courses.state, globalState);
++  }
++});
++
+ test("success and recovery snapshots remain isolated by UI locale", async () => {
+   const app = harness();
+   await app.request("zh-CN");
+diff --git a/apps/official-site/tests/website-entry.test.mjs b/apps/official-site/tests/website-entry.test.mjs
+index 1c1f2869..0ad8624c 100644
+--- a/apps/official-site/tests/website-entry.test.mjs
++++ b/apps/official-site/tests/website-entry.test.mjs
+@@ -54,17 +54,19 @@ test("entry configuration rejects credentials, executable URLs and embedded quer
+     for (const mobile of [false, true])
+       assert.throws(() => buildPublicLearningEntry({ base, mobile }));
+ });
+-test("sitemap exposes public website routes and six learning descriptions without retired pricing pages", () => {
++test("sitemap exposes public website routes including independent pricing/download", () => {
+   assert.equal(new Set(publicRoutes).size, publicRoutes.length);
+   for (const route of [
+     "/world",
+     "/help",
+     "/method",
+     "/start",
++    "/pricing",
++    "/download",
+     "/courses/daily-words",
+     "/privacy",
+   ])
+     assert.ok(publicRoutes.includes(route));
+-  for (const route of ["/pricing", "/download", "/login", "/register"])
++  for (const route of ["/login", "/register"])
+     assert.ok(!publicRoutes.includes(route));
+ });
+diff --git a/apps/official-site/utils/public-projection.ts b/apps/official-site/utils/public-projection.ts
+index 2c3d30b9..37f9308b 100644
+--- a/apps/official-site/utils/public-projection.ts
++++ b/apps/official-site/utils/public-projection.ts
+@@ -101,12 +101,32 @@ export interface PublicProjection {
+ 
+ export type PublicProjectionLoadState = 'loading' | 'ready' | 'empty' | 'error' | 'permission' | 'recovery' | 'maintenance'
+ 
++export type PublicProjectionFacet = 'courses' | 'pricing' | 'download' | 'announcements' | 'compliance'
++
++export interface PublicFacetStatus {
++  readonly state: PublicProjectionLoadState
++  readonly updatedAt: string | null
++  readonly errorCode: string | null
++  readonly stale: boolean
++}
++
++export interface PublicProjectionFacets {
++  readonly courses: PublicFacetStatus
++  readonly pricing: PublicFacetStatus
++  readonly download: PublicFacetStatus
++  readonly announcements: PublicFacetStatus
++  readonly compliance: PublicFacetStatus
++}
++
+ export interface PublicProjectionResponse {
+   readonly projection: PublicProjection
+   readonly state: PublicProjectionLoadState
+   readonly stale: boolean
+   readonly source: 'gateway' | 'memory-cache' | 'empty-fallback'
+   readonly errorCode: string | null
++  readonly facets: PublicProjectionFacets
++  readonly commerceState: PublicProjectionLoadState | null
++  readonly commerceErrorCode: string | null
+ }
+ 
+ export const EMPTY_PUBLIC_PROJECTION: PublicProjection = Object.freeze({
+@@ -360,15 +380,71 @@ export function normalizePublicProjectionResponse(value: unknown, requestedLocal
+   const root = isRecord(value) ? value : {}
+   const candidateSource = text(root.source).toLowerCase()
+   const source: PublicProjectionResponse['source'] = candidateSource === 'gateway' || candidateSource === 'memory-cache' || candidateSource === 'empty-fallback' ? candidateSource : 'gateway'
++  const generatedAt = nullableText((sourceData(value) as Record<string, unknown>).generatedAt)
++  const facetState = (hasData: boolean, explicit: PublicProjectionLoadState | null): PublicProjectionLoadState =>
++    explicit ?? (hasData ? 'ready' : 'empty')
++  const globalExplicit = explicitState
++  // 全局不可读/拒绝/维护优先：内容投影不可读时，价格 facet 不得因独立
++  // commerce 成功而显示为空价成功；commerce 只在内容投影可读时参与。
++  const contentReadable = globalExplicit === null || globalExplicit === 'ready' || globalExplicit === 'empty' || globalExplicit === 'recovery' || globalExplicit === 'loading'
++  const commerceState = resolveFacetCommerceState(root)
++  const commerceErrorCode = resolveFacetCommerceError(root)
++  const pricingFromCommerce = contentReadable && commerceState !== null
++  const facets: PublicProjectionFacets = {
++    courses: facetStatus(globalExplicit, projection.courses.length > 0, generatedAt, nullableText(root.errorCode), root.stale === true),
++    pricing: pricingFromCommerce
++      ? { state: commerceState, updatedAt: generatedAt, errorCode: commerceErrorCode, stale: commerceState === 'recovery' }
++      : facetStatus(globalExplicit, projection.pricingPlans.length > 0 || projection.skus.length > 0, generatedAt, nullableText(root.errorCode), root.stale === true),
++    download: facetStatus(globalExplicit, projection.downloadChannels.length > 0, generatedAt, nullableText(root.errorCode), root.stale === true),
++    announcements: facetStatus(globalExplicit, projection.announcements.length > 0, generatedAt, nullableText(root.errorCode), root.stale === true),
++    compliance: facetStatus(globalExplicit, projection.complianceNotices.length > 0, generatedAt, nullableText(root.errorCode), root.stale === true),
++  }
+   return {
+     projection,
+     state,
+     stale: root.stale === true || state === 'recovery',
+     source,
+     errorCode: nullableText(root.errorCode),
++    facets,
++    commerceState,
++    commerceErrorCode,
++  }
++}
++
++function facetStatus(
++  explicit: PublicProjectionLoadState | null,
++  hasData: boolean,
++  updatedAt: string | null,
++  errorCode: string | null,
++  stale: boolean,
++): PublicFacetStatus {
++  const state = explicit ?? (hasData ? 'ready' : 'empty')
++  return {
++    state,
++    // A facet is only as fresh as the projection that carried it. Never claim
++    // a successful read when the upstream explicitly failed for that facet.
++    updatedAt: state === 'error' || state === 'permission' ? null : updatedAt,
++    errorCode: state === 'ready' || state === 'empty' ? null : errorCode,
++    stale: stale || state === 'recovery',
+   }
+ }
+ 
++function resolveFacetCommerceState(root: Record<string, unknown>): PublicProjectionLoadState | null {
++  const candidate = text(
++    root.commerceState ?? root.commerceStatus ?? (root as Record<string, unknown>).commerce_state,
++  ).toLowerCase().replaceAll('_', '-')
++  if (candidate === 'ready' || candidate === 'empty' || candidate === 'error' || candidate === 'permission' || candidate === 'recovery' || candidate === 'maintenance' || candidate === 'loading') return candidate
++  if (text(root.commerceDegraded) === 'true' || root.commerceDegraded === true) return 'error'
++  return null
++}
++
++function resolveFacetCommerceError(root: Record<string, unknown>): string | null {
++  const explicit = nullableText(root.commerceErrorCode ?? root.commerceError)
++  if (explicit) return explicit
++  if (text(root.commerceDegraded) === 'true' || root.commerceDegraded === true) return 'PUBLIC_COMMERCE_DEGRADED'
++  return null
++}
++
+ export function hasPublicProjectionData(projection: PublicProjection): boolean {
+   return projection.courses.length > 0 || projection.pricingPlans.length > 0 || projection.skus.length > 0 || projection.campaigns.length > 0 || projection.downloadChannels.length > 0 || projection.announcements.length > 0 || projection.complianceNotices.length > 0
+ }
+diff --git a/apps/official-site/utils/site-content.mjs b/apps/official-site/utils/site-content.mjs
+index 493fd9a2..8c7317f3 100644
+--- a/apps/official-site/utils/site-content.mjs
++++ b/apps/official-site/utils/site-content.mjs
+@@ -157,6 +157,8 @@ export const complianceNotices = Object.freeze([
+ export const publicRoutes = Object.freeze([
+   "/",
+   "/courses",
++  "/pricing",
++  "/download",
+   "/world",
+   "/method",
+   "/start",
+diff --git a/packages/i18n/src/official-site.ts b/packages/i18n/src/official-site.ts
+index 425ab6c3..6c2d4804 100644
+--- a/packages/i18n/src/official-site.ts
++++ b/packages/i18n/src/official-site.ts
+@@ -214,11 +214,20 @@ export const officialWebsiteMessages = {
+       cb6d26530e: "查看全部内容",
+       cab2cf9e17: "这里介绍学习方式，具体课程以学习端已开放内容为准。",
+       c52c0deec0: "当前公开课程",
++      c52c0deec1: "内容准备中",
++      c52c0deec2: "正式课程还在准备中，你可以先浏览学习方式示例，开放安排以公告为准。",
+       caa236cbb2: "查看开放情况",
+       ccc3aad4f2: "看看练习示例",
+       cd529d921d: "可以这样学",
+       c0d2ad5cd6: "用一段内容，了解过程",
+       c2efea64f5: "了解练习与复习",
++      c4e8f2a1b5: "公开价格以服务端发布为准；当前没有可购买的付费套餐。",
++      c3b7d1e9a0: "价格方案",
++      c1f7a3d8e4: "各端下载入口以服务端公开版本为准；原生 App 尚未开放。",
++      c9d2b4e6f1: "下载体验",
++      cd8a16c6a7: "下载渠道暂未开放",
++      c40af6e5a7: "原生 App 开放与下载信息以正式公告为准；可先使用浏览器学习入口。",
++      c5a1f3e8d2: "公开数据更新时间：",
+       cedf796f35: "以上为学习结构示例，具体内容以实际开放课程为准。",
+       cf4d016977: "按自己的节奏",
+       c8158df616: "先开始，再慢慢积累。",

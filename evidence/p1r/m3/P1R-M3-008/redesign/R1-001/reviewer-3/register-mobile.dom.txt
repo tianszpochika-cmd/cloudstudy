@@ -1,0 +1,24 @@
+- generic: ✦
+- generic: 语学星
+- generic: 为热爱学习的你
+- generic: CREATE ACCOUNT
+- heading "创建账号" [level=1]
+- generic: 注册后确认成人身份。
+- generic: ✦
+- generic: Aa
+- generic: 使用至少 12 位的密码，让账号更安全。
+- generic: 账号
+- generic "账号":
+  - generic: 邮箱或账号
+  - textbox
+- generic: 密码
+- generic "密码":
+  - generic: 输入密码
+  - textbox
+- generic: 确认密码
+- generic "确认密码":
+  - generic: 再输入一次
+  - textbox
+- button "注册并继续"
+- button "已有账号？去登录"
+- generic: 目前面向 18 岁及以上成人与大学生

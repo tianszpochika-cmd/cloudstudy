@@ -1,0 +1,345 @@
+TAP version 13
+# Subtest: initial wall never inherits implementation acceptance
+ok 1 - initial wall never inherits implementation acceptance
+  ---
+  duration_ms: 178.1655
+  ...
+# Subtest: start before verified inputs is refused
+ok 2 - start before verified inputs is refused
+  ---
+  duration_ms: 193.1701
+  ...
+# Subtest: ready requires gate evidence
+ok 3 - ready requires gate evidence
+  ---
+  duration_ms: 207.3051
+  ...
+# Subtest: ready requires explicit preparation scope instead of a global gate claim
+ok 4 - ready requires explicit preparation scope instead of a global gate claim
+  ---
+  duration_ms: 154.6231
+  ...
+# Subtest: ready snapshots actual input policy files
+ok 5 - ready snapshots actual input policy files
+  ---
+  duration_ms: 166.4043
+  ...
+# Subtest: a missing required input cannot disappear from preparation checks
+ok 6 - a missing required input cannot disappear from preparation checks
+  ---
+  duration_ms: 130.4321
+  ...
+# Subtest: ready requires canonical parent owner confirmation
+ok 7 - ready requires canonical parent owner confirmation
+  ---
+  duration_ms: 157.538
+  ...
+# Subtest: ready refuses stale canonical ledger
+ok 8 - ready refuses stale canonical ledger
+  ---
+  duration_ms: 175.3853
+  ...
+# Subtest: ready requires explicit conditional branch decisions
+ok 9 - ready requires explicit conditional branch decisions
+  ---
+  duration_ms: 169.8942
+  ...
+# Subtest: mandatory input cannot be marked as an excluded optional branch
+ok 10 - mandatory input cannot be marked as an excluded optional branch
+  ---
+  duration_ms: 192.3038
+  ...
+# Subtest: unaccepted dependency prevents preparation
+ok 11 - unaccepted dependency prevents preparation
+  ---
+  duration_ms: 158.9301
+  ...
+# Subtest: receipt task revision conflicts do not mutate state
+ok 12 - receipt task revision conflicts do not mutate state
+  ---
+  duration_ms: 161.5318
+  ...
+# Subtest: old instruction digest is refused
+ok 13 - old instruction digest is refused
+  ---
+  duration_ms: 143.1103
+  ...
+# Subtest: valid preparation and start preserve distinct executor
+ok 14 - valid preparation and start preserve distinct executor
+  ---
+  duration_ms: 172.7883
+  ...
+# Subtest: a declared new file created after preparation needs refreshed inputs before start
+ok 15 - a declared new file created after preparation needs refreshed inputs before start
+  ---
+  duration_ms: 194.5967
+  ...
+# Subtest: unknown development checkpoint is refused
+ok 16 - unknown development checkpoint is refused
+  ---
+  duration_ms: 179.3034
+  ...
+# Subtest: checkpoint records delivery, not approval
+ok 17 - checkpoint records delivery, not approval
+  ---
+  duration_ms: 169.5568
+  ...
+# Subtest: partial step delivery cannot submit
+ok 18 - partial step delivery cannot submit
+  ---
+  duration_ms: 457.6047
+  ...
+# Subtest: missing artifact digest cannot submit
+ok 19 - missing artifact digest cannot submit
+  ---
+  duration_ms: 311.2168
+  ...
+# Subtest: an edited allowed source not in readFirst must still be delivered
+ok 20 - an edited allowed source not in readFirst must still be delivered
+  ---
+  duration_ms: 399.3151
+  ...
+# Subtest: a newly created declared source cannot be omitted from delivery
+ok 21 - a newly created declared source cannot be omitted from delivery
+  ---
+  duration_ms: 466.3335
+  ...
+# Subtest: a newly generated output cannot be omitted from delivery
+ok 22 - a newly generated output cannot be omitted from delivery
+  ---
+  duration_ms: 445.2483
+  ...
+# Subtest: a forged commit or scope diff digest cannot submit
+ok 23 - a forged commit or scope diff digest cannot submit
+  ---
+  duration_ms: 408.2392
+  ...
+# Subtest: an allowed deletion requires its real baseline tombstone
+ok 24 - an allowed deletion requires its real baseline tombstone
+  ---
+  duration_ms: 682.0854
+  ...
+# Subtest: deleting a whole declared generated directory keeps its baseline deletion scope
+ok 25 - deleting a whole declared generated directory keeps its baseline deletion scope
+  ---
+  duration_ms: 687.0683
+  ...
+# Subtest: out-of-scope delivery artifacts cannot submit
+ok 26 - out-of-scope delivery artifacts cannot submit
+  ---
+  duration_ms: 279.5264
+  ...
+# Subtest: submit is REVIEW, never ACCEPTED
+ok 27 - submit is REVIEW, never ACCEPTED
+  ---
+  duration_ms: 404.7227
+  ...
+# Subtest: worker cannot sign own approval
+ok 28 - worker cannot sign own approval
+  ---
+  duration_ms: 427.5411
+  ...
+# Subtest: different reviewer chat cannot approve
+ok 29 - different reviewer chat cannot approve
+  ---
+  duration_ms: 445.5997
+  ...
+# Subtest: case with no actual result cannot approve
+ok 30 - case with no actual result cannot approve
+  ---
+  duration_ms: 705.6763
+  ...
+# Subtest: failed case cannot approve
+ok 31 - failed case cannot approve
+  ---
+  duration_ms: 640.724
+  ...
+# Subtest: missing step checks cannot approve
+ok 32 - missing step checks cannot approve
+  ---
+  duration_ms: 651.35
+  ...
+# Subtest: no independent rerun log cannot approve
+ok 33 - no independent rerun log cannot approve
+  ---
+  duration_ms: 737.9339
+  ...
+# Subtest: invalid rerun timestamp cannot approve
+ok 34 - invalid rerun timestamp cannot approve
+  ---
+  duration_ms: 733.8302
+  ...
+# Subtest: a historical rerun before delivery cannot approve the current submission
+ok 35 - a historical rerun before delivery cannot approve the current submission
+  ---
+  duration_ms: 632.4473
+  ...
+# Subtest: future rerun timestamps cannot approve
+ok 36 - future rerun timestamps cannot approve
+  ---
+  duration_ms: 639.0667
+  ...
+# Subtest: blocking findings cannot approve
+ok 37 - blocking findings cannot approve
+  ---
+  duration_ms: 700.1044
+  ...
+# Subtest: unprepared exclusion cannot skip a required case
+ok 38 - unprepared exclusion cannot skip a required case
+  ---
+  duration_ms: 691.6232
+  ...
+# Subtest: unrelated excluded branch cannot skip a core case
+ok 39 - unrelated excluded branch cannot skip a core case
+  ---
+  duration_ms: 638.2918
+  ...
+# Subtest: a specifically bound optional case may be excluded after preparation
+ok 40 - a specifically bound optional case may be excluded after preparation
+  ---
+  duration_ms: 644.3781
+  ...
+# Subtest: valid reviewer checks accept only this child scope
+ok 41 - valid reviewer checks accept only this child scope
+  ---
+  duration_ms: 700.2785
+  ...
+# Subtest: an unrelated commit does not revoke unchanged accepted work
+ok 42 - an unrelated commit does not revoke unchanged accepted work
+  ---
+  duration_ms: 763.1453
+  ...
+# Subtest: an unrelated parent row update does not revoke unchanged accepted work
+ok 43 - an unrelated parent row update does not revoke unchanged accepted work
+  ---
+  duration_ms: 658.713
+  ...
+# Subtest: current source changed before approval is refused
+ok 44 - current source changed before approval is refused
+  ---
+  duration_ms: 413.2178
+  ...
+# Subtest: accepted source drift invalidates displayed acceptance
+ok 45 - accepted source drift invalidates displayed acceptance
+  ---
+  duration_ms: 637.419
+  ...
+# Subtest: accepted evidence drift invalidates displayed acceptance
+ok 46 - accepted evidence drift invalidates displayed acceptance
+  ---
+  duration_ms: 727.8488
+  ...
+# Subtest: upstream input policy drift invalidates accepted child scope
+ok 47 - upstream input policy drift invalidates accepted child scope
+  ---
+  duration_ms: 736.9066
+  ...
+# Subtest: an intended contract edit is accepted with both baseline and delivery snapshot
+ok 48 - an intended contract edit is accepted with both baseline and delivery snapshot
+  ---
+  duration_ms: 663.8155
+  ...
+# Subtest: an edited input omitted from delivery cannot submit
+ok 49 - an edited input omitted from delivery cannot submit
+  ---
+  duration_ms: 290.126
+  ...
+# Subtest: a read-only policy change cannot be laundered into a delivery
+ok 50 - a read-only policy change cannot be laundered into a delivery
+  ---
+  duration_ms: 412.6305
+  ...
+# Subtest: ready gate evidence drift is visible before execution
+ok 51 - ready gate evidence drift is visible before execution
+  ---
+  duration_ms: 206.6588
+  ...
+# Subtest: canonical parent ledger drift prevents start and invalidates preparation
+ok 52 - canonical parent ledger drift prevents start and invalidates preparation
+  ---
+  duration_ms: 199.6267
+  ...
+# Subtest: review delivery drift is visible before approval
+ok 53 - review delivery drift is visible before approval
+  ---
+  duration_ms: 425.3751
+  ...
+# Subtest: rework may resume from its verified in-scope delivery snapshot
+ok 54 - rework may resume from its verified in-scope delivery snapshot
+  ---
+  duration_ms: 551.8419
+  ...
+# Subtest: review receipt cannot be overwritten without invalidating acceptance
+ok 55 - review receipt cannot be overwritten without invalidating acceptance
+  ---
+  duration_ms: 821.4305
+  ...
+# Subtest: historical checkpoint receipt drift invalidates acceptance
+ok 56 - historical checkpoint receipt drift invalidates acceptance
+  ---
+  duration_ms: 779.0897
+  ...
+# Subtest: a changed historical receipt prevents a new approval
+ok 57 - a changed historical receipt prevents a new approval
+  ---
+  duration_ms: 511.7581
+  ...
+# Subtest: actionable rejection goes to REWORK
+ok 58 - actionable rejection goes to REWORK
+  ---
+  duration_ms: 477.8631
+  ...
+# Subtest: block records an unblock condition
+ok 59 - block records an unblock condition
+  ---
+  duration_ms: 220.1283
+  ...
+# Subtest: accepted work must reopen before blocking
+ok 60 - accepted work must reopen before blocking
+  ---
+  duration_ms: 1207.4542
+  ...
+# Subtest: reopened inputs must be prepared again
+ok 61 - reopened inputs must be prepared again
+  ---
+  duration_ms: 941.8073
+  ...
+# Subtest: atomic writer refuses concurrent revision, preserving old state
+ok 62 - atomic writer refuses concurrent revision, preserving old state
+  ---
+  duration_ms: 230.2744
+  ...
+# Subtest: existing writer lock is preserved
+ok 63 - existing writer lock is preserved
+  ---
+  duration_ms: 233.5695
+  ...
+# Subtest: evidence cannot escape workspace
+ok 64 - evidence cannot escape workspace
+  ---
+  duration_ms: 220.5375
+  ...
+# Subtest: evidence directory prefix cannot hide traversal inside the repository
+ok 65 - evidence directory prefix cannot hide traversal inside the repository
+  ---
+  duration_ms: 208.3455
+  ...
+# Subtest: renderer escapes unsafe titles and shows test state honestly
+ok 66 - renderer escapes unsafe titles and shows test state honestly
+  ---
+  duration_ms: 215.4642
+  ...
+# Subtest: stale renderer distinguishes historical PASS from current approval
+ok 67 - stale renderer distinguishes historical PASS from current approval
+  ---
+  duration_ms: 719.8997
+  ...
+1..67
+# tests 67
+# suites 0
+# pass 67
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 30010.6509

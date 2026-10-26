@@ -462,5 +462,18 @@
       }
     ],
     "previousCurrentSourceCommit": "b1081aff6f82be1d0a4fdf58bf66c613b9da0b51"
-  }
+  },
+  "redesignChildReviews": [
+    {
+      "taskId": "R1-001",
+      "decision": "ACCEPTED",
+      "scope": "R1-001 public read-only slice only; canonical parent status and full gates unchanged",
+      "review": {
+        "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/review.json",
+        "sha256": "2cb74f24be4ab18365b46a0ae4f27c1392b76fb9dbf28a9847d8da44f917688f"
+      },
+      "submissionSha256": "97b7fec966ea86622bc8250e10491b62e095ddebc3a84f985e13d090da774c7a",
+      "reviewedAt": "2026-10-05T02:32:38.399Z"
+    }
+  ]
 }

@@ -1,0 +1,209 @@
+{
+  "checkedAt": "2026-10-05T01:31:18.820Z",
+  "mocked": true,
+  "scope": "same collectFromPage v11 incl. operable gate + menu path; synthetic DOM facts only",
+  "rows": [
+    {
+      "name": "valid-web",
+      "label": "1440x900",
+      "entries": [
+        {
+          "href": "http://127.0.0.1:18180/register?returnTo=%2Fhome&uiLocale=zh-CN&theme=system",
+          "target": "web",
+          "visible": true,
+          "actionable": true
+        }
+      ],
+      "expectedAccepted": true,
+      "accepted": true,
+      "matchesExpectation": true,
+      "error": null
+    },
+    {
+      "name": "valid-mobile",
+      "label": "375x812",
+      "entries": [
+        {
+          "href": "http://127.0.0.1:18183/#/pages/register/register?returnTo=%2Fpages%2Fhome%2Fhome&uiLocale=zh-CN&theme=system",
+          "target": "mobile",
+          "visible": true,
+          "actionable": true
+        }
+      ],
+      "expectedAccepted": true,
+      "accepted": true,
+      "matchesExpectation": true,
+      "error": null
+    },
+    {
+      "name": "non-200-status",
+      "label": "1440x900",
+      "entries": [
+        {
+          "href": "http://127.0.0.1:18180/register?returnTo=%2Fhome&uiLocale=zh-CN&theme=system",
+          "target": "web",
+          "visible": true,
+          "actionable": true
+        }
+      ],
+      "expectedAccepted": false,
+      "accepted": false,
+      "matchesExpectation": true,
+      "error": "/courses http=503\n\n503 !== 200\n"
+    },
+    {
+      "name": "missing-cta",
+      "label": "1440x900",
+      "entries": [],
+      "expectedAccepted": false,
+      "accepted": false,
+      "matchesExpectation": true,
+      "error": "/courses cta=0"
+    },
+    {
+      "name": "wrong-origin",
+      "label": "1440x900",
+      "entries": [
+        {
+          "href": "https://evil.invalid/register?returnTo=%2Fhome&uiLocale=zh-CN&theme=system",
+          "target": "web",
+          "visible": true,
+          "actionable": true
+        }
+      ],
+      "expectedAccepted": false,
+      "accepted": false,
+      "matchesExpectation": true,
+      "error": "/courses origin=https://evil.invalid\n+ actual - expected\n\n+ 'https://evil.invalid'\n- 'http://127.0.0.1:18180'\n       ^"
+    },
+    {
+      "name": "wrong-web-path",
+      "label": "1440x900",
+      "entries": [
+        {
+          "href": "http://127.0.0.1:18180/register-incorrect?returnTo=%2Fhome&uiLocale=zh-CN&theme=system",
+          "target": "web",
+          "visible": true,
+          "actionable": true
+        }
+      ],
+      "expectedAccepted": false,
+      "accepted": false,
+      "matchesExpectation": true,
+      "error": "/courses pathname=/register-incorrect\n+ actual - expected\n\n+ '/register-incorrect'\n- '/register'\n            ^"
+    },
+    {
+      "name": "path-only-in-query",
+      "label": "1440x900",
+      "entries": [
+        {
+          "href": "http://127.0.0.1:18180/incorrect?extra=/register&returnTo=%2Fhome&uiLocale=zh-CN&theme=system",
+          "target": "web",
+          "visible": true,
+          "actionable": true
+        }
+      ],
+      "expectedAccepted": false,
+      "accepted": false,
+      "matchesExpectation": true,
+      "error": "/courses pathname=/incorrect\n+ actual - expected\n\n+ '/incorrect'\n- '/register'"
+    },
+    {
+      "name": "wrong-mobile-path",
+      "label": "375x812",
+      "entries": [
+        {
+          "href": "http://127.0.0.1:18183/#/pages/register/register-incorrect?returnTo=%2Fpages%2Fhome%2Fhome&uiLocale=zh-CN&theme=system",
+          "target": "mobile",
+          "visible": true,
+          "actionable": true
+        }
+      ],
+      "expectedAccepted": false,
+      "accepted": false,
+      "matchesExpectation": true,
+      "error": "/courses hashRoute=/pages/register/register-incorrect\n+ actual - expected\n\n+ '/pages/register/register-incorrect'\n- '/pages/register/register'\n                           ^"
+    },
+    {
+      "name": "wrong-device-mobile-viewport",
+      "label": "375x812",
+      "entries": [
+        {
+          "href": "http://127.0.0.1:18180/register?returnTo=%2Fhome&uiLocale=zh-CN&theme=system",
+          "target": "web",
+          "visible": true,
+          "actionable": true
+        }
+      ],
+      "expectedAccepted": false,
+      "accepted": false,
+      "matchesExpectation": true,
+      "error": "/courses no-mobile-entry (total=1)"
+    },
+    {
+      "name": "wrong-device-desktop-viewport",
+      "label": "1440x900",
+      "entries": [
+        {
+          "href": "http://127.0.0.1:18183/#/pages/register/register?returnTo=%2Fpages%2Fhome%2Fhome&uiLocale=zh-CN&theme=system",
+          "target": "mobile",
+          "visible": true,
+          "actionable": true
+        }
+      ],
+      "expectedAccepted": false,
+      "accepted": false,
+      "matchesExpectation": true,
+      "error": "/courses no-web-entry (total=1)"
+    },
+    {
+      "name": "all-hidden-no-menu-entry",
+      "label": "375x812",
+      "entries": [
+        {
+          "href": "http://127.0.0.1:18183/#/pages/register/register?returnTo=%2Fpages%2Fhome%2Fhome&uiLocale=zh-CN&theme=system",
+          "target": "mobile",
+          "visible": false,
+          "actionable": true
+        }
+      ],
+      "expectedAccepted": false,
+      "accepted": false,
+      "matchesExpectation": true,
+      "error": "/courses no-visible-operable-mobile (total=1, menuOpened=true)"
+    },
+    {
+      "name": "all-disabled-no-menu-entry",
+      "label": "375x812",
+      "entries": [
+        {
+          "href": "http://127.0.0.1:18183/#/pages/register/register?returnTo=%2Fpages%2Fhome%2Fhome&uiLocale=zh-CN&theme=system",
+          "target": "mobile",
+          "visible": true,
+          "actionable": false
+        }
+      ],
+      "expectedAccepted": false,
+      "accepted": false,
+      "matchesExpectation": true,
+      "error": "/courses no-visible-operable-mobile (total=1, menuOpened=true)"
+    },
+    {
+      "name": "menu-opens-operable-pass",
+      "label": "375x812",
+      "entries": [
+        {
+          "href": "http://127.0.0.1:18183/#/pages/register/register?returnTo=%2Fpages%2Fhome%2Fhome&uiLocale=zh-CN&theme=system",
+          "target": "mobile",
+          "visible": false,
+          "actionable": true
+        }
+      ],
+      "expectedAccepted": true,
+      "accepted": true,
+      "matchesExpectation": true,
+      "error": null
+    }
+  ],
+  "failedChecks": []
+}

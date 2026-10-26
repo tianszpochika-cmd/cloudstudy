@@ -1,0 +1,181 @@
+{
+  "checkedAt": "2026-10-03T09:34:48.671Z",
+  "run": {
+    "startedAt": "2026-10-03T09:34:47.821Z",
+    "finishedAt": "2026-10-03T09:34:48.671Z",
+    "exitCode": 0,
+    "command": "node reviewer-3/cache-probe.mjs",
+    "scope": "VM reproduction run; exits 0 to record observed defect, not acceptance PASS"
+  },
+  "cache": {
+    "scope": "synthetic sequential current BFF VM execution, not actual integration",
+    "rows": [
+      {
+        "nextCatalog": "empty",
+        "first": {
+          "state": "ready",
+          "source": "gateway",
+          "pricingFacet": "ready",
+          "skus": [
+            "withdrawn"
+          ],
+          "courses": [
+            "course-1"
+          ]
+        },
+        "afterAuthoritativeRead": {
+          "state": "recovery",
+          "source": "gateway",
+          "pricingFacet": "ready",
+          "skus": [],
+          "courses": [
+            "current-course"
+          ]
+        },
+        "afterOutage": {
+          "state": "recovery",
+          "source": "memory-cache",
+          "pricingFacet": "recovery",
+          "skus": [
+            "withdrawn"
+          ],
+          "courses": [
+            "course-1"
+          ]
+        },
+        "oldSkuRevived": true
+      },
+      {
+        "nextCatalog": "changed",
+        "first": {
+          "state": "ready",
+          "source": "gateway",
+          "pricingFacet": "ready",
+          "skus": [
+            "withdrawn"
+          ],
+          "courses": [
+            "course-1"
+          ]
+        },
+        "afterAuthoritativeRead": {
+          "state": "recovery",
+          "source": "gateway",
+          "pricingFacet": "ready",
+          "skus": [
+            "new-plan"
+          ],
+          "courses": [
+            "current-course"
+          ]
+        },
+        "afterOutage": {
+          "state": "recovery",
+          "source": "memory-cache",
+          "pricingFacet": "recovery",
+          "skus": [
+            "withdrawn"
+          ],
+          "courses": [
+            "course-1"
+          ]
+        },
+        "oldSkuRevived": true
+      },
+      {
+        "nextCatalog": "failed",
+        "first": {
+          "state": "ready",
+          "source": "gateway",
+          "pricingFacet": "ready",
+          "skus": [
+            "withdrawn"
+          ],
+          "courses": [
+            "course-1"
+          ]
+        },
+        "afterAuthoritativeRead": {
+          "state": "recovery",
+          "source": "gateway",
+          "pricingFacet": "error",
+          "skus": [],
+          "courses": [
+            "current-course"
+          ]
+        },
+        "afterOutage": {
+          "state": "recovery",
+          "source": "memory-cache",
+          "pricingFacet": "recovery",
+          "skus": [
+            "withdrawn"
+          ],
+          "courses": [
+            "course-1"
+          ]
+        },
+        "oldSkuRevived": true
+      }
+    ]
+  },
+  "http": [
+    {
+      "route": "/",
+      "status": 200,
+      "setCookiePresent": true
+    },
+    {
+      "route": "/courses",
+      "status": 200,
+      "setCookiePresent": true
+    },
+    {
+      "route": "/pricing",
+      "status": 200,
+      "setCookiePresent": true
+    },
+    {
+      "route": "/download",
+      "status": 200,
+      "setCookiePresent": true
+    },
+    {
+      "route": "/announcements",
+      "status": 200,
+      "setCookiePresent": true
+    },
+    {
+      "route": "/about",
+      "status": 200,
+      "setCookiePresent": true
+    },
+    {
+      "route": "/compliance",
+      "status": 200,
+      "setCookiePresent": true
+    },
+    {
+      "route": "/status",
+      "status": 200,
+      "setCookiePresent": true
+    },
+    {
+      "route": "/privacy",
+      "status": 200,
+      "setCookiePresent": true
+    },
+    {
+      "route": "/terms",
+      "status": 200,
+      "setCookiePresent": true
+    },
+    {
+      "route": "/minors",
+      "status": 200,
+      "setCookiePresent": true
+    }
+  ],
+  "headBffTestCount": 12,
+  "currentBffTestCount": 18
+}

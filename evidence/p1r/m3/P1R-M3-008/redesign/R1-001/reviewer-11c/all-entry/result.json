@@ -1,0 +1,383 @@
+{
+  "startedAt": "2026-10-05T02:29:11.840Z",
+  "mocked": false,
+  "checks": [
+    {
+      "label": "375x812",
+      "route": "/",
+      "status": 200,
+      "details": {
+        "h1": "让英语，\n回到你的日常。",
+        "entries": 5,
+        "operable": 3,
+        "visibleCount": 3,
+        "menuOpened": false,
+        "sample": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=system&returnTo=%2Fpages%2Fhome%2Fhome"
+      },
+      "landed": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=system&returnTo=%2Fpages%2Fhome%2Fhome",
+      "returnedOrigin": "http://127.0.0.1:18182",
+      "registrationSubmitted": false,
+      "result": "PASS"
+    },
+    {
+      "label": "375x812",
+      "route": "/courses",
+      "status": 200,
+      "details": {
+        "h1": "找到今天想学的内容。",
+        "entries": 3,
+        "operable": 1,
+        "visibleCount": 1,
+        "menuOpened": false,
+        "sample": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=system&returnTo=%2Fpages%2Fhome%2Fhome"
+      },
+      "landed": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=system&returnTo=%2Fpages%2Fhome%2Fhome",
+      "returnedOrigin": "http://127.0.0.1:18182",
+      "registrationSubmitted": false,
+      "result": "PASS"
+    },
+    {
+      "label": "375x812",
+      "route": "/pricing",
+      "status": 200,
+      "details": {
+        "h1": "价格方案",
+        "entries": 3,
+        "operable": 1,
+        "visibleCount": 1,
+        "menuOpened": false,
+        "sample": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=system&returnTo=%2Fpages%2Fhome%2Fhome"
+      },
+      "landed": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=system&returnTo=%2Fpages%2Fhome%2Fhome",
+      "returnedOrigin": "http://127.0.0.1:18182",
+      "registrationSubmitted": false,
+      "result": "PASS"
+    },
+    {
+      "label": "375x812",
+      "route": "/download",
+      "status": 200,
+      "details": {
+        "h1": "下载体验",
+        "entries": 2,
+        "operable": 1,
+        "visibleCount": 1,
+        "menuOpened": true,
+        "sample": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=system&returnTo=%2Fpages%2Fhome%2Fhome"
+      },
+      "landed": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=system&returnTo=%2Fpages%2Fhome%2Fhome",
+      "returnedOrigin": "http://127.0.0.1:18182",
+      "registrationSubmitted": false,
+      "result": "PASS"
+    },
+    {
+      "label": "375x812",
+      "route": "/announcements",
+      "status": 200,
+      "details": {
+        "h1": "产品动态与服务通知。",
+        "entries": 2,
+        "operable": 1,
+        "visibleCount": 1,
+        "menuOpened": true,
+        "sample": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=system&returnTo=%2Fpages%2Fhome%2Fhome"
+      },
+      "landed": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=system&returnTo=%2Fpages%2Fhome%2Fhome",
+      "returnedOrigin": "http://127.0.0.1:18182",
+      "registrationSubmitted": false,
+      "result": "PASS"
+    },
+    {
+      "label": "375x812",
+      "route": "/about",
+      "status": 200,
+      "details": {
+        "h1": "学习，应该能继续下去。",
+        "entries": 4,
+        "operable": 2,
+        "visibleCount": 2,
+        "menuOpened": false,
+        "sample": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=system&returnTo=%2Fpages%2Fhome%2Fhome"
+      },
+      "landed": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=system&returnTo=%2Fpages%2Fhome%2Fhome",
+      "returnedOrigin": "http://127.0.0.1:18182",
+      "registrationSubmitted": false,
+      "result": "PASS"
+    },
+    {
+      "label": "375x812",
+      "route": "/status",
+      "status": 200,
+      "details": {
+        "h1": "服务状态，及时了解。",
+        "entries": 2,
+        "operable": 1,
+        "visibleCount": 1,
+        "menuOpened": true,
+        "sample": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=system&returnTo=%2Fpages%2Fhome%2Fhome"
+      },
+      "landed": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=system&returnTo=%2Fpages%2Fhome%2Fhome",
+      "returnedOrigin": "http://127.0.0.1:18182",
+      "registrationSubmitted": false,
+      "result": "PASS"
+    },
+    {
+      "label": "375x812",
+      "route": "/privacy",
+      "status": 200,
+      "details": {
+        "h1": "隐私与数据",
+        "entries": 2,
+        "operable": 1,
+        "visibleCount": 1,
+        "menuOpened": true,
+        "sample": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=system&returnTo=%2Fpages%2Fhome%2Fhome"
+      },
+      "landed": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=system&returnTo=%2Fpages%2Fhome%2Fhome",
+      "returnedOrigin": "http://127.0.0.1:18182",
+      "registrationSubmitted": false,
+      "result": "PASS"
+    },
+    {
+      "label": "375x812",
+      "route": "/terms",
+      "status": 200,
+      "details": {
+        "h1": "使用说明",
+        "entries": 2,
+        "operable": 1,
+        "visibleCount": 1,
+        "menuOpened": true,
+        "sample": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=system&returnTo=%2Fpages%2Fhome%2Fhome"
+      },
+      "landed": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=system&returnTo=%2Fpages%2Fhome%2Fhome",
+      "returnedOrigin": "http://127.0.0.1:18182",
+      "registrationSubmitted": false,
+      "result": "PASS"
+    },
+    {
+      "label": "375x812",
+      "route": "/minors",
+      "status": 200,
+      "details": {
+        "h1": "成人使用范围",
+        "entries": 2,
+        "operable": 1,
+        "visibleCount": 1,
+        "menuOpened": true,
+        "sample": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=system&returnTo=%2Fpages%2Fhome%2Fhome"
+      },
+      "landed": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=system&returnTo=%2Fpages%2Fhome%2Fhome",
+      "returnedOrigin": "http://127.0.0.1:18182",
+      "registrationSubmitted": false,
+      "result": "PASS"
+    },
+    {
+      "label": "375x812",
+      "route": "/compliance",
+      "status": 200,
+      "details": {
+        "h1": "公开信息",
+        "entries": 2,
+        "operable": 1,
+        "visibleCount": 1,
+        "menuOpened": true,
+        "sample": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=system&returnTo=%2Fpages%2Fhome%2Fhome"
+      },
+      "landed": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=system&returnTo=%2Fpages%2Fhome%2Fhome",
+      "returnedOrigin": "http://127.0.0.1:18182",
+      "registrationSubmitted": false,
+      "result": "PASS"
+    },
+    {
+      "label": "1440x900",
+      "route": "/",
+      "status": 200,
+      "details": {
+        "h1": "让英语，\n回到你的日常。",
+        "entries": 5,
+        "operable": 4,
+        "visibleCount": 4,
+        "menuOpened": false,
+        "sample": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=system&returnTo=%2Fhome"
+      },
+      "landed": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=system&returnTo=%2Fhome",
+      "returnedOrigin": "http://127.0.0.1:18182",
+      "registrationSubmitted": false,
+      "result": "PASS"
+    },
+    {
+      "label": "1440x900",
+      "route": "/courses",
+      "status": 200,
+      "details": {
+        "h1": "找到今天想学的内容。",
+        "entries": 3,
+        "operable": 2,
+        "visibleCount": 2,
+        "menuOpened": false,
+        "sample": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=system&returnTo=%2Fhome"
+      },
+      "landed": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=system&returnTo=%2Fhome",
+      "returnedOrigin": "http://127.0.0.1:18182",
+      "registrationSubmitted": false,
+      "result": "PASS"
+    },
+    {
+      "label": "1440x900",
+      "route": "/pricing",
+      "status": 200,
+      "details": {
+        "h1": "价格方案",
+        "entries": 3,
+        "operable": 2,
+        "visibleCount": 2,
+        "menuOpened": false,
+        "sample": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=system&returnTo=%2Fhome"
+      },
+      "landed": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=system&returnTo=%2Fhome",
+      "returnedOrigin": "http://127.0.0.1:18182",
+      "registrationSubmitted": false,
+      "result": "PASS"
+    },
+    {
+      "label": "1440x900",
+      "route": "/download",
+      "status": 200,
+      "details": {
+        "h1": "下载体验",
+        "entries": 2,
+        "operable": 1,
+        "visibleCount": 1,
+        "menuOpened": false,
+        "sample": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=system&returnTo=%2Fhome"
+      },
+      "landed": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=system&returnTo=%2Fhome",
+      "returnedOrigin": "http://127.0.0.1:18182",
+      "registrationSubmitted": false,
+      "result": "PASS"
+    },
+    {
+      "label": "1440x900",
+      "route": "/announcements",
+      "status": 200,
+      "details": {
+        "h1": "产品动态与服务通知。",
+        "entries": 2,
+        "operable": 1,
+        "visibleCount": 1,
+        "menuOpened": false,
+        "sample": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=system&returnTo=%2Fhome"
+      },
+      "landed": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=system&returnTo=%2Fhome",
+      "returnedOrigin": "http://127.0.0.1:18182",
+      "registrationSubmitted": false,
+      "result": "PASS"
+    },
+    {
+      "label": "1440x900",
+      "route": "/about",
+      "status": 200,
+      "details": {
+        "h1": "学习，应该能继续下去。",
+        "entries": 4,
+        "operable": 2,
+        "visibleCount": 2,
+        "menuOpened": false,
+        "sample": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=system&returnTo=%2Fhome"
+      },
+      "landed": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=system&returnTo=%2Fhome",
+      "returnedOrigin": "http://127.0.0.1:18182",
+      "registrationSubmitted": false,
+      "result": "PASS"
+    },
+    {
+      "label": "1440x900",
+      "route": "/status",
+      "status": 200,
+      "details": {
+        "h1": "服务状态，及时了解。",
+        "entries": 2,
+        "operable": 1,
+        "visibleCount": 1,
+        "menuOpened": false,
+        "sample": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=system&returnTo=%2Fhome"
+      },
+      "landed": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=system&returnTo=%2Fhome",
+      "returnedOrigin": "http://127.0.0.1:18182",
+      "registrationSubmitted": false,
+      "result": "PASS"
+    },
+    {
+      "label": "1440x900",
+      "route": "/privacy",
+      "status": 200,
+      "details": {
+        "h1": "隐私与数据",
+        "entries": 2,
+        "operable": 1,
+        "visibleCount": 1,
+        "menuOpened": false,
+        "sample": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=system&returnTo=%2Fhome"
+      },
+      "landed": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=system&returnTo=%2Fhome",
+      "returnedOrigin": "http://127.0.0.1:18182",
+      "registrationSubmitted": false,
+      "result": "PASS"
+    },
+    {
+      "label": "1440x900",
+      "route": "/terms",
+      "status": 200,
+      "details": {
+        "h1": "使用说明",
+        "entries": 2,
+        "operable": 1,
+        "visibleCount": 1,
+        "menuOpened": false,
+        "sample": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=system&returnTo=%2Fhome"
+      },
+      "landed": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=system&returnTo=%2Fhome",
+      "returnedOrigin": "http://127.0.0.1:18182",
+      "registrationSubmitted": false,
+      "result": "PASS"
+    },
+    {
+      "label": "1440x900",
+      "route": "/minors",
+      "status": 200,
+      "details": {
+        "h1": "成人使用范围",
+        "entries": 2,
+        "operable": 1,
+        "visibleCount": 1,
+        "menuOpened": false,
+        "sample": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=system&returnTo=%2Fhome"
+      },
+      "landed": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=system&returnTo=%2Fhome",
+      "returnedOrigin": "http://127.0.0.1:18182",
+      "registrationSubmitted": false,
+      "result": "PASS"
+    },
+    {
+      "label": "1440x900",
+      "route": "/compliance",
+      "status": 200,
+      "details": {
+        "h1": "公开信息",
+        "entries": 2,
+        "operable": 1,
+        "visibleCount": 1,
+        "menuOpened": false,
+        "sample": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=system&returnTo=%2Fhome"
+      },
+      "landed": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=system&returnTo=%2Fhome",
+      "returnedOrigin": "http://127.0.0.1:18182",
+      "registrationSubmitted": false,
+      "result": "PASS"
+    }
+  ],
+  "errors": [],
+  "result": "PASS",
+  "finishedAt": "2026-10-05T02:29:37.484Z"
+}

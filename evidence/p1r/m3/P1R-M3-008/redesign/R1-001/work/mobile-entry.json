@@ -1,0 +1,18 @@
+{
+  "checkedAt": "2026-10-03T06:47:03.190Z",
+  "web": {
+    "href": "http://127.0.0.1:18180/register?utm_source=official&uiLocale=zh-CN&theme=dark&returnTo=%2Fhome",
+    "hostOk": true,
+    "returnToOk": true,
+    "localeOk": true,
+    "themeOk": true
+  },
+  "mobile": {
+    "href": "http://127.0.0.1:18183/#/pages/register/register?utm_source=official&uiLocale=zh-CN&theme=dark&returnTo=%2Fpages%2Fhome%2Fhome",
+    "hostOk": true,
+    "pageOk": true,
+    "returnToOk": true,
+    "localeOk": true,
+    "themeOk": true
+  }
+}

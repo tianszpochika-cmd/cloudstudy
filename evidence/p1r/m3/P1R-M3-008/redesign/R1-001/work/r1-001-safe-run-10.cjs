@@ -1,0 +1,12 @@
+const {spawn}=require('node:child_process');
+const fs=require('node:fs'),path=require('node:path');
+const args=process.argv.slice(2);const index=args.indexOf('--service');
+if(index<0||args.includes('--all'))throw Error('Explicit service list required');
+const selected=args[index+1].split(',');
+if(selected.some(s=>!['content-service','commerce-service','api-gateway'].includes(s)))throw Error('Service outside R1-001 scope');
+const flags={CONTENT_EVENT_RELAY_ENABLED:'false',CONTENT_EVENT_CONSUMER_ENABLED:'false',CONTENT_SCHEDULE_ENABLED:'false',CONTENT_FLYWAY_ENABLED:'false',COMMERCE_FLYWAY_ENABLED:'false',SPRING_FLYWAY_ENABLED:'false',P1R_DIAG:'0'};
+console.log(JSON.stringify({scope:'Owned public-read services only; nonempty content uses existing owner read path',selected,safeFlags:flags}));
+const child=spawn(process.execPath,['scripts/runtime/run-v2-services.mjs',...args],{env:{...process.env,...flags},stdio:'inherit',windowsHide:true});
+child.once('error',()=>{console.error('Service wrapper failed to spawn');process.exitCode=1;});
+child.once('exit',code=>{process.exitCode=code??1;});
+for(const signal of ['SIGINT','SIGTERM'])process.on(signal,()=>{if(child.pid&&!child.killed)child.kill('SIGTERM');});

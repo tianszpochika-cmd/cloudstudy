@@ -1,0 +1,70 @@
+{
+  "checkedAt": "2026-10-03T06:47:42.171Z",
+  "rows": [
+    {
+      "case": "empty-global",
+      "state": "empty",
+      "courses": "empty",
+      "pricing": "empty",
+      "download": "empty",
+      "stale": false,
+      "commerceState": null
+    },
+    {
+      "case": "empty-courses-with-other-data",
+      "state": "ready",
+      "courses": "empty",
+      "pricing": "empty",
+      "download": "empty",
+      "stale": false,
+      "commerceState": null
+    },
+    {
+      "case": "global-maintenance-with-commerce-success",
+      "state": "maintenance",
+      "courses": "maintenance",
+      "pricing": "maintenance",
+      "download": "maintenance",
+      "stale": false,
+      "commerceState": "ready"
+    },
+    {
+      "case": "global-permission-with-commerce-success",
+      "state": "permission",
+      "courses": "permission",
+      "pricing": "permission",
+      "download": "permission",
+      "stale": false,
+      "commerceState": "ready"
+    },
+    {
+      "case": "global-error-with-commerce-success",
+      "state": "error",
+      "courses": "error",
+      "pricing": "error",
+      "download": "error",
+      "stale": false,
+      "commerceState": "ready"
+    },
+    {
+      "case": "recovery-download",
+      "state": "recovery",
+      "courses": "recovery",
+      "pricing": "recovery",
+      "download": "recovery",
+      "stale": true,
+      "commerceState": null
+    }
+  ],
+  "composableInitial": {
+    "state": "loading",
+    "facets": "loading",
+    "commerceState": "loading"
+  },
+  "composableAfterThrow": {
+    "state": "error",
+    "pricing": "error",
+    "commerceState": "error",
+    "errorCode": "PUBLIC_PROJECTION_UNAVAILABLE"
+  }
+}

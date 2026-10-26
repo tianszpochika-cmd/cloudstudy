@@ -1,0 +1,82 @@
+{
+  "taskId": "R1-001",
+  "action": "reject",
+  "expectedRevision": 23,
+  "specSha256": "57726738acaac54eac1bedf2b69b97205d4e1933019781747f1b907294fadd52",
+  "actor": "root-reviewer",
+  "role": "reviewer",
+  "reviewerThreadId": "01a0cb93-8791-7ee2-b453-8e8752b2553f",
+  "note": "delivery-7有真实隔离输入和503进展；采集器可操作门退化、未点击重试、套件计数与交互证据仍不达标。限定整改测试与终验证据，不重做已核实产品实现，不开放002。",
+  "evidence": [
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-10/review.md",
+      "sha256": "32eabb176b8f23132a2c63d2d47ea76934903446b78feb9bdf380cd2413c9d69"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-10/units.log",
+      "sha256": "3f1812df2abffd138a3c33e952d054f4a2cf826a84a775b8021eaa3f8d446670"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-10/verification.json",
+      "sha256": "8320f9975b6b4693b6181b0b2a3a073d37625f3b2cd7f41db3e4016b8cc418d3"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-10/verify.mjs",
+      "sha256": "742a025c51f11bc87e02fc64511059d54c3c387735ef54bc735bef3f2c94d68f"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-10/website-report-observed.json",
+      "sha256": "e439804f945c071f922fc28e8fdf58ab6a71a973ed63a37027e0f0faaf93a5e4"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-10/website-report-source.json",
+      "sha256": "e34970322fc7e293afc6057c4670043856e2a61963bc45577ab2b3be5af12d49"
+    }
+  ],
+  "findings": [
+    {
+      "priority": "P1",
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/work/r1-001-sweep-7.cjs",
+      "line": 81,
+      "problem": "可操作入口为零仍PASS，独立全隐藏/全禁用探针均误过，真实七个移动路由受影响。",
+      "fix": "新11版采集器恢复可操作门，真实打开菜单验证入口，保持负例拒绝。",
+      "retestCaseIds": [
+        "R1-001-TC01",
+        "R1-001-TC03"
+      ]
+    },
+    {
+      "priority": "P1",
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/work/tc02-retry-10.cjs",
+      "line": 27,
+      "problem": "新开恢复页并reload，没有从原失败页点击重试；错误态断言仅看零卡。",
+      "fix": "保留真实失败页，恢复自有上游后点击重试捕捉响应及DOM，补error/recovery硬断言。",
+      "retestCaseIds": [
+        "R1-001-TC02"
+      ]
+    },
+    {
+      "priority": "P2",
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/summary-7.md",
+      "line": 21,
+      "problem": "16/17与原始FAIL报告不符；报告只有8检查/152布局，失败后续项未执行。",
+      "fix": "修隐藏首元素误选后全套跑到底，保存原始报告和退出码，准确计数。",
+      "retestCaseIds": [
+        "R1-001-TC01",
+        "R1-001-TC02"
+      ]
+    },
+    {
+      "priority": "P2",
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/work/tc03-10.cjs",
+      "line": 35,
+      "problem": "href检查未进行快速点击/恶意参数导航；截图未覆盖待验区域，storage未检。",
+      "fix": "精确复用合法旧证据或补真实导航，补状态区域截图与匿名官网storage检查。",
+      "retestCaseIds": [
+        "R1-001-TC01",
+        "R1-001-TC02",
+        "R1-001-TC03"
+      ]
+    }
+  ]
+}

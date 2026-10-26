@@ -1,0 +1,327 @@
+{
+  "startedAt": "2026-10-03T09:38:16.274Z",
+  "finishedAt": "2026-10-03T09:38:18.704Z",
+  "scope": "scoped patch apply/reverse in a unique isolated directory only; shared tree untouched; not restore to delivery-2 or production rollback",
+  "lineEndingBoundary": "Git patch applies normalized LF text; Windows working files differ in CRLF on changed files. Forward raw-byte matches and normalized-text matches are separately recorded; reverse baseline is exact Git bytes.",
+  "forward": [
+    {
+      "path": "apps/official-site/components/SiteStartButton.vue",
+      "match": false,
+      "textMatch": true
+    },
+    {
+      "path": "apps/official-site/composables/useOfficialSiteLinks.ts",
+      "match": false,
+      "textMatch": true
+    },
+    {
+      "path": "apps/official-site/composables/usePublicProjection.ts",
+      "match": false,
+      "textMatch": true
+    },
+    {
+      "path": "apps/official-site/pages/about.vue",
+      "match": true,
+      "textMatch": true
+    },
+    {
+      "path": "apps/official-site/pages/announcements.vue",
+      "match": false,
+      "textMatch": true
+    },
+    {
+      "path": "apps/official-site/pages/compliance.vue",
+      "match": false,
+      "textMatch": true
+    },
+    {
+      "path": "apps/official-site/pages/courses/index.vue",
+      "match": false,
+      "textMatch": true
+    },
+    {
+      "path": "apps/official-site/pages/download.vue",
+      "match": false,
+      "textMatch": true
+    },
+    {
+      "path": "apps/official-site/pages/index.vue",
+      "match": false,
+      "textMatch": true
+    },
+    {
+      "path": "apps/official-site/pages/minors.vue",
+      "match": true,
+      "textMatch": true
+    },
+    {
+      "path": "apps/official-site/pages/pricing.vue",
+      "match": false,
+      "textMatch": true
+    },
+    {
+      "path": "apps/official-site/pages/privacy.vue",
+      "match": true,
+      "textMatch": true
+    },
+    {
+      "path": "apps/official-site/pages/status.vue",
+      "match": true,
+      "textMatch": true
+    },
+    {
+      "path": "apps/official-site/pages/terms.vue",
+      "match": true,
+      "textMatch": true
+    },
+    {
+      "path": "apps/official-site/server/api/public-projection.get.ts",
+      "match": false,
+      "textMatch": true
+    },
+    {
+      "path": "apps/official-site/tests/b13-official-site.test.mjs",
+      "match": false,
+      "textMatch": true
+    },
+    {
+      "path": "apps/official-site/tests/b14-fe-005.test.mjs",
+      "match": false,
+      "textMatch": true
+    },
+    {
+      "path": "apps/official-site/tests/browser/website-runtime.cjs",
+      "match": false,
+      "textMatch": true
+    },
+    {
+      "path": "apps/official-site/tests/public-projection-bff.test.mjs",
+      "match": false,
+      "textMatch": true
+    },
+    {
+      "path": "apps/official-site/tests/website-entry.test.mjs",
+      "match": false,
+      "textMatch": true
+    },
+    {
+      "path": "apps/official-site/utils/public-links.mjs",
+      "match": true,
+      "textMatch": true
+    },
+    {
+      "path": "apps/official-site/utils/public-projection.ts",
+      "match": false,
+      "textMatch": true
+    },
+    {
+      "path": "apps/official-site/utils/site-content.mjs",
+      "match": false,
+      "textMatch": true
+    },
+    {
+      "path": "packages/i18n/src/official-site.ts",
+      "match": false,
+      "textMatch": true
+    }
+  ],
+  "reversed": [
+    {
+      "path": "apps/official-site/components/SiteStartButton.vue",
+      "match": false
+    },
+    {
+      "path": "apps/official-site/composables/useOfficialSiteLinks.ts",
+      "match": false
+    },
+    {
+      "path": "apps/official-site/composables/usePublicProjection.ts",
+      "match": false
+    },
+    {
+      "path": "apps/official-site/pages/about.vue",
+      "match": true
+    },
+    {
+      "path": "apps/official-site/pages/announcements.vue",
+      "match": false
+    },
+    {
+      "path": "apps/official-site/pages/compliance.vue",
+      "match": false
+    },
+    {
+      "path": "apps/official-site/pages/courses/index.vue",
+      "match": false
+    },
+    {
+      "path": "apps/official-site/pages/download.vue",
+      "match": false
+    },
+    {
+      "path": "apps/official-site/pages/index.vue",
+      "match": false
+    },
+    {
+      "path": "apps/official-site/pages/minors.vue",
+      "match": true
+    },
+    {
+      "path": "apps/official-site/pages/pricing.vue",
+      "match": false
+    },
+    {
+      "path": "apps/official-site/pages/privacy.vue",
+      "match": true
+    },
+    {
+      "path": "apps/official-site/pages/status.vue",
+      "match": true
+    },
+    {
+      "path": "apps/official-site/pages/terms.vue",
+      "match": true
+    },
+    {
+      "path": "apps/official-site/server/api/public-projection.get.ts",
+      "match": false
+    },
+    {
+      "path": "apps/official-site/tests/b13-official-site.test.mjs",
+      "match": false
+    },
+    {
+      "path": "apps/official-site/tests/b14-fe-005.test.mjs",
+      "match": false
+    },
+    {
+      "path": "apps/official-site/tests/browser/website-runtime.cjs",
+      "match": false
+    },
+    {
+      "path": "apps/official-site/tests/public-projection-bff.test.mjs",
+      "match": false
+    },
+    {
+      "path": "apps/official-site/tests/website-entry.test.mjs",
+      "match": false
+    },
+    {
+      "path": "apps/official-site/utils/public-links.mjs",
+      "match": true
+    },
+    {
+      "path": "apps/official-site/utils/public-projection.ts",
+      "match": false
+    },
+    {
+      "path": "apps/official-site/utils/site-content.mjs",
+      "match": false
+    },
+    {
+      "path": "packages/i18n/src/official-site.ts",
+      "match": false
+    }
+  ],
+  "baseline": [
+    {
+      "path": "apps/official-site/components/SiteStartButton.vue",
+      "sha256": "e966175babbfa7c1f3cda300f81f69a07df4a827a31c4b2d0c8d89c363936a5f"
+    },
+    {
+      "path": "apps/official-site/composables/useOfficialSiteLinks.ts",
+      "sha256": "efa0830ae0c5b3150e441def1e45ed4b3f5c2d873a3b739efbabcd4e253b3cc2"
+    },
+    {
+      "path": "apps/official-site/composables/usePublicProjection.ts",
+      "sha256": "7b82ce9a9c1bd318ed6b796023a312ed7982b4f589185b138152c323e7713d98"
+    },
+    {
+      "path": "apps/official-site/pages/about.vue",
+      "sha256": "d70cac5f7c6f4c9dacfc84cc94d90cd51792cdf63222025322c9f73151c6f5e1"
+    },
+    {
+      "path": "apps/official-site/pages/announcements.vue",
+      "sha256": "9d675a1796994af1e87959894de3203821b013f0fb11bd84159a38512572781c"
+    },
+    {
+      "path": "apps/official-site/pages/compliance.vue",
+      "sha256": "07a2425381a9c04ad40aa51c815c5fb7e2fca938cfb2a3922ac2e7d0a3604561"
+    },
+    {
+      "path": "apps/official-site/pages/courses/index.vue",
+      "sha256": "d2bb4d7622573c08e553b1adea4431565ff661a3fb42748e072f0619339a5742"
+    },
+    {
+      "path": "apps/official-site/pages/download.vue",
+      "sha256": "1f73880a488b95ac560579c2cf40bb5c08d09d24422b649a9c6706ffbbb8afa5"
+    },
+    {
+      "path": "apps/official-site/pages/index.vue",
+      "sha256": "cb52d704bc53f6810483b22580815f43eaee91360ce976ee0f3d07b3b98baef5"
+    },
+    {
+      "path": "apps/official-site/pages/minors.vue",
+      "sha256": "d17a1f687e4502122bfaa6fa92b1ebfa5de1759343918a0a75624ff227b528f2"
+    },
+    {
+      "path": "apps/official-site/pages/pricing.vue",
+      "sha256": "1f73880a488b95ac560579c2cf40bb5c08d09d24422b649a9c6706ffbbb8afa5"
+    },
+    {
+      "path": "apps/official-site/pages/privacy.vue",
+      "sha256": "72562ecc8f4a38d00d5af7eccc736d715ba48f96dd3d8ac6f07d1b05ba61cf9f"
+    },
+    {
+      "path": "apps/official-site/pages/status.vue",
+      "sha256": "f85952587dc38b4799dd3aaea76c971fb6635ca43b1e508c5de8d519b1add355"
+    },
+    {
+      "path": "apps/official-site/pages/terms.vue",
+      "sha256": "5e6b4c8c59d3cae277d6bd63ed6255d4366eba4358b7a3b182313cdbab70f44b"
+    },
+    {
+      "path": "apps/official-site/server/api/public-projection.get.ts",
+      "sha256": "1d2ef1ca85737bc589e2edaf2834afc61aa83b214ebb1cf4637eb7b6935fff7b"
+    },
+    {
+      "path": "apps/official-site/tests/b13-official-site.test.mjs",
+      "sha256": "cb4639aea81aee747e148572a931718e021c96a76e7df2a837be9f381cc315ee"
+    },
+    {
+      "path": "apps/official-site/tests/b14-fe-005.test.mjs",
+      "sha256": "19eedcbe12d8f58fa7f79aa5594f176b7d3ae45b913b42b57c4d267a09ca14b3"
+    },
+    {
+      "path": "apps/official-site/tests/browser/website-runtime.cjs",
+      "sha256": "29e55520e88bde65e6c31262de582c0ff78858b298a5606ebed94007d383e915"
+    },
+    {
+      "path": "apps/official-site/tests/public-projection-bff.test.mjs",
+      "sha256": "dd2802e7a8bfb8edb76537bc8efd077c605e1562214c0d00b883566ea23b3675"
+    },
+    {
+      "path": "apps/official-site/tests/website-entry.test.mjs",
+      "sha256": "c48b4d7ce788352a67e0ca8130d648801225fe8f0951bc24c9874221da0160a0"
+    },
+    {
+      "path": "apps/official-site/utils/public-links.mjs",
+      "sha256": "94abc4fd69d51bf6964fcfa93f6e8a6a044141a54359603205b930de5ff9e3e6"
+    },
+    {
+      "path": "apps/official-site/utils/public-projection.ts",
+      "sha256": "43dbe878288dccda4a99334422bed07d693d02167a34eee94ce5ffd34aa4c3c0"
+    },
+    {
+      "path": "apps/official-site/utils/site-content.mjs",
+      "sha256": "33553a4cb0f3e8c49c1c19821056f3cfa927052f2d3700fa83f08e08b6b2c7ff"
+    },
+    {
+      "path": "packages/i18n/src/official-site.ts",
+      "sha256": "5889d1a4a1e36820a333435d8ea78170606926751e0795f7d3a93a0a6c8c906a"
+    }
+  ],
+  "oldBffTestCount": 12,
+  "oldBffExitCode": 0,
+  "patchSha256": "bfde84f408e50957383e6bb432efe15a1525e7498fefe3f086bb99654591da85"
+}

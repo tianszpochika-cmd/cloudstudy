@@ -1,0 +1,83 @@
+{
+  "checkedAt": "2026-10-04T06:13:40.460Z",
+  "historical": [
+    {
+      "reviewer": 1,
+      "evidenceCount": 16,
+      "result": "all pinned review evidence unchanged"
+    },
+    {
+      "reviewer": 2,
+      "evidenceCount": 17,
+      "result": "all pinned review evidence unchanged"
+    },
+    {
+      "reviewer": 3,
+      "evidenceCount": 42,
+      "result": "all pinned review evidence unchanged"
+    },
+    {
+      "reviewer": 4,
+      "evidenceCount": 11,
+      "result": "all pinned review evidence unchanged"
+    },
+    {
+      "reviewer": 5,
+      "evidenceCount": 15,
+      "result": "all pinned review evidence unchanged"
+    }
+  ],
+  "pinning": [
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/work/r1-001-sweep-6.cjs",
+      "exists": true,
+      "sha256": "216ca899df6e4149da97519bf2450468bdb7f00550324eaaacbf9612de98f91c",
+      "inReceipt": true
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/work/real-upstream-6.cjs",
+      "exists": true,
+      "sha256": "17423790e19a15e7c33baf57a701c6a1cbb1927061a8d8fbe36d2ba30dfc153b",
+      "inReceipt": true
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/work/real-upstream-6/courses-success-375x812.png",
+      "exists": true,
+      "sha256": "d8aee3428f7291226b34ea2d0d74b0fe2de5fb0bda76ff587bb639d1f0a3508e",
+      "inReceipt": false
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/work/real-upstream-6/courses-success-1440x900.png",
+      "exists": true,
+      "sha256": "de65c66d7ba421246cf1a4222039455ee14d9013d1bef5c318322802c1511d8b",
+      "inReceipt": false
+    }
+  ],
+  "ports": [
+    {
+      "port": 18070,
+      "state": "CLOSED"
+    },
+    {
+      "port": 18089,
+      "state": "CLOSED"
+    },
+    {
+      "port": 18096,
+      "state": "CLOSED"
+    },
+    {
+      "port": 18182,
+      "state": "CLOSED"
+    },
+    {
+      "port": 18180,
+      "state": "CLOSED"
+    },
+    {
+      "port": 18183,
+      "state": "CLOSED"
+    }
+  ],
+  "scope": "receipt pinning and loopback availability only; no backend launch or database access"
+}

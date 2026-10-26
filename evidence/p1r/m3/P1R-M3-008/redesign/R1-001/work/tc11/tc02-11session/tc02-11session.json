@@ -1,0 +1,133 @@
+{
+  "startedAt": "2026-10-05T01:54:46.504Z",
+  "scope": "TC02-11 continuous session v2: same page click retry",
+  "restoreMark": "nonempty",
+  "steps": [
+    {
+      "step": "375x812 gateway-failure",
+      "ok": true,
+      "detail": {
+        "status": 503,
+        "req": "req-a4e7f8766282434ab129b86a80a43de3",
+        "body": "{\"error\":{\"errorCode\":\"SERVICE_UNAVAILABLE\",\"message\":\"The upstream service is unavailable.\",\"retryable\":true},\"meta\":{\"requestId\":\"req-a4e7f8766282434ab129b86a80a43de3\",\"traceId\":\"4be5d098a8104edbbb8"
+      }
+    },
+    {
+      "step": "375x812 bff-failure-state",
+      "ok": true,
+      "detail": {
+        "state": "error",
+        "source": "empty-fallback",
+        "errorCode": "PUBLIC_PROJECTION_UNAVAILABLE"
+      }
+    },
+    {
+      "step": "375x812 page-error-hard",
+      "ok": true,
+      "detail": {
+        "cards": 0,
+        "retryVisible": true,
+        "retryEnabled": true,
+        "bodySample": "当前公开课程\n\n这里介绍学习方式，具体课程以学习端已开放内容为准。\n\n查看开放情况\n公开内容暂时无法加载\n\n学习方式介绍仍可浏览，也可以稍后再试。\n\n重新加载"
+      }
+    },
+    {
+      "step": "375x812 restore-content-healthy",
+      "ok": true,
+      "detail": {
+        "pid": 15540
+      }
+    },
+    {
+      "step": "375x812 click-bff-response",
+      "ok": true,
+      "detail": {
+        "status": 200,
+        "state": "ready",
+        "courses": 7
+      }
+    },
+    {
+      "step": "375x812 dom-recovered",
+      "ok": true,
+      "detail": {
+        "cards": 7,
+        "date": "2026-09-27"
+      }
+    },
+    {
+      "step": "375x812 console-clean",
+      "ok": true,
+      "detail": {
+        "errors": []
+      }
+    },
+    {
+      "step": "1440x900 gateway-failure",
+      "ok": true,
+      "detail": {
+        "status": 503,
+        "req": "req-006de80b01074007930e7859749d5874",
+        "body": "{\"error\":{\"errorCode\":\"SERVICE_UNAVAILABLE\",\"message\":\"The upstream service is unavailable.\",\"retryable\":true},\"meta\":{\"requestId\":\"req-006de80b01074007930e7859749d5874\",\"traceId\":\"5ea8178f8e984f5daad"
+      }
+    },
+    {
+      "step": "1440x900 bff-failure-state",
+      "ok": true,
+      "detail": {
+        "state": "recovery",
+        "source": "memory-cache",
+        "errorCode": "PUBLIC_PROJECTION_STALE"
+      }
+    },
+    {
+      "step": "1440x900 page-recovery-hard",
+      "ok": true,
+      "detail": {
+        "cards": 7,
+        "retryVisible": true,
+        "retryEnabled": true,
+        "bodySample": "当前公开课程\n\n这里介绍学习方式，具体课程以学习端已开放内容为准。\n\n查看开放情况\n\n正在恢复公开内容：当前内容可能已经更新，请重新加载后查看。 公开数据更新时间：2026-09-27重新加载\n\nA1\nDemo present simple\n\nSubject plus base verb for habits.\n\n查看"
+      }
+    },
+    {
+      "step": "1440x900 restore-content-healthy",
+      "ok": true,
+      "detail": {
+        "pid": 27956
+      }
+    },
+    {
+      "step": "1440x900 click-bff-response",
+      "ok": true,
+      "detail": {
+        "status": 200,
+        "state": "ready",
+        "courses": 7
+      }
+    },
+    {
+      "step": "1440x900 dom-recovered",
+      "ok": true,
+      "detail": {
+        "cards": 7,
+        "date": "2026-09-27"
+      }
+    },
+    {
+      "step": "1440x900 console-clean",
+      "ok": true,
+      "detail": {
+        "errors": []
+      }
+    }
+  ],
+  "failedChecks": [],
+  "gatewayFailure": {
+    "status": 503,
+    "body": "{\"error\":{\"errorCode\":\"SERVICE_UNAVAILABLE\",\"message\":\"The upstream service is unavailable.\",\"retryable\":true},\"meta\":{\"requestId\":\"req-a4e7f8766282434ab129b86a80a43de3\",\"traceId\":\"4be5d098a8104edbbb808964485081d8\",\"apiVersion\":\"v1\",\"schemaVersion\":\"1.0.0\",\"serverTime\":\"2026-10-05T01:54:50.439390200Z\"}}"
+  },
+  "restorePid-375x812": 15540,
+  "restorePid-1440x900": 27956,
+  "finishedAt": "2026-10-05T01:55:25.280Z"
+}

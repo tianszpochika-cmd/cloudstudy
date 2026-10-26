@@ -1,0 +1,463 @@
+{
+  "checkedAt": "2026-10-03T17:31:14.870Z",
+  "origin": "http://127.0.0.1:18182",
+  "node": "v20.19.5",
+  "viewports": [
+    {
+      "check": "375x812 http /",
+      "ok": true,
+      "detail": {
+        "status": 200,
+        "ms": 3288
+      }
+    },
+    {
+      "check": "375x812 r1-001 /",
+      "ok": true,
+      "detail": {
+        "h1": "让英语，\n回到你的日常。",
+        "entries": 5,
+        "sample": {
+          "href": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=system&returnTo=%2Fpages%2Fhome%2Fhome",
+          "target": "mobile"
+        }
+      }
+    },
+    {
+      "check": "375x812 http /courses",
+      "ok": true,
+      "detail": {
+        "status": 200,
+        "ms": 203
+      }
+    },
+    {
+      "check": "375x812 r1-001 /courses",
+      "ok": true,
+      "detail": {
+        "h1": "找到今天想学的内容。",
+        "entries": 3,
+        "sample": {
+          "href": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=system&returnTo=%2Fpages%2Fhome%2Fhome",
+          "target": "mobile"
+        }
+      }
+    },
+    {
+      "check": "375x812 http /pricing",
+      "ok": true,
+      "detail": {
+        "status": 200,
+        "ms": 155
+      }
+    },
+    {
+      "check": "375x812 r1-001 /pricing",
+      "ok": true,
+      "detail": {
+        "h1": "价格方案",
+        "entries": 3,
+        "sample": {
+          "href": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=system&returnTo=%2Fpages%2Fhome%2Fhome",
+          "target": "mobile"
+        }
+      }
+    },
+    {
+      "check": "375x812 http /download",
+      "ok": true,
+      "detail": {
+        "status": 200,
+        "ms": 125
+      }
+    },
+    {
+      "check": "375x812 r1-001 /download",
+      "ok": true,
+      "detail": {
+        "h1": "下载体验",
+        "entries": 2,
+        "sample": {
+          "href": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=system&returnTo=%2Fpages%2Fhome%2Fhome",
+          "target": "mobile"
+        }
+      }
+    },
+    {
+      "check": "375x812 http /announcements",
+      "ok": true,
+      "detail": {
+        "status": 200,
+        "ms": 149
+      }
+    },
+    {
+      "check": "375x812 r1-001 /announcements",
+      "ok": true,
+      "detail": {
+        "h1": "产品动态与服务通知。",
+        "entries": 2,
+        "sample": {
+          "href": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=system&returnTo=%2Fpages%2Fhome%2Fhome",
+          "target": "mobile"
+        }
+      }
+    },
+    {
+      "check": "375x812 http /about",
+      "ok": true,
+      "detail": {
+        "status": 200,
+        "ms": 173
+      }
+    },
+    {
+      "check": "375x812 r1-001 /about",
+      "ok": true,
+      "detail": {
+        "h1": "学习，应该能继续下去。",
+        "entries": 4,
+        "sample": {
+          "href": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=system&returnTo=%2Fpages%2Fhome%2Fhome",
+          "target": "mobile"
+        }
+      }
+    },
+    {
+      "check": "375x812 http /compliance",
+      "ok": true,
+      "detail": {
+        "status": 200,
+        "ms": 224
+      }
+    },
+    {
+      "check": "375x812 r1-001 /compliance",
+      "ok": true,
+      "detail": {
+        "h1": "公开信息",
+        "entries": 2,
+        "sample": {
+          "href": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=system&returnTo=%2Fpages%2Fhome%2Fhome",
+          "target": "mobile"
+        }
+      }
+    },
+    {
+      "check": "375x812 http /status",
+      "ok": true,
+      "detail": {
+        "status": 200,
+        "ms": 141
+      }
+    },
+    {
+      "check": "375x812 r1-001 /status",
+      "ok": true,
+      "detail": {
+        "h1": "服务状态，及时了解。",
+        "entries": 2,
+        "sample": {
+          "href": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=system&returnTo=%2Fpages%2Fhome%2Fhome",
+          "target": "mobile"
+        }
+      }
+    },
+    {
+      "check": "375x812 http /privacy",
+      "ok": true,
+      "detail": {
+        "status": 200,
+        "ms": 166
+      }
+    },
+    {
+      "check": "375x812 r1-001 /privacy",
+      "ok": true,
+      "detail": {
+        "h1": "隐私与数据",
+        "entries": 2,
+        "sample": {
+          "href": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=system&returnTo=%2Fpages%2Fhome%2Fhome",
+          "target": "mobile"
+        }
+      }
+    },
+    {
+      "check": "375x812 http /terms",
+      "ok": true,
+      "detail": {
+        "status": 200,
+        "ms": 120
+      }
+    },
+    {
+      "check": "375x812 r1-001 /terms",
+      "ok": true,
+      "detail": {
+        "h1": "使用说明",
+        "entries": 2,
+        "sample": {
+          "href": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=system&returnTo=%2Fpages%2Fhome%2Fhome",
+          "target": "mobile"
+        }
+      }
+    },
+    {
+      "check": "375x812 http /minors",
+      "ok": true,
+      "detail": {
+        "status": 200,
+        "ms": 149
+      }
+    },
+    {
+      "check": "375x812 r1-001 /minors",
+      "ok": true,
+      "detail": {
+        "h1": "成人使用范围",
+        "entries": 2,
+        "sample": {
+          "href": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=system&returnTo=%2Fpages%2Fhome%2Fhome",
+          "target": "mobile"
+        }
+      }
+    },
+    {
+      "check": "375x812 console-clean",
+      "ok": true,
+      "detail": {
+        "errors": []
+      }
+    },
+    {
+      "check": "1440x900 http /",
+      "ok": true,
+      "detail": {
+        "status": 200,
+        "ms": 353
+      }
+    },
+    {
+      "check": "1440x900 r1-001 /",
+      "ok": true,
+      "detail": {
+        "h1": "让英语，\n回到你的日常。",
+        "entries": 5,
+        "sample": {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=system&returnTo=%2Fhome",
+          "target": "web"
+        }
+      }
+    },
+    {
+      "check": "1440x900 http /courses",
+      "ok": true,
+      "detail": {
+        "status": 200,
+        "ms": 131
+      }
+    },
+    {
+      "check": "1440x900 r1-001 /courses",
+      "ok": true,
+      "detail": {
+        "h1": "找到今天想学的内容。",
+        "entries": 3,
+        "sample": {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=system&returnTo=%2Fhome",
+          "target": "web"
+        }
+      }
+    },
+    {
+      "check": "1440x900 http /pricing",
+      "ok": true,
+      "detail": {
+        "status": 200,
+        "ms": 115
+      }
+    },
+    {
+      "check": "1440x900 r1-001 /pricing",
+      "ok": true,
+      "detail": {
+        "h1": "价格方案",
+        "entries": 3,
+        "sample": {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=system&returnTo=%2Fhome",
+          "target": "web"
+        }
+      }
+    },
+    {
+      "check": "1440x900 http /download",
+      "ok": true,
+      "detail": {
+        "status": 200,
+        "ms": 114
+      }
+    },
+    {
+      "check": "1440x900 r1-001 /download",
+      "ok": true,
+      "detail": {
+        "h1": "下载体验",
+        "entries": 2,
+        "sample": {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=system&returnTo=%2Fhome",
+          "target": "web"
+        }
+      }
+    },
+    {
+      "check": "1440x900 http /announcements",
+      "ok": true,
+      "detail": {
+        "status": 200,
+        "ms": 151
+      }
+    },
+    {
+      "check": "1440x900 r1-001 /announcements",
+      "ok": true,
+      "detail": {
+        "h1": "产品动态与服务通知。",
+        "entries": 2,
+        "sample": {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=system&returnTo=%2Fhome",
+          "target": "web"
+        }
+      }
+    },
+    {
+      "check": "1440x900 http /about",
+      "ok": true,
+      "detail": {
+        "status": 200,
+        "ms": 134
+      }
+    },
+    {
+      "check": "1440x900 r1-001 /about",
+      "ok": true,
+      "detail": {
+        "h1": "学习，应该能继续下去。",
+        "entries": 4,
+        "sample": {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=system&returnTo=%2Fhome",
+          "target": "web"
+        }
+      }
+    },
+    {
+      "check": "1440x900 http /compliance",
+      "ok": true,
+      "detail": {
+        "status": 200,
+        "ms": 114
+      }
+    },
+    {
+      "check": "1440x900 r1-001 /compliance",
+      "ok": true,
+      "detail": {
+        "h1": "公开信息",
+        "entries": 2,
+        "sample": {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=system&returnTo=%2Fhome",
+          "target": "web"
+        }
+      }
+    },
+    {
+      "check": "1440x900 http /status",
+      "ok": true,
+      "detail": {
+        "status": 200,
+        "ms": 105
+      }
+    },
+    {
+      "check": "1440x900 r1-001 /status",
+      "ok": true,
+      "detail": {
+        "h1": "服务状态，及时了解。",
+        "entries": 2,
+        "sample": {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=system&returnTo=%2Fhome",
+          "target": "web"
+        }
+      }
+    },
+    {
+      "check": "1440x900 http /privacy",
+      "ok": true,
+      "detail": {
+        "status": 200,
+        "ms": 133
+      }
+    },
+    {
+      "check": "1440x900 r1-001 /privacy",
+      "ok": true,
+      "detail": {
+        "h1": "隐私与数据",
+        "entries": 2,
+        "sample": {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=system&returnTo=%2Fhome",
+          "target": "web"
+        }
+      }
+    },
+    {
+      "check": "1440x900 http /terms",
+      "ok": true,
+      "detail": {
+        "status": 200,
+        "ms": 227
+      }
+    },
+    {
+      "check": "1440x900 r1-001 /terms",
+      "ok": true,
+      "detail": {
+        "h1": "使用说明",
+        "entries": 2,
+        "sample": {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=system&returnTo=%2Fhome",
+          "target": "web"
+        }
+      }
+    },
+    {
+      "check": "1440x900 http /minors",
+      "ok": true,
+      "detail": {
+        "status": 200,
+        "ms": 104
+      }
+    },
+    {
+      "check": "1440x900 r1-001 /minors",
+      "ok": true,
+      "detail": {
+        "h1": "成人使用范围",
+        "entries": 2,
+        "sample": {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=system&returnTo=%2Fhome",
+          "target": "web"
+        }
+      }
+    },
+    {
+      "check": "1440x900 console-clean",
+      "ok": true,
+      "detail": {
+        "errors": []
+      }
+    }
+  ],
+  "failedChecks": [],
+  "finishedAt": "2026-10-03T17:32:11.783Z"
+}

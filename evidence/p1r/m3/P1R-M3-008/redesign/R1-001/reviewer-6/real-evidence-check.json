@@ -1,0 +1,12 @@
+{
+  "checkedAt": "2026-10-04T06:13:41.089Z",
+  "scope": "Pinned executor response readback and synthetic current scalar PASS expression; no real browser rerun",
+  "recordedGatewayBffIdsMatch": true,
+  "recordedGeneratedAtMatch": true,
+  "recordedStatuses200": true,
+  "missingEmptyNoteAccepted": true,
+  "domIdsCollectedButNotRecordedOrCompared": true,
+  "cookieCollectionCodePresent": false,
+  "cookieFieldsPresent": false,
+  "screenshotsPinned": false
+}

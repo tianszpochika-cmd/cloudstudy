@@ -1,0 +1,389 @@
+{
+  "taskId": "R1-001",
+  "action": "ready",
+  "expectedRevision": 20,
+  "specSha256": "57726738acaac54eac1bedf2b69b97205d4e1933019781747f1b907294fadd52",
+  "actor": "root-reviewer",
+  "role": "reviewer",
+  "reviewerThreadId": "01a0cb93-8791-7ee2-b453-8e8752b2553f",
+  "note": "隔离输入已实际读回，主审修正准备接线并限定放行真实终验；不批准产品ACCEPTED，不开放R1-002。旧交付保留历史，下一轮start后提交delivery-7。",
+  "sourceArtifacts": [
+    {
+      "path": "docs/06-design/v2-980plus/redesign/task-specs/R1-001-041.json",
+      "sha256": "6c69bc2200c316dea9b5840df2aefb64b5d420e66b676f5ff9334442e40dad6d"
+    },
+    {
+      "path": "AGENTS.md",
+      "sha256": "1029a788919c5151a6b7193f29afbdaedbca67d30bbc2ced59bbe74d7c619e53"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/redesign/dev-plan-R1.md",
+      "sha256": "ad61c8b2c4114e0d70af301bc92d3d851b0d62d8310a2d72473ec53a64f70b49"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/redesign/business-chains.md",
+      "sha256": "f37907af051ab0b644654153f8b365a228451151fbb27527c53e43b8b714c637"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/redesign/interaction-chains.md",
+      "sha256": "37548c077648a633f821b83c73bfd4f66b93d710dc5bd5ccf57d32a24b596bdf"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/08-980plus-功能点设计登记册.md",
+      "sha256": "c96f3587c7e825c4d961cc56a44a15e5f198c59f8bdaa9cea11ba105956b526c"
+    },
+    {
+      "path": "packages/contracts/fragments/b9/b9-content.openapi.json",
+      "sha256": "0eec642468783d3db7070a0b8ab2e74a291d11339b17c178afed7f0cff2d111c"
+    },
+    {
+      "path": "config/local-ports.json",
+      "sha256": "0a6b43d35379fed2e679961b34a0ad0e9ec1888dfb7d1a2c76eed20706e5ca95"
+    },
+    {
+      "path": "config/toolchain-baseline.json",
+      "sha256": "a9825edb7c58c4178e8423ba6f839eed54fb6fb135f86a026b43038d79eef867"
+    },
+    {
+      "path": "apps/official-site/nuxt.config.ts",
+      "sha256": "b334ce1a11abe2002d30ff6b90c96307e97010899d20035e261a134591f32bb1"
+    },
+    {
+      "path": "apps/official-site/plugins/foundation.ts",
+      "sha256": "09b86a851ab192637cccfd8f96073e029c6363711c7436694d13eca2b39a3e45"
+    },
+    {
+      "path": "apps/official-site/components/PublicStatus.vue",
+      "sha256": "1fd360e513110e3b8dfb9da22e53d640b0aff9a5c81aa0edac383b9bdb6281a9"
+    },
+    {
+      "path": "packages/contracts/openapi/v1/openapi.json",
+      "sha256": "0f241f060f6d45856c8df5de9ffaef3e2f762fc669e417ac6322cf93cb7af9d7"
+    },
+    {
+      "path": "packages/contracts/generated/openapi.ts",
+      "sha256": "92a7ad369c64cb8d0033c6186d3e00eba9620e83ca0e1b9c32ce02807b078c72"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/redesign/input-gates.md",
+      "sha256": "5778937db94ef5edb86c0d2fc9246602290f8547c235c50f16629feee4f458d1"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/redesign/execution-handbook.md",
+      "sha256": "5dd9c5b894cd4bfa08754c61b95b83308a7509cd722b6ede5d731e0d64214c88"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/phase1-business-operation/01-角色系统边界与业务总图.md",
+      "sha256": "d2a11d8e542373441683368b6af180c7bbbf2cf654399df574eb78d664474c7c"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/phase1-business-operation/02-端到端业务旅程台账.md",
+      "sha256": "28fee299ff0eb8eb17b5eccc83555395964e978481979931f29fe4b6dc32ab38"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
+      "sha256": "49dec04b396cdb732c61c210b6d4473dc37dedef21c8620bf4b59f1c39356625"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/phase1-business-operation/08-验收与追溯规范.md",
+      "sha256": "68094074693b8143669332e6412f93061f58b790cb06601caebcfdec093bf403"
+    },
+    {
+      "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+      "sha256": "61e6826d6994f94cd6829da2873500b942bdad2b493e10ea7d754905377750dc"
+    },
+    {
+      "path": "packages/contracts/fragments/b13/b13-commerce-admin-analytics.openapi.json",
+      "sha256": "c9f865a14e5dc36084e283f33fe2d84e465e1f54b5854859cd1e173a6c94bf21"
+    },
+    {
+      "path": "apps/official-site/utils/public-projection.ts",
+      "sha256": "fa597d5844dc41a2bf951bfd477bc8f3729654fdf1f099ff2d24b8968c63a7bb"
+    },
+    {
+      "path": "apps/official-site/utils/public-links.mjs",
+      "sha256": "94abc4fd69d51bf6964fcfa93f6e8a6a044141a54359603205b930de5ff9e3e6"
+    },
+    {
+      "path": "apps/official-site/server/api/public-projection.get.ts",
+      "sha256": "33eebcb2f16d76406067ff3beb0420dd177614875ac45b233a21b2f73e9b1144"
+    },
+    {
+      "path": "apps/official-site/pages/index.vue",
+      "sha256": "4ae46de320ee57ad07ce1df97c02fbab74012a5486e856cb9c413c32ea6af2c8"
+    },
+    {
+      "path": "apps/official-site/pages/courses/index.vue",
+      "sha256": "d508b7a31dcd843326efa6779bebb1a8f88a1614fc7f9e539077875c8fe09c45"
+    },
+    {
+      "path": "apps/official-site/pages/pricing.vue",
+      "sha256": "9ddb207ff003d6b36a5f1f596a2e149a956ce2a1896cedbe0675a551111e8643"
+    },
+    {
+      "path": "apps/official-site/pages/download.vue",
+      "sha256": "213d09439b69f021b10e1095f5cd1e08fc0a4fb7dd5956c4f5337a06b079e490"
+    },
+    {
+      "path": "apps/official-site/pages/announcements.vue",
+      "sha256": "c17cb53331e1f83b7d146e9ff1b687aec1302bcc918eb7dcaca2d0619f299d42"
+    },
+    {
+      "path": "apps/official-site/pages/about.vue",
+      "sha256": "d70cac5f7c6f4c9dacfc84cc94d90cd51792cdf63222025322c9f73151c6f5e1"
+    },
+    {
+      "path": "apps/official-site/pages/compliance.vue",
+      "sha256": "1d3dbae4d053ada1055263c2ec14cdef46b96ca23f971e3cd3e2dd03b7760b41"
+    },
+    {
+      "path": "apps/official-site/pages/status.vue",
+      "sha256": "f85952587dc38b4799dd3aaea76c971fb6635ca43b1e508c5de8d519b1add355"
+    },
+    {
+      "path": "apps/official-site/pages/privacy.vue",
+      "sha256": "72562ecc8f4a38d00d5af7eccc736d715ba48f96dd3d8ac6f07d1b05ba61cf9f"
+    },
+    {
+      "path": "apps/official-site/pages/terms.vue",
+      "sha256": "5e6b4c8c59d3cae277d6bd63ed6255d4366eba4358b7a3b182313cdbab70f44b"
+    },
+    {
+      "path": "apps/official-site/pages/minors.vue",
+      "sha256": "d17a1f687e4502122bfaa6fa92b1ebfa5de1759343918a0a75624ff227b528f2"
+    },
+    {
+      "path": "apps/official-site/tests/public-projection-bff.test.mjs",
+      "sha256": "0e7f100c8e75066af4eee8394f97c9f2b0bddf5d189e3734878e5b9508e56e33"
+    },
+    {
+      "path": "apps/official-site/components/SiteStartButton.vue",
+      "sha256": "2281c5e6133c3d5182e29accb1ae55c9ee92fef56d0af41487caee12ab3bc332"
+    },
+    {
+      "path": "apps/official-site/composables/useOfficialSiteLinks.ts",
+      "sha256": "455b02ef0f428c5d2da9c09f2c24e232cf3e2aef4790db5dbf482b401fd80b56"
+    },
+    {
+      "path": "packages/i18n/src/official-site.ts",
+      "sha256": "f445aed5156c6502008e03cd9161d3bf799dc3731c2d9e032fb4ce3a622492ba"
+    },
+    {
+      "path": "apps/official-site/utils/site-content.mjs",
+      "sha256": "57f1dbe0353aa27565a3fe2e36a5ec0d2fc3a701259209ec732286dabbe5a361"
+    },
+    {
+      "path": "apps/official-site/tests/b13-official-site.test.mjs",
+      "sha256": "d6015fa8cf8d1130085fb87434f04b994d924011053882ca22b654a58b1c782b"
+    },
+    {
+      "path": "apps/official-site/tests/b14-fe-005.test.mjs",
+      "sha256": "acfb0b3eec0178ca029a40f5b8efe964c77c46ae5243d4c7c7cd562e3012b59b"
+    },
+    {
+      "path": "apps/official-site/tests/website-entry.test.mjs",
+      "sha256": "2a512d72f1175fcc0e492c3d299db98039282089a9c27e5b80a2495eab438d7e"
+    },
+    {
+      "path": "apps/official-site/tests/browser/website-runtime.cjs",
+      "sha256": "56c6192eb45b5e151ea40719bc99ec457213a237dcc797a8503769d47f91b207"
+    },
+    {
+      "path": "apps/official-site/composables/usePublicProjection.ts",
+      "sha256": "5cc61540b9e934a71e0e0a7b3d0073ddb5e3174878627bc225691e9a13edb110"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/work/r1-001-content-empty-10.cjs",
+      "sha256": "5c3b7b906cd8992a14ac73a5b4fcb0d4445c2f5c800d7beb6211c4bf7dcef89b"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/work/real-upstream-10.cjs",
+      "sha256": "4b9259935d2db756e51bed944413f91f0e7ba47b7e35e1868efe460fefd74aec"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/work/real-chain-assert-10.cjs",
+      "sha256": "946336130a6597161e8df393ab9640fe2b5ab39c82e1f865711215798cf974c5"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/work/r1-001-safe-run-10.cjs",
+      "sha256": "acaf4666e6e65d8050c4e30b83105b6d747351be76d68191883b9adcd82d4323"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/work/real-chain-assert-9.cjs",
+      "sha256": "0212409edd0632120c1af7efd116375805729adf3b195cfac472709f38436949"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/work/real-chain-assert-8.cjs",
+      "sha256": "3f7117cc7161e8a12d6bc80643b38d0e7756c7fdf8737868b8a8cfa0000968c8"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/work/prepare-empty-schema-9.mjs",
+      "sha256": "b194c639109cf190a6238c707f7a5dfc632d12be6628b25eec32f5146e421410"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/work/r1-001-sweep-7.cjs",
+      "sha256": "25857d5db83e2e75e7ee8df083532df087c85487e6389bc8d39192a501a0ab4e"
+    },
+    {
+      "path": "scripts/runtime/run-v2-services.mjs",
+      "sha256": "cb8ec8b66575051e69afac941e2d58f17e9caa88bb514a143a9555d10daa84dc"
+    },
+    {
+      "path": "services/content-service/target/content-service-0.1.0-SNAPSHOT.jar",
+      "sha256": "feafab1459ce422d90bc9c3672f0f6732db963544d3abedb3f2d3f397b6d798a"
+    },
+    {
+      "path": "services/commerce-service/target/commerce-service-0.1.0-SNAPSHOT.jar",
+      "sha256": "317af7b79b58ec28f9a53a33077a8decacce33a9ec9fef34b81e8643f140d340"
+    },
+    {
+      "path": "services/api-gateway/target/api-gateway-0.1.0-SNAPSHOT.jar",
+      "sha256": "f1bb808859a146064d1479859531e83836a129a2d3f4c1f5ac27a7eefdf02e20"
+    }
+  ],
+  "parentClaim": {
+    "taskId": "P1R-M3-008",
+    "confirmed": true,
+    "owner": "Muse Spark（用户指定的执行 Agent；仅 R1-001 官网切片）",
+    "canonicalLedgerSha256": "1059491ba35133bef925a083eb5a3b7be8e78cec0ae6198a6a6e998fbaa89925"
+  },
+  "gates": [
+    {
+      "id": "G-ENV",
+      "result": "PASS",
+      "scope": "限定只读终验输入：专用空schema八表0行、专用reader SELECT权限及接线已核；固定六端口当前空闲，Java/Node/Maven与jar身份可核，关闭relay/consumer/schedule/Flyway和P1R_DIAG。生效配置/健康/真实恢复为本卡后置验收，不签完整IAM/Outbox运行Gate。",
+      "evidencePaths": [
+        "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-9-prep/review.md",
+        "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-9-prep/preparation-check.json",
+        "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-9-prep/runtime-preflight.json",
+        "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-9-prep/independent-review.md"
+      ]
+    },
+    {
+      "id": "G-CONTRACT",
+      "result": "PASS",
+      "scope": "沿用未漂移的三个公开GET契约与原签收，24产品快照一致，独立38/38。无新增契约或DTO；不把准备签收扩称全服务契约运行PASS。",
+      "evidencePaths": [
+        "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-9-prep/review.md",
+        "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-9-prep/preparation-check.json",
+        "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-9-prep/runtime-preflight.json",
+        "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-9-prep/independent-review.md"
+      ]
+    },
+    {
+      "id": "G-PLATFORM",
+      "result": "PASS",
+      "scope": "Gateway公开读路径及owner输入已有源码与隔离空事实；仅启动当轮自有固定端口实例，非空场景只读共享发布事实并关闭后台任务，不提交注册，不操作他组进程。有效白名单/上游/DOM必须后置实测。",
+      "evidencePaths": [
+        "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-9-prep/review.md",
+        "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-9-prep/preparation-check.json",
+        "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-9-prep/runtime-preflight.json",
+        "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-9-prep/independent-review.md"
+      ]
+    },
+    {
+      "id": "G-FRONTEND",
+      "result": "PASS",
+      "scope": "共享i18n/受控注册链接基础输入未漂移，四套件38/38；10版采集脚本静态与终态负例通过、独立复核无新准备阻塞。双视口/失败重试/主题适用项/TC01至03仍待真实运行，不降级或豁免。",
+      "evidencePaths": [
+        "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-9-prep/review.md",
+        "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-9-prep/preparation-check.json",
+        "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-9-prep/runtime-preflight.json",
+        "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-9-prep/independent-review.md"
+      ]
+    }
+  ],
+  "blockerDecisions": [
+    {
+      "id": "CURRENT-APPLICABLE-GATES",
+      "disposition": "APPROVED",
+      "reason": "当前本卡公开只读输入及隔离空事实准备已落实，见限定Gate签收；产品TC、运行effective证明和未测安全项保留后置必测，不构成要求本卡先验完成的循环开工输入。",
+      "evidencePaths": [
+        "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-9-prep/review.md",
+        "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-9-prep/runtime-preflight.json"
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-9-prep/check-preparation.mjs",
+      "sha256": "77d6050fd8d5eda20b6853a27bb261fe4e3292d28a5daf6d8857d9b266e64379"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-9-prep/independent-review.md",
+      "sha256": "edf4a1ebd951634c80f1fb4c1640648a845310d944a809557b143dd935f086a9"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-9-prep/launcher-static/content-empty-10.json",
+      "sha256": "410c8a61955e28b31b1dd473863759ad5051422b9b5d86646f97bc4558a6c8b9"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-9-prep/negative-chain/negative-chain-9.json",
+      "sha256": "fb8689f27e1e56eddef8db29ec436bf6fe51930e0b3786332ab2ee624a5fe0d9"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-9-prep/preparation-check.json",
+      "sha256": "29a882c61822ec98314427d7a652dd2bbacc757fa7ca0e8a9daf95a0935c4910"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-9-prep/review.md",
+      "sha256": "e4f04def7f3674dbd6119b4b024c52e89e97105cba9b683b258a687905adf147"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-9-prep/runtime-preflight.json",
+      "sha256": "c25527985dec44f5f9bf89ecdd0a5bd12f9e38c2c117765842fdfe0416573a3b"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-9-prep/runtime-preflight.mjs",
+      "sha256": "b371aa50b998353415014413aa3b45e6c7ee106671bd1ef7052997e0aee7cf3e"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-9-prep/scope-snapshot.json",
+      "sha256": "0d637c7eff8d2204b6eed55a804e7cdd31a519299e6db8fec62f2ea18874c17b"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-9-prep/syntax-r1-001-content-empty-10.cjs.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-9-prep/syntax-r1-001-safe-run-10.cjs.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-9-prep/syntax-real-chain-assert-10.cjs.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-9-prep/syntax-real-upstream-10.cjs.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-9-prep/toolchain.log",
+      "sha256": "dee95bc13ad835566ac59760cc6ad76379272fa25fbffb17ae69c223cc2103ac"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-9-prep/units.log",
+      "sha256": "94e9b56fd7f051f1ca39e20617df9d9be8464d189b2293d7c39608c013592406"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/inputs/claim-20261003.json",
+      "sha256": "bf67298d4610f321b9a00b6f5c72cc6974ede6d0716c4418215ac34143c9d913"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/inputs/G-CONTRACT-20261003.md",
+      "sha256": "c029f070b7fca30275e20c16cd5f0bdbc11f6285549d6e98323069e28114eb3d"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/inputs/G-PLATFORM-20261003.md",
+      "sha256": "ba4b7fca6ebeabac53dc77f8a5cb5d84f489a632926be5ed8ab73999a6a1066d"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/inputs/G-FRONTEND-20261003.md",
+      "sha256": "96269a4b94073f7304552d71850c5718faf276659d6ff174dceea034c2b095f2"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-8-prep/review.md",
+      "sha256": "4567d287346b680397862d608e965fe736ad4043de290c389f61a879d7c7dec4"
+    }
+  ]
+}

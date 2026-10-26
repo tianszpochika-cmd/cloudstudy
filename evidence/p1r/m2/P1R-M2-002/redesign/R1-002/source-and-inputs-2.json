@@ -1,0 +1,598 @@
+{
+  "taskId": "R1-002",
+  "checkedAt": "2026-10-05T07:30:18.684Z",
+  "sourceCommit": "3d11be3337accd32afbdbe13a218bca38c786043",
+  "statusRevision": 27,
+  "r1_002": {
+    "state": "PLANNED",
+    "specSha256": "768a23c3fb6662693f9ff1ce9ab93391aca3019252d95d9a51eb39967690f96d"
+  },
+  "isolatedSchema": {
+    "checkedAt": "2026-10-05T07:23:02.929Z",
+    "mode": "apply",
+    "schema": "r1_002_iam_t2e",
+    "migrator": "r1_002_migrator_t2e",
+    "runner": "r1_002_runner_t2e",
+    "host": "127.0.0.1",
+    "port": "13306",
+    "migrations": [
+      {
+        "name": "V1__create_iam_service_schema.sql",
+        "version": 1,
+        "checksum": "7f6b53749a6546d1d0479b96b3e7c0d370928f2ede803fa7ce1e267c9723e828"
+      },
+      {
+        "name": "V3__seed_b30_policy_version.sql",
+        "version": 3,
+        "checksum": "a9ecb96233d934c46dc3a6bd617431f7876a226e896fc898bba36787bceb1858"
+      },
+      {
+        "name": "V4__preserve_iam_consent_history.sql",
+        "version": 4,
+        "checksum": "ffba958ccfe4aa3de3f7d58eb7548853056c95c86d8b65146a3d456915a00373"
+      },
+      {
+        "name": "V5__create_self_owned_jwt_auth_schema.sql",
+        "version": 5,
+        "checksum": "2c3b4f4b4c3bc72caeb3f10d03be106a0eb0d125ee398c0c5c71073554d000a4"
+      },
+      {
+        "name": "V6__create_password_reset_challenges.sql",
+        "version": 6,
+        "checksum": "ba57134e77313e2510546a928f2636f9cb3565bcc862847648d29c21800afbfc"
+      },
+      {
+        "name": "V7__create_iam_idempotency_record.sql",
+        "version": 7,
+        "checksum": "3bda77c8d0fcfeda5751e7d98a4a25ebffbd6ff444ff00ff1e88f3ea61f1c9e1"
+      },
+      {
+        "name": "V8__create_iam_rate_limit.sql",
+        "version": 8,
+        "checksum": "c598aada47852427839478ee6248c4438e849b10cf17fa4fdd78b42eb5cd6d0c"
+      },
+      {
+        "name": "V9__encrypt_idempotency_response_snapshots.sql",
+        "version": 9,
+        "checksum": "c968e0adbb25e30e731cde528dc425b8a8348dabb2f6056f5406a8a6b749e6f6"
+      },
+      {
+        "name": "V10__create_iam_policy_control_plane.sql",
+        "version": 10,
+        "checksum": "ea1cabefd5d49de243b319a57f421f3914db214e8da334b6ef6539746716351a"
+      },
+      {
+        "name": "V11__extend_iam_consent_facts.sql",
+        "version": 11,
+        "checksum": "af1bf4e1f99aa914d8afef3ca11858620952931ae7d0b46ea824a8924fbaf92e"
+      },
+      {
+        "name": "V12__normalize_iam_consent_withdrawal_facts.sql",
+        "version": 12,
+        "checksum": "fb9342323e0080bcd3deb55242387cb0723f8848f8c0cf696d11861be12f9c9d"
+      },
+      {
+        "name": "V13__key_and_version_idempotency_request_hashes.sql",
+        "version": 13,
+        "checksum": "6cfb4ca903dce6b942a9f0e86fdf317f4b2b0d215ba243d258170ca9c59c85e8"
+      },
+      {
+        "name": "V14__create_iam_consent_document_control.sql",
+        "version": 14,
+        "checksum": "bbe3deefb752defe92c85593cea32d12deaf2b286f1feeeccd4409b0a39a332d"
+      },
+      {
+        "name": "V15__create_account_deletion.sql",
+        "version": 15,
+        "checksum": "6f370ba65cf0fdf6504430358c083ae5ecbf441aeae0556dd425c102a4af47ec"
+      },
+      {
+        "name": "V16__grant_canonical_placement_permissions_to_learners.sql",
+        "version": 16,
+        "checksum": "5eb22a4f7a6d97cf9ff04b7828c2a923d301735e49842be7dd0f71a71d3cf2b9"
+      },
+      {
+        "name": "V17__grant_canonical_b12_learner_permissions.sql",
+        "version": 17,
+        "checksum": "5b524e31e175d5ee4ead9183a957b803b7d22c167721a2131a020411a412bc09"
+      },
+      {
+        "name": "V18__grant_canonical_notification_preference_permissions.sql",
+        "version": 18,
+        "checksum": "2e6c47673cd15179dba936af68bbf072559e709b1c33dc19d0cf123b63aad28e"
+      }
+    ],
+    "steps": [
+      {
+        "step": "migration-files",
+        "ok": true,
+        "detail": {
+          "count": 17,
+          "versions": "1,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18"
+        }
+      },
+      {
+        "step": "v13-present",
+        "ok": true,
+        "detail": {
+          "note": "one-way cutover; new empty schema has no old writer"
+        }
+      },
+      {
+        "step": "schema-absent",
+        "ok": true,
+        "detail": {
+          "schema": "r1_002_iam_t2e"
+        }
+      },
+      {
+        "step": "schema-created",
+        "ok": true,
+        "detail": {
+          "schema": "r1_002_iam_t2e"
+        }
+      },
+      {
+        "step": "identities-created",
+        "ok": true,
+        "detail": {
+          "migrator": "r1_002_migrator_t2e",
+          "runner": "r1_002_runner_t2e",
+          "runnerGrants": "SELECT,INSERT,UPDATE,DELETE on new schema only"
+        }
+      },
+      {
+        "step": "migrate-V1",
+        "ok": true,
+        "detail": {
+          "checksum": "7f6b53749a6546d1"
+        }
+      },
+      {
+        "step": "migrate-V3",
+        "ok": true,
+        "detail": {
+          "checksum": "a9ecb96233d934c4"
+        }
+      },
+      {
+        "step": "migrate-V4",
+        "ok": true,
+        "detail": {
+          "checksum": "ffba958ccfe4aa3d"
+        }
+      },
+      {
+        "step": "migrate-V5",
+        "ok": true,
+        "detail": {
+          "checksum": "2c3b4f4b4c3bc72c"
+        }
+      },
+      {
+        "step": "migrate-V6",
+        "ok": true,
+        "detail": {
+          "checksum": "ba57134e77313e25"
+        }
+      },
+      {
+        "step": "migrate-V7",
+        "ok": true,
+        "detail": {
+          "checksum": "3bda77c8d0fcfeda"
+        }
+      },
+      {
+        "step": "migrate-V8",
+        "ok": true,
+        "detail": {
+          "checksum": "c598aada47852427"
+        }
+      },
+      {
+        "step": "migrate-V9",
+        "ok": true,
+        "detail": {
+          "checksum": "c968e0adbb25e30e"
+        }
+      },
+      {
+        "step": "migrate-V10",
+        "ok": true,
+        "detail": {
+          "checksum": "ea1cabefd5d49de2"
+        }
+      },
+      {
+        "step": "migrate-V11",
+        "ok": true,
+        "detail": {
+          "checksum": "af1bf4e1f99aa914"
+        }
+      },
+      {
+        "step": "migrate-V12",
+        "ok": true,
+        "detail": {
+          "checksum": "fb9342323e0080bc"
+        }
+      },
+      {
+        "step": "migrate-V13",
+        "ok": true,
+        "detail": {
+          "checksum": "6cfb4ca903dce6b9"
+        }
+      },
+      {
+        "step": "migrate-V14",
+        "ok": true,
+        "detail": {
+          "checksum": "bbe3deefb752defe"
+        }
+      },
+      {
+        "step": "migrate-V15",
+        "ok": true,
+        "detail": {
+          "checksum": "6f370ba65cf0fdf6"
+        }
+      },
+      {
+        "step": "migrate-V16",
+        "ok": true,
+        "detail": {
+          "checksum": "5eb22a4f7a6d97cf"
+        }
+      },
+      {
+        "step": "migrate-V17",
+        "ok": true,
+        "detail": {
+          "checksum": "5b524e31e175d5ee"
+        }
+      },
+      {
+        "step": "migrate-V18",
+        "ok": true,
+        "detail": {
+          "checksum": "2e6c47673cd15179"
+        }
+      },
+      {
+        "step": "history-complete",
+        "ok": true,
+        "detail": {
+          "history": "1\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\n14\n15\n16\n17\n18"
+        }
+      },
+      {
+        "step": "baseline-zero-accounts",
+        "ok": true,
+        "detail": {
+          "counts": [
+            {
+              "table": "iam_principal",
+              "rows": 0
+            },
+            {
+              "table": "iam_account",
+              "rows": 0
+            },
+            {
+              "table": "iam_device",
+              "rows": 0
+            },
+            {
+              "table": "iam_session",
+              "rows": 0
+            },
+            {
+              "table": "iam_consent",
+              "rows": 0
+            }
+          ]
+        }
+      },
+      {
+        "step": "seed-recorded",
+        "ok": true,
+        "detail": {
+          "seedCounts": [
+            {
+              "table": "iam_role",
+              "rows": 1
+            },
+            {
+              "table": "iam_permission",
+              "rows": 30
+            },
+            {
+              "table": "iam_consent_document_version",
+              "rows": 0
+            }
+          ]
+        }
+      }
+    ],
+    "failedChecks": [],
+    "baselineCounts": [
+      {
+        "table": "iam_principal",
+        "rows": 0
+      },
+      {
+        "table": "iam_account",
+        "rows": 0
+      },
+      {
+        "table": "iam_device",
+        "rows": 0
+      },
+      {
+        "table": "iam_session",
+        "rows": 0
+      },
+      {
+        "table": "iam_consent",
+        "rows": 0
+      }
+    ],
+    "seedCounts": [
+      {
+        "table": "iam_role",
+        "rows": 1
+      },
+      {
+        "table": "iam_permission",
+        "rows": 30
+      },
+      {
+        "table": "iam_consent_document_version",
+        "rows": 0
+      }
+    ],
+    "credentialNote": "migrator/runner 密码仅本次子进程内存，不落盘；runner 密码需主审签收后由启动脚本单独注入",
+    "finishedAt": "2026-10-05T07:23:09.683Z"
+  },
+  "policyFixture": {
+    "checkedAt": "2026-10-05T07:26:45.146Z",
+    "schema": "r1_002_iam_t2e",
+    "policySource": "control-plane",
+    "purpose": "本地合成测试用途，不冒充正式法务签收",
+    "docs": [
+      {
+        "type": "TERMS_OF_SERVICE",
+        "document_version": "b30-consent-v1",
+        "policy_version": "b30-consent-policy-v1",
+        "requirement": "BASE_REQUIRED",
+        "capabilities": [
+          "ACCOUNT",
+          "LEARNING"
+        ],
+        "published_at": "2026-08-30 00:00:00.000000",
+        "policy_ref": "iam://consent/ACCOUNT_TERMS",
+        "document_digest": "eb74b7254589589f...",
+        "policy_digest": "718e235dab2c1854..."
+      },
+      {
+        "type": "PRIVACY_NOTICE",
+        "document_version": "b30-consent-v1",
+        "policy_version": "b30-consent-policy-v1",
+        "requirement": "BASE_REQUIRED",
+        "capabilities": [
+          "ACCOUNT",
+          "LEARNING"
+        ],
+        "published_at": "2026-08-30 00:00:00.000000",
+        "policy_ref": "iam://consent/PRIVACY_NOTICE",
+        "document_digest": "4ab15e31c11c9ef9...",
+        "policy_digest": "718e235dab2c1854..."
+      },
+      {
+        "type": "ADULT_LEARNING",
+        "document_version": "b30-consent-v1",
+        "policy_version": "b30-consent-policy-v1",
+        "requirement": "LEARNING_REQUIRED",
+        "capabilities": [
+          "LEARNING"
+        ],
+        "published_at": "2026-08-30 00:00:00.000000",
+        "policy_ref": "iam://consent/ADULT_LEARNING_ELIGIBILITY",
+        "document_digest": "9702cd4fe3e50613...",
+        "policy_digest": "718e235dab2c1854..."
+      }
+    ],
+    "steps": [
+      {
+        "step": "fixture-inserted",
+        "ok": true,
+        "detail": {
+          "count": 3
+        }
+      },
+      {
+        "step": "fixture-readback",
+        "ok": true,
+        "detail": {
+          "rows": "ADULT_LEARNING\tb30-consent-v1\tACTIVE\nPRIVACY_NOTICE\tb30-consent-v1\tACTIVE\nTERMS_OF_SERVICE\tb30-consent-v1\tACTIVE"
+        }
+      },
+      {
+        "step": "user-baseline-zero",
+        "ok": true,
+        "detail": {
+          "counts": [
+            0,
+            0,
+            0
+          ]
+        }
+      }
+    ],
+    "failedChecks": [],
+    "readback": [
+      "ADULT_LEARNING\tb30-consent-v1\tACTIVE",
+      "PRIVACY_NOTICE\tb30-consent-v1\tACTIVE",
+      "TERMS_OF_SERVICE\tb30-consent-v1\tACTIVE"
+    ],
+    "userBaseline": [
+      0,
+      0,
+      0
+    ],
+    "finishedAt": "2026-10-05T07:26:45.535Z"
+  },
+  "safeRun": {
+    "checkedAt": "2026-10-05T07:25:12.292Z",
+    "scope": "R1-002 isolated IAM start config; static validate only, no backend launch",
+    "schema": "r1_002_iam_t2e",
+    "safeEnv": {
+      "IAM_PERSISTENCE_ENABLED": "true",
+      "IAM_FLYWAY_ENABLED": "true",
+      "SPRING_FLYWAY_ENABLED": "true",
+      "IAM_PERSISTENCE_JDBCURL": "jdbc:mysql://127.0.0.1:13306/r1_002_iam_t2e?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC&useSSL=false&allowPublicKeyRetrieval=true",
+      "IAM_PERSISTENCE_USERNAME": "r1_002_runner_t2e",
+      "IAM_PERSISTENCE_SCHEMA": "r1_002_iam_t2e",
+      "IAM_CONSENT_POLICY_SOURCE": "control-plane",
+      "IAM_PASSWORD_MIN_LENGTH": "12",
+      "IAM_JWT_ISSUER": "http://127.0.0.1:18087",
+      "IAM_JWT_AUDIENCE": "yuxuexing-api",
+      "IAM_JWT_ALGORITHM": "RS256",
+      "IAM_JWT_KEY_ID": "iam-local-2026-08",
+      "IAM_LOCAL_ADULT_GATE_ENABLED": "true",
+      "IAM_NATIVE_TRANSPORT_POLICY": "deny",
+      "P1R_DIAG": "0"
+    },
+    "ports": {
+      "iam-service": 18087,
+      "api-gateway": 18070,
+      "learning-service": 18090
+    },
+    "jars": {
+      "iam-service": {
+        "path": "services/iam-service/target/iam-service-0.1.0-SNAPSHOT.jar",
+        "bytes": 43852295,
+        "sha256": "5d3fcdf828d91fe8793002d99ce1ddbdca484762d84be925e408de4bd0221f3f"
+      }
+    },
+    "passwordPolicy": "IAM_PERSISTENCE_PASSWORD + replay/fingerprint secrets injected into child env only at start; never CLI/output/evidence",
+    "tls": {
+      "entry": "https://127.0.0.1:<TLS_PORT>/api/v1/auth/register (TLS_PORT pending owner input; default HTTP :18087 must NOT be used as TLS evidence)",
+      "secureCookie": "refresh-cookie-secure=true (application.yaml default; local profile false is NOT acceptance)",
+      "note": "JWT RSA signing key (IAM_JWT_PRIVATE_KEY_FILE) is not a TLS server certificate"
+    },
+    "pep403": {
+      "route": "GET http://127.0.0.1:18090/api/v1/learning/today via Gateway /api/v1/learning/today",
+      "expect": "403 learning access is not granted (never 401/404/503 substitute)",
+      "reason": "restricted JWT lacks PASSED/GRANTED/learning.* (LearningHttpPrincipals:50-55)"
+    },
+    "failedChecks": [],
+    "effectiveCheck": "READY 后子进程 env 逐键核对上述白名单（密钥类仅核存在性，不输出值）+ /actuator/health/readiness + 公开 GET"
+  },
+  "files": [
+    {
+      "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/prep-report-2.md",
+      "sha256": "ad0b69d3297bdc906377cc5d562aea1a5d0646428e08beb14c1ea6475ef0226c"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/prepare-iam-schema-2.mjs",
+      "sha256": "be21a00007d75ec5eb859df961dcd601e3db50ec8e54f6705d7290112276bfb5"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/r1-002-safe-run-2.cjs",
+      "sha256": "2eb00f7b7e7aebd7eac4b3d1a8b17656044c15891c88ca348d676f830024e17c"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/prepare-policy-fixture-2.cjs",
+      "sha256": "29a4a58537eb6367a8e3ce421c3b08e61663db2151dbe1584f0fd7c5d59c49ac"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/iam-schema-2/iam-schema-2.json",
+      "sha256": "cb3e4ca9b15e151cec53b6bd4b1d3b6f31f90db4d4844bfa27315db32936138d"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/policy-fixture-2/policy-fixture-2.json",
+      "sha256": "187ec8356efb87282f218bdbf99de5b07f3a28b0edcc9bf92f0288a15f83fa9a"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/safe-run-2/safe-run-2.json",
+      "sha256": "ab79c94cd47647667d2540b8411df47cb85368c205d6d25a3a596d88c1659fa1"
+    },
+    {
+      "path": "packages/contracts/events/v1/fragments/m1-018-iam-v2.events.json",
+      "sha256": "323c1614f04301b74f568610add6ca922f34f43ece7340ba4a2922738164f989"
+    },
+    {
+      "path": "services/iam-service/src/main/java/com/englishflow/iam/web/IamProviderBoundaryController.java",
+      "sha256": "5df5c5de541a594251c04171f08810cd52f26140718b1bf6ae34e02a2c976a67"
+    },
+    {
+      "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/PasswordAccountService.java",
+      "sha256": "919426fa9da4c48beea7f5d08d3a2e5a5694024c804ea66eb6032547720ca2b1"
+    },
+    {
+      "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/SessionService.java",
+      "sha256": "5f208d93f9cf7e51fdd8d3ac73195b0de8f448374c5e752fe14616819670deaa"
+    },
+    {
+      "path": "services/iam-service/src/main/java/com/englishflow/iam/config/IamRuntimeConfiguration.java",
+      "sha256": "eaedacd9cdeac288f393c2ae4d28880e68493cd33ca92848fce75c2993b111c3"
+    },
+    {
+      "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/JdbcIdempotencyStore.java",
+      "sha256": "f3e8d5cbd0d6903957533080fa0bd2cff48cd704fd31976763ad7e5ee713f2dd"
+    },
+    {
+      "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/JdbcConsentPolicy.java",
+      "sha256": "f37aac4fd563ea14c7a3d06078a6b698ae6d315f47056935670639c27eed4de9"
+    },
+    {
+      "path": "services/iam-service/src/main/java/com/englishflow/iam/domain/ConsentService.java",
+      "sha256": "ed9673e8a8b1e42e320a33b4052a86c65db08104454fb6b8a77c192c4ff41995"
+    },
+    {
+      "path": "services/learning-service/src/main/java/com/englishflow/learning/web/LearningHttpPrincipals.java",
+      "sha256": "b0889ed72f2922b322c164bf551abb96b6a8857ecbf9c0732083e78a0680d4ef"
+    }
+  ],
+  "gates": {
+    "G-ENV": {
+      "result": "INPUT-READY-PENDING-SIGNOFF",
+      "scope": "专用库真实迁移+双身份+静态启动白名单；TLS入口待签收",
+      "evidence": [
+        "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/iam-schema-2/iam-schema-2.json",
+        "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/safe-run-2/safe-run-2.json"
+      ]
+    },
+    "G-CONTRACT": {
+      "result": "INPUT-READY-PENDING-SIGNOFF",
+      "scope": "register/principal/permissions契约+安全语义已核；C1/G1/G2终核待终验",
+      "evidence": [
+        "packages/contracts/fragments/b8/b8-auth-iam.openapi.json"
+      ]
+    },
+    "G-PLATFORM": {
+      "result": "INPUT-READY-PENDING-SIGNOFF",
+      "scope": "iam唯一owner+Gateway路由+专用库；Outbox扩围提案待确认",
+      "evidence": [
+        "packages/contracts/events/v1/fragments/m1-018-iam-v2.events.json"
+      ]
+    },
+    "G-FRONTEND": {
+      "result": "INPUT-READY-PENDING-SIGNOFF",
+      "scope": "R1-001 ACCEPTED复用；本卡无新增UI",
+      "evidence": [
+        "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11/approve-8.json"
+      ]
+    }
+  },
+  "gaps": [
+    "T1 TLS入口方案待签收",
+    "Outbox扩围实现范围待确认",
+    "E3终值TC时生成",
+    "C1/G1/G2终核待终验"
+  ],
+  "secrets": "none-collected"
+}

@@ -1,0 +1,70 @@
+{
+  "startedAt": "2026-10-05T00:15:09.445Z",
+  "scope": "TC02 no-cache: own content stopped, Gateway/BFF real failure + page error",
+  "steps": [
+    {
+      "step": "gateway-failure",
+      "ok": true,
+      "detail": {
+        "status": 503,
+        "requestId": "req-343d7a56102a4186b06882af651474d5",
+        "traceId": "d0de91577781455f8a7b8313fa113784",
+        "body": "{\"error\":{\"errorCode\":\"SERVICE_UNAVAILABLE\",\"message\":\"The upstream service is unavailable.\",\"retryable\":true},\"meta\":{\"requestId\":\"req-343d7a56102a4186b06882af651474d5\",\"traceId\":\"d0de91577781455f8a7b8313fa113784\",\"apiVersion\":\"v1\",\"schemaVersion\":\"1.0.0\",\"serverTime\":\"2026-10-05T00:15:09.478183500"
+      }
+    },
+    {
+      "step": "bff-failure",
+      "ok": true,
+      "detail": {
+        "status": 200,
+        "state": "error",
+        "source": "empty-fallback",
+        "errorCode": "PUBLIC_PROJECTION_UNAVAILABLE",
+        "facet": {
+          "state": "error",
+          "updatedAt": null,
+          "errorCode": "PUBLIC_PROJECTION_UNAVAILABLE",
+          "stale": false
+        }
+      }
+    },
+    {
+      "step": "375x812 page-error",
+      "ok": true,
+      "detail": {
+        "cards": 0,
+        "bodySample": "当前公开课程\n\n这里介绍学习方式，具体课程以学习端已开放内容为准。\n\n查看开放情况\n公开内容暂时无法加载\n\n学习方式介绍仍可浏览，也可以稍后再试。\n\n重新加载",
+        "consoleErrors": []
+      }
+    },
+    {
+      "step": "1440x900 page-error",
+      "ok": true,
+      "detail": {
+        "cards": 0,
+        "bodySample": "当前公开课程\n\n这里介绍学习方式，具体课程以学习端已开放内容为准。\n\n查看开放情况\n公开内容暂时无法加载\n\n学习方式介绍仍可浏览，也可以稍后再试。\n\n重新加载",
+        "consoleErrors": []
+      }
+    }
+  ],
+  "failedChecks": [],
+  "gatewayFailure": {
+    "status": 503,
+    "requestIdPresent": true,
+    "traceIdPresent": true,
+    "body": "{\"error\":{\"errorCode\":\"SERVICE_UNAVAILABLE\",\"message\":\"The upstream service is unavailable.\",\"retryable\":true},\"meta\":{\"requestId\":\"req-343d7a56102a4186b06882af651474d5\",\"traceId\":\"d0de91577781455f8a7b8313fa113784\",\"apiVersion\":\"v1\",\"schemaVersion\":\"1.0.0\",\"serverTime\":\"2026-10-05T00:15:09.478183500Z\"}}"
+  },
+  "bffFailure": {
+    "status": 200,
+    "state": "error",
+    "source": "empty-fallback",
+    "errorCode": "PUBLIC_PROJECTION_UNAVAILABLE",
+    "coursesFacet": {
+      "state": "error",
+      "updatedAt": null,
+      "errorCode": "PUBLIC_PROJECTION_UNAVAILABLE",
+      "stale": false
+    }
+  },
+  "finishedAt": "2026-10-05T00:15:15.914Z"
+}

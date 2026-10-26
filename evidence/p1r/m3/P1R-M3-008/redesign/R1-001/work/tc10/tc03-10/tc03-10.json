@@ -1,0 +1,81 @@
+{
+  "startedAt": "2026-10-05T00:20:59.387Z",
+  "scope": "TC03: malicious returnTo, strict device entry, rapid click/return, official cookies",
+  "steps": [
+    {
+      "step": "375x812 strict-device-entry",
+      "ok": true,
+      "detail": {
+        "count": 10,
+        "sample": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=system&returnTo=%2Fpages%2Fhom"
+      }
+    },
+    {
+      "step": "375x812 no-evil-returnTo",
+      "ok": true,
+      "detail": {
+        "count": 10
+      }
+    },
+    {
+      "step": "375x812 rapid-click-lands",
+      "ok": false,
+      "detail": {
+        "url": "http://127.0.0.1:18182/courses"
+      }
+    },
+    {
+      "step": "375x812 cookie-no-business",
+      "ok": true,
+      "detail": {
+        "total": 2,
+        "official": [
+          "yx.public.locale",
+          "yx.public.theme"
+        ],
+        "businessHits": 0,
+        "storageChecked": false
+      }
+    },
+    {
+      "step": "1440x900 strict-device-entry",
+      "ok": true,
+      "detail": {
+        "count": 10,
+        "sample": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=system&returnTo=%2Fhome"
+      }
+    },
+    {
+      "step": "1440x900 no-evil-returnTo",
+      "ok": true,
+      "detail": {
+        "count": 10
+      }
+    },
+    {
+      "step": "1440x900 rapid-click-lands",
+      "ok": false,
+      "detail": {
+        "url": "chrome-error://chromewebdata/"
+      }
+    },
+    {
+      "step": "1440x900 cookie-no-business",
+      "ok": true,
+      "detail": {
+        "total": 2,
+        "official": [
+          "yx.public.locale",
+          "yx.public.theme"
+        ],
+        "businessHits": 0,
+        "storageChecked": false
+      }
+    }
+  ],
+  "failedChecks": [
+    "375x812 rapid-click-lands",
+    "1440x900 rapid-click-lands"
+  ],
+  "finishedAt": "2026-10-05T00:21:43.912Z"
+}

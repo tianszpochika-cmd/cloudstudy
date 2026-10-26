@@ -1,0 +1,36 @@
+ M CHANGELOG.md
+ M config/toolchain-baseline.json
+ M docs/06-design/v2-980plus/redesign/README.md
+ M docs/06-design/v2-980plus/redesign/business-chains.md
+ M docs/06-design/v2-980plus/redesign/dev-plan-R1.md
+ M docs/06-design/v2-980plus/redesign/interaction-chains.md
+ M docs/06-design/v2-980plus/redesign/mockups/admin/DEMO-GUIDE.md
+ M docs/06-design/v2-980plus/redesign/mockups/admin/app.js
+ M docs/06-design/v2-980plus/redesign/mockups/admin/index.html
+ M docs/06-design/v2-980plus/redesign/mockups/mobile/DEMO-GUIDE.md
+ M docs/06-design/v2-980plus/redesign/mockups/mobile/evidence/README.md
+ M docs/06-design/v2-980plus/redesign/mockups/mobile/learning.js
+ M docs/06-design/v2-980plus/redesign/revision-notes.md
+ M docs/06-design/v2-980plus/redesign/traceability-matrix.md
+ M docs/06-design/v2-980plus/redesign/validation-report.md
+ M scripts/check-admin-mockups.mjs
+ M scripts/verify-mobile-learning-model.cjs
+?? artifacts/review-2026-10-02/
+?? artifacts/review-2026-10-03/
+?? docs/06-design/v2-980plus/redesign/design-source-traceability.md
+?? docs/06-design/v2-980plus/redesign/dev-plan-R1.status.json
+?? docs/06-design/v2-980plus/redesign/dev-plan-R1.tasks.json
+?? docs/06-design/v2-980plus/redesign/execution-handbook.md
+?? docs/06-design/v2-980plus/redesign/input-gates.md
+?? docs/06-design/v2-980plus/redesign/mockups/admin/model.js
+?? docs/06-design/v2-980plus/redesign/status-wall.html
+?? docs/06-design/v2-980plus/redesign/status-wall.md
+?? docs/06-design/v2-980plus/redesign/task-specs/
+?? docs/06-design/v2-980plus/redesign/tasks/
+?? evidence/p1r/m3/P1R-M3-008/redesign/
+?? scripts/check-redesign-dev-plan.mjs
+?? scripts/generate-redesign-dev-plan-index.cjs
+?? scripts/lib/
+?? scripts/redesign-task-state.mjs
+?? scripts/test-admin-mockups.mjs
+?? scripts/test-redesign-task-state.mjs

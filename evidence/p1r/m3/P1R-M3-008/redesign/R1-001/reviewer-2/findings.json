@@ -1,0 +1,144 @@
+{
+  "findings": [
+    {
+      "id": "F07",
+      "priority": "P2",
+      "path": "apps/official-site/server/api/public-projection.get.ts",
+      "line": 209,
+      "problem": "HTTP200业务recovery响应在normalize后仍被替换为空projection，stale强制false，独立commerce成功又清掉全局errorCode。真实执行当前BFF得到state=recovery但courses=0/generatedAt=null/stale=false；facet却保留旧时间和stale=true，恢复内容与页面状态不一致。",
+      "fix": "在现有受控状态规则内保留合法可读recovery公开数据、更新时间、stale和原因；继续清空permission/error/maintenance的不可读内容，保持commerce独立新鲜度，不能因本问题把正常新鲜价格误判旧数据。新增走完整BFF的recovery组合断言，不只测normalize；保留401/403/404/410、过期及并发作废安全负例。",
+      "retestCaseIds": [
+        "R1-001-TC02"
+      ]
+    },
+    {
+      "id": "F08",
+      "priority": "P2",
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/summary.md",
+      "line": 4,
+      "problem": "delivery-2覆盖了delivery-1已固定哈希的summary.md（旧ab5ecabc…，当前fc497d6f…），与“不覆盖历史证据”的报告矛盾。当前24 artifacts/8 evidence及scope全部匹配不代表旧证据完整。",
+      "fix": "保持现有delivery-1/2、reviewer-1/2及其收据字节不变，新报告使用summary-3.md等版本路径。若有原始summary字节，另存归档并验旧哈希，通过新增历史恢复映射说明原路径漂移；若无原字节，如实登记旧summary无法恢复，以新独立证据补足，不改旧收据哈希掩盖问题。",
+      "retestCaseIds": [
+        "R1-001-TC01",
+        "R1-001-TC02",
+        "R1-001-TC03"
+      ]
+    },
+    {
+      "id": "F09",
+      "priority": "P1",
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/delivery-2.json",
+      "line": 1,
+      "problem": "提交仍列4项P1阻塞：三个必测产品TC与浏览器套件。当前18070、18180、18183未监听，只能验证官网error分支和生成目标，不能验证成功/空态实际渲染、真实503恢复、注册重复点击与回跳。",
+      "fix": "协调隔离的现有公开Gateway/content/commerce只读验收实例与学习端注册页面，保持固定端口/无秘密/不重启共享服务，不伪造发布事实。按TC01-03提交当前截图、Console、请求及回跳证据；VM/HTTP仅标局部检查。复测website-runtime适用断言或交主审用现有浏览器执行对应检查并逐条登记，不把未跑套件标PASS。缺输入时先报告具体缺项，维持阻塞，不开002。",
+      "retestCaseIds": [
+        "R1-001-TC01",
+        "R1-001-TC02",
+        "R1-001-TC03"
+      ]
+    }
+  ],
+  "currentSourceSnapshot": {
+    "sourceCommit": "3d11be3337accd32afbdbe13a218bca38c786043",
+    "dirtyDiffSha256": "1f44d8082723dcb9d860a2be01573f80e60edc11860a653887deec3b414ea286",
+    "files": [
+      {
+        "path": "apps/official-site/components/SiteStartButton.vue",
+        "sha256": "2281c5e6133c3d5182e29accb1ae55c9ee92fef56d0af41487caee12ab3bc332"
+      },
+      {
+        "path": "apps/official-site/composables/useOfficialSiteLinks.ts",
+        "sha256": "455b02ef0f428c5d2da9c09f2c24e232cf3e2aef4790db5dbf482b401fd80b56"
+      },
+      {
+        "path": "apps/official-site/composables/usePublicProjection.ts",
+        "sha256": "5cc61540b9e934a71e0e0a7b3d0073ddb5e3174878627bc225691e9a13edb110"
+      },
+      {
+        "path": "apps/official-site/pages/about.vue",
+        "sha256": "d70cac5f7c6f4c9dacfc84cc94d90cd51792cdf63222025322c9f73151c6f5e1"
+      },
+      {
+        "path": "apps/official-site/pages/announcements.vue",
+        "sha256": "c17cb53331e1f83b7d146e9ff1b687aec1302bcc918eb7dcaca2d0619f299d42"
+      },
+      {
+        "path": "apps/official-site/pages/compliance.vue",
+        "sha256": "1d3dbae4d053ada1055263c2ec14cdef46b96ca23f971e3cd3e2dd03b7760b41"
+      },
+      {
+        "path": "apps/official-site/pages/courses/index.vue",
+        "sha256": "d508b7a31dcd843326efa6779bebb1a8f88a1614fc7f9e539077875c8fe09c45"
+      },
+      {
+        "path": "apps/official-site/pages/download.vue",
+        "sha256": "213d09439b69f021b10e1095f5cd1e08fc0a4fb7dd5956c4f5337a06b079e490"
+      },
+      {
+        "path": "apps/official-site/pages/index.vue",
+        "sha256": "4ae46de320ee57ad07ce1df97c02fbab74012a5486e856cb9c413c32ea6af2c8"
+      },
+      {
+        "path": "apps/official-site/pages/minors.vue",
+        "sha256": "d17a1f687e4502122bfaa6fa92b1ebfa5de1759343918a0a75624ff227b528f2"
+      },
+      {
+        "path": "apps/official-site/pages/pricing.vue",
+        "sha256": "9ddb207ff003d6b36a5f1f596a2e149a956ce2a1896cedbe0675a551111e8643"
+      },
+      {
+        "path": "apps/official-site/pages/privacy.vue",
+        "sha256": "72562ecc8f4a38d00d5af7eccc736d715ba48f96dd3d8ac6f07d1b05ba61cf9f"
+      },
+      {
+        "path": "apps/official-site/pages/status.vue",
+        "sha256": "f85952587dc38b4799dd3aaea76c971fb6635ca43b1e508c5de8d519b1add355"
+      },
+      {
+        "path": "apps/official-site/pages/terms.vue",
+        "sha256": "5e6b4c8c59d3cae277d6bd63ed6255d4366eba4358b7a3b182313cdbab70f44b"
+      },
+      {
+        "path": "apps/official-site/server/api/public-projection.get.ts",
+        "sha256": "44337b17da02883ed800037cd00dbe7fd81fd928757bae18852dd4940a3bcf9e"
+      },
+      {
+        "path": "apps/official-site/tests/b13-official-site.test.mjs",
+        "sha256": "d6015fa8cf8d1130085fb87434f04b994d924011053882ca22b654a58b1c782b"
+      },
+      {
+        "path": "apps/official-site/tests/b14-fe-005.test.mjs",
+        "sha256": "acfb0b3eec0178ca029a40f5b8efe964c77c46ae5243d4c7c7cd562e3012b59b"
+      },
+      {
+        "path": "apps/official-site/tests/browser/website-runtime.cjs",
+        "sha256": "56c6192eb45b5e151ea40719bc99ec457213a237dcc797a8503769d47f91b207"
+      },
+      {
+        "path": "apps/official-site/tests/public-projection-bff.test.mjs",
+        "sha256": "c3d5d3609231772b38592b1d73f8451a297bb40b24597f0ac9a965df0ccd4e7f"
+      },
+      {
+        "path": "apps/official-site/tests/website-entry.test.mjs",
+        "sha256": "2a512d72f1175fcc0e492c3d299db98039282089a9c27e5b80a2495eab438d7e"
+      },
+      {
+        "path": "apps/official-site/utils/public-links.mjs",
+        "sha256": "94abc4fd69d51bf6964fcfa93f6e8a6a044141a54359603205b930de5ff9e3e6"
+      },
+      {
+        "path": "apps/official-site/utils/public-projection.ts",
+        "sha256": "fa597d5844dc41a2bf951bfd477bc8f3729654fdf1f099ff2d24b8968c63a7bb"
+      },
+      {
+        "path": "apps/official-site/utils/site-content.mjs",
+        "sha256": "57f1dbe0353aa27565a3fe2e36a5ec0d2fc3a701259209ec732286dabbe5a361"
+      },
+      {
+        "path": "packages/i18n/src/official-site.ts",
+        "sha256": "f445aed5156c6502008e03cd9161d3bf799dc3731c2d9e032fb4ce3a622492ba"
+      }
+    ]
+  },
+  "delivery2Verified": true
+}

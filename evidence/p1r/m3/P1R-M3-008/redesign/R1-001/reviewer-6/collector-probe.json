@@ -1,0 +1,91 @@
+{
+  "checkedAt": "2026-10-04T06:12:11.998Z",
+  "scope": "Exact current collectFromPage function with synthetic DOM-fact test doubles; no real browser run or product defect inferred",
+  "rows": [
+    {
+      "name": "valid-desktop",
+      "label": "1440x900",
+      "entries": [
+        {
+          "target": "web",
+          "href": "http://127.0.0.1:18180/register?returnTo=%2Fhome&uiLocale=zh-CN&theme=system",
+          "visible": true
+        }
+      ],
+      "expectedAccepted": true,
+      "accepted": true,
+      "matchesExpectation": true,
+      "error": null
+    },
+    {
+      "name": "valid-mobile",
+      "label": "375x812",
+      "entries": [
+        {
+          "target": "mobile",
+          "href": "http://127.0.0.1:18183/#/pages/register/register?returnTo=%2Fpages%2Fhome%2Fhome&uiLocale=zh-CN&theme=system",
+          "visible": true
+        }
+      ],
+      "expectedAccepted": true,
+      "accepted": true,
+      "matchesExpectation": true,
+      "error": null
+    },
+    {
+      "name": "mobile-all-web",
+      "label": "375x812",
+      "entries": [
+        {
+          "target": "web",
+          "href": "http://127.0.0.1:18180/register?returnTo=%2Fhome&uiLocale=zh-CN&theme=system",
+          "visible": true
+        }
+      ],
+      "expectedAccepted": false,
+      "accepted": true,
+      "matchesExpectation": false,
+      "error": null
+    },
+    {
+      "name": "desktop-all-mobile",
+      "label": "1440x900",
+      "entries": [
+        {
+          "target": "mobile",
+          "href": "http://127.0.0.1:18183/#/pages/register/register?returnTo=%2Fpages%2Fhome%2Fhome&uiLocale=zh-CN&theme=system",
+          "visible": true
+        }
+      ],
+      "expectedAccepted": false,
+      "accepted": true,
+      "matchesExpectation": false,
+      "error": null
+    },
+    {
+      "name": "all-links-hidden",
+      "label": "375x812",
+      "entries": [
+        {
+          "target": "mobile",
+          "href": "http://127.0.0.1:18183/#/pages/register/register?returnTo=%2Fpages%2Fhome%2Fhome&uiLocale=zh-CN&theme=system",
+          "visible": false
+        }
+      ],
+      "expectedAccepted": false,
+      "accepted": true,
+      "matchesExpectation": false,
+      "error": null
+    },
+    {
+      "name": "no-entries",
+      "label": "375x812",
+      "entries": [],
+      "expectedAccepted": false,
+      "accepted": false,
+      "matchesExpectation": true,
+      "error": "/courses cta=0"
+    }
+  ],
+  "falsePasses": 3
+}

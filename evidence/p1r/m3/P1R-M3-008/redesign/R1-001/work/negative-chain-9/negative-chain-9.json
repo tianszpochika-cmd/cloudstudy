@@ -1,0 +1,113 @@
+{
+  "checkedAt": "2026-10-04T22:00:47.162Z",
+  "mocked": true,
+  "scope": "same real-chain-assert-9 module; synthetic facts only",
+  "rows": [
+    {
+      "name": "nonempty-valid",
+      "expectedAccepted": true,
+      "accepted": true,
+      "matchesExpectation": true,
+      "error": null
+    },
+    {
+      "name": "empty-valid",
+      "expectedAccepted": true,
+      "accepted": true,
+      "matchesExpectation": true,
+      "error": null
+    },
+    {
+      "name": "empty-generatedAt-differs-ok",
+      "expectedAccepted": true,
+      "accepted": true,
+      "matchesExpectation": true,
+      "error": null
+    },
+    {
+      "name": "empty-nonempty-courses-fail",
+      "expectedAccepted": false,
+      "accepted": false,
+      "matchesExpectation": true,
+      "error": "t upstream not empty\n+ actual - expected\n\n+ [\n+   'A'\n+ ]\n- []"
+    },
+    {
+      "name": "empty-error-facet-fail",
+      "expectedAccepted": false,
+      "accepted": false,
+      "matchesExpectation": true,
+      "error": "t courses facet={\"state\":\"error\",\"stale\":false,\"errorCode\":\"X\"}"
+    },
+    {
+      "name": "empty-stale-facet-fail",
+      "expectedAccepted": false,
+      "accepted": false,
+      "matchesExpectation": true,
+      "error": "t courses facet stale\n\ntrue !== false\n"
+    },
+    {
+      "name": "empty-dom-ok",
+      "expectedAccepted": true,
+      "accepted": true,
+      "matchesExpectation": true,
+      "error": null
+    },
+    {
+      "name": "empty-dom-cards-fail",
+      "expectedAccepted": false,
+      "accepted": false,
+      "matchesExpectation": true,
+      "error": "t cards=2\n\n2 !== 0\n"
+    },
+    {
+      "name": "empty-dom-note-hidden-fail",
+      "expectedAccepted": false,
+      "accepted": false,
+      "matchesExpectation": true,
+      "error": "t empty copy not visible in courses region\n\nfalse !== true\n"
+    },
+    {
+      "name": "commerce-plans-match",
+      "expectedAccepted": true,
+      "accepted": true,
+      "matchesExpectation": true,
+      "error": null
+    },
+    {
+      "name": "commerce-plans-mismatch-fail",
+      "expectedAccepted": false,
+      "accepted": false,
+      "matchesExpectation": true,
+      "error": "t pricing plans mismatch\n+ actual - expected\n\n+ []\n- [\n-   'P1'\n- ]"
+    },
+    {
+      "name": "price-valid",
+      "expectedAccepted": true,
+      "accepted": true,
+      "matchesExpectation": true,
+      "error": null
+    },
+    {
+      "name": "price-missing-note-fail",
+      "expectedAccepted": false,
+      "accepted": false,
+      "matchesExpectation": true,
+      "error": "t empty-note not visible in pricing region\n\nfalse !== true\n"
+    },
+    {
+      "name": "cookie-hit-fail",
+      "expectedAccepted": false,
+      "accepted": false,
+      "matchesExpectation": true,
+      "error": "t business-cookie-hit=session-id\n\n1 !== 0\n"
+    },
+    {
+      "name": "cookie-clean-pass",
+      "expectedAccepted": true,
+      "accepted": true,
+      "matchesExpectation": true,
+      "error": null
+    }
+  ],
+  "failedChecks": []
+}

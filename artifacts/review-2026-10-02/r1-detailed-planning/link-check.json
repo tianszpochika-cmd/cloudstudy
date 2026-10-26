@@ -1,0 +1,7 @@
+{
+  "result": "PASS",
+  "documents": 129,
+  "relativeFileLinks": 5531,
+  "missing": [],
+  "limitations": "Target existence only; external URLs and heading anchors not checked"
+}

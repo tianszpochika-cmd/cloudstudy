@@ -1,0 +1,525 @@
+{
+  "checkedAt": "2026-10-03T04:45:47.987Z",
+  "scope": "actual UI with unavailable upstream; not empty/ready/recovery TC approval",
+  "samples": [
+    {
+      "route": "/",
+      "size": {
+        "width": 375,
+        "height": 812
+      },
+      "entries": [
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "label": "查看开放情况"
+        },
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "label": "查看开放情况"
+        },
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "label": "查看开放情况"
+        },
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "label": "查看开放情况"
+        },
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "label": "查看开放情况"
+        }
+      ],
+      "h1": "让英语，回到你的日常。",
+      "height": 812,
+      "overflow": false,
+      "width": 375
+    },
+    {
+      "route": "/courses",
+      "size": {
+        "width": 375,
+        "height": 812
+      },
+      "entries": [
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "label": "查看开放情况"
+        },
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "label": "查看开放情况"
+        },
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "label": "查看开放情况"
+        }
+      ],
+      "h1": "找到今天想学的内容。",
+      "height": 812,
+      "overflow": false,
+      "width": 375
+    },
+    {
+      "route": "/pricing",
+      "size": {
+        "width": 375,
+        "height": 812
+      },
+      "entries": [
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "label": "查看开放情况"
+        },
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "label": "查看开放情况"
+        },
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "label": "查看开放情况"
+        }
+      ],
+      "h1": "价格方案",
+      "height": 812,
+      "overflow": false,
+      "width": 375
+    },
+    {
+      "route": "/download",
+      "size": {
+        "width": 375,
+        "height": 812
+      },
+      "entries": [
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "label": "查看开放情况"
+        },
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "label": "查看开放情况"
+        }
+      ],
+      "h1": "下载体验",
+      "height": 812,
+      "overflow": false,
+      "width": 375
+    },
+    {
+      "route": "/announcements",
+      "size": {
+        "width": 375,
+        "height": 812
+      },
+      "entries": [
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "label": "查看开放情况"
+        },
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "label": "查看开放情况"
+        }
+      ],
+      "h1": "产品动态与服务通知。",
+      "height": 812,
+      "overflow": false,
+      "width": 375
+    },
+    {
+      "route": "/about",
+      "size": {
+        "width": 375,
+        "height": 812
+      },
+      "entries": [
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "label": "查看开放情况"
+        },
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "label": "查看开放情况"
+        },
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "label": "查看开放情况"
+        },
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "label": "查看开放情况"
+        }
+      ],
+      "h1": "学习，应该能继续下去。",
+      "height": 812,
+      "overflow": false,
+      "width": 375
+    },
+    {
+      "route": "/compliance",
+      "size": {
+        "width": 375,
+        "height": 812
+      },
+      "entries": [
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "label": "查看开放情况"
+        },
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "label": "查看开放情况"
+        }
+      ],
+      "h1": "公开信息",
+      "height": 812,
+      "overflow": false,
+      "width": 375
+    },
+    {
+      "route": "/status",
+      "size": {
+        "width": 375,
+        "height": 812
+      },
+      "entries": [
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "label": "查看开放情况"
+        },
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "label": "查看开放情况"
+        }
+      ],
+      "h1": "服务状态，及时了解。",
+      "height": 812,
+      "overflow": false,
+      "width": 375
+    },
+    {
+      "route": "/privacy",
+      "size": {
+        "width": 375,
+        "height": 812
+      },
+      "entries": [
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "label": "查看开放情况"
+        },
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "label": "查看开放情况"
+        }
+      ],
+      "h1": "隐私与数据",
+      "height": 812,
+      "overflow": false,
+      "width": 375
+    },
+    {
+      "route": "/terms",
+      "size": {
+        "width": 375,
+        "height": 812
+      },
+      "entries": [
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "label": "查看开放情况"
+        },
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "label": "查看开放情况"
+        }
+      ],
+      "h1": "使用说明",
+      "height": 812,
+      "overflow": false,
+      "width": 375
+    },
+    {
+      "route": "/minors",
+      "size": {
+        "width": 375,
+        "height": 812
+      },
+      "entries": [
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "label": "查看开放情况"
+        },
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "label": "查看开放情况"
+        }
+      ],
+      "h1": "成人使用范围",
+      "height": 812,
+      "overflow": false,
+      "width": 375
+    },
+    {
+      "route": "/",
+      "size": {
+        "width": 1440,
+        "height": 900
+      },
+      "entries": [
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "label": "查看开放情况"
+        },
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "label": "查看开放情况"
+        },
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "label": "查看开放情况"
+        },
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "label": "查看开放情况"
+        },
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "label": "查看开放情况"
+        }
+      ],
+      "h1": "让英语，回到你的日常。",
+      "height": 900,
+      "overflow": false,
+      "width": 1440
+    },
+    {
+      "route": "/courses",
+      "size": {
+        "width": 1440,
+        "height": 900
+      },
+      "entries": [
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "label": "查看开放情况"
+        },
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "label": "查看开放情况"
+        },
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "label": "查看开放情况"
+        }
+      ],
+      "h1": "找到今天想学的内容。",
+      "height": 900,
+      "overflow": false,
+      "width": 1440
+    },
+    {
+      "route": "/pricing",
+      "size": {
+        "width": 1440,
+        "height": 900
+      },
+      "entries": [
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "label": "查看开放情况"
+        },
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "label": "查看开放情况"
+        },
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "label": "查看开放情况"
+        }
+      ],
+      "h1": "价格方案",
+      "height": 900,
+      "overflow": false,
+      "width": 1440
+    },
+    {
+      "route": "/download",
+      "size": {
+        "width": 1440,
+        "height": 900
+      },
+      "entries": [
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "label": "查看开放情况"
+        },
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "label": "查看开放情况"
+        }
+      ],
+      "h1": "下载体验",
+      "height": 900,
+      "overflow": false,
+      "width": 1440
+    },
+    {
+      "route": "/announcements",
+      "size": {
+        "width": 1440,
+        "height": 900
+      },
+      "entries": [
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "label": "查看开放情况"
+        },
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "label": "查看开放情况"
+        }
+      ],
+      "h1": "产品动态与服务通知。",
+      "height": 900,
+      "overflow": false,
+      "width": 1440
+    },
+    {
+      "route": "/about",
+      "size": {
+        "width": 1440,
+        "height": 900
+      },
+      "entries": [
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "label": "查看开放情况"
+        },
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "label": "查看开放情况"
+        },
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "label": "查看开放情况"
+        },
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "label": "查看开放情况"
+        }
+      ],
+      "h1": "学习，应该能继续下去。",
+      "height": 900,
+      "overflow": false,
+      "width": 1440
+    },
+    {
+      "route": "/compliance",
+      "size": {
+        "width": 1440,
+        "height": 900
+      },
+      "entries": [
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "label": "查看开放情况"
+        },
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "label": "查看开放情况"
+        }
+      ],
+      "h1": "公开信息",
+      "height": 900,
+      "overflow": false,
+      "width": 1440
+    },
+    {
+      "route": "/status",
+      "size": {
+        "width": 1440,
+        "height": 900
+      },
+      "entries": [
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "label": "查看开放情况"
+        },
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "label": "查看开放情况"
+        }
+      ],
+      "h1": "服务状态，及时了解。",
+      "height": 900,
+      "overflow": false,
+      "width": 1440
+    },
+    {
+      "route": "/privacy",
+      "size": {
+        "width": 1440,
+        "height": 900
+      },
+      "entries": [
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "label": "查看开放情况"
+        },
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "label": "查看开放情况"
+        }
+      ],
+      "h1": "隐私与数据",
+      "height": 900,
+      "overflow": false,
+      "width": 1440
+    },
+    {
+      "route": "/terms",
+      "size": {
+        "width": 1440,
+        "height": 900
+      },
+      "entries": [
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "label": "查看开放情况"
+        },
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "label": "查看开放情况"
+        }
+      ],
+      "h1": "使用说明",
+      "height": 900,
+      "overflow": false,
+      "width": 1440
+    },
+    {
+      "route": "/minors",
+      "size": {
+        "width": 1440,
+        "height": 900
+      },
+      "entries": [
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "label": "查看开放情况"
+        },
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "label": "查看开放情况"
+        }
+      ],
+      "h1": "成人使用范围",
+      "height": 900,
+      "overflow": false,
+      "width": 1440
+    }
+  ],
+  "logs": []
+}

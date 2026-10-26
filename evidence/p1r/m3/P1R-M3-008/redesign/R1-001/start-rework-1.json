@@ -1,0 +1,1 @@
+{"action": "start", "actor": "Muse Spark", "expectedRevision": 5, "note": "R1-001 rework READY已核对(spec 57726738/46源文件无变化/22证据无变化/台账7行存在)，按F01-F06在24文件范围整改，不进R1-002。", "specSha256": "57726738acaac54eac1bedf2b69b97205d4e1933019781747f1b907294fadd52", "taskId": "R1-001"}

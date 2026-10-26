@@ -1,0 +1,43 @@
+{
+  "kind": "readonly-preparation-review",
+  "taskId": "R1-002",
+  "reviewerThreadId": "01a0cb93-8791-7ee2-b453-8e8752b2553f",
+  "actor": "root-reviewer",
+  "reviewedAt": "2026-10-05T06:44:19.313Z",
+  "decision": "PREPARATION_RECEIVED_NOT_READY",
+  "stateUnchanged": "PLANNED",
+  "revisionUnchanged": 27,
+  "evidence": [
+    {
+      "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/reviewer-1-prep/review.md",
+      "sha256": "f37b99508a96df841502e4c0fd38a905517148c42f15c32ac29b0e2fddc59767"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/reviewer-1-prep/current-check.json",
+      "sha256": "a49d6d7d42fb6050a332f17f701951e6d2c94d644ac3774633cd88164aca889a"
+    },
+    {
+      "path": "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/reviewer-1-prep/next-prompt.md",
+      "sha256": "f8b816419b0d9e2e47d0c631531da123352bb592e907e61a11d54aaaf392dffc"
+    }
+  ],
+  "closedInputs": [
+    "E1 jar identity",
+    "G1/G2 source clarification",
+    "C1 source/default configuration clarification"
+  ],
+  "nextWorkAuthorization": {
+    "kind": "isolated-preparation-only",
+    "newSchemaPrefix": "r1_002_iam_",
+    "newIdentityPrefix": "r1_002_",
+    "allowNewDedicatedSchemaAndIdentity": true,
+    "allowCanonicalMigrationsAndSyntheticPolicyFixturesInNewSchemaOnly": true,
+    "sharedSchemaOrExistingIdentityChanges": false,
+    "backendStart": false,
+    "registrationPost": false,
+    "businessImplementation": false,
+    "readyOrAcceptanceStateWrite": false,
+    "requireValidatedSetupBeforeAnyServiceBasedMigration": true
+  },
+  "note": "This is not a READY/start/acceptance receipt; do not feed it to the task state record command."
+}

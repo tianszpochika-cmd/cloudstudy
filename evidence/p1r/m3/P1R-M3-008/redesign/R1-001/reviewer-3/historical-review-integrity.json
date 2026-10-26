@@ -1,0 +1,14 @@
+{
+  "checkedAt": "2026-10-03T09:43:08.988Z",
+  "historyReceiptsVerified": 10,
+  "reviewEvidence": [
+    {
+      "receipt": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-1/reject-1.json",
+      "evidenceMatches": 16
+    },
+    {
+      "receipt": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-2/reject-2.json",
+      "evidenceMatches": 17
+    }
+  ]
+}

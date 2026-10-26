@@ -1,0 +1,30 @@
+{
+  "base": "http://127.0.0.1:18182",
+  "checkedAt": "2026-10-03T04:16:38.662Z",
+  "sanitizedReturnTos": [
+    {
+      "name": "external-https",
+      "returnTo": "https://evil.invalid",
+      "sanitized": "/home"
+    },
+    {
+      "name": "protocol-relative",
+      "returnTo": "//evil",
+      "sanitized": "/home"
+    },
+    {
+      "name": "encoded-slash",
+      "returnTo": "%2Fhome%2F..%2Fevil",
+      "sanitized": "/home"
+    },
+    {
+      "name": "backslash",
+      "returnTo": "\\evil",
+      "sanitized": "/home"
+    }
+  ],
+  "repeatedClickSameHref": true,
+  "officialHtmlHasBusinessToken": [],
+  "officialHtmlHasAuthStorage": [],
+  "allSanitizedToHome": true
+}

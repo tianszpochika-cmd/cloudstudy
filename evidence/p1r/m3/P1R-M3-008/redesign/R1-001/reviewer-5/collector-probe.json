@@ -1,0 +1,57 @@
+{
+  "checkedAt": "2026-10-04T03:39:32.910Z",
+  "scope": "Exact function extracted from pinned executor collector; synthetic URL inputs; no browser or product defect inferred",
+  "sourcePath": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/work/r1-001-sweep-5.cjs",
+  "sourceSha256": "3df32be5affc0ccb4c56c864c9cbf19bd74bf63d0abcab24b90eb2b5640835ff",
+  "rows": [
+    {
+      "name": "valid-web",
+      "href": "http://127.0.0.1:18180/register?returnTo=%2Fhome&uiLocale=zh-CN&theme=system",
+      "expectedAccepted": true,
+      "accepted": true,
+      "matchesExpectation": true,
+      "error": null
+    },
+    {
+      "name": "wrong-web-path",
+      "href": "http://127.0.0.1:18180/register-incorrect?returnTo=%2Fhome&uiLocale=zh-CN&theme=system",
+      "expectedAccepted": false,
+      "accepted": true,
+      "matchesExpectation": false,
+      "error": null
+    },
+    {
+      "name": "path-only-in-query",
+      "href": "http://127.0.0.1:18180/incorrect?extra=/register&returnTo=%2Fhome&uiLocale=zh-CN&theme=system",
+      "expectedAccepted": false,
+      "accepted": true,
+      "matchesExpectation": false,
+      "error": null
+    },
+    {
+      "name": "valid-mobile",
+      "href": "http://127.0.0.1:18183/#/pages/register/register?returnTo=%2Fpages%2Fhome%2Fhome&uiLocale=zh-CN&theme=system",
+      "expectedAccepted": true,
+      "accepted": true,
+      "matchesExpectation": true,
+      "error": null
+    },
+    {
+      "name": "wrong-mobile-path",
+      "href": "http://127.0.0.1:18183/#/pages/register/register-incorrect?returnTo=%2Fpages%2Fhome%2Fhome&uiLocale=zh-CN&theme=system",
+      "expectedAccepted": false,
+      "accepted": true,
+      "matchesExpectation": false,
+      "error": null
+    },
+    {
+      "name": "wrong-origin",
+      "href": "https://evil.invalid/register?returnTo=%2Fhome&uiLocale=zh-CN&theme=system",
+      "expectedAccepted": false,
+      "accepted": false,
+      "matchesExpectation": true,
+      "error": "wrong-origin origin=https://evil.invalid\n+ actual - expected\n\n+ 'https://evil.invalid'\n- 'http://127.0.0.1:18180'\n       ^"
+    }
+  ],
+  "falsePasses": 3
+}

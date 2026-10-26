@@ -1,0 +1,119 @@
+{
+  "taskId": "R1-001",
+  "action": "reject",
+  "expectedRevision": 7,
+  "specSha256": "57726738acaac54eac1bedf2b69b97205d4e1933019781747f1b907294fadd52",
+  "actor": "root-reviewer",
+  "role": "reviewer",
+  "reviewerThreadId": "01a0cb93-8791-7ee2-b453-8e8752b2553f",
+  "note": "delivery-2上轮五项整改已落实，32项和构建退出0；剩余恢复数据、历史证据及必测阻塞，继续001，不放行002。",
+  "evidence": [
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-2/browser-checks.json",
+      "sha256": "cf0f0e516a8a193b9b0cf98ac87faae2562db719ea3e7f7e884625e9c6b7960f"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-2/build-result.json",
+      "sha256": "9592bfa3e52784ca842815668fae943c33e9075d53f96956cf22a50373cc9f6c"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-2/build.log",
+      "sha256": "9f8b2cf0cc35dd16a2ceb5359214b092254d7f5b5efa48c08ca1f80eac6618d0"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-2/courses-mobile.dom.txt",
+      "sha256": "00670f0d72e832bfe8322d4798a19946585ba93bb7e89dd458fd8006d31a7ef6"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-2/courses-mobile.png",
+      "sha256": "3b44a399f1f02e939011a6728c598316067bc35c7093bf95a9b169b12775f8b4"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-2/courses-retry-desktop.dom.txt",
+      "sha256": "6268d43cd93300d76e59b86d3ccfcda2f16c6e691c4587071bd6ed821ec32651"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-2/courses-retry-desktop.png",
+      "sha256": "53600b2e3f2bbb5c43dc10546ea78e4147cd003c709233fc0d5809a750b86517"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-2/findings.json",
+      "sha256": "6dd9a7febfd11d91a1c7f164722baa158ceae9382b79c19e098f3e60a58ad0cf"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-2/hashes.json",
+      "sha256": "755803bba776907d22f9d42dde010b92a0b821fa29f0cf1322a422296ce79aad"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-2/nuxt-input-shim.d.ts",
+      "sha256": "995163db7ec8ebd87cca577cde2f32fa173155555a5f72d7305c0884ea850732"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-2/record-review.mjs",
+      "sha256": "cd72047a09649c87e430d2a35170e8c8dd3f36d2f38e558d4dcb4f75a01c4c83"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-2/review.md",
+      "sha256": "24185d0b50b5f8bf5a2aa1f67c94f440ba43ae606593aab849b6658ede0f4d03"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-2/semantic-probe.log",
+      "sha256": "8aa3d26c1a7f3fdb26a04efba0608fb4b0ea3d8ef67793140969edb39d5dfdb7"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-2/semantic-probe.mjs",
+      "sha256": "90bc4d0e5819a5ec65eb90a9b1c0abd25a42799b4644f5dcecdd69fc1ee579a4"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-2/unit-rerun.log",
+      "sha256": "13cb9543b726a74ee357b181559f5728eda6fbf5ef13692769e7b484fee0dcaa"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-2/verification.json",
+      "sha256": "3b20fc5abd9ac11f5ec2223bbf88ccfb2a7f0e2423450b950c823c46ff6c86da"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-2/verify.mjs",
+      "sha256": "b9e1a056e65eae3eea01cb2dba9471f130cb9be98191ba504149acdaca03edef"
+    }
+  ],
+  "findings": [
+    {
+      "id": "F07",
+      "priority": "P2",
+      "path": "apps/official-site/server/api/public-projection.get.ts",
+      "line": 209,
+      "problem": "HTTP200业务recovery响应在normalize后仍被替换为空projection，stale强制false，独立commerce成功又清掉全局errorCode。真实执行当前BFF得到state=recovery但courses=0/generatedAt=null/stale=false；facet却保留旧时间和stale=true，恢复内容与页面状态不一致。",
+      "fix": "在现有受控状态规则内保留合法可读recovery公开数据、更新时间、stale和原因；继续清空permission/error/maintenance的不可读内容，保持commerce独立新鲜度，不能因本问题把正常新鲜价格误判旧数据。新增走完整BFF的recovery组合断言，不只测normalize；保留401/403/404/410、过期及并发作废安全负例。",
+      "retestCaseIds": [
+        "R1-001-TC02"
+      ]
+    },
+    {
+      "id": "F08",
+      "priority": "P2",
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/summary.md",
+      "line": 4,
+      "problem": "delivery-2覆盖了delivery-1已固定哈希的summary.md（旧ab5ecabc…，当前fc497d6f…），与“不覆盖历史证据”的报告矛盾。当前24 artifacts/8 evidence及scope全部匹配不代表旧证据完整。",
+      "fix": "保持现有delivery-1/2、reviewer-1/2及其收据字节不变，新报告使用summary-3.md等版本路径。若有原始summary字节，另存归档并验旧哈希，通过新增历史恢复映射说明原路径漂移；若无原字节，如实登记旧summary无法恢复，以新独立证据补足，不改旧收据哈希掩盖问题。",
+      "retestCaseIds": [
+        "R1-001-TC01",
+        "R1-001-TC02",
+        "R1-001-TC03"
+      ]
+    },
+    {
+      "id": "F09",
+      "priority": "P1",
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/delivery-2.json",
+      "line": 1,
+      "problem": "提交仍列4项P1阻塞：三个必测产品TC与浏览器套件。当前18070、18180、18183未监听，只能验证官网error分支和生成目标，不能验证成功/空态实际渲染、真实503恢复、注册重复点击与回跳。",
+      "fix": "协调隔离的现有公开Gateway/content/commerce只读验收实例与学习端注册页面，保持固定端口/无秘密/不重启共享服务，不伪造发布事实。按TC01-03提交当前截图、Console、请求及回跳证据；VM/HTTP仅标局部检查。复测website-runtime适用断言或交主审用现有浏览器执行对应检查并逐条登记，不把未跑套件标PASS。缺输入时先报告具体缺项，维持阻塞，不开002。",
+      "retestCaseIds": [
+        "R1-001-TC01",
+        "R1-001-TC02",
+        "R1-001-TC03"
+      ]
+    }
+  ]
+}

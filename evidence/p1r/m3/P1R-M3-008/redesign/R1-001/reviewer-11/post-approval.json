@@ -1,0 +1,44 @@
+{
+  "at": "2026-10-05T02:34:19.309Z",
+  "revision": 27,
+  "counts": {
+    "ACCEPTED": 1,
+    "PLANNED": 113
+  },
+  "R1001": {
+    "state": "ACCEPTED",
+    "issues": []
+  },
+  "next": [
+    {
+      "id": "R1-002",
+      "state": "PLANNED",
+      "dependsOn": [
+        "R1-001"
+      ]
+    },
+    {
+      "id": "R1-003",
+      "state": "PLANNED",
+      "dependsOn": [
+        "R1-002"
+      ]
+    },
+    {
+      "id": "R1-004",
+      "state": "PLANNED",
+      "dependsOn": [
+        "R1-002"
+      ]
+    },
+    {
+      "id": "R1-005",
+      "state": "PLANNED",
+      "dependsOn": [
+        "R1-004"
+      ]
+    }
+  ],
+  "productEditsByReviewer": 0,
+  "parentStatusUnchanged": true
+}

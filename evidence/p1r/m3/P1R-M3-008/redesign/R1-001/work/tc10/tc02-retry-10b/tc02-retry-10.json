@@ -1,0 +1,50 @@
+{
+  "startedAt": "2026-10-05T00:20:07.737Z",
+  "scope": "TC02 recovery: real click retry after content restore",
+  "steps": [
+    {
+      "step": "375x812 reload-recovered",
+      "ok": true,
+      "detail": {
+        "cards": 7,
+        "titles": [
+          "Demo present simple",
+          "Demo listening minute"
+        ],
+        "retryVisible": false,
+        "consoleErrors": []
+      }
+    },
+    {
+      "step": "375x812 bff-recovered",
+      "ok": true,
+      "detail": {
+        "state": "ready",
+        "courses": 7
+      }
+    },
+    {
+      "step": "1440x900 reload-recovered",
+      "ok": true,
+      "detail": {
+        "cards": 7,
+        "titles": [
+          "Demo present simple",
+          "Demo listening minute"
+        ],
+        "retryVisible": false,
+        "consoleErrors": []
+      }
+    },
+    {
+      "step": "1440x900 bff-recovered",
+      "ok": true,
+      "detail": {
+        "state": "ready",
+        "courses": 7
+      }
+    }
+  ],
+  "failedChecks": [],
+  "finishedAt": "2026-10-05T00:20:18.207Z"
+}

@@ -1,0 +1,265 @@
+{
+  "checkedAt": "2026-10-03T09:27:38.851Z",
+  "revision": 10,
+  "state": "REVIEW",
+  "specMatch": true,
+  "receiptMatch": true,
+  "scopeMatch": true,
+  "artifacts": [
+    {
+      "path": "apps/official-site/components/SiteStartButton.vue",
+      "match": true
+    },
+    {
+      "path": "apps/official-site/composables/useOfficialSiteLinks.ts",
+      "match": true
+    },
+    {
+      "path": "apps/official-site/composables/usePublicProjection.ts",
+      "match": true
+    },
+    {
+      "path": "apps/official-site/pages/about.vue",
+      "match": true
+    },
+    {
+      "path": "apps/official-site/pages/announcements.vue",
+      "match": true
+    },
+    {
+      "path": "apps/official-site/pages/compliance.vue",
+      "match": true
+    },
+    {
+      "path": "apps/official-site/pages/courses/index.vue",
+      "match": true
+    },
+    {
+      "path": "apps/official-site/pages/download.vue",
+      "match": true
+    },
+    {
+      "path": "apps/official-site/pages/index.vue",
+      "match": true
+    },
+    {
+      "path": "apps/official-site/pages/minors.vue",
+      "match": true
+    },
+    {
+      "path": "apps/official-site/pages/pricing.vue",
+      "match": true
+    },
+    {
+      "path": "apps/official-site/pages/privacy.vue",
+      "match": true
+    },
+    {
+      "path": "apps/official-site/pages/status.vue",
+      "match": true
+    },
+    {
+      "path": "apps/official-site/pages/terms.vue",
+      "match": true
+    },
+    {
+      "path": "apps/official-site/server/api/public-projection.get.ts",
+      "match": true
+    },
+    {
+      "path": "apps/official-site/tests/b13-official-site.test.mjs",
+      "match": true
+    },
+    {
+      "path": "apps/official-site/tests/b14-fe-005.test.mjs",
+      "match": true
+    },
+    {
+      "path": "apps/official-site/tests/browser/website-runtime.cjs",
+      "match": true
+    },
+    {
+      "path": "apps/official-site/tests/public-projection-bff.test.mjs",
+      "match": true
+    },
+    {
+      "path": "apps/official-site/tests/website-entry.test.mjs",
+      "match": true
+    },
+    {
+      "path": "apps/official-site/utils/public-links.mjs",
+      "match": true
+    },
+    {
+      "path": "apps/official-site/utils/public-projection.ts",
+      "match": true
+    },
+    {
+      "path": "apps/official-site/utils/site-content.mjs",
+      "match": true
+    },
+    {
+      "path": "packages/i18n/src/official-site.ts",
+      "match": true
+    }
+  ],
+  "evidence": [
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/summary-3.md",
+      "match": true
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/commands-3.log",
+      "match": true
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/work/tc3/tc3-sweep.json",
+      "match": true
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/work/tc1/tc1-error.json",
+      "match": true
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/work/tc2-simulated.json",
+      "match": true
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/work/cta-rework.json",
+      "match": true
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/work/mobile-entry.json",
+      "match": true
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/work/semantic-rework.json",
+      "match": true
+    }
+  ],
+  "historicalEvidence": [
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/summary.md",
+      "match": false,
+      "error": "File changed: evidence/p1r/m3/P1R-M3-008/redesign/R1-001/summary.md"
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/commands.log",
+      "match": true
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/work/cta-11pages-final.json",
+      "match": true
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/work/tc03.json",
+      "match": true
+    },
+    {
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/work/selftest.json",
+      "match": true
+    }
+  ],
+  "current": {
+    "sourceCommit": "3d11be3337accd32afbdbe13a218bca38c786043",
+    "dirtyDiffSha256": "b1dfbb1feaf66557bcfa17831ae02d592a92e06f77489e699116862e5cf9d03d",
+    "files": [
+      {
+        "path": "apps/official-site/components/SiteStartButton.vue",
+        "sha256": "2281c5e6133c3d5182e29accb1ae55c9ee92fef56d0af41487caee12ab3bc332"
+      },
+      {
+        "path": "apps/official-site/composables/useOfficialSiteLinks.ts",
+        "sha256": "455b02ef0f428c5d2da9c09f2c24e232cf3e2aef4790db5dbf482b401fd80b56"
+      },
+      {
+        "path": "apps/official-site/composables/usePublicProjection.ts",
+        "sha256": "5cc61540b9e934a71e0e0a7b3d0073ddb5e3174878627bc225691e9a13edb110"
+      },
+      {
+        "path": "apps/official-site/pages/about.vue",
+        "sha256": "d70cac5f7c6f4c9dacfc84cc94d90cd51792cdf63222025322c9f73151c6f5e1"
+      },
+      {
+        "path": "apps/official-site/pages/announcements.vue",
+        "sha256": "c17cb53331e1f83b7d146e9ff1b687aec1302bcc918eb7dcaca2d0619f299d42"
+      },
+      {
+        "path": "apps/official-site/pages/compliance.vue",
+        "sha256": "1d3dbae4d053ada1055263c2ec14cdef46b96ca23f971e3cd3e2dd03b7760b41"
+      },
+      {
+        "path": "apps/official-site/pages/courses/index.vue",
+        "sha256": "d508b7a31dcd843326efa6779bebb1a8f88a1614fc7f9e539077875c8fe09c45"
+      },
+      {
+        "path": "apps/official-site/pages/download.vue",
+        "sha256": "213d09439b69f021b10e1095f5cd1e08fc0a4fb7dd5956c4f5337a06b079e490"
+      },
+      {
+        "path": "apps/official-site/pages/index.vue",
+        "sha256": "4ae46de320ee57ad07ce1df97c02fbab74012a5486e856cb9c413c32ea6af2c8"
+      },
+      {
+        "path": "apps/official-site/pages/minors.vue",
+        "sha256": "d17a1f687e4502122bfaa6fa92b1ebfa5de1759343918a0a75624ff227b528f2"
+      },
+      {
+        "path": "apps/official-site/pages/pricing.vue",
+        "sha256": "9ddb207ff003d6b36a5f1f596a2e149a956ce2a1896cedbe0675a551111e8643"
+      },
+      {
+        "path": "apps/official-site/pages/privacy.vue",
+        "sha256": "72562ecc8f4a38d00d5af7eccc736d715ba48f96dd3d8ac6f07d1b05ba61cf9f"
+      },
+      {
+        "path": "apps/official-site/pages/status.vue",
+        "sha256": "f85952587dc38b4799dd3aaea76c971fb6635ca43b1e508c5de8d519b1add355"
+      },
+      {
+        "path": "apps/official-site/pages/terms.vue",
+        "sha256": "5e6b4c8c59d3cae277d6bd63ed6255d4366eba4358b7a3b182313cdbab70f44b"
+      },
+      {
+        "path": "apps/official-site/server/api/public-projection.get.ts",
+        "sha256": "fa45038b8c8ac5c737ab7abe948d4c677f02a22af73a5ddafc9a5ec0c7bdbee4"
+      },
+      {
+        "path": "apps/official-site/tests/b13-official-site.test.mjs",
+        "sha256": "d6015fa8cf8d1130085fb87434f04b994d924011053882ca22b654a58b1c782b"
+      },
+      {
+        "path": "apps/official-site/tests/b14-fe-005.test.mjs",
+        "sha256": "acfb0b3eec0178ca029a40f5b8efe964c77c46ae5243d4c7c7cd562e3012b59b"
+      },
+      {
+        "path": "apps/official-site/tests/browser/website-runtime.cjs",
+        "sha256": "56c6192eb45b5e151ea40719bc99ec457213a237dcc797a8503769d47f91b207"
+      },
+      {
+        "path": "apps/official-site/tests/public-projection-bff.test.mjs",
+        "sha256": "d3258e330bdcd9ce26d315112de077dbde43f4a5f69a6f1080f9e9121aecf62c"
+      },
+      {
+        "path": "apps/official-site/tests/website-entry.test.mjs",
+        "sha256": "2a512d72f1175fcc0e492c3d299db98039282089a9c27e5b80a2495eab438d7e"
+      },
+      {
+        "path": "apps/official-site/utils/public-links.mjs",
+        "sha256": "94abc4fd69d51bf6964fcfa93f6e8a6a044141a54359603205b930de5ff9e3e6"
+      },
+      {
+        "path": "apps/official-site/utils/public-projection.ts",
+        "sha256": "fa597d5844dc41a2bf951bfd477bc8f3729654fdf1f099ff2d24b8968c63a7bb"
+      },
+      {
+        "path": "apps/official-site/utils/site-content.mjs",
+        "sha256": "57f1dbe0353aa27565a3fe2e36a5ec0d2fc3a701259209ec732286dabbe5a361"
+      },
+      {
+        "path": "packages/i18n/src/official-site.ts",
+        "sha256": "f445aed5156c6502008e03cd9161d3bf799dc3731c2d9e032fb4ce3a622492ba"
+      }
+    ]
+  }
+}

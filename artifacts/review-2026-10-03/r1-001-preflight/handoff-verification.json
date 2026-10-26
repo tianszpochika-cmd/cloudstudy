@@ -1,0 +1,98 @@
+{
+  "result": "PASS",
+  "verifiedAt": "2026-10-02T18:28:56.286Z",
+  "runs": [
+    {
+      "command": "C:\\Users\\Administrator\\Tools\\node-v20.19.5-win-x64\\node.exe scripts/generate-redesign-dev-plan-index.cjs",
+      "startedAt": "2026-10-02T18:28:28.337Z",
+      "finishedAt": "2026-10-02T18:28:28.659Z",
+      "exitCode": 0,
+      "log": "regenerate.log",
+      "logSha256": "21db7c91bc1fb5c1d9dbfa1c3a42fe14ac3ff592e5eefabc7cf13238736fe8bc"
+    },
+    {
+      "command": "C:\\Users\\Administrator\\Tools\\node-v20.19.5-win-x64\\node.exe scripts/check-redesign-dev-plan.mjs",
+      "startedAt": "2026-10-02T18:28:28.673Z",
+      "finishedAt": "2026-10-02T18:28:31.778Z",
+      "exitCode": 0,
+      "log": "plan-check.log",
+      "logSha256": "0c7e7894ae897010c138283a1427db9211a161e01d227733d4c1fd6cc40e0f9a"
+    },
+    {
+      "command": "C:\\Users\\Administrator\\Tools\\node-v20.19.5-win-x64\\node.exe --test scripts/test-redesign-task-state.mjs",
+      "startedAt": "2026-10-02T18:28:31.783Z",
+      "finishedAt": "2026-10-02T18:28:56.104Z",
+      "exitCode": 0,
+      "log": "workflow-tests.log",
+      "logSha256": "64b16474df0fa534c03791d893d00a3569db919c06e724b1930abca2abc2d7db"
+    },
+    {
+      "command": "C:\\Users\\Administrator\\Tools\\node-v20.19.5-win-x64\\node.exe --check scripts/generate-redesign-dev-plan-index.cjs",
+      "startedAt": "2026-10-02T18:28:56.109Z",
+      "finishedAt": "2026-10-02T18:28:56.145Z",
+      "exitCode": 0,
+      "log": "syntax-0.log",
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": "C:\\Users\\Administrator\\Tools\\node-v20.19.5-win-x64\\node.exe --check artifacts/review-2026-10-03/r1-001-preflight/apply-preparation-scope.mjs",
+      "startedAt": "2026-10-02T18:28:56.146Z",
+      "finishedAt": "2026-10-02T18:28:56.183Z",
+      "exitCode": 0,
+      "log": "syntax-1.log",
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": "C:\\Users\\Administrator\\Tools\\node-v20.19.5-win-x64\\node.exe --check artifacts/review-2026-10-03/r1-001-preflight/prepare-ready.mjs",
+      "startedAt": "2026-10-02T18:28:56.183Z",
+      "finishedAt": "2026-10-02T18:28:56.220Z",
+      "exitCode": 0,
+      "log": "syntax-2.log",
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": "C:\\Users\\Administrator\\Tools\\node-v20.19.5-win-x64\\node.exe --check artifacts/review-2026-10-03/r1-001-preflight/verify-handoff.mjs",
+      "startedAt": "2026-10-02T18:28:56.220Z",
+      "finishedAt": "2026-10-02T18:28:56.270Z",
+      "exitCode": 0,
+      "log": "syntax-3.log",
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "plan": {
+    "result": "PASS",
+    "cards": 114,
+    "detailedSpecs": 114,
+    "executionSteps": 569,
+    "testCases": 593,
+    "uniqueBCReferences": 114,
+    "reviewFindingsCovered": 12,
+    "parents": 42,
+    "dagNodes": 114,
+    "stateCounts": {
+      "PLANNED": 113,
+      "READY": 1,
+      "IN_PROGRESS": 0,
+      "REVIEW": 0,
+      "REWORK": 0,
+      "BLOCKED": 0,
+      "ACCEPTED": 0,
+      "STALE": 0
+    },
+    "errors": [],
+    "scope": "planning structure and detailed source/file/operation existence only; test case definitions are not executed product acceptance"
+  },
+  "generatedFilesStable": 116,
+  "relativeLinks": {
+    "files": 11,
+    "links": 369,
+    "missing": []
+  },
+  "workflowTests": {
+    "tests": 67,
+    "pass": 67,
+    "fail": 0,
+    "scope": "temporary repository workflow fixtures, not product business acceptance"
+  },
+  "scope": "preparation handoff only; no product TC executed or ACCEPTED card"
+}

@@ -1,0 +1,136 @@
+{
+  "startedAt": "2026-10-04T23:46:51.964Z",
+  "origin": "http://127.0.0.1:18182",
+  "scenario": "empty",
+  "mocked": false,
+  "checks": [
+    {
+      "name": "375x812 mounted-course-chain",
+      "result": "PASS"
+    },
+    {
+      "name": "375x812 empty-course-dom",
+      "result": "PASS"
+    },
+    {
+      "name": "375x812 course-updated-date",
+      "result": "FAIL",
+      "error": "The expression evaluated to a falsy value:\n\n  assert.ok(date)\n"
+    }
+  ],
+  "pages": [
+    {
+      "label": "375x812",
+      "route": "/courses",
+      "navigationStatus": 200,
+      "mountedResponse": {
+        "url": "http://127.0.0.1:18182/api/public-projection?locale=zh-CN",
+        "status": 200,
+        "body": {
+          "projection": {
+            "schemaVersion": "public-site-v1",
+            "uiLocale": "zh-CN",
+            "contentLocale": "en-US",
+            "generatedAt": null,
+            "courses": [],
+            "pricingPlans": [],
+            "skus": [],
+            "campaigns": [],
+            "downloadChannels": [],
+            "announcements": [],
+            "complianceNotices": []
+          },
+          "state": "empty",
+          "stale": false,
+          "source": "gateway",
+          "errorCode": null,
+          "facets": {
+            "courses": {
+              "state": "empty",
+              "updatedAt": "2026-10-04T23:46:52.499085100Z",
+              "errorCode": null,
+              "stale": false
+            },
+            "pricing": {
+              "state": "ready",
+              "updatedAt": "2026-10-04T23:46:52.499085100Z",
+              "errorCode": null,
+              "stale": false
+            },
+            "download": {
+              "state": "empty",
+              "updatedAt": "2026-10-04T23:46:52.499085100Z",
+              "errorCode": null,
+              "stale": false
+            },
+            "announcements": {
+              "state": "empty",
+              "updatedAt": "2026-10-04T23:46:52.499085100Z",
+              "errorCode": null,
+              "stale": false
+            },
+            "compliance": {
+              "state": "empty",
+              "updatedAt": "2026-10-04T23:46:52.499085100Z",
+              "errorCode": null,
+              "stale": false
+            }
+          },
+          "commerceState": "ready",
+          "commerceErrorCode": null
+        }
+      },
+      "checkedAt": "2026-10-04T23:46:52.559Z",
+      "dom": {
+        "cards": 0,
+        "emptyCopyVisible": true
+      }
+    }
+  ],
+  "screenshots": [],
+  "upstreamReceipt": {
+    "url": "http://127.0.0.1:18070/api/v1/public/site/projection?uiLocale=zh-CN",
+    "status": 200,
+    "body": {
+      "data": {
+        "generatedAt": "2026-10-04T23:46:51.996046100Z",
+        "projectionVersion": 1,
+        "contentEpoch": 1,
+        "courses": [],
+        "pricing": [],
+        "downloads": [],
+        "announcements": [],
+        "compliance": []
+      },
+      "meta": {
+        "projectionVersion": 1,
+        "contentEpoch": 1,
+        "generatedAt": "2026-10-04T23:46:51.996046100Z",
+        "source": "CONTENT_SERVICE",
+        "stale": false,
+        "traceId": "8d21f80c2e074d6ea0b5ae0a50aaec51"
+      }
+    },
+    "requestId": "req-a35bf607889240129a9abf9c83af920d",
+    "traceId": "8d21f80c2e074d6ea0b5ae0a50aaec51"
+  },
+  "commerceReceipt": {
+    "url": "http://127.0.0.1:18070/api/v1/public/commerce/catalog",
+    "status": 200,
+    "body": {
+      "catalogVersion": "commerce-public-v1",
+      "uiLocale": "zh-CN",
+      "contentLocale": "en-US",
+      "plans": [],
+      "publishedAt": "2026-10-04T23:46:52.029000400Z",
+      "checkoutPath": "/pricing",
+      "productionPaymentEnabled": false,
+      "autoRenewalEnabled": false
+    },
+    "requestId": "req-e143d921dc91428cba2ad54c663ae2de",
+    "traceId": "0ebc5f890da34abdb475a2c81f8c6a05"
+  },
+  "result": "FAIL",
+  "failure": "The expression evaluated to a falsy value:\n\n  assert.ok(date)\n",
+  "finishedAt": "2026-10-04T23:46:52.613Z"
+}

@@ -1,0 +1,10 @@
+{
+  "path": "docs/06-design/v2-980plus/official-site-experience-proposal-2026-09-21/implementation/browser-checks.json",
+  "sha256": "e439804f945c071f922fc28e8fdf58ab6a71a973ed63a37027e0f0faaf93a5e4",
+  "observedAt": "2026-10-05T00:50:01.292Z",
+  "at": "2026-10-05T00:25:07.341Z",
+  "result": "FAIL",
+  "checks": 8,
+  "layouts": 152,
+  "failure": "false == true"
+}

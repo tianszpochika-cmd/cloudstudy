@@ -1,0 +1,7 @@
+{
+  "checkedAt": "2026-10-03T09:33:38.159Z",
+  "reason": "one first read captured Web session bootstrap before heading; wait for visible register heading",
+  "input": "//evil.invalid",
+  "landed": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+  "registerVisible": true
+}

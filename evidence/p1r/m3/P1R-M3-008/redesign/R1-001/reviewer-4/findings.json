@@ -1,0 +1,27 @@
+{
+  "findings": [
+    {
+      "id": "F12",
+      "priority": "P2",
+      "path": "apps/official-site/server/api/public-projection.get.ts",
+      "line": 262,
+      "problem": "F10旧套餐已不复活，但恢复缓存回填把已知pricing error/PUBLIC_COMMERCE_DEGRADED无条件改为recovery/PUBLIC_PROJECTION_STALE，并把commerceState/Error同步覆盖。既有价格读取失败原因和独立facet语义丢失；新连续测试只检查SKU与课程，没断言第三步的状态/原因。",
+      "fix": "在缓存回填中保留已知不可读facet的状态及原因；对此前成功取得的可读缓存才标stale/recovery。同步commerceState/commerceErrorCode与pricing facet，保持无旧SKU、TTL、权限及并发作废规则。给failed连续序列补第三步状态/错误码断言。",
+      "retestCaseIds": [
+        "R1-001-TC02"
+      ]
+    },
+    {
+      "id": "F11",
+      "priority": "P2",
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/work/negative-control-4.cjs",
+      "line": 1,
+      "problem": "HTTP真实状态与基础assert已补，但negative-control是另一个独立assert脚本，未调用r1-001-sweep-4，无法证明实际采集器在缺CTA时非零。实际采集器仍只接受href含/register和web|mobile，错误域名/端口或双视口都走Web也会通过；h1 attached+固定2秒不证明hydration；website mapping把未点击的retry列PASS。",
+      "fix": "新建版本采集器，精确断言设备对应origin/port/path与安全returnTo及locale/theme；等待可见页面和预期设备CTA。用相同采集器入口在隔离受控样本注入非200/缺CTA/错误目标等，保存子进程退出码与失败项。真实未执行的重试/主题维度只标PARTIAL/未跑，不擅自把必测项判不适用；固定脚本、输入、日志与输出哈希。",
+      "retestCaseIds": [
+        "R1-001-TC01",
+        "R1-001-TC03"
+      ]
+    }
+  ]
+}

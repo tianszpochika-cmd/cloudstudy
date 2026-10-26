@@ -1,0 +1,167 @@
+{
+  "checkedAt": "2026-10-04T06:40:53.345Z",
+  "mocked": true,
+  "scope": "same collectFromPage + checkHrefStrict + HTTP/device/visibility assertions; synthetic DOM facts only",
+  "rows": [
+    {
+      "name": "valid-web",
+      "label": "1440x900",
+      "entries": [
+        {
+          "href": "http://127.0.0.1:18180/register?returnTo=%2Fhome&uiLocale=zh-CN&theme=system",
+          "target": "web",
+          "visible": true
+        }
+      ],
+      "expectedAccepted": true,
+      "accepted": true,
+      "matchesExpectation": true,
+      "error": null
+    },
+    {
+      "name": "valid-mobile",
+      "label": "375x812",
+      "entries": [
+        {
+          "href": "http://127.0.0.1:18183/#/pages/register/register?returnTo=%2Fpages%2Fhome%2Fhome&uiLocale=zh-CN&theme=system",
+          "target": "mobile",
+          "visible": true
+        }
+      ],
+      "expectedAccepted": true,
+      "accepted": true,
+      "matchesExpectation": true,
+      "error": null
+    },
+    {
+      "name": "non-200-status",
+      "label": "1440x900",
+      "entries": [
+        {
+          "href": "http://127.0.0.1:18180/register?returnTo=%2Fhome&uiLocale=zh-CN&theme=system",
+          "target": "web",
+          "visible": true
+        }
+      ],
+      "expectedAccepted": false,
+      "accepted": false,
+      "matchesExpectation": true,
+      "error": "/courses http=503\n\n503 !== 200\n"
+    },
+    {
+      "name": "missing-cta",
+      "label": "1440x900",
+      "entries": [],
+      "expectedAccepted": false,
+      "accepted": false,
+      "matchesExpectation": true,
+      "error": "locator.waitFor: no matching web entry"
+    },
+    {
+      "name": "wrong-origin",
+      "label": "1440x900",
+      "entries": [
+        {
+          "href": "https://evil.invalid/register?returnTo=%2Fhome&uiLocale=zh-CN&theme=system",
+          "target": "web",
+          "visible": true
+        }
+      ],
+      "expectedAccepted": false,
+      "accepted": false,
+      "matchesExpectation": true,
+      "error": "/courses origin=https://evil.invalid\n+ actual - expected\n\n+ 'https://evil.invalid'\n- 'http://127.0.0.1:18180'\n       ^"
+    },
+    {
+      "name": "wrong-web-path",
+      "label": "1440x900",
+      "entries": [
+        {
+          "href": "http://127.0.0.1:18180/register-incorrect?returnTo=%2Fhome&uiLocale=zh-CN&theme=system",
+          "target": "web",
+          "visible": true
+        }
+      ],
+      "expectedAccepted": false,
+      "accepted": false,
+      "matchesExpectation": true,
+      "error": "/courses pathname=/register-incorrect\n+ actual - expected\n\n+ '/register-incorrect'\n- '/register'\n            ^"
+    },
+    {
+      "name": "path-only-in-query",
+      "label": "1440x900",
+      "entries": [
+        {
+          "href": "http://127.0.0.1:18180/incorrect?extra=/register&returnTo=%2Fhome&uiLocale=zh-CN&theme=system",
+          "target": "web",
+          "visible": true
+        }
+      ],
+      "expectedAccepted": false,
+      "accepted": false,
+      "matchesExpectation": true,
+      "error": "/courses pathname=/incorrect\n+ actual - expected\n\n+ '/incorrect'\n- '/register'"
+    },
+    {
+      "name": "wrong-mobile-path",
+      "label": "375x812",
+      "entries": [
+        {
+          "href": "http://127.0.0.1:18183/#/pages/register/register-incorrect?returnTo=%2Fpages%2Fhome%2Fhome&uiLocale=zh-CN&theme=system",
+          "target": "mobile",
+          "visible": true
+        }
+      ],
+      "expectedAccepted": false,
+      "accepted": false,
+      "matchesExpectation": true,
+      "error": "/courses hashRoute=/pages/register/register-incorrect\n+ actual - expected\n\n+ '/pages/register/register-incorrect'\n- '/pages/register/register'\n                           ^"
+    },
+    {
+      "name": "wrong-device-mobile-viewport",
+      "label": "375x812",
+      "entries": [
+        {
+          "href": "http://127.0.0.1:18180/register?returnTo=%2Fhome&uiLocale=zh-CN&theme=system",
+          "target": "web",
+          "visible": true
+        }
+      ],
+      "expectedAccepted": false,
+      "accepted": false,
+      "matchesExpectation": true,
+      "error": "locator.waitFor: no matching mobile entry"
+    },
+    {
+      "name": "wrong-device-desktop-viewport",
+      "label": "1440x900",
+      "entries": [
+        {
+          "href": "http://127.0.0.1:18183/#/pages/register/register?returnTo=%2Fpages%2Fhome%2Fhome&uiLocale=zh-CN&theme=system",
+          "target": "mobile",
+          "visible": true
+        }
+      ],
+      "expectedAccepted": false,
+      "accepted": false,
+      "matchesExpectation": true,
+      "error": "locator.waitFor: no matching web entry"
+    },
+    {
+      "name": "all-links-hidden",
+      "label": "375x812",
+      "entries": [
+        {
+          "href": "http://127.0.0.1:18183/#/pages/register/register?returnTo=%2Fpages%2Fhome%2Fhome&uiLocale=zh-CN&theme=system",
+          "target": "mobile",
+          "visible": false
+        }
+      ],
+      "expectedAccepted": false,
+      "accepted": false,
+      "matchesExpectation": true,
+      "error": "locator.waitFor: no matching mobile entry"
+    }
+  ],
+  "failedChecks": []
+}

@@ -1,0 +1,437 @@
+{
+  "checkedAt": "2026-10-03T07:14:53.861Z",
+  "scope": "actual DOM/error branch only; no real upstream, no register target server; not complete TC01-03 or website-runtime suite",
+  "samples": [
+    {
+      "route": "/",
+      "viewport": "375x812",
+      "alerts": [],
+      "entries": [
+        {
+          "href": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=light&returnTo=%2Fpages%2Fhome%2Fhome",
+          "target": "mobile"
+        },
+        {
+          "href": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=light&returnTo=%2Fpages%2Fhome%2Fhome",
+          "target": "mobile"
+        },
+        {
+          "href": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=light&returnTo=%2Fpages%2Fhome%2Fhome",
+          "target": "mobile"
+        },
+        {
+          "href": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=light&returnTo=%2Fpages%2Fhome%2Fhome",
+          "target": "mobile"
+        },
+        {
+          "href": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=light&returnTo=%2Fpages%2Fhome%2Fhome",
+          "target": "mobile"
+        }
+      ],
+      "h1": "让英语，回到你的日常。",
+      "overflow": false
+    },
+    {
+      "route": "/courses",
+      "viewport": "375x812",
+      "alerts": [
+        "公开内容暂时无法加载学习方式介绍仍可浏览，也可以稍后再试。重新加载"
+      ],
+      "entries": [
+        {
+          "href": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=light&returnTo=%2Fpages%2Fhome%2Fhome",
+          "target": "mobile"
+        },
+        {
+          "href": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=light&returnTo=%2Fpages%2Fhome%2Fhome",
+          "target": "mobile"
+        },
+        {
+          "href": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=light&returnTo=%2Fpages%2Fhome%2Fhome",
+          "target": "mobile"
+        }
+      ],
+      "h1": "找到今天想学的内容。",
+      "overflow": false
+    },
+    {
+      "route": "/pricing",
+      "viewport": "375x812",
+      "alerts": [
+        "公开内容暂时无法加载学习方式介绍仍可浏览，也可以稍后再试。重新加载"
+      ],
+      "entries": [
+        {
+          "href": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=light&returnTo=%2Fpages%2Fhome%2Fhome",
+          "target": "mobile"
+        },
+        {
+          "href": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=light&returnTo=%2Fpages%2Fhome%2Fhome",
+          "target": "mobile"
+        },
+        {
+          "href": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=light&returnTo=%2Fpages%2Fhome%2Fhome",
+          "target": "mobile"
+        }
+      ],
+      "h1": "价格方案",
+      "overflow": false
+    },
+    {
+      "route": "/download",
+      "viewport": "375x812",
+      "alerts": [
+        "公开内容暂时无法加载学习方式介绍仍可浏览，也可以稍后再试。重新加载"
+      ],
+      "entries": [
+        {
+          "href": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=light&returnTo=%2Fpages%2Fhome%2Fhome",
+          "target": "mobile"
+        },
+        {
+          "href": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=light&returnTo=%2Fpages%2Fhome%2Fhome",
+          "target": "mobile"
+        }
+      ],
+      "h1": "下载体验",
+      "overflow": false
+    },
+    {
+      "route": "/announcements",
+      "viewport": "375x812",
+      "alerts": [
+        "公开内容暂时无法加载学习方式介绍仍可浏览，也可以稍后再试。重新加载"
+      ],
+      "entries": [
+        {
+          "href": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=light&returnTo=%2Fpages%2Fhome%2Fhome",
+          "target": "mobile"
+        },
+        {
+          "href": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=light&returnTo=%2Fpages%2Fhome%2Fhome",
+          "target": "mobile"
+        }
+      ],
+      "h1": "产品动态与服务通知。",
+      "overflow": false
+    },
+    {
+      "route": "/about",
+      "viewport": "375x812",
+      "alerts": [],
+      "entries": [
+        {
+          "href": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=light&returnTo=%2Fpages%2Fhome%2Fhome",
+          "target": "mobile"
+        },
+        {
+          "href": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=light&returnTo=%2Fpages%2Fhome%2Fhome",
+          "target": "mobile"
+        },
+        {
+          "href": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=light&returnTo=%2Fpages%2Fhome%2Fhome",
+          "target": "mobile"
+        },
+        {
+          "href": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=light&returnTo=%2Fpages%2Fhome%2Fhome",
+          "target": "mobile"
+        }
+      ],
+      "h1": "学习，应该能继续下去。",
+      "overflow": false
+    },
+    {
+      "route": "/compliance",
+      "viewport": "375x812",
+      "alerts": [
+        "公开内容暂时无法加载学习方式介绍仍可浏览，也可以稍后再试。重新加载"
+      ],
+      "entries": [
+        {
+          "href": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=light&returnTo=%2Fpages%2Fhome%2Fhome",
+          "target": "mobile"
+        },
+        {
+          "href": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=light&returnTo=%2Fpages%2Fhome%2Fhome",
+          "target": "mobile"
+        }
+      ],
+      "h1": "公开信息",
+      "overflow": false
+    },
+    {
+      "route": "/status",
+      "viewport": "375x812",
+      "alerts": [],
+      "entries": [
+        {
+          "href": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=light&returnTo=%2Fpages%2Fhome%2Fhome",
+          "target": "mobile"
+        },
+        {
+          "href": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=light&returnTo=%2Fpages%2Fhome%2Fhome",
+          "target": "mobile"
+        }
+      ],
+      "h1": "服务状态，及时了解。",
+      "overflow": false
+    },
+    {
+      "route": "/privacy",
+      "viewport": "375x812",
+      "alerts": [],
+      "entries": [
+        {
+          "href": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=light&returnTo=%2Fpages%2Fhome%2Fhome",
+          "target": "mobile"
+        },
+        {
+          "href": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=light&returnTo=%2Fpages%2Fhome%2Fhome",
+          "target": "mobile"
+        }
+      ],
+      "h1": "隐私与数据",
+      "overflow": false
+    },
+    {
+      "route": "/terms",
+      "viewport": "375x812",
+      "alerts": [],
+      "entries": [
+        {
+          "href": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=light&returnTo=%2Fpages%2Fhome%2Fhome",
+          "target": "mobile"
+        },
+        {
+          "href": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=light&returnTo=%2Fpages%2Fhome%2Fhome",
+          "target": "mobile"
+        }
+      ],
+      "h1": "使用说明",
+      "overflow": false
+    },
+    {
+      "route": "/minors",
+      "viewport": "375x812",
+      "alerts": [],
+      "entries": [
+        {
+          "href": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=light&returnTo=%2Fpages%2Fhome%2Fhome",
+          "target": "mobile"
+        },
+        {
+          "href": "http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=light&returnTo=%2Fpages%2Fhome%2Fhome",
+          "target": "mobile"
+        }
+      ],
+      "h1": "成人使用范围",
+      "overflow": false
+    },
+    {
+      "route": "/",
+      "viewport": "1440x900",
+      "entries": [
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "target": "web"
+        },
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "target": "web"
+        },
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "target": "web"
+        },
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "target": "web"
+        },
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "target": "web"
+        }
+      ],
+      "h1": "让英语，回到你的日常。",
+      "overflow": false
+    },
+    {
+      "route": "/courses",
+      "viewport": "1440x900",
+      "entries": [
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "target": "web"
+        },
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "target": "web"
+        },
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "target": "web"
+        }
+      ],
+      "h1": "找到今天想学的内容。",
+      "overflow": false
+    },
+    {
+      "route": "/pricing",
+      "viewport": "1440x900",
+      "entries": [
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "target": "web"
+        },
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "target": "web"
+        },
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "target": "web"
+        }
+      ],
+      "h1": "价格方案",
+      "overflow": false
+    },
+    {
+      "route": "/download",
+      "viewport": "1440x900",
+      "entries": [
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "target": "web"
+        },
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "target": "web"
+        }
+      ],
+      "h1": "下载体验",
+      "overflow": false
+    },
+    {
+      "route": "/announcements",
+      "viewport": "1440x900",
+      "entries": [
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "target": "web"
+        },
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "target": "web"
+        }
+      ],
+      "h1": "产品动态与服务通知。",
+      "overflow": false
+    },
+    {
+      "route": "/about",
+      "viewport": "1440x900",
+      "entries": [
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "target": "web"
+        },
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "target": "web"
+        },
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "target": "web"
+        },
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "target": "web"
+        }
+      ],
+      "h1": "学习，应该能继续下去。",
+      "overflow": false
+    },
+    {
+      "route": "/compliance",
+      "viewport": "1440x900",
+      "entries": [
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "target": "web"
+        },
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "target": "web"
+        }
+      ],
+      "h1": "公开信息",
+      "overflow": false
+    },
+    {
+      "route": "/status",
+      "viewport": "1440x900",
+      "entries": [
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "target": "web"
+        },
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "target": "web"
+        }
+      ],
+      "h1": "服务状态，及时了解。",
+      "overflow": false
+    },
+    {
+      "route": "/privacy",
+      "viewport": "1440x900",
+      "entries": [
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "target": "web"
+        },
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "target": "web"
+        }
+      ],
+      "h1": "隐私与数据",
+      "overflow": false
+    },
+    {
+      "route": "/terms",
+      "viewport": "1440x900",
+      "entries": [
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "target": "web"
+        },
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "target": "web"
+        }
+      ],
+      "h1": "使用说明",
+      "overflow": false
+    },
+    {
+      "route": "/minors",
+      "viewport": "1440x900",
+      "entries": [
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "target": "web"
+        },
+        {
+          "href": "http://127.0.0.1:18180/register?uiLocale=zh-CN&theme=light&returnTo=%2Fhome",
+          "target": "web"
+        }
+      ],
+      "h1": "成人使用范围",
+      "overflow": false
+    }
+  ],
+  "retryStillError": true,
+  "console": []
+}

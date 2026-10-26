@@ -1,0 +1,23 @@
+{
+  "result": "PASS",
+  "cards": 114,
+  "detailedSpecs": 114,
+  "executionSteps": 569,
+  "testCases": 593,
+  "uniqueBCReferences": 114,
+  "reviewFindingsCovered": 12,
+  "parents": 42,
+  "dagNodes": 114,
+  "stateCounts": {
+    "PLANNED": 114,
+    "READY": 0,
+    "IN_PROGRESS": 0,
+    "REVIEW": 0,
+    "REWORK": 0,
+    "BLOCKED": 0,
+    "ACCEPTED": 0,
+    "STALE": 0
+  },
+  "errors": [],
+  "scope": "planning structure and detailed source/file/operation existence only; test case definitions are not executed product acceptance"
+}

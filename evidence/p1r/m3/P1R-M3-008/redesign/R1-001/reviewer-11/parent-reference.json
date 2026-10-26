@@ -1,0 +1,13 @@
+{
+  "before": {
+    "path": "evidence/p1r/m3/P1R-M3-008/manifest.json",
+    "sha256": "f5dd38c6ffd86df56cbc1cf2a1af517073a3760fa9bd274d9fffa663db209754"
+  },
+  "after": {
+    "path": "evidence/p1r/m3/P1R-M3-008/manifest.json",
+    "sha256": "4a42acf2af627708d503372bd54e9af0988611173d6bd7c7d168556b936a9779"
+  },
+  "canonicalTaskStatusBefore": "ACCEPTED",
+  "canonicalTaskStatusAfter": "ACCEPTED",
+  "canonicalParentPromotion": false
+}

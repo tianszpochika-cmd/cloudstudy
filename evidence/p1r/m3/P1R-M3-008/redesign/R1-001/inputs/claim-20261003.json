@@ -1,0 +1,16 @@
+{
+  "confirmedAt": "2026-10-02T18:27:22.681Z",
+  "reviewerThreadId": "01a0cb93-8791-7ee2-b453-8e8752b2553f",
+  "taskId": "P1R-M3-008",
+  "childTaskId": "R1-001",
+  "owner": "Muse Spark（用户指定的执行 Agent；仅 R1-001 官网切片）",
+  "authority": "用户已交付第一组提示词并要求本聊天主导及审批；执行 Agent 日志主动申请本卡开工。本聊天现确认此限定认领。Git作者配置不是认领依据。",
+  "childScopeOnly": true,
+  "parentCanonicalStateChanged": false,
+  "canonicalLedger": {
+    "path": "requirements/backlog/v2-phase1-rebaseline/02-编号任务台账.md",
+    "sha256": "1059491ba35133bef925a083eb5a3b7be8e78cec0ae6198a6a6e998fbaa89925"
+  },
+  "childDependencies": [],
+  "siblings": "R1-002…005不获本收据放行，R1-006及第二组不开放"
+}

@@ -1,0 +1,25 @@
+{
+  "checkedAt": "2026-10-05T01:17:42.732Z",
+  "schema": "r1_001_empty_20261005_t9b",
+  "reader": "r1_001_reader_t9b",
+  "host": "127.0.0.1",
+  "port": 18089,
+  "jar": {
+    "path": "services/content-service/target/content-service-0.1.0-SNAPSHOT.jar",
+    "bytes": 63760208,
+    "sha256": "feafab1459ce422d90bc9c3672f0f6732db963544d3abedb3f2d3f397b6d798a"
+  },
+  "safeFlags": {
+    "CONTENT_EVENT_RELAY_ENABLED": "false",
+    "CONTENT_EVENT_CONSUMER_ENABLED": "false",
+    "CONTENT_SCHEDULE_ENABLED": "false",
+    "CONTENT_FLYWAY_ENABLED": "false",
+    "SPRING_FLYWAY_ENABLED": "false"
+  },
+  "P1R_DIAG": "0",
+  "mode": "start-requested",
+  "passwordPolicy": "Dedicated fixture reader credential resolved only at start; never output or put on command line; no admin credentials forwarded to Java",
+  "pid": 25720,
+  "spawnedAt": "2026-10-05T01:17:42.742Z",
+  "scope": "Own content instance bound to approved empty fixture; emitted flags only, no secrets"
+}

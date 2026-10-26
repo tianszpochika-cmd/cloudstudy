@@ -1,0 +1,40 @@
+- main:
+  - complementary:
+    - generic: 语学星
+    - text: A LITTLE, EVERY DAY
+    - heading [level=2]: 让英语， 回到你的日常。
+    - paragraph: 记几个词，听一段对话。 一点一点，学得更从容。
+    - generic: ✦
+    - generic: ✧
+    - generic: little by little
+    - strong: grow.
+    - generic: ✦
+    - generic: LEARN A LITTLE. EVERY DAY.
+  - link "语学星":
+    - /url: /login
+    - generic: 语学星
+  - generic: 初期免费开放 · 面向 18 岁以上成人与大学生
+  - region "创建账号，开始学习":
+    - heading "创建账号，开始学习" [level=1]
+    - paragraph: 仅面向 18 岁以上成人与大学生；注册后需要确认年龄与必要说明。
+    - generic: 账号
+    - textbox "账号":
+      - /placeholder: 邮箱或账号
+    - generic: 密码（至少 12 位）
+    - textbox "密码（至少 12 位）":
+      - /placeholder: 输入密码
+    - generic: 确认密码
+    - textbox "确认密码":
+      - /placeholder: 再输入一次
+    - status:
+      - generic: ✦
+      - strong: 等待注册
+      - paragraph: 使用至少 12 位的密码，让账号更安全。
+    - button "注册并继续"
+    - paragraph:
+      - text: 已有账号？
+      - link "去登录":
+        - /url: /login?redirect=/home
+      - text: ·
+      - link "忘记密码":
+        - /url: /reset-password?redirect=/home

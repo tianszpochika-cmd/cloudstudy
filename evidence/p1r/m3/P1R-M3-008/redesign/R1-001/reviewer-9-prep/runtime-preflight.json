@@ -1,0 +1,61 @@
+{
+  "startedAt": "2026-10-04T23:04:37.547Z",
+  "finishedAt": "2026-10-04T23:04:42.450Z",
+  "schema": "r1_001_empty_20261005_t9b",
+  "reader": "r1_001_reader_t9b",
+  "addedFacetTable": true,
+  "counts": [
+    {
+      "table": "content_definition",
+      "rows": 0,
+      "structureSha256": "1df5eca0df17c9f047580774bcd25119667cf8f40cac24df435e668cbb1d38ad"
+    },
+    {
+      "table": "content_version",
+      "rows": 0,
+      "structureSha256": "74a04bd2341e5ae3f83c2e169895562c383badc148781fcc1096c46a0a84b962"
+    },
+    {
+      "table": "content_public_projection",
+      "rows": 0,
+      "structureSha256": "dc2f7ccc6c42cab441898884cb5655557c5fbcb76a6247c3174f7c580b99b3a0"
+    },
+    {
+      "table": "content_outbox_event",
+      "rows": 0,
+      "structureSha256": "5f82395bee62068ae92cb7b82e4aaee2d7c7383d8544d3e5b18e75476b4a9a06"
+    },
+    {
+      "table": "content_idempotency_record",
+      "rows": 0,
+      "structureSha256": "45d7bf45ff15123021ceeb272728a84dcf8b1314155aa3d242542b76851f4fe9"
+    },
+    {
+      "table": "content_cache_invalidation",
+      "rows": 0,
+      "structureSha256": "1e0e5851bae87c95d31dd250cb33c61336ba688634acb0bc84ae42159784a87b"
+    },
+    {
+      "table": "content_version_id_sequence",
+      "rows": 0,
+      "structureSha256": "62fa9fc88a4973fe478ebfe0705352788b20ef06c89de43900b0e2029e19ad16"
+    },
+    {
+      "table": "content_public_site_facet",
+      "rows": 0,
+      "structureSha256": "1a5310d62e29c3d10b2d851ae6eadf5f4c0a0a45549ca76bc37bb59b4bdd4403"
+    }
+  ],
+  "grants": [
+    "GRANT USAGE ON *.* TO `r1_001_reader_t9b`@`%`",
+    "GRANT SELECT ON `r1_001_empty_20261005_t9b`.* TO `r1_001_reader_t9b`@`%`"
+  ],
+  "identity": "r1_001_reader_t9b@%\tr1_001_empty_20261005_t9b",
+  "beforeDemoCount": 11,
+  "afterDemoCount": 11,
+  "scope": "Own test schema only: cloned one missing public facet table; SELECT with dedicated reader against eight empty tables. Shared source structure/count read only; count equality does not prove all historical data unchanged.",
+  "limitations": [
+    "CREATE TABLE LIKE is a read-fixture structure copy, not full migration or foreign-key equivalence certification",
+    "No service or browser started"
+  ]
+}

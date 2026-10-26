@@ -1,0 +1,60 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import crypto from 'node:crypto';
+import { spawnSync, execFileSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
+import assert from 'node:assert/strict';
+
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
+const relative = 'evidence/p1r/m3/P1R-M3-008/redesign/R1-001/inputs/preflight-20261003/';
+const out = path.join(root, relative);
+fs.mkdirSync(out, { recursive: true });
+const digest = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
+const read = p => fs.readFileSync(path.join(root, p), 'utf8');
+const runs = [];
+function run(label, executable, args) {
+  const startedAt = new Date().toISOString();
+  const result = spawnSync(executable, args, { cwd: root, encoding: 'utf8', windowsHide: true, shell: process.platform === 'win32' && executable.endsWith('.cmd'), timeout: 120000 });
+  const logPath = relative + label + '.log';
+  fs.writeFileSync(path.join(root, logPath), (result.stdout || '') + (result.stderr ? '\nSTDERR:\n' + result.stderr : '') + (result.error ? '\nERROR: ' + result.error.message : ''));
+  const record = { command: [executable, ...args].join(' '), startedAt, finishedAt: new Date().toISOString(), exitCode: result.status, logPath, logSha256: digest(fs.readFileSync(path.join(root, logPath))) };
+  runs.push(record);
+  return { ...record, stdout: result.stdout || '' };
+}
+const baseline = JSON.parse(read('config/toolchain-baseline.json'));
+const portsText = read('config/local-ports.json');
+const ports = JSON.parse(portsText);
+const fromGit = rev => execFileSync('git', ['show', rev + ':config/local-ports.json'], { cwd: root, windowsHide: true }).toString('utf8');
+const canonical = text => digest(JSON.stringify(JSON.parse(text)));
+const parentPorts = fromGit('fbcbe2b7^');
+assert.equal(canonical(portsText), baseline.policy.portsCanonicalSha256);
+assert.equal(portsText, fromGit('HEAD'));
+const withoutWorkflow = JSON.parse(portsText);
+delete withoutWorkflow.services['workflow-service'];
+assert.equal(canonical(parentPorts), digest(JSON.stringify(withoutWorkflow)));
+const hashProof = { result: 'PASS', algorithm: 'SHA256(JSON.stringify(JSON.parse(ports)))', currentCanonical: canonical(portsText), expectedAfterRepair: baseline.policy.portsCanonicalSha256, priorExpected: canonical(parentPorts), registeredWorkflowPort: ports.services['workflow-service'].port, registrationCommit: 'fbcbe2b77df0244ca2fd1982a48a17262042f5bd', currentPortsByteEqualGitHead: true, portNumbersChangedByReview: false, rootCause: 'workflow-service registration was committed without synchronizing toolchain baseline hash' };
+fs.writeFileSync(path.join(out, 'port-hash-proof.json'), JSON.stringify(hashProof, null, 2) + '\n');
+const nodeRun = run('node-version', process.execPath, ['--version']);
+assert.equal(nodeRun.exitCode, 0);
+assert.equal(nodeRun.stdout.trim(), 'v' + baseline.node.requiredVersion);
+const pnpmRun = run('pnpm-version', process.platform === 'win32' ? 'pnpm.cmd' : 'pnpm', ['--version']);
+assert.equal(pnpmRun.exitCode, 0);
+assert.equal(pnpmRun.stdout.trim(), baseline.pnpm.requiredVersion);
+const toolchainRun = run('toolchain-static', process.execPath, ['scripts/dev/p1r-toolchain-check.mjs', '--static-only']);
+assert.equal(toolchainRun.exitCode, 0);
+const toolchain = JSON.parse(toolchainRun.stdout);
+assert.equal(toolchain.result, 'PASS');
+const portRuns = [];
+for (const service of ['official-site-dev', 'learner-web-dev', 'mobile-h5-dev']) {
+  const check = run('port-' + service, process.execPath, ['scripts/check-fixed-ports.mjs', '--service', service]);
+  assert.equal(check.exitCode, 0);
+  portRuns.push({ service, ...check });
+}
+const fixtureRun = run('fixture-validation', process.execPath, ['scripts/fixtures/p1r-fixtures.mjs', 'validate']);
+assert.equal(fixtureRun.exitCode, 0);
+const testRun = run('current-official-unit-baseline', process.execPath, ['--test', 'apps/official-site/tests/public-projection-bff.test.mjs', 'apps/official-site/tests/b13-official-site.test.mjs', 'apps/official-site/tests/b14-fe-005.test.mjs', 'apps/official-site/tests/website-entry.test.mjs']);
+const stats = Object.fromEntries(['tests', 'pass', 'fail', 'skipped'].map(key => [key, Number(testRun.stdout.match(new RegExp('^# ' + key + ' (\\d+)$', 'm'))?.[1] ?? -1)]));
+const summary = { reviewedAt: new Date().toISOString(), root, runs, toolchainStatic: { result: toolchain.result, checks: toolchain.checks.length }, publicPortChecks: portRuns.map(r => ({ service: r.service, exitCode: r.exitCode })), fixtureValidationExitCode: fixtureRun.exitCode, existingOfficialUnitBaseline: { exitCode: testRun.exitCode, ...stats, scope: 'current unit/static/VM expectations include legacy 301/start rules; not R1 implementation approval or browser TC execution' }, productCasesExecuted: [], gatesScope: 'public read-only frontend/BFF preparation; no IAM/DB writes, no Java DTO or event producer changes; real upstream and three mandatory product cases are delivery outputs' };
+fs.writeFileSync(path.join(out, 'verification.json'), JSON.stringify(summary, null, 2) + '\n');
+console.log(JSON.stringify({ toolchainStatic: summary.toolchainStatic, publicPortChecks: summary.publicPortChecks, existingOfficialUnitBaseline: summary.existingOfficialUnitBaseline, fixtureValidationExitCode: fixtureRun.exitCode, proofDirectory: relative }, null, 2));
+if (testRun.exitCode !== 0) process.exitCode = 1;

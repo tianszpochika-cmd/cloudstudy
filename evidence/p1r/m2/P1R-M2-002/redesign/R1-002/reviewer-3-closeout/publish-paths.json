@@ -1,0 +1,38 @@
+{
+  "paths": [
+    ".gitattributes",
+    "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/r1-002-vault-4.cjs",
+    "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/r1-002-validate-4.cjs",
+    "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/r1-002-rotate-t3g-4.cjs",
+    "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/prepare-policy-fixture-4.cjs",
+    "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/r1-002-launcher-4.cjs",
+    "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/r1-002-gateway-4.cjs",
+    "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/r1-002-bg-start-4.cjs",
+    "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/r1-002-config-check-4.cjs",
+    "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/r1-002-tls-rebuild-4.cjs",
+    "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/tls-preflight-4.cjs",
+    "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/r1-002-process-guard.cjs",
+    "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/validate-4/validate-4.json",
+    "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/policy-fixture-4/policy-fixture-4.json",
+    "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/tls-4/tls-preflight-4.json",
+    "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/config-check-4/config-check-4.json",
+    "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/launcher-4/launcher-4.json",
+    "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/gateway-4/gateway-4.json",
+    "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/t3-tls/r1-002.pem",
+    "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/t3-tls/r1-002.cer",
+    "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/outbox-proposal-4.md",
+    "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/tc03-plan-4.json",
+    "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/prep-report-4.md",
+    "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/commands-4.log",
+    "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/reviewer-3-closeout/review.md",
+    "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/reviewer-3-closeout/verify-and-close.cjs",
+    "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/reviewer-3-closeout/runtime-and-cleanup.json",
+    "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/reviewer-3-closeout/validate/validate-4.json",
+    "evidence/p1r/m2/P1R-M2-002/redesign/R1-002/source-and-inputs-4.json"
+  ],
+  "documentPaths": [
+    "docs/06-design/v2-980plus/redesign/README.md",
+    "docs/06-design/v2-980plus/redesign/validation-report.md",
+    "CHANGELOG.md"
+  ]
+}

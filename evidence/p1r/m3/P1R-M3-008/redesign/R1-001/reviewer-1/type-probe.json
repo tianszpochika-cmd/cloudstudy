@@ -1,0 +1,17 @@
+{
+  "scope": "targeted semantic TS check of real composable using explicit Nuxt API declaration shim, NOT full Nuxt typecheck",
+  "diagnostics": [
+    {
+      "file": "apps/official-site/composables/usePublicProjection.ts",
+      "line": 23,
+      "code": 2739,
+      "message": "Type '{ projection: PublicProjection; state: \"loading\"; stale: false; source: \"empty-fallback\"; errorCode: null; }' is missing the following properties from type 'PublicProjectionResponse': facets, commerceState, commerceErrorCode"
+    },
+    {
+      "file": "apps/official-site/composables/usePublicProjection.ts",
+      "line": 43,
+      "code": 2739,
+      "message": "Type '{ projection: PublicProjection; state: \"error\"; stale: false; source: \"empty-fallback\"; errorCode: string; }' is missing the following properties from type 'PublicProjectionResponse': facets, commerceState, commerceErrorCode"
+    }
+  ]
+}

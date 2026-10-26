@@ -1,0 +1,172 @@
+{
+  "findings": [
+    {
+      "id": "F01",
+      "priority": "P2",
+      "path": "apps/official-site/pages/courses/index.vue",
+      "line": 142,
+      "problem": "正常空目录courses.state=empty，但定制“内容准备中”仅ready时传入，首页同类条件也永不触发。",
+      "fix": "按empty状态显示共享课程空文案，覆盖全空及其它facet有数据的空课程；不要改变公示空态。",
+      "retestCaseIds": [
+        "R1-001-TC01"
+      ]
+    },
+    {
+      "id": "F02",
+      "priority": "P2",
+      "path": "apps/official-site/utils/public-projection.ts",
+      "line": 391,
+      "problem": "内容HTTP200业务maintenance/permission/error时commerce成功强设pricing=ready，价格页误显示为空价成功。",
+      "fix": "全局不可读/拒绝/维护优先，独立commerce状态只在内容投影可读时参与；补三种业务状态和commerce成功的组合负例。",
+      "retestCaseIds": [
+        "R1-001-TC02"
+      ]
+    },
+    {
+      "id": "F03",
+      "priority": "P2",
+      "path": "apps/official-site/pages/pricing.vue",
+      "line": 35,
+      "problem": "价格、下载和公告recovery带旧数据时进入列表分支，PublicStatus在v-else，无恢复说明和重试入口。",
+      "fix": "旧数据保留时仍明确stale/recovery、最后成功时间和重试按钮；三页均验证故障后主动重载。",
+      "retestCaseIds": [
+        "R1-001-TC02"
+      ]
+    },
+    {
+      "id": "F04",
+      "priority": "P2",
+      "path": "apps/official-site/components/SiteStartButton.vue",
+      "line": 4,
+      "problem": "默认web，课程和价格亦硬指定web，实际11页375px所有CTA均18180，移动注册helper没有页面入口。",
+      "fix": "落实设备对应Web/mobile默认路由或清晰可选移动入口；SSR与hydration一致，保留locale/theme与固定returnTo；补真实移动点击。",
+      "retestCaseIds": [
+        "R1-001-TC01",
+        "R1-001-TC03"
+      ]
+    },
+    {
+      "id": "F05",
+      "priority": "P2",
+      "path": "apps/official-site/composables/usePublicProjection.ts",
+      "line": 23,
+      "problem": "新增必填响应字段未同步初始与catch对象，定向TS检查23/43行TS2739；现有网络失败测试实际返回error对象而非抛异常。",
+      "fix": "补齐加载/真实throw异常的完整响应形状与facet状态，保留正常响应；增加真实reject用例，不以可选字段绕过类型一致性。需主审补此文件编辑范围。",
+      "retestCaseIds": [
+        "R1-001-TC02"
+      ]
+    },
+    {
+      "id": "F06",
+      "priority": "P2",
+      "path": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/delivery-1.json",
+      "line": 1,
+      "problem": "必测双视口空/成功态、真实上游503恢复、浏览器点击/返回证据缺失被标成P3非阻塞。summary同时声称composable已改和未改，回退删除证据/checkout会丢审计及共享修改。",
+      "fix": "如实声明必测未验证为阻塞；修正实际文件17个及复用说明，保留历史证据，回退仅撤销自身差量。完成真实TC或明确BLOCKED，禁止用VM/HTTP代替产品PASS。",
+      "retestCaseIds": [
+        "R1-001-TC01",
+        "R1-001-TC02",
+        "R1-001-TC03"
+      ]
+    }
+  ],
+  "currentSourceSnapshot": {
+    "sourceCommit": "3d11be3337accd32afbdbe13a218bca38c786043",
+    "dirtyDiffSha256": "fffa3ec1625d3f9362e3b8010d6812f44e40d2beefa63360206812bf1c3d23ad",
+    "files": [
+      {
+        "path": "apps/official-site/components/SiteStartButton.vue",
+        "sha256": "626addf7ff0269129f04b5196c95192e5759375a8ffa110cd823b8a3b4f6e2c3"
+      },
+      {
+        "path": "apps/official-site/composables/useOfficialSiteLinks.ts",
+        "sha256": "455b02ef0f428c5d2da9c09f2c24e232cf3e2aef4790db5dbf482b401fd80b56"
+      },
+      {
+        "path": "apps/official-site/pages/about.vue",
+        "sha256": "d70cac5f7c6f4c9dacfc84cc94d90cd51792cdf63222025322c9f73151c6f5e1"
+      },
+      {
+        "path": "apps/official-site/pages/announcements.vue",
+        "sha256": "7af3c2273a4541185215668a8b3c5c33047c53e5738f055b6f03ec45d9cbb3cd"
+      },
+      {
+        "path": "apps/official-site/pages/compliance.vue",
+        "sha256": "1d3dbae4d053ada1055263c2ec14cdef46b96ca23f971e3cd3e2dd03b7760b41"
+      },
+      {
+        "path": "apps/official-site/pages/courses/index.vue",
+        "sha256": "b978d9ce3fa78030e80ce26f0fbe630f952f060c5a09f6f9f3909604850e0b59"
+      },
+      {
+        "path": "apps/official-site/pages/download.vue",
+        "sha256": "02300d1a0fc35a4aa2b93795a0fc2d714784ac69b512e56978c348b9e802c8d1"
+      },
+      {
+        "path": "apps/official-site/pages/index.vue",
+        "sha256": "2b0144ceab014338d588169b63eed63ad07eb8d069a64ddee1338b9d38e77564"
+      },
+      {
+        "path": "apps/official-site/pages/minors.vue",
+        "sha256": "d17a1f687e4502122bfaa6fa92b1ebfa5de1759343918a0a75624ff227b528f2"
+      },
+      {
+        "path": "apps/official-site/pages/pricing.vue",
+        "sha256": "8568d5bcdacb967802e57d526d3c3df98b116504f667864b8626e727ad5f113f"
+      },
+      {
+        "path": "apps/official-site/pages/privacy.vue",
+        "sha256": "72562ecc8f4a38d00d5af7eccc736d715ba48f96dd3d8ac6f07d1b05ba61cf9f"
+      },
+      {
+        "path": "apps/official-site/pages/status.vue",
+        "sha256": "f85952587dc38b4799dd3aaea76c971fb6635ca43b1e508c5de8d519b1add355"
+      },
+      {
+        "path": "apps/official-site/pages/terms.vue",
+        "sha256": "5e6b4c8c59d3cae277d6bd63ed6255d4366eba4358b7a3b182313cdbab70f44b"
+      },
+      {
+        "path": "apps/official-site/server/api/public-projection.get.ts",
+        "sha256": "44337b17da02883ed800037cd00dbe7fd81fd928757bae18852dd4940a3bcf9e"
+      },
+      {
+        "path": "apps/official-site/tests/b13-official-site.test.mjs",
+        "sha256": "f743a256f7e49a39fd9f32794594fb1cfc108bf692f8cbf6923c0ca361af5c43"
+      },
+      {
+        "path": "apps/official-site/tests/b14-fe-005.test.mjs",
+        "sha256": "e77a2264812a3c0deae8d9c2869c869bb949c44f1ba9ee72ab4804fd4ac2c402"
+      },
+      {
+        "path": "apps/official-site/tests/browser/website-runtime.cjs",
+        "sha256": "56c6192eb45b5e151ea40719bc99ec457213a237dcc797a8503769d47f91b207"
+      },
+      {
+        "path": "apps/official-site/tests/public-projection-bff.test.mjs",
+        "sha256": "e90af2c7c28b9f13060eba2c06d4ed75296694c968699f2b6064f932d851d60c"
+      },
+      {
+        "path": "apps/official-site/tests/website-entry.test.mjs",
+        "sha256": "2a512d72f1175fcc0e492c3d299db98039282089a9c27e5b80a2495eab438d7e"
+      },
+      {
+        "path": "apps/official-site/utils/public-links.mjs",
+        "sha256": "94abc4fd69d51bf6964fcfa93f6e8a6a044141a54359603205b930de5ff9e3e6"
+      },
+      {
+        "path": "apps/official-site/utils/public-projection.ts",
+        "sha256": "a117306d0d4745392d004a2fe167fe45abbfa70abc596a9639381c1d8918886c"
+      },
+      {
+        "path": "apps/official-site/utils/site-content.mjs",
+        "sha256": "57f1dbe0353aa27565a3fe2e36a5ec0d2fc3a701259209ec732286dabbe5a361"
+      },
+      {
+        "path": "packages/i18n/src/official-site.ts",
+        "sha256": "f445aed5156c6502008e03cd9161d3bf799dc3731c2d9e032fb4ce3a622492ba"
+      }
+    ]
+  },
+  "deliveryVerified": true
+}

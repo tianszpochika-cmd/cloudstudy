@@ -1,0 +1,63 @@
+{
+  "startedAt": "2026-10-05T02:29:01.040Z",
+  "browserPath": "Browser plugin not available; regular Playwright",
+  "runs": [
+    {
+      "name": "all-entry",
+      "command": "node evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11/browser-all-entry.cjs evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11c/all-entry",
+      "startedAt": "2026-10-05T02:29:11.435Z",
+      "logPath": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-11c/all-entry.log",
+      "exitCode": 0,
+      "finishedAt": "2026-10-05T02:29:37.507Z"
+    }
+  ],
+  "processes": [
+    {
+      "name": "official-site",
+      "pid": 33208,
+      "startedAt": "2026-10-05T02:29:01.062Z",
+      "stopRequestedAt": "2026-10-05T02:29:40.600Z"
+    },
+    {
+      "name": "learner-web",
+      "pid": 42468,
+      "startedAt": "2026-10-05T02:29:01.081Z",
+      "stopRequestedAt": "2026-10-05T02:29:39.321Z"
+    },
+    {
+      "name": "mobile",
+      "pid": 14492,
+      "startedAt": "2026-10-05T02:29:01.092Z",
+      "stopRequestedAt": "2026-10-05T02:29:38.428Z"
+    }
+  ],
+  "checks": [],
+  "result": "PASS",
+  "finalPorts": [
+    {
+      "port": 18070,
+      "free": true
+    },
+    {
+      "port": 18089,
+      "free": true
+    },
+    {
+      "port": 18096,
+      "free": true
+    },
+    {
+      "port": 18182,
+      "free": true
+    },
+    {
+      "port": 18180,
+      "free": true
+    },
+    {
+      "port": 18183,
+      "free": true
+    }
+  ],
+  "finishedAt": "2026-10-05T02:29:41.609Z"
+}

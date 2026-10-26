@@ -1,0 +1,12 @@
+{
+  "checkedAt": "2026-10-03T04:35:53.809Z",
+  "finishedAt": "2026-10-03T04:36:03.279Z",
+  "unitTests": {
+    "command": "node --test <4 official files>",
+    "tail": "# tests 29\n# suites 0\n# pass 29\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 752.6378"
+  },
+  "build": {
+    "command": "pnpm --dir apps/official-site build",
+    "buildComplete": true
+  }
+}

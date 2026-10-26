@@ -1,0 +1,135 @@
+- link "跳到主要内容":
+  - /url: "#main-content"
+- banner:
+  - link "语学星首页":
+    - /url: /
+    - text: 语学星
+  - button "切换为深色模式":
+  - button "打开导航菜单":
+- main:
+  - navigation "当前位置":
+    - link "首页":
+      - /url: /
+    - generic: 学习内容
+  - generic: 学习内容
+  - heading "找到今天想学的内容。" [level=1]
+  - paragraph: 从词汇、听读到表达，先选一个适合自己的起点。
+  - group "学习内容分类":
+    - button "全部" [pressed]
+    - button "词汇与语法"
+    - button "听力与阅读"
+    - button "口语与写作"
+  - searchbox "搜索学习内容"
+  - button "清空搜索":
+  - paragraph: 6种学习方式 · 正式内容以开放情况为准
+  - link "日常词汇 词卡、例句与到期复习，把熟悉变成记得。 主动回忆 生词本 规律复习 了解学习方式":
+    - /url: /courses/daily-words
+    - generic: 词汇与复习
+    - generic: Aa+
+    - generic: Little words. Lasting memories.
+    - heading "日常词汇" [level=2]
+    - paragraph: 词卡、例句与到期复习，把熟悉变成记得。
+    - generic: 主动回忆
+    - generic: 生词本
+    - generic: 规律复习
+    - generic: 了解学习方式
+  - link "语法与句子 拆开句子看结构，练习后查看规则与错因。 语法规则 句子结构 错因说明 了解学习方式":
+    - /url: /courses/clear-grammar
+    - generic: 语法与规则
+    - generic: "{ a }"
+    - generic: Make sense of a sentence.
+    - heading "语法与句子" [level=2]
+    - paragraph: 拆开句子看结构，练习后查看规则与错因。
+    - generic: 语法规则
+    - generic: 句子结构
+    - generic: 错因说明
+    - generic: 了解学习方式
+  - link "听力精练 字幕对照、慢速与循环，听清每一句。 字幕对照 变速复听 听写练习 了解学习方式":
+    - /url: /courses/listening
+    - generic: 听力与理解
+    - generic: A little coffee break.
+    - heading "听力精练" [level=2]
+    - paragraph: 字幕对照、慢速与循环，听清每一句。
+    - generic: 字幕对照
+    - generic: 变速复听
+    - generic: 听写练习
+    - generic: 了解学习方式
+  - link "分级阅读 读短文、查词句，用检查点确认理解。 分级内容 词句辅助 阅读检查点 了解学习方式":
+    - /url: /courses/reading
+    - generic: 阅读与理解
+    - generic: One page at a time.
+    - heading "分级阅读" [level=2]
+    - paragraph: 读短文、查词句，用检查点确认理解。
+    - generic: 分级内容
+    - generic: 词句辅助
+    - generic: 阅读检查点
+    - generic: 了解学习方式
+  - link "口语自评 跟读、录音、回放，按提示自己检查。 示范跟读 录音回放 自评提示 了解学习方式":
+    - /url: /courses/speaking
+    - generic: 口语练习
+    - generic: Listen. Record. Reflect.
+    - heading "口语自评" [level=2]
+    - paragraph: 跟读、录音、回放，按提示自己检查。
+    - generic: 示范跟读
+    - generic: 录音回放
+    - generic: 自评提示
+    - generic: 了解学习方式
+  - link "写作练习 从短句开始写，对照规则反馈再修改。 句子练习 规则反馈 修改回看 了解学习方式":
+    - /url: /courses/writing
+    - generic: 写作与表达
+    - generic: Find your words.
+    - heading "写作练习" [level=2]
+    - paragraph: 从短句开始写，对照规则反馈再修改。
+    - generic: 句子练习
+    - generic: 规则反馈
+    - generic: 修改回看
+    - generic: 了解学习方式
+  - region "当前公开课程":
+    - heading "当前公开课程" [level=2]
+    - paragraph: 这里介绍学习方式，具体课程以学习端已开放内容为准。
+    - link "查看开放情况":
+      - /url: http://127.0.0.1:18183/#/pages/register/register?uiLocale=zh-CN&theme=light&returnTo=%2Fpages%2Fhome%2Fhome
+      - text: 查看开放情况
+    - alert:
+      - heading "公开内容暂时无法加载" [level=2]
+      - paragraph: 学习方式介绍仍可浏览，也可以稍后再试。
+      - button "重新加载":
+        - text: 重新加载
+- contentinfo:
+  - link "语学星首页":
+    - /url: /
+    - text: 语学星
+  - paragraph:
+    - text: 让英语，回到你的日常。
+    - text: 一点一点，学得更从容。
+  - heading "学习方式" [level=3]
+  - link "学习内容":
+    - /url: /courses
+  - link "怎么学":
+    - /url: /method
+  - link "学习世界":
+    - /url: /world
+  - link "查看开放情况":
+    - /url: /start
+  - heading "了解更多" [level=3]
+  - link "常见问题":
+    - /url: /help
+  - link "关于语学星":
+    - /url: /about
+  - link "服务公告":
+    - /url: /announcements
+  - link "服务状态":
+    - /url: /status
+  - heading "公开信息" [level=3]
+  - link "隐私与数据":
+    - /url: /privacy
+  - link "使用说明":
+    - /url: /terms
+  - link "成人使用范围":
+    - /url: /minors
+  - link "公开信息":
+    - /url: /compliance
+  - button "显示与语言":
+    - text: 显示与语言
+  - generic: © 2026 语学星
+  - generic: 面向 18 岁以上成人与大学生 · 学习账号暂不可用

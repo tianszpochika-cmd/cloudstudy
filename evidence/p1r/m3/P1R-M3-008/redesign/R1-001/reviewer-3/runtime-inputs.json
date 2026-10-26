@@ -1,0 +1,14 @@
+{
+  "checkedPorts": [
+    18070,
+    18089,
+    18096,
+    18180,
+    18182,
+    18183
+  ],
+  "listeners": [],
+  "checkedAt": "2026-10-03T09:43:08.0948623Z",
+  "ownedFrontendsStopped": true,
+  "scope": "availability only; no DB writes or shared service restart"
+}

@@ -1,0 +1,99 @@
+{
+  "reviewedAt": "2026-10-02T16:04:59.940Z",
+  "root": "C:\\Users\\Administrator\\Desktop\\my\\cloudstudy",
+  "runs": [
+    {
+      "command": "C:\\Users\\Administrator\\Tools\\node-v20.19.5-win-x64\\node.exe --version",
+      "startedAt": "2026-10-02T16:04:57.758Z",
+      "finishedAt": "2026-10-02T16:04:57.792Z",
+      "exitCode": 0,
+      "logPath": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/inputs/preflight-20261003/node-version.log",
+      "logSha256": "558b469eda47e62449431ebd35b2f6f728ae8c6d64ce818db042e976bd66dd96"
+    },
+    {
+      "command": "pnpm.cmd --version",
+      "startedAt": "2026-10-02T16:04:57.796Z",
+      "finishedAt": "2026-10-02T16:04:58.192Z",
+      "exitCode": 0,
+      "logPath": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/inputs/preflight-20261003/pnpm-version.log",
+      "logSha256": "ebccd6458c11e6c7202d533bdec871170f4635f4d16db839399b6c25dcad1ee0"
+    },
+    {
+      "command": "C:\\Users\\Administrator\\Tools\\node-v20.19.5-win-x64\\node.exe scripts/dev/p1r-toolchain-check.mjs --static-only",
+      "startedAt": "2026-10-02T16:04:58.197Z",
+      "finishedAt": "2026-10-02T16:04:58.269Z",
+      "exitCode": 0,
+      "logPath": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/inputs/preflight-20261003/toolchain-static.log",
+      "logSha256": "df757fbaf7f8ffe2f0a53d1c2ec8b779446b0dfeb762eda5cfe3dcf368d1b30d"
+    },
+    {
+      "command": "C:\\Users\\Administrator\\Tools\\node-v20.19.5-win-x64\\node.exe scripts/check-fixed-ports.mjs --service official-site-dev",
+      "startedAt": "2026-10-02T16:04:58.277Z",
+      "finishedAt": "2026-10-02T16:04:58.344Z",
+      "exitCode": 0,
+      "logPath": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/inputs/preflight-20261003/port-official-site-dev.log",
+      "logSha256": "2bfc5f191399bfe81470c04214d5a3f240ad68fc01b99de2539f3a9882c0de9c"
+    },
+    {
+      "command": "C:\\Users\\Administrator\\Tools\\node-v20.19.5-win-x64\\node.exe scripts/check-fixed-ports.mjs --service learner-web-dev",
+      "startedAt": "2026-10-02T16:04:58.349Z",
+      "finishedAt": "2026-10-02T16:04:58.443Z",
+      "exitCode": 0,
+      "logPath": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/inputs/preflight-20261003/port-learner-web-dev.log",
+      "logSha256": "8cb5abba8577dba8e8de851432f8747bd49993749ac5e0b54465f18ac57ad6c5"
+    },
+    {
+      "command": "C:\\Users\\Administrator\\Tools\\node-v20.19.5-win-x64\\node.exe scripts/check-fixed-ports.mjs --service mobile-h5-dev",
+      "startedAt": "2026-10-02T16:04:58.451Z",
+      "finishedAt": "2026-10-02T16:04:58.567Z",
+      "exitCode": 0,
+      "logPath": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/inputs/preflight-20261003/port-mobile-h5-dev.log",
+      "logSha256": "3dedf6656ee6b35dec54166b7c3d9d017e81c1a8d05c73101d1383e7b858a612"
+    },
+    {
+      "command": "C:\\Users\\Administrator\\Tools\\node-v20.19.5-win-x64\\node.exe scripts/fixtures/p1r-fixtures.mjs validate",
+      "startedAt": "2026-10-02T16:04:58.576Z",
+      "finishedAt": "2026-10-02T16:04:58.758Z",
+      "exitCode": 0,
+      "logPath": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/inputs/preflight-20261003/fixture-validation.log",
+      "logSha256": "62c2c44ad2533e2f110daa73955f93845b1babfc117b8442d8e1710c1934b09d"
+    },
+    {
+      "command": "C:\\Users\\Administrator\\Tools\\node-v20.19.5-win-x64\\node.exe --test apps/official-site/tests/public-projection-bff.test.mjs apps/official-site/tests/b13-official-site.test.mjs apps/official-site/tests/b14-fe-005.test.mjs apps/official-site/tests/website-entry.test.mjs",
+      "startedAt": "2026-10-02T16:04:58.767Z",
+      "finishedAt": "2026-10-02T16:04:59.934Z",
+      "exitCode": 0,
+      "logPath": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/inputs/preflight-20261003/current-official-unit-baseline.log",
+      "logSha256": "b4b13ddad14279830896de811566a809109fbd11e430f1a02d1fef943513f3ed"
+    }
+  ],
+  "toolchainStatic": {
+    "result": "PASS",
+    "checks": 52
+  },
+  "publicPortChecks": [
+    {
+      "service": "official-site-dev",
+      "exitCode": 0
+    },
+    {
+      "service": "learner-web-dev",
+      "exitCode": 0
+    },
+    {
+      "service": "mobile-h5-dev",
+      "exitCode": 0
+    }
+  ],
+  "fixtureValidationExitCode": 0,
+  "existingOfficialUnitBaseline": {
+    "exitCode": 0,
+    "tests": 26,
+    "pass": 26,
+    "fail": 0,
+    "skipped": 0,
+    "scope": "current unit/static/VM expectations include legacy 301/start rules; not R1 implementation approval or browser TC execution"
+  },
+  "productCasesExecuted": [],
+  "gatesScope": "public read-only frontend/BFF preparation; no IAM/DB writes, no Java DTO or event producer changes; real upstream and three mandatory product cases are delivery outputs"
+}

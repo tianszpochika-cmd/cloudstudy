@@ -1,0 +1,80 @@
+{
+  "checkedAt": "2026-10-03T07:12:34.518Z",
+  "runs": [
+    {
+      "command": "node --test apps/official-site/tests/public-projection-bff.test.mjs apps/official-site/tests/b13-official-site.test.mjs apps/official-site/tests/b14-fe-005.test.mjs apps/official-site/tests/website-entry.test.mjs",
+      "startedAt": "2026-10-03T07:12:31.678Z",
+      "finishedAt": "2026-10-03T07:12:32.536Z",
+      "exitCode": 0,
+      "logPath": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-2/unit-rerun.log"
+    },
+    {
+      "command": "node C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\evidence\\p1r\\m3\\P1R-M3-008\\redesign\\R1-001\\reviewer-2\\semantic-probe.mjs",
+      "startedAt": "2026-10-03T07:12:32.537Z",
+      "finishedAt": "2026-10-03T07:12:33.187Z",
+      "exitCode": 0,
+      "logPath": "evidence/p1r/m3/P1R-M3-008/redesign/R1-001/reviewer-2/semantic-probe.log"
+    }
+  ],
+  "typeScope": "targeted real composable with Nuxt declarations, not full Nuxt typecheck",
+  "typeDiagnostics": [],
+  "semantic": {
+    "scope": "synthetic VM execution of current BFF, not actual Gateway integration",
+    "maintenance": {
+      "state": "maintenance",
+      "pricing": "maintenance"
+    },
+    "permission": {
+      "state": "permission",
+      "pricing": "permission"
+    },
+    "error": {
+      "state": "error",
+      "pricing": "error"
+    },
+    "empty": {
+      "state": "empty",
+      "courseFacet": "empty"
+    },
+    "businessRecovery": {
+      "state": "recovery",
+      "stale": false,
+      "errorCode": null,
+      "courses": 0,
+      "updatedAt": null,
+      "courseFacet": {
+        "state": "recovery",
+        "updatedAt": "2026-10-03T00:00:00Z",
+        "errorCode": "PUBLIC_PROJECTION_STALE",
+        "stale": true
+      },
+      "pricingFacet": {
+        "state": "ready",
+        "updatedAt": "2026-10-03T00:00:00Z",
+        "errorCode": null,
+        "stale": false
+      }
+    },
+    "metaStale": {
+      "state": "ready",
+      "stale": false,
+      "courseFacet": {
+        "state": "ready",
+        "updatedAt": "2026-10-03T00:00:00Z",
+        "errorCode": null,
+        "stale": false
+      },
+      "headers": {
+        "cache-control": "public, max-age=60, s-maxage=60",
+        "vary": "Accept-Language",
+        "x-public-projection-commerce": "gateway",
+        "x-public-projection-source": "gateway"
+      }
+    },
+    "cachedRecovery": {
+      "state": "recovery",
+      "stale": true,
+      "courses": 1
+    }
+  }
+}
