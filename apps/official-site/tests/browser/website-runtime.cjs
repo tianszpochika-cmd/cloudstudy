@@ -319,12 +319,27 @@ async function check(name, fn) {
       },
     );
     await check(
-      "legacy redirect, 404 and SSR preferences do not leak across visitors",
+      "independent pricing/download pages stay readable and keep registration entries",
       async () => {
+        for (const path of ["/pricing", "/download"]) {
+          const response = await p.request.get(origin + path);
+          assert.equal(response.status(), 200);
+        }
         await go("/pricing");
-        assert.equal(new URL(p.url()).pathname, "/start");
+        assert.equal(new URL(p.url()).pathname, "/pricing");
+        // F17 修复：按当前视口找用户可操作入口（首个 header CTA 在窄视口
+        // 按 CSS 隐藏）；必要时打开移动菜单后再断言可见。
+        const vp = await p.viewportSize().width;
+        const entryTarget = vp <= 690 ? "mobile" : "web";
+        let entryVisible = await p.locator('[data-learning-entry="' + entryTarget + '"]').first().isVisible().catch(() => false);
+        if (!entryVisible) {
+          await p.locator("header button.menu-toggle").first().click({ timeout: 10000 }).catch(() => {});
+          await p.waitForTimeout(1500);
+          entryVisible = await p.locator('dialog[open] [data-learning-entry="' + entryTarget + '"]').first().isVisible().catch(() => false);
+        }
+        assert.ok(entryVisible, "operable registration entry not visible for " + entryTarget);
         await go("/download");
-        assert.equal(new URL(p.url()).pathname, "/start");
+        assert.equal(new URL(p.url()).pathname, "/download");
         const bad = await p.request.get(origin + "/does-not-exist");
         assert.equal(bad.status(), 404);
         const a = await p.request.get(origin + "/about", {

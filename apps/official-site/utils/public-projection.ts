@@ -101,12 +101,32 @@ export interface PublicProjection {
 
 export type PublicProjectionLoadState = 'loading' | 'ready' | 'empty' | 'error' | 'permission' | 'recovery' | 'maintenance'
 
+export type PublicProjectionFacet = 'courses' | 'pricing' | 'download' | 'announcements' | 'compliance'
+
+export interface PublicFacetStatus {
+  readonly state: PublicProjectionLoadState
+  readonly updatedAt: string | null
+  readonly errorCode: string | null
+  readonly stale: boolean
+}
+
+export interface PublicProjectionFacets {
+  readonly courses: PublicFacetStatus
+  readonly pricing: PublicFacetStatus
+  readonly download: PublicFacetStatus
+  readonly announcements: PublicFacetStatus
+  readonly compliance: PublicFacetStatus
+}
+
 export interface PublicProjectionResponse {
   readonly projection: PublicProjection
   readonly state: PublicProjectionLoadState
   readonly stale: boolean
   readonly source: 'gateway' | 'memory-cache' | 'empty-fallback'
   readonly errorCode: string | null
+  readonly facets: PublicProjectionFacets
+  readonly commerceState: PublicProjectionLoadState | null
+  readonly commerceErrorCode: string | null
 }
 
 export const EMPTY_PUBLIC_PROJECTION: PublicProjection = Object.freeze({
@@ -360,13 +380,69 @@ export function normalizePublicProjectionResponse(value: unknown, requestedLocal
   const root = isRecord(value) ? value : {}
   const candidateSource = text(root.source).toLowerCase()
   const source: PublicProjectionResponse['source'] = candidateSource === 'gateway' || candidateSource === 'memory-cache' || candidateSource === 'empty-fallback' ? candidateSource : 'gateway'
+  const generatedAt = nullableText((sourceData(value) as Record<string, unknown>).generatedAt)
+  const facetState = (hasData: boolean, explicit: PublicProjectionLoadState | null): PublicProjectionLoadState =>
+    explicit ?? (hasData ? 'ready' : 'empty')
+  const globalExplicit = explicitState
+  // 全局不可读/拒绝/维护优先：内容投影不可读时，价格 facet 不得因独立
+  // commerce 成功而显示为空价成功；commerce 只在内容投影可读时参与。
+  const contentReadable = globalExplicit === null || globalExplicit === 'ready' || globalExplicit === 'empty' || globalExplicit === 'recovery' || globalExplicit === 'loading'
+  const commerceState = resolveFacetCommerceState(root)
+  const commerceErrorCode = resolveFacetCommerceError(root)
+  const pricingFromCommerce = contentReadable && commerceState !== null
+  const facets: PublicProjectionFacets = {
+    courses: facetStatus(globalExplicit, projection.courses.length > 0, generatedAt, nullableText(root.errorCode), root.stale === true),
+    pricing: pricingFromCommerce
+      ? { state: commerceState, updatedAt: generatedAt, errorCode: commerceErrorCode, stale: commerceState === 'recovery' }
+      : facetStatus(globalExplicit, projection.pricingPlans.length > 0 || projection.skus.length > 0, generatedAt, nullableText(root.errorCode), root.stale === true),
+    download: facetStatus(globalExplicit, projection.downloadChannels.length > 0, generatedAt, nullableText(root.errorCode), root.stale === true),
+    announcements: facetStatus(globalExplicit, projection.announcements.length > 0, generatedAt, nullableText(root.errorCode), root.stale === true),
+    compliance: facetStatus(globalExplicit, projection.complianceNotices.length > 0, generatedAt, nullableText(root.errorCode), root.stale === true),
+  }
   return {
     projection,
     state,
     stale: root.stale === true || state === 'recovery',
     source,
     errorCode: nullableText(root.errorCode),
+    facets,
+    commerceState,
+    commerceErrorCode,
   }
+}
+
+function facetStatus(
+  explicit: PublicProjectionLoadState | null,
+  hasData: boolean,
+  updatedAt: string | null,
+  errorCode: string | null,
+  stale: boolean,
+): PublicFacetStatus {
+  const state = explicit ?? (hasData ? 'ready' : 'empty')
+  return {
+    state,
+    // A facet is only as fresh as the projection that carried it. Never claim
+    // a successful read when the upstream explicitly failed for that facet.
+    updatedAt: state === 'error' || state === 'permission' ? null : updatedAt,
+    errorCode: state === 'ready' || state === 'empty' ? null : errorCode,
+    stale: stale || state === 'recovery',
+  }
+}
+
+function resolveFacetCommerceState(root: Record<string, unknown>): PublicProjectionLoadState | null {
+  const candidate = text(
+    root.commerceState ?? root.commerceStatus ?? (root as Record<string, unknown>).commerce_state,
+  ).toLowerCase().replaceAll('_', '-')
+  if (candidate === 'ready' || candidate === 'empty' || candidate === 'error' || candidate === 'permission' || candidate === 'recovery' || candidate === 'maintenance' || candidate === 'loading') return candidate
+  if (text(root.commerceDegraded) === 'true' || root.commerceDegraded === true) return 'error'
+  return null
+}
+
+function resolveFacetCommerceError(root: Record<string, unknown>): string | null {
+  const explicit = nullableText(root.commerceErrorCode ?? root.commerceError)
+  if (explicit) return explicit
+  if (text(root.commerceDegraded) === 'true' || root.commerceDegraded === true) return 'PUBLIC_COMMERCE_DEGRADED'
+  return null
 }
 
 export function hasPublicProjectionData(projection: PublicProjection): boolean {

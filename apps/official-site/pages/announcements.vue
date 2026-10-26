@@ -3,6 +3,7 @@ import { useOfficialSeo } from "~/utils/seo";
 const { t } = useSiteText(),
   { publicLink } = useOfficialSiteLinks(),
   { loadState, load } = usePublicProjection("announcements");
+const announcementsFacet = computed(() => loadState.value.facets?.announcements ?? { state: loadState.value.state, updatedAt: null as string | null, errorCode: loadState.value.errorCode, stale: loadState.value.stale });
 useOfficialSeo({
   title: t("official.c9f9bb9530"),
   description: t("official.ce8a9e7813"),
@@ -18,9 +19,21 @@ useOfficialSeo({
     />
     <section class="page-body">
       <div class="container status-note">
+        <p
+          v-if="announcementsFacet.state === 'recovery'"
+          class="facet-recovery"
+          role="status"
+        >
+          {{ t("official.ce3ebe23fc") }}：{{ t("official.ca0731eec0") }}
+          <span v-if="announcementsFacet.updatedAt">{{ t("official.c5a1f3e8d2") }}{{ announcementsFacet.updatedAt.slice(0, 10) }}</span>
+          <button class="btn btn-outline" type="button" @click="load">{{ t("official.c5982c44c1") }}</button>
+        </p>
+        <p v-if="announcementsFacet.updatedAt && announcementsFacet.state !== 'recovery'" class="facet-updated" aria-live="polite">
+          {{ t("official.c5a1f3e8d2") }}{{ announcementsFacet.updatedAt.slice(0, 10) }}
+        </p>
         <template
           v-if="
-            loadState.state === 'ready' &&
+            ['ready', 'recovery'].includes(announcementsFacet.state) &&
             loadState.projection.announcements.length
           "
           ><article
@@ -41,7 +54,7 @@ useOfficialSeo({
             /></a></article></template
         ><PublicStatus
           v-else
-          :state="loadState.state === 'ready' ? 'empty' : loadState.state"
+          :state="announcementsFacet.state === 'ready' ? 'empty' : announcementsFacet.state"
           @retry="load"
         />
       </div>

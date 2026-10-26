@@ -2,7 +2,9 @@
 import { learningMethods, frequentlyAsked } from "~/utils/experience-content";
 import { useOfficialSeo } from "~/utils/seo";
 const { t } = useSiteText(),
-  sampleOpen = ref(false);
+  sampleOpen = ref(false),
+  { loadState } = usePublicProjection("home");
+const homeCoursesFacet = computed(() => loadState.value.facets?.courses ?? { state: loadState.value.state, updatedAt: null as string | null, errorCode: loadState.value.errorCode, stale: loadState.value.stale });
 useOfficialSeo({
   title: t("official.cb2ffbd59f"),
   description: t("official.cea0be3689"),
@@ -146,6 +148,16 @@ useOfficialSeo({
             compact
           /><LearningMethodCard :course="learningMethods[1]" compact />
         </div>
+        <p v-if="homeCoursesFacet.updatedAt" class="facet-updated" aria-live="polite">
+          {{ t("official.c5a1f3e8d2") }}{{ homeCoursesFacet.updatedAt.slice(0, 10) }}
+        </p>
+        <p
+          v-if="['ready', 'empty'].includes(homeCoursesFacet.state) && !loadState.projection.courses.length"
+          class="catalog-note"
+          role="status"
+        >
+          {{ t("official.c52c0deec1") }}：{{ t("official.c52c0deec2") }}
+        </p>
       </div>
     </section>
     <section id="practice-example" class="section try-section">

@@ -94,12 +94,23 @@ function invalidate(locale: PublicUiLocale, state: "permission" | "error"): void
 }
 
 function emptyFallback(state: "permission" | "error"): PublicProjectionResponse {
+  const errorCode = state === "permission" ? "PUBLIC_PROJECTION_PERMISSION" : "PUBLIC_PROJECTION_UNAVAILABLE";
+  const facets = {
+    courses: { state, updatedAt: null, errorCode, stale: false },
+    pricing: { state, updatedAt: null, errorCode, stale: false },
+    download: { state, updatedAt: null, errorCode, stale: false },
+    announcements: { state, updatedAt: null, errorCode, stale: false },
+    compliance: { state, updatedAt: null, errorCode, stale: false },
+  } as PublicProjectionResponse["facets"];
   return {
     projection: EMPTY_PUBLIC_PROJECTION,
     state,
     stale: false,
     source: "empty-fallback",
-    errorCode: state === "permission" ? "PUBLIC_PROJECTION_PERMISSION" : "PUBLIC_PROJECTION_UNAVAILABLE",
+    errorCode,
+    facets,
+    commerceState: state,
+    commerceErrorCode: errorCode,
   };
 }
 
@@ -184,13 +195,26 @@ export default defineEventHandler(
         commerceDegraded = true;
         setResponseHeader(event, "x-public-projection-commerce", "degraded");
       }
-      const normalized = normalizePublicProjectionResponse(mergedPayload, locale);
+      const normalized = normalizePublicProjectionResponse(
+        {
+          ...(isRecord(mergedPayload) ? mergedPayload : {}),
+          commerceState: commerceDegraded ? "error" : "ready",
+          commerceErrorCode: commerceDegraded ? "PUBLIC_COMMERCE_DEGRADED" : null,
+          commerceDegraded,
+        },
+        locale,
+      );
+      // 合法 recovery：保留经过字段过滤的可读公开数据、更新时间、旧数据
+      // 标记与恢复原因；permission/error/maintenance 仍按不可读处理。
+      const keepRecoveryData = normalized.state === "recovery";
       const result: PublicProjectionResponse = {
         ...normalized,
-        projection: normalized.state === "ready" ? normalized.projection : EMPTY_PUBLIC_PROJECTION,
+        projection: normalized.state === "ready" || keepRecoveryData ? normalized.projection : EMPTY_PUBLIC_PROJECTION,
         source: "gateway",
-        stale: false,
-        errorCode: null,
+        stale: keepRecoveryData ? true : false,
+        errorCode: keepRecoveryData
+          ? (normalized.errorCode ?? "PUBLIC_PROJECTION_STALE")
+          : commerceDegraded ? normalized.errorCode : null,
       };
       const latestInvalidation = invalidationByLocale.get(locale);
       if ((latestInvalidation?.generation ?? 0) !== initialGeneration
@@ -201,7 +225,15 @@ export default defineEventHandler(
       latestAppliedRequestByLocale.set(locale, requestId);
       if (result.state === "ready" && !commerceDegraded)
         lastGoodProjectionByLocale.set(locale, { response: result, fetchedAt: Date.now() });
-      else
+      else if (result.state === "recovery") {
+        // F10: recovery 携带权威内容+commerce 事实。刷新缓存中的事实，使随后的
+        // 网络故障不能复活已被清空/替换的旧套餐；保留原 fetchedAt，recovery 永不
+        // 延长 60 秒 TTL。无前置缓存时不从 recovery 新建缓存。
+        const prior = lastGoodProjectionByLocale.get(locale);
+        if (prior) {
+          lastGoodProjectionByLocale.set(locale, { response: result, fetchedAt: prior.fetchedAt });
+        }
+      } else
         invalidate(locale, result.state === "permission" ? "permission" : "error");
       if (!commerceDegraded && (result.state === "ready" || result.state === "empty"))
         setResponseHeader(
@@ -219,23 +251,53 @@ export default defineEventHandler(
       const lastGoodProjection = lastGoodProjectionByLocale.get(locale);
       const snapshotAge = lastGoodProjection ? Date.now() - lastGoodProjection.fetchedAt : -1;
       if (lastGoodProjection && snapshotAge >= 0 && snapshotAge <= LAST_GOOD_MAX_AGE_MS) {
+        // F12: 缓存回填保留已知不可读 facet 的状态及原因；仅对此前成功取得的
+        // 可读缓存标记 stale/recovery。pricing facet 与 commerce 信号保持一致。
+        const cachedFacets = lastGoodProjection.response.facets;
+        const cachedGeneratedAt = lastGoodProjection.response.projection.generatedAt;
+        const toOutageFacet = (
+          cached: { readonly state: string; readonly updatedAt: string | null; readonly errorCode: string | null; readonly stale: boolean },
+        ): PublicProjectionResponse["facets"]["courses"] => {
+          if (cached.state === "error" || cached.state === "permission" || cached.state === "maintenance") return { ...cached } as PublicProjectionResponse["facets"]["courses"];
+          return { state: "recovery", updatedAt: cachedGeneratedAt, errorCode: "PUBLIC_PROJECTION_STALE", stale: true };
+        };
+        const outagePricing = toOutageFacet(cachedFacets.pricing);
         const stale: PublicProjectionResponse = {
           ...lastGoodProjection.response,
           state: "recovery",
           stale: true,
           source: "memory-cache",
           errorCode: "PUBLIC_PROJECTION_STALE",
+          facets: {
+            courses: toOutageFacet(cachedFacets.courses),
+            pricing: outagePricing,
+            download: toOutageFacet(cachedFacets.download),
+            announcements: toOutageFacet(cachedFacets.announcements),
+            compliance: toOutageFacet(cachedFacets.compliance),
+          },
+          commerceState: outagePricing.state,
+          commerceErrorCode: outagePricing.errorCode,
         };
         setResponseHeader(event, "x-public-projection-source", "memory-cache");
         return stale;
       }
       lastGoodProjectionByLocale.delete(locale);
+      const fallbackFacets = {
+        courses: { state: "error", updatedAt: null, errorCode: "PUBLIC_PROJECTION_UNAVAILABLE", stale: false },
+        pricing: { state: "error", updatedAt: null, errorCode: "PUBLIC_PROJECTION_UNAVAILABLE", stale: false },
+        download: { state: "error", updatedAt: null, errorCode: "PUBLIC_PROJECTION_UNAVAILABLE", stale: false },
+        announcements: { state: "error", updatedAt: null, errorCode: "PUBLIC_PROJECTION_UNAVAILABLE", stale: false },
+        compliance: { state: "error", updatedAt: null, errorCode: "PUBLIC_PROJECTION_UNAVAILABLE", stale: false },
+      } as PublicProjectionResponse["facets"];
       const fallback: PublicProjectionResponse = {
         projection: EMPTY_PUBLIC_PROJECTION,
         state: "error",
         stale: false,
         source: "empty-fallback",
         errorCode: "PUBLIC_PROJECTION_UNAVAILABLE",
+        facets: fallbackFacets,
+        commerceState: "error",
+        commerceErrorCode: "PUBLIC_PROJECTION_UNAVAILABLE",
       };
       setResponseHeader(event, "x-public-projection-source", "empty-fallback");
       return fallback;
