@@ -10,9 +10,13 @@
 
 ## 当前分支：迭代 2（第二轮重设计）
 
-`dev` 的唯一当前进度入口是[迭代 2 当前进度](docs/06-design/v2-980plus/redesign/CURRENT-PROGRESS.md)，接手先读[根交接](CURRENT-HANDOFF.md)与[R1 执行计划](docs/06-design/v2-980plus/redesign/dev-plan-R1.md)。该计划包含 IT-1～IT-7；其中 IT-2 是定级站，不能与本轮迭代名称或产品 Phase 2 混用。最近可确认工作点、未发布全量卡墙、验收缺口和接手顺序只在进度页维护。
+当前状态总览见 [docs/STATUS.md](docs/STATUS.md)（分支、R1、UI 规格、部署）。`dev` 的迭代进度入口是[迭代 2 当前进度](docs/06-design/v2-980plus/redesign/CURRENT-PROGRESS.md)，接手先读[根交接](CURRENT-HANDOFF.md)与[R1 执行计划](docs/06-design/v2-980plus/redesign/dev-plan-R1.md)。该计划包含 IT-1～IT-7；其中 IT-2 是定级站，不能与本轮迭代名称或产品 Phase 2 混用。最近可确认工作点、未发布全量卡墙、验收缺口和接手顺序只在进度页维护。
 
 在迭代目录也可从[迭代 2 索引](requirements/iterations/iteration-02-redesign.md)进入同一计划。旧 P1R、B/DEV/G、PAGE-P1 台账和九月交接保留为历史/复用证据，不构成本分支任务队列。不要用旧完成率、原型覆盖或环境就绪推断本轮业务完成。
+
+## 当前部署
+
+SJC 服务器 `173.249.208.210`，域名 `clyune.com`：`learn.clyune.com`（学员 Web）、`admin.clyune.com`（后台）、`mobile.clyune.com`（移动 H5）、`api.clyune.com`（网关）。运行版本 `4990dd29`（2026-10-13），落后 `origin/dev`（截至 2026-10-30 落后 132 个提交）。详见 [STATUS](docs/STATUS.md#部署)。
 
 ## 唯一事实源基线
 
@@ -52,7 +56,7 @@ Phase 1 **有意设计为覆盖面较大的首发基座**，不是只做一条�
 
 ### 历史批次与验收记录
 
-旧 B0–B6 职责和 P1R 完整度、四端 PAGE-P1 判定及九月测试顺序见[历史交接归档](CURRENT-HANDOFF-ARCHIVE-2026-09-28.md)与[历史任务索引](requirements/backlog/README.md)。记录保留当时的提交和验收范围，不再作为本分支当前进度展示。
+旧 B0–B6 职责和 P1R 完整度、四端 PAGE-P1 判定及九月测试顺序见[历史交接归档](docs/archive/2026-10-legacy/handoffs/CURRENT-HANDOFF-ARCHIVE-2026-09-28.md)与[历史任务索引](requirements/backlog/README.md)。记录保留当时的提交和验收范围，不再作为本分支当前进度展示。
 
 Phase 1 不启用生成式 AI；规则化学习及平台能力仍按本轮 R1 卡计划和服务 owner 边界实现。
 

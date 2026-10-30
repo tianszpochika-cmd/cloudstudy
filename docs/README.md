@@ -4,7 +4,7 @@
 
 ## dev 当前入口
 
-本分支执行**迭代 2（第二轮重设计）**。先读[唯一当前进度](06-design/v2-980plus/redesign/CURRENT-PROGRESS.md)与[根交接](../CURRENT-HANDOFF.md)，再读[R1 卡计划](06-design/v2-980plus/redesign/dev-plan-R1.md)。旧台账与带日期报告是复用/历史证据。
+本分支执行**迭代 2（第二轮重设计）**。先读[当前状态总览](STATUS.md)，再读[迭代 2 进度](06-design/v2-980plus/redesign/CURRENT-PROGRESS.md)与[根交接](../CURRENT-HANDOFF.md)，再读[R1 卡计划](06-design/v2-980plus/redesign/dev-plan-R1.md)。旧台账与带日期报告是复用/历史证据。
 
 ## 目录地图
 
@@ -21,6 +21,8 @@
 | `08-compliance/` | 中国大陆合规、审查基线与首发执行清单 | [README](08-compliance/README.md) |
 | `09-roadmap/` | 分期路线、关键指标与首 30 天计划 | [README](09-roadmap/README.md) |
 | `10-decisions/` | 架构决策记录（ADR，编号 0001–0014 连续） | [README](10-decisions/README.md) |
+| `design/` | 移动端 UI 规格（第 1 轮 / 第 2 轮） | [README](design/README.md) |
+| `archive/` | 已被取代的旧材料（2026-10 清理） | [README](archive/README.md) |
 | `technical-specs/` | 技术规格与模块级详细设计 | [README](technical-specs/README.md) |
 
 ## 按任务的阅读路径

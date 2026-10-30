@@ -1,5 +1,7 @@
 # V2 UI 逐页审查索引 — 2026-10-13
 
+> **2026-10-30 说明**：下面 10-13…10-21 的额度暂停/续做检查点均为历史。当时的 `dev-redesign` 推送失败与“本地 UI 9 / 远程 7”已过时：相关提交已于 2026-10-26 进入 `origin/dev`。当前汇总见 [STATUS](../STATUS.md)；页面表与签收原文不改。
+
 > **2026-10-21 用户暂停检查点（最新）**：本地提交 `b64db8e9…` 成功（361文件，parent 5b3ca5a7），但 `git push origin HEAD:dev-redesign` 单次执行 exit **128**：msys `sh.exe` 直接崩溃于凭据 helper 子进程（凭据助手子进程启动失败、认证未完成；凭据状态未验证），未换transport、未force、未读数。远程未更新，本地UI 9/远程仍7（本轮未新核），MB005 758dc0fb与MB006 8a66cc73仍未推；需人类本机正常Git环境推送。详见[推送收据](ui-audit-20261013/PUSH-RECEIPT-20261021-USER-PAUSE.md)。
 
 

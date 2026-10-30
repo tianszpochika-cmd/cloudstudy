@@ -1,10 +1,12 @@
 # clyunedev 单机预发布 / 联调环境运行记录
 
+> **2026-10-30 说明**：德国服务器 `37.120.160.36` 与 `clyunedev.com` 域名已不是当前环境。当前部署为 SJC `173.249.208.210`，`clyune.com` 下 `learn`/`admin`/`mobile`/`api`，运行 `4990dd29`（落后 `dev`），以 [STATUS](../STATUS.md) 为准。下文编排步骤仍可参考，其中 IP、域名与“已部署”表述是历史记录。
+
 > 状态：**环境准备中，不是正式生产上线或 Phase 1 验收结论**。
 >
 > 本文记录 2026-09-20 起为 Cloudstudy 建设的 `dev` 单机预发布环境。它不改变正式生产域名、产品发布 Gate 或任何 P1R 验收状态。
 
-跨电脑继续操作时，先阅读 [2026-09-21 clyunedev 跨电脑交接快照](clyunedev-cross-device-handoff-2026-09-21.md)。交接文档以已回传的服务器证据为准，避免把本地已提交的部署资产误当作已经在服务器执行。
+跨电脑继续操作时，先阅读 [2026-09-21 clyunedev 跨电脑交接快照](../archive/2026-10-legacy/clyunedev-german-server/clyunedev-cross-device-handoff-2026-09-21.md)。交接文档以已回传的服务器证据为准，避免把本地已提交的部署资产误当作已经在服务器执行。
 
 ## 1. 环境边界
 

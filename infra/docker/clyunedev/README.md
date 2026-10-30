@@ -1,8 +1,10 @@
 # clyunedev 单机预发布 Docker 资产
 
+> **2026-10-30 说明**：德国服务器 `37.120.160.36` 与 `clyunedev.com` 域名已不是当前环境。当前部署为 SJC `173.249.208.210`，`clyune.com` 下 `learn`/`admin`/`mobile`/`api`，运行 `4990dd29`（落后 `dev`），以 [STATUS](../../../docs/STATUS.md) 为准。目录名沿用历史名称；下文的 clyunedev 域名描述为历史口径，Nginx/Compose 文件本次未改动。
+
 本目录承载 `clyunedev` 的受版本控制单机预发布编排。它服务于 `dev` 分支联调，不替代 Kubernetes/GitOps 目标架构，也不构成正式 `clyune.com` 生产发布。
 
-跨电脑继续服务器操作时，先读 [2026-09-21 clyunedev 单机预发布交接快照](../../../docs/07-operations/clyunedev-cross-device-handoff-2026-09-21.md)。其中将“仓库已提交”与“服务器已回传验证”分开记录。
+跨电脑继续服务器操作时，先读 [2026-09-21 clyunedev 单机预发布交接快照](../../../docs/archive/2026-10-legacy/clyunedev-german-server/clyunedev-cross-device-handoff-2026-09-21.md)。其中将“仓库已提交”与“服务器已回传验证”分开记录。
 
 ## 不变量
 

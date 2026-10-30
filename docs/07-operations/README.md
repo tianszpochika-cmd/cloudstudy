@@ -4,12 +4,17 @@
 
 dev 当前读取顺序：
 
+0. [当前状态总览](../STATUS.md)：分支、R1、部署版本（SJC `173.249.208.210`，`clyune.com`）。
 1. [迭代 2 当前进度](../06-design/v2-980plus/redesign/CURRENT-PROGRESS.md) → [根交接](../../CURRENT-HANDOFF.md) → [R1 卡计划](../06-design/v2-980plus/redesign/dev-plan-R1.md)。
 2. [当前架构](../02-architecture/v2-microservices-architecture.md)、[本地开发指南](local-development.md)及 `config/` / canonical 契约。
 3. [2026-10-06 本机环境验证](local-environment-verification-2026-10-06.md)：只说明当次环境和测试范围，不改变 R1 卡验收。
-4. 历史 P1R/B/G、`b36-validation.md`、56 页覆盖/三态台账及九月报告只作为复用/审计候选；不能代替本轮干净库与独立验收，也不构成当前开工队列。原读取顺序见[九月历史交接](../../CURRENT-HANDOFF-ARCHIVE-2026-09-28.md)。
+4. 历史 P1R/B/G、`b36-validation.md`、56 页覆盖/三态台账及九月报告只作为复用/审计候选；不能代替本轮干净库与独立验收，也不构成当前开工队列。原读取顺序见[九月历史交接](../archive/2026-10-legacy/handoffs/CURRENT-HANDOFF-ARCHIVE-2026-09-28.md)。
 
 带具体日期、runId 或 B 编号的报告应保持可审计，不为追随新口径而改写历史结果。若其中含已废弃的外部认证、五项必需依赖、旧契约计数或旧页面旅程，只能按历史快照解释；新开发和新验收必须引用当前权威入口。
+
+## 当前部署
+
+SJC 服务器 `173.249.208.210`，域名 `clyune.com`：`learn.clyune.com`（学员 Web）、`admin.clyune.com`（后台）、`mobile.clyune.com`（移动 H5）、`api.clyune.com`（网关）。运行版本 `4990dd29`（2026-10-13），落后 `origin/dev`（截至 2026-10-30 落后 132 个提交）。旧德国服务器（`37.120.160.36` / `clyunedev.com`）的带日期记录已归档到 [clyunedev-german-server](../archive/2026-10-legacy/clyunedev-german-server/)；[单机预发布手册](clyunedev-single-host-pre-release-runbook.md)仍可参考编排步骤。
 
 ## 历史快照清单
 

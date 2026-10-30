@@ -57,7 +57,7 @@
 
 本次官网源码只有在独立提交推送到 `dev`、服务器拉取该提交并且只重建 `official-site` 容器后，才会显示在 `https://clyunedev.com`。此前服务器运行的任意镜像不会自动包含本机未提交文件；容器成功重启也只能证明它运行了已拉取的那一版源码。
 
-官网的受控发布命令、验证和双版本镜像保留规则见 [clyunedev 官网 UI 重构发布记录](../../../../07-operations/clyunedev-official-site-ui-release-2026-09-21.md)。该流程明确禁止为官网 UI 更新而重建数据服务、Gateway 或全部 Compose 栈。
+官网的受控发布命令、验证和双版本镜像保留规则见 [clyunedev 官网 UI 重构发布记录](../../../../archive/2026-10-legacy/clyunedev-german-server/clyunedev-official-site-ui-release-2026-09-21.md)。该流程明确禁止为官网 UI 更新而重建数据服务、Gateway 或全部 Compose 栈。
 
 ## 后续维护与发布前事项
 

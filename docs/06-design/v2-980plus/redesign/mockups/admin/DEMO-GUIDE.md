@@ -5,7 +5,7 @@
 > `yxx-admin-v1` 存储键升级到对象 v2；与学习端 `yxx-demo-v3` 隔离。
 > 简审和 L2 后直接发布为本机演示；正式 editor/L1/L2/release 四主体分离遵守上游，模式变更待负责人签收。
 
-正式开发接手：[114张任务卡](../../tasks/README.md)、[任务状态墙](../../status-wall.md)、[逐卡执行与审批](../../execution-handbook.md)。每卡交付后由本聊天实测审查；演示成功不继承为新卡ACCEPTED。
+正式开发接手：[115 卡权威卡账](../../../../../takeover/CARD-LEDGER.md)与[当前状态](../../../../../STATUS.md)（原 114 卡墙已归档到 [r1-114-wall](../../../../../archive/2026-10-legacy/r1-114-wall/tasks/README.md)）。每卡交付后由本聊天实测审查；演示成功不继承为新卡ACCEPTED。
 
 ## 1. 身份与权限
 
