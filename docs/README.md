@@ -2,7 +2,7 @@
 
 本目录是产品与研发文档的**总入口**。文档的事实源优先级、Phase 1 范围冻结、跨域数据所有权与文件命名规范，统一由 [00-vision/document-governance.md](00-vision/document-governance.md) 规定；本索引与治理规则冲突时，以治理规则为准。
 
-## dev-redesign 当前入口
+## dev 当前入口
 
 本分支执行**迭代 2（第二轮重设计）**。先读[唯一当前进度](06-design/v2-980plus/redesign/CURRENT-PROGRESS.md)与[根交接](../CURRENT-HANDOFF.md)，再读[R1 卡计划](06-design/v2-980plus/redesign/dev-plan-R1.md)。旧台账与带日期报告是复用/历史证据。
 

@@ -33,7 +33,6 @@ assert('CI is least privilege', /permissions:\s*\r?\n\s+contents:\s*read/m.test(
 assert('CI tests Windows', /windows-latest/.test(workflow), 'Windows runner is required');
 assert('CI tests Linux', /ubuntu-latest/.test(workflow), 'Linux runner is required');
 assert('CI tests macOS frontend', /macos-latest/.test(workflow), 'macOS frontend runner is required');
-assert('CI handles dev-redesign branch', /branches:\s*\[[^\]]*\bdev-redesign\b[^\]]*\]/m.test(workflow), 'push.dev-redesign is not configured');
 assert('CI bootstraps fresh local infrastructure', /^\s*local-infrastructure:\s*$/m.test(workflow)
   && /pnpm infra:up/.test(workflow) && /check-local-infra.mjs --require-healthy/.test(workflow), 'fresh-volume infrastructure gate is required');
 assert('CI runs workspace unit tests', /run:\s*pnpm test\s*$/m.test(workflow), 'workspace unit tests are required');

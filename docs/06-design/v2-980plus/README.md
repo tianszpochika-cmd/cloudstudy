@@ -1,6 +1,6 @@
 # v2-980 全量设计单元登记基线
 
-> **dev-redesign 分支入口校正（2026-10-06）：全量设计基线；本分支任务入口以进度页为准。** 本分支只按[迭代 2（第二轮重设计）当前进度](redesign/CURRENT-PROGRESS.md)接手；本文业务范围、架构、分期与运行规则继续有效；任务认领与当前验收只按进度页，不将历史状态迁移为 R1 验收。
+> **dev 分支入口校正（2026-10-06）：全量设计基线；本分支任务入口以进度页为准。** 本分支只按[迭代 2（第二轮重设计）当前进度](redesign/CURRENT-PROGRESS.md)接手；本文业务范围、架构、分期与运行规则继续有效；任务认领与当前验收只按进度页，不将历史状态迁移为 R1 验收。
 
 > 版本：v2.3 Phase 1 业务运行设计补齐版
 > 生成器：scripts/audit/generate-v2-design-package.mjs
@@ -65,7 +65,7 @@
 12. [11-架构映射与任务重基线](11-架构映射与任务重基线.md)：V2-980 业务单元与 ARCH 平台能力的依赖、任务卡和验收字段。
 13. [12-架构与设计一致性审核](12-架构与设计一致性审核.md)：v2 需求、服务边界、权限、数据、事件和运行模型的审核结论。
 14. [Phase 1 业务运行设计包](phase1-business-operation/README.md)：角色和业务总图、端到端旅程、逐页功能、学习规则、后台流程、业务联调、恢复与 E2E 追溯；它补齐“系统怎样运行”，不改变 980 计数，也不代表实现完成。
-15. [Phase 1 开发计划重基线](../../../requirements/backlog/v2-phase1-rebaseline/README.md)：9 个里程碑、108 个 `P1R-*` 任务、依赖图、D2–D5 Evidence Gate 和运行层覆盖矩阵；原 P1R 拆分与冻结来源；dev-redesign 按[迭代 2 当前进度](redesign/CURRENT-PROGRESS.md)和[R1 卡计划](redesign/dev-plan-R1.md)执行。
+15. [Phase 1 开发计划重基线](../../../requirements/backlog/v2-phase1-rebaseline/README.md)：9 个里程碑、108 个 `P1R-*` 任务、依赖图、D2–D5 Evidence Gate 和运行层覆盖矩阵；原 P1R 拆分与冻结来源；dev 按[迭代 2 当前进度](redesign/CURRENT-PROGRESS.md)和[R1 卡计划](redesign/dev-plan-R1.md)执行。
 16. [B7+ 代码重塑与交互测试状态台账](../../../requirements/backlog/v2-B7plus-代码重塑与交互测试任务基线.md)：保留现有代码、测试和迁移状态；只作 historical-candidate。
 
 ### 3.1 Phase 1 业务运行层

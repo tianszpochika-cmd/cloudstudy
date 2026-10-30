@@ -279,7 +279,7 @@ process.on('SIGTERM', () => { cleanup().finally(() => process.exit(1)); });
 
 const result = {
   date: '2026-10-10',
-  branch: 'dev-redesign',
+  branch: 'dev',
   suffix,
   iamSchema,
   learnerSchema,

@@ -1,6 +1,6 @@
 # 迭代计划与历史记录
 
-## dev-redesign 当前迭代
+## dev 当前迭代
 
 - [迭代 2 — 第二轮重设计](iteration-02-redesign.md)：本分支当前迭代入口索引。
 - [唯一当前进度](../../docs/06-design/v2-980plus/redesign/CURRENT-PROGRESS.md)与[R1 卡计划](../../docs/06-design/v2-980plus/redesign/dev-plan-R1.md)：当前工作点、缺口、卡依赖与验收路径，只在进度页维护当前状态。

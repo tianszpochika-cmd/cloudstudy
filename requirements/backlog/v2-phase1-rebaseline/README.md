@@ -1,15 +1,15 @@
 # Phase 1 开发计划重基线
 
-> **dev-redesign 分支入口校正（2026-10-06）：历史进度 / 复用参考。** 本分支只按[迭代 2（第二轮重设计）当前进度](../../../docs/06-design/v2-980plus/redesign/CURRENT-PROGRESS.md)接手；下文的旧计数、状态和下一步不构成本分支任务认领指令，不能迁移为 R1 卡验收。
+> **dev 分支入口校正（2026-10-06）：历史进度 / 复用参考。** 本分支只按[迭代 2（第二轮重设计）当前进度](../../../docs/06-design/v2-980plus/redesign/CURRENT-PROGRESS.md)接手；下文的旧计数、状态和下一步不构成本分支任务认领指令，不能迁移为 R1 卡验收。
 
 > 计划版本：v1.0（2026-08-29）
 > 设计基线提交：`b01505a71f8b6f980d63cd58e3c3687e59daa13a`
-> 原 P1R 历史计划状态（实核快照 2026-09-20，源码 `2c2cfa2e`）：**81 项 ACCEPTED + 27 项 DEV_DONE，共 108 项，任务验收比例 75%**；分布见[完整度梳理日志](execution/COMPLETENESS-AUDIT-2026-09-20.md)。当前契约检查存在失败，部分 ACCEPTED/DEV_DONE 任务仍有实现或跨服务残留，不能把无 PLANNED/READY 解读为本地工作清空或只剩外部验收。本目录原任务状态以[任务台账](02-编号任务台账.md)为准，本次不改变状态行；dev-redesign 实时接手只看[迭代 2 当前进度](../../../docs/06-design/v2-980plus/redesign/CURRENT-PROGRESS.md)。
+> 原 P1R 历史计划状态（实核快照 2026-09-20，源码 `2c2cfa2e`）：**81 项 ACCEPTED + 27 项 DEV_DONE，共 108 项，任务验收比例 75%**；分布见[完整度梳理日志](execution/COMPLETENESS-AUDIT-2026-09-20.md)。当前契约检查存在失败，部分 ACCEPTED/DEV_DONE 任务仍有实现或跨服务残留，不能把无 PLANNED/READY 解读为本地工作清空或只剩外部验收。本目录原任务状态以[任务台账](02-编号任务台账.md)为准，本次不改变状态行；dev 实时接手只看[迭代 2 当前进度](../../../docs/06-design/v2-980plus/redesign/CURRENT-PROGRESS.md)。
 > 正式范围：仅 Phase 1、18 岁以上成人与大学生、规则化学习；Phase 2 AI/RTC 与 Phase 3 K12 不进入本计划
 
 ## 1. 这份计划取代什么
 
-本目录保留原 Phase 1 重基线的计划、状态与冻结门禁；dev-redesign 后续执行转入[迭代 2 / R1 卡计划](../../../docs/06-design/v2-980plus/redesign/dev-plan-R1.md)，不以此旧队列续领本轮任务。它以 [v2-980plus 设计包](../../../docs/06-design/v2-980plus/README.md)、[Phase 1 业务运行设计包](../../../docs/06-design/v2-980plus/phase1-business-operation/README.md)、[v2 微服务架构](../../../docs/02-architecture/v2-microservices-architecture.md)和 ADR-0009/0010/0012/0013/0014 为输入，从业务旅程、事实所有权和验收 Evidence 重新编排任务。
+本目录保留原 Phase 1 重基线的计划、状态与冻结门禁；dev 后续执行转入[迭代 2 / R1 卡计划](../../../docs/06-design/v2-980plus/redesign/dev-plan-R1.md)，不以此旧队列续领本轮任务。它以 [v2-980plus 设计包](../../../docs/06-design/v2-980plus/README.md)、[Phase 1 业务运行设计包](../../../docs/06-design/v2-980plus/phase1-business-operation/README.md)、[v2 微服务架构](../../../docs/02-architecture/v2-microservices-architecture.md)和 ADR-0009/0010/0012/0013/0014 为输入，从业务旅程、事实所有权和验收 Evidence 重新编排任务。
 
 旧 B7–B36、旧 `DEV-*` 和旧 G0–G4 台账继续保留，但只用于以下用途：
 

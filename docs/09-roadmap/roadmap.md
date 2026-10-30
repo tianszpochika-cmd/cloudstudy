@@ -1,6 +1,6 @@
 # 产品路线图
 
-> **文档分类：当前执行路线图**。Platform 0、Phase 1 和后续阶段的阶段顺序以本路线图为索引；dev-redesign 的当前接手/执行以[迭代 2 当前进度](../06-design/v2-980plus/redesign/CURRENT-PROGRESS.md)与[R1 卡计划](../06-design/v2-980plus/redesign/dev-plan-R1.md)为准；[原 Phase 1 重基线](../../requirements/backlog/v2-phase1-rebaseline/README.md)保留来源/复用/冻结门禁，业务范围和设计状态仍以 v2-980plus 为准。`V2-980-0001..0980` 固定表示 930 个业务单元 + 50 个跨域扩展登记位，成熟度为 184/486/310，不等于 980 份可实施详细设计或已完成实现。
+> **文档分类：当前执行路线图**。Platform 0、Phase 1 和后续阶段的阶段顺序以本路线图为索引；dev 的当前接手/执行以[迭代 2 当前进度](../06-design/v2-980plus/redesign/CURRENT-PROGRESS.md)与[R1 卡计划](../06-design/v2-980plus/redesign/dev-plan-R1.md)为准；[原 Phase 1 重基线](../../requirements/backlog/v2-phase1-rebaseline/README.md)保留来源/复用/冻结门禁，业务范围和设计状态仍以 v2-980plus 为准。`V2-980-0001..0980` 固定表示 930 个业务单元 + 50 个跨域扩展登记位，成熟度为 184/486/310，不等于 980 份可实施详细设计或已完成实现。
 
 > 三阶段产品边界以 PRD v3.3 和 v2-980plus 为准。后端技术演进以 [v2 微服务目标架构](../02-architecture/v2-microservices-architecture.md) 和 ADR-0010 为准；平台能力建设不等于提前开放 AI/K12 业务。
 

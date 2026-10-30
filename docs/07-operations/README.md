@@ -2,7 +2,7 @@
 
 本目录保存按日期、批次和运行环境形成的验证快照，不是需求、架构或当前配置的事实源。旧快照中的 Java 版本、依赖数量、认证方案、端口状态、契约计数和测试结果只说明当次运行，不得覆盖当前代码与配置。
 
-dev-redesign 当前读取顺序：
+dev 当前读取顺序：
 
 1. [迭代 2 当前进度](../06-design/v2-980plus/redesign/CURRENT-PROGRESS.md) → [根交接](../../CURRENT-HANDOFF.md) → [R1 卡计划](../06-design/v2-980plus/redesign/dev-plan-R1.md)。
 2. [当前架构](../02-architecture/v2-microservices-architecture.md)、[本地开发指南](local-development.md)及 `config/` / canonical 契约。

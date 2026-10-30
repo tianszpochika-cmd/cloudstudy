@@ -6,7 +6,7 @@
 
 - `../docs/06-design/v2-980plus/README.md`：第二版全量业务设计、四端边界、状态、契约和阶段 Gate；新任务以此为准，`V2-EXT-*` 需细化签收后实施。
 - `../docs/06-design/v2-980plus/phase1-business-operation/README.md`：Phase 1 角色与业务总图、端到端旅程、逐页功能、学习机制、后台流程、业务联调、异常恢复和 E2E Evidence；运行层 ID 不改变 980 计数，文档存在不等于实现完成。
-- [迭代 2 当前进度](../docs/06-design/v2-980plus/redesign/CURRENT-PROGRESS.md)与[R1 卡计划](../docs/06-design/v2-980plus/redesign/dev-plan-R1.md)：dev-redesign 唯一当前接手/执行入口。
+- [迭代 2 当前进度](../docs/06-design/v2-980plus/redesign/CURRENT-PROGRESS.md)与[R1 卡计划](../docs/06-design/v2-980plus/redesign/dev-plan-R1.md)：dev 唯一当前接手/执行入口。
 - `backlog/v2-phase1-rebaseline/README.md`：原 Phase 1 计划与复用/冻结来源；9 个里程碑、108 个 `P1R-*` 任务、依赖图、D2–D5 验收与全运行层覆盖矩阵。
 - product-requirements.md：完整 PRD，提供产品阶段、边界和功能的来源证据。
 - mvp-scope.md：Phase 1 可执行范围与优先级。
@@ -52,5 +52,5 @@ AI 仅在 Phase 2 通过 Python FastAPI 独立服务启用。历史技术方案�
 
 ## 任务重基线提示
 
-Phase 1 重基线已经落入 [`backlog/v2-phase1-rebaseline/`](./backlog/v2-phase1-rebaseline/README.md)。dev-redesign 的新工作从[迭代 2 当前进度](../docs/06-design/v2-980plus/redesign/CURRENT-PROGRESS.md)进入并按 R1 卡依赖提交当前 Evidence；原 P1R 的 D2–D5 及冻结门禁作为追溯/复用边界保留。旧 B0–B36、`DEV-*` 和 G 台账保留用于审计、现状回放和复用候选；不能把其中状态直接等同于 Gateway、RBAC、微服务、业务旅程或发布完成。`CONTRACT-GAP/EVENT-GAP/IMPLEMENTATION-GAP/EVIDENCE-GAP` 由新计划中的对应任务关闭。
+Phase 1 重基线已经落入 [`backlog/v2-phase1-rebaseline/`](./backlog/v2-phase1-rebaseline/README.md)。dev 的新工作从[迭代 2 当前进度](../docs/06-design/v2-980plus/redesign/CURRENT-PROGRESS.md)进入并按 R1 卡依赖提交当前 Evidence；原 P1R 的 D2–D5 及冻结门禁作为追溯/复用边界保留。旧 B0–B36、`DEV-*` 和 G 台账保留用于审计、现状回放和复用候选；不能把其中状态直接等同于 Gateway、RBAC、微服务、业务旅程或发布完成。`CONTRACT-GAP/EVENT-GAP/IMPLEMENTATION-GAP/EVIDENCE-GAP` 由新计划中的对应任务关闭。
 

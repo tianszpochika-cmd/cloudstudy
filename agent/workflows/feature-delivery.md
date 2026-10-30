@@ -1,4 +1,4 @@
-# 功能交付工作流 — dev-redesign 迭代 2
+# 功能交付工作流 — dev 迭代 2
 
 1. 先读[当前进度](../../docs/06-design/v2-980plus/redesign/CURRENT-PROGRESS.md)、[根交接](../../CURRENT-HANDOFF.md)和[R1 卡计划](../../docs/06-design/v2-980plus/redesign/dev-plan-R1.md)，核对当前卡、依赖和开放 GAP；IT-1 未签出站不进入 IT-2。
 2. 补齐该卡 BC/IC、FEAT/PRD-ATOM/V2-980、ARCH、ACT/JNY/PAGE/RULE/INT/E2E、服务及 data owner 映射；旧 P1R 仅作复用与冻结来源，不继承状态。

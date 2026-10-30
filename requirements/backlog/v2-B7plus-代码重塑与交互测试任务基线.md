@@ -1,6 +1,6 @@
 # v2 B7+ 代码重塑与交互测试任务基线
 
-> **dev-redesign 分支入口校正（2026-10-06）：历史进度 / 复用参考。** 本分支只按[迭代 2（第二轮重设计）当前进度](../../docs/06-design/v2-980plus/redesign/CURRENT-PROGRESS.md)接手；下文的旧计数、状态和下一步不构成本分支任务认领指令，不能迁移为 R1 卡验收。
+> **dev 分支入口校正（2026-10-06）：历史进度 / 复用参考。** 本分支只按[迭代 2（第二轮重设计）当前进度](../../docs/06-design/v2-980plus/redesign/CURRENT-PROGRESS.md)接手；下文的旧计数、状态和下一步不构成本分支任务认领指令，不能迁移为 R1 卡验收。
 
 > **文档分类：Historical / Superseded**。本文件只保留代码、迁移、静态与运行候选证据；当前新开发入口是 [`v2-phase1-rebaseline`](./v2-phase1-rebaseline/README.md)，旧 B 状态不得自动迁移为 `P1R-*` 的完成状态。
 > 基线 ID：`V2-CODE-BASELINE-20260822`  

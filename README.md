@@ -10,7 +10,7 @@
 
 ## 当前分支：迭代 2（第二轮重设计）
 
-`dev-redesign` 的唯一当前进度入口是[迭代 2 当前进度](docs/06-design/v2-980plus/redesign/CURRENT-PROGRESS.md)，接手先读[根交接](CURRENT-HANDOFF.md)与[R1 执行计划](docs/06-design/v2-980plus/redesign/dev-plan-R1.md)。该计划包含 IT-1～IT-7；其中 IT-2 是定级站，不能与本轮迭代名称或产品 Phase 2 混用。最近可确认工作点、未发布全量卡墙、验收缺口和接手顺序只在进度页维护。
+`dev` 的唯一当前进度入口是[迭代 2 当前进度](docs/06-design/v2-980plus/redesign/CURRENT-PROGRESS.md)，接手先读[根交接](CURRENT-HANDOFF.md)与[R1 执行计划](docs/06-design/v2-980plus/redesign/dev-plan-R1.md)。该计划包含 IT-1～IT-7；其中 IT-2 是定级站，不能与本轮迭代名称或产品 Phase 2 混用。最近可确认工作点、未发布全量卡墙、验收缺口和接手顺序只在进度页维护。
 
 在迭代目录也可从[迭代 2 索引](requirements/iterations/iteration-02-redesign.md)进入同一计划。旧 P1R、B/DEV/G、PAGE-P1 台账和九月交接保留为历史/复用证据，不构成本分支任务队列。不要用旧完成率、原型覆盖或环境就绪推断本轮业务完成。
 

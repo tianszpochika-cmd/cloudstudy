@@ -1,6 +1,6 @@
 # 项目上下文
 
-> dev-redesign 执行迭代 2（第二轮重设计）；当前进度和接手顺序唯一见[进度页](../../docs/06-design/v2-980plus/redesign/CURRENT-PROGRESS.md)与[根交接](../../CURRENT-HANDOFF.md)。按 R1 卡依赖工作，不按旧台账认领。
+> dev 执行迭代 2（第二轮重设计）；当前进度和接手顺序唯一见[进度页](../../docs/06-design/v2-980plus/redesign/CURRENT-PROGRESS.md)与[根交接](../../CURRENT-HANDOFF.md)。按 R1 卡依赖工作，不按旧台账认领。
 
 - 产品名：语学星（研发代号：EnglishFlow）
 - 公司主体：深圳云澜深境科技有限公司

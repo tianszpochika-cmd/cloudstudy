@@ -1,4 +1,4 @@
-# 迭代 2 · Redesign 重设包（dev-redesign 分支专用）
+# 迭代 2 · Redesign 重设包（dev 分支专用）
 
 > **当前进度唯一入口：[CURRENT-PROGRESS](CURRENT-PROGRESS.md)。** 接手先读[根交接](../../../../CURRENT-HANDOFF.md)与[R1 卡计划](dev-plan-R1.md)。“迭代 2”指第二轮重设计，不等于 IT-2 定级站或产品 Phase 2。下文带日期的交付/收口为当次快照，不单独充当实时状态墙。
 

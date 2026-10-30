@@ -1,6 +1,6 @@
 # 设计文档总索引
 
-> **dev-redesign 分支入口校正（2026-10-06）：设计总索引；本分支执行入口以进度页为准。** 本分支只按[迭代 2（第二轮重设计）当前进度](v2-980plus/redesign/CURRENT-PROGRESS.md)接手；本文业务范围、架构、分期与运行规则继续有效；任务认领与当前验收只按进度页，不将历史状态迁移为 R1 验收。
+> **dev 分支入口校正（2026-10-06）：设计总索引；本分支执行入口以进度页为准。** 本分支只按[迭代 2（第二轮重设计）当前进度](v2-980plus/redesign/CURRENT-PROGRESS.md)接手；本文业务范围、架构、分期与运行规则继续有效；任务认领与当前验收只按进度页，不将历史状态迁移为 R1 验收。
 
 > **设计基线**：`v2-980plus/` 是下一轮开发唯一的全量业务设计与需求落地基线；`requirements/` 提供来源证据、编号和法规边界。既有 v1 设计包/B0–B6 只作历史与迁移参考，不能覆盖 v2。当前设计面向 Phase 1 18+ 成人/大学生，无生成式 AI；Phase 2/3 设计在对应阶段启动并满足前置条件后新增。后端技术绑定 Java 25 微服务、Gateway、IAM/RBAC，认证会话以 [ADR-0012](../10-decisions/0012-jwt-bearer-access-token-and-session.md) 与 [ADR-0013](../10-decisions/0013-self-owned-jwt-authentication-center.md) 为准，见 [v2 微服务架构](../02-architecture/v2-microservices-architecture.md)。
 
