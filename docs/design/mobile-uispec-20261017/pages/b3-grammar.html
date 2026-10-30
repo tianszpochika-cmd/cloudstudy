@@ -1,0 +1,1472 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>语法结构 · 语学星移动端 UI 稿</title>
+<link rel="stylesheet" href="../shared.css">
+<script src="../shared.js"></script>
+<style>
+  /* 仅本页布局；组件与 token 全部来自 shared.css */
+  .grm-page { padding: 4px 20px 28px; }
+  .grm-page [hidden] { display: none !important; }
+
+  /* 页头 */
+  .grm-head { margin: 4px 0 16px; }
+  .grm-kicker {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0 0 4px;
+    color: var(--v2-brand);
+    font-size: 13px;
+    line-height: 1.6;
+    font-weight: 600;
+    letter-spacing: .04em;
+  }
+  .grm-kicker .icon { flex: none; }
+  .grm-title {
+    margin: 0;
+    color: var(--v2-ink);
+    font-size: 28px;
+    line-height: 1.4;
+    font-weight: 650;
+    letter-spacing: -.01em;
+  }
+  .grm-intro {
+    margin: 6px 0 0;
+    color: var(--v2-mut);
+    font-size: 14px;
+    line-height: 1.75;
+  }
+
+  /* 顶部：知识点计数 + 画质 */
+  .grm-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-height: 44px;
+    margin: 0 0 12px;
+  }
+  .grm-count {
+    color: var(--v2-mut);
+    font-size: 13px;
+    line-height: 1.6;
+    font-variant-numeric: tabular-nums;
+  }
+  .grm-quality {
+    gap: 4px;
+    max-width: 150px;
+    min-height: 44px;
+    padding: 0 10px;
+    font-size: 13px;
+    white-space: nowrap;
+  }
+  .grm-quality .icon { flex: none; color: var(--v2-mut); }
+  .grm-quality__label { overflow: hidden; text-overflow: ellipsis; }
+
+  .grm-stack { display: flex; flex-direction: column; gap: 16px; }
+
+  /* 横幅与页内提示 */
+  .grm-banner {
+    display: grid;
+    gap: 10px;
+    margin: 0 0 16px;
+    padding: 14px 16px;
+    border-radius: var(--v2-radius-md);
+    background: var(--v2-warn-soft);
+    color: var(--v2-warn);
+  }
+  .grm-banner--info { background: var(--v2-soft); color: var(--v2-ink); }
+  .grm-banner__title { margin: 0; font-size: 14px; line-height: 1.6; font-weight: 600; }
+  .grm-banner__text { margin: 2px 0 0; font-size: 13px; line-height: 1.6; }
+  .grm-banner .btn { justify-self: start; }
+  .grm-ready {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin: 0 0 16px;
+    padding: 12px 14px;
+    border-radius: var(--v2-radius-md);
+    background: var(--v2-ok-soft);
+    color: var(--v2-ok);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .grm-ready .icon { flex: none; margin-top: 1px; }
+  .grm-ready__body { display: grid; gap: 2px; min-width: 0; color: var(--v2-ink); }
+  .grm-ready__title { color: var(--v2-ok); font-size: 14px; font-weight: 600; }
+  .grm-ready.is-leaving { opacity: 0; transition: opacity var(--v2-motion-fast) ease; }
+
+  /* 卡片内的小标题 */
+  .grm-eyebrow {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 0 0 4px;
+    color: var(--v2-mut);
+    font-size: 12px;
+    line-height: 1.6;
+    font-weight: 600;
+    letter-spacing: .04em;
+  }
+  .grm-eyebrow .icon { flex: none; }
+  .grm-section-title {
+    margin: 0;
+    color: var(--v2-ink);
+    font-size: 16px;
+    line-height: 1.5;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+  }
+
+  /* 语法知识树 */
+  .grm-points { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  .chip.grm-point {
+    min-height: 44px;
+    max-width: 100%;
+    white-space: normal;
+    text-align: left;
+    overflow-wrap: anywhere;
+  }
+  .grm-switching {
+    margin: 10px 0 0;
+    color: var(--v2-mut);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .grm-rule {
+    display: grid;
+    gap: 6px;
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid var(--v2-line);
+  }
+  .grm-rule.is-loading { opacity: .55; }
+  .grm-rule__code {
+    color: var(--v2-brand);
+    font-size: 12px;
+    line-height: 1.6;
+    font-weight: 600;
+    letter-spacing: .04em;
+  }
+  .grm-rule__title {
+    margin: 0;
+    color: var(--v2-ink);
+    font-size: 16px;
+    line-height: 1.5;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+  }
+  .grm-rule__copy {
+    margin: 0;
+    color: var(--v2-mut);
+    font-size: 14px;
+    line-height: 1.7;
+  }
+  .grm-formula {
+    margin: 4px 0;
+    padding: 10px 12px;
+    border-radius: var(--v2-radius-md);
+    background: var(--v2-soft);
+    color: var(--v2-brand);
+    font-size: 14px;
+    line-height: 1.6;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+  }
+  .grm-rule__meta {
+    margin: 0;
+    color: var(--v2-mut);
+    font-size: 13px;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+  }
+
+  /* 长难句 X 光机 */
+  .grm-sentence-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .grm-sentence-head__copy { flex: 1 1 auto; min-width: 0; }
+  .grm-sentence {
+    margin: 6px 0 0;
+    color: var(--v2-ink);
+    font-size: 20px;
+    line-height: 1.55;
+    font-weight: 650;
+    overflow-wrap: anywhere;
+  }
+  .grm-sentence--sm { margin: 8px 0 0; font-size: 16px; font-weight: 600; }
+  .grm-translation {
+    margin: 4px 0 0;
+    color: var(--v2-mut);
+    font-size: 14px;
+    line-height: 1.7;
+    overflow-wrap: anywhere;
+  }
+  .grm-notice {
+    margin: 10px 0 0;
+    padding: 10px 12px;
+    border-radius: var(--v2-radius-md);
+    background: var(--v2-warn-soft);
+    color: var(--v2-warn);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .grm-nodes { display: grid; gap: 8px; margin-top: 12px; }
+  .grm-node {
+    display: grid;
+    grid-template-columns: 76px minmax(0, 1fr);
+    gap: 10px;
+    align-items: start;
+    padding: 10px 12px;
+    border-radius: var(--v2-radius-md);
+    background: var(--v2-surface);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  .grm-node__role {
+    color: var(--v2-brand);
+    font-size: 12px;
+    line-height: 1.7;
+    font-weight: 600;
+  }
+  .grm-node__text { color: var(--v2-ink); overflow-wrap: anywhere; }
+  .grm-relations {
+    display: grid;
+    gap: 4px;
+    margin-top: 10px;
+    padding: 12px 14px;
+    border-radius: var(--v2-radius-md);
+    background: var(--v2-surface);
+    color: var(--v2-mut);
+    font-size: 13px;
+    line-height: 1.7;
+  }
+  .grm-relations__title {
+    color: var(--v2-ink);
+    font-size: 13px;
+    line-height: 1.6;
+    font-weight: 600;
+  }
+  .grm-relations__line { overflow-wrap: anywhere; }
+
+  /* 卡片内练习分区 */
+  .grm-section {
+    display: grid;
+    gap: 10px;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--v2-line);
+  }
+  .grm-hint {
+    margin: 0;
+    color: var(--v2-mut);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .grm-blocks { display: grid; gap: 8px; }
+  .grm-block {
+    display: grid;
+    grid-template-columns: 20px minmax(0, 1fr) 44px 44px;
+    align-items: center;
+    gap: 8px;
+    min-height: 52px;
+    padding: 4px 6px 4px 12px;
+    border: 1px solid var(--v2-line);
+    border-radius: var(--v2-radius-md);
+    background: var(--v2-card);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  .grm-block__index {
+    color: var(--v2-mut);
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+  }
+  .grm-block__text { color: var(--v2-ink); overflow-wrap: anywhere; }
+  .grm-move {
+    width: 44px;
+    height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--v2-line);
+    border-radius: var(--v2-radius-sm);
+    background: var(--v2-surface);
+    color: var(--v2-brand);
+    cursor: pointer;
+  }
+  .grm-move:hover:not(:disabled) { border-color: var(--v2-brand); }
+  .grm-move:focus-visible { outline: none; box-shadow: var(--v2-focus); }
+  .grm-move:disabled {
+    background: transparent;
+    border: 1px dashed var(--v2-line);
+    color: var(--v2-mut);
+    cursor: not-allowed;
+  }
+  .grm-inline-bad {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 12px 14px;
+    border-radius: var(--v2-radius-md);
+    background: var(--v2-bad-soft);
+    color: var(--v2-bad);
+    font-size: 13px;
+    line-height: 1.7;
+  }
+  .grm-inline-bad .icon { flex: none; margin-top: 2px; }
+
+  /* 会话练习卡（B10ExerciseCard）与练习数量说明 */
+  .grm-pack {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: -4px 2px 0;
+    color: var(--v2-mut);
+    font-size: 13px;
+    line-height: 1.6;
+    font-variant-numeric: tabular-nums;
+  }
+  .grm-pack .icon { flex: none; color: var(--v2-brand); }
+  .grm-exercise { display: grid; gap: 10px; }
+  .grm-exercise__prompt {
+    margin: 0;
+    color: var(--v2-ink);
+    font-size: 16px;
+    line-height: 1.5;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+  }
+  .grm-exercise__source {
+    margin: 0;
+    padding: 12px 14px;
+    border-radius: var(--v2-radius-md);
+    background: var(--v2-soft);
+    color: var(--v2-brand);
+    font-size: 15px;
+    line-height: 1.6;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+  }
+  .grm-options { display: grid; gap: 8px; }
+  .grm-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    min-height: 48px;
+    padding: 10px 14px;
+    border: 1px solid var(--v2-line);
+    border-radius: var(--v2-radius-md);
+    background: var(--v2-card);
+    color: var(--v2-ink);
+    font-family: inherit;
+    font-size: 14px;
+    line-height: 1.6;
+    text-align: left;
+    cursor: pointer;
+  }
+  .grm-option:hover:not(:disabled) { border-color: var(--v2-brand); }
+  .grm-option:focus-visible { outline: none; box-shadow: var(--v2-focus); }
+  .grm-option[aria-pressed="true"] {
+    border-color: var(--v2-brand);
+    background: var(--v2-soft);
+    color: var(--v2-brand);
+    font-weight: 600;
+  }
+  .grm-option:disabled {
+    background: var(--v2-surface);
+    border: 1px dashed var(--v2-line);
+    color: var(--v2-mut);
+    cursor: not-allowed;
+  }
+  .grm-option__key { flex: none; font-variant-numeric: tabular-nums; }
+  .grm-exercise__status {
+    margin: 0;
+    color: var(--v2-mut);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  /* 结构槽位 */
+  .grm-slots { display: grid; gap: 12px; }
+  .grm-slot { display: grid; gap: 6px; }
+  .grm-slot__label {
+    color: var(--v2-ink);
+    font-size: 14px;
+    line-height: 1.6;
+    font-weight: 500;
+  }
+  .grm-slot__input {
+    width: 100%;
+    height: 48px;
+    padding: 0 12px;
+    border: 1px solid var(--v2-line);
+    border-radius: var(--v2-radius-md);
+    background: var(--v2-card);
+    color: var(--v2-ink);
+    font-family: inherit;
+    font-size: 16px;
+    line-height: 1.5;
+  }
+  .grm-slot__input::placeholder { color: var(--v2-mut); opacity: 1; }
+  .grm-slot__input:focus {
+    outline: none;
+    border-color: var(--v2-brand);
+    box-shadow: 0 0 0 3px var(--v2-soft);
+  }
+  .grm-slot__input:disabled {
+    background: var(--v2-surface);
+    color: var(--v2-mut);
+    cursor: not-allowed;
+  }
+
+  /* 病句改错 */
+  .grm-textarea {
+    width: 100%;
+    min-height: 108px;
+    padding: 12px;
+    border: 1px solid var(--v2-line);
+    border-radius: var(--v2-radius-md);
+    background: var(--v2-card);
+    color: var(--v2-ink);
+    font-family: inherit;
+    font-size: 16px;
+    line-height: 1.6;
+    resize: vertical;
+  }
+  .grm-textarea::placeholder { color: var(--v2-mut); opacity: 1; }
+  .grm-textarea:focus {
+    outline: none;
+    border-color: var(--v2-brand);
+    box-shadow: 0 0 0 3px var(--v2-soft);
+  }
+  .grm-textarea:disabled {
+    background: var(--v2-surface);
+    color: var(--v2-mut);
+    cursor: not-allowed;
+  }
+
+  /* 规则反馈 */
+  .grm-feedback { display: grid; gap: 10px; }
+  .grm-feedback--ok { background: var(--v2-ok-soft); box-shadow: none; }
+  .grm-feedback--bad { background: var(--v2-bad-soft); box-shadow: none; }
+  .grm-feedback__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .grm-feedback__title {
+    color: var(--v2-ink);
+    font-size: 16px;
+    line-height: 1.5;
+    font-weight: 650;
+  }
+  .grm-feedback--ok .grm-feedback__title { color: var(--v2-ok); }
+  .grm-feedback--bad .grm-feedback__title { color: var(--v2-bad); }
+  .grm-feedback__title:focus { outline: none; }
+  .grm-feedback__text {
+    margin: 0;
+    color: var(--v2-ink);
+    font-size: 14px;
+    line-height: 1.7;
+  }
+  .grm-feedback__save {
+    margin: 0;
+    color: var(--v2-mut);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .grm-feedback__evidence { display: grid; gap: 8px; padding-top: 10px; border-top: 1px solid var(--v2-line); }
+  .grm-feedback__label {
+    color: var(--v2-ink);
+    font-size: 13px;
+    line-height: 1.6;
+    font-weight: 600;
+  }
+  .grm-evidence {
+    display: grid;
+    gap: 2px;
+    padding: 10px 12px;
+    border-radius: var(--v2-radius-sm);
+    background: var(--v2-card);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .grm-evidence__label { color: var(--v2-ink); font-weight: 600; }
+  .grm-evidence__explain { color: var(--v2-mut); }
+  .grm-evidence__source { color: var(--v2-brand); overflow-wrap: anywhere; }
+  .grm-feedback__next {
+    margin: 0;
+    color: var(--v2-ink);
+    font-size: 14px;
+    line-height: 1.6;
+    font-weight: 500;
+  }
+  .grm-ai {
+    margin: 2px 0 0;
+    color: var(--v2-mut);
+    font-size: 12px;
+    line-height: 1.6;
+  }
+
+  /* 出口 */
+  .grm-links {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin-top: 4px;
+  }
+  .grm-links .btn { width: 100%; padding: 0 12px; }
+
+  /* 页面状态 */
+  .grm-state .state-block { padding-top: 24px; }
+  .grm-state .state-block__actions { flex-wrap: wrap; justify-content: center; }
+  .grm-loading-status {
+    margin: 0 0 16px;
+    color: var(--v2-mut);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  .grm-skeleton-card { display: grid; gap: 12px; padding: 20px; }
+  .grm-skeleton-card .skeleton { width: 100%; }
+
+  /* 画质弹层 */
+  .grm-sheet__item { justify-content: space-between; }
+  .grm-sheet__check { color: var(--v2-brand); display: inline-flex; visibility: hidden; }
+  .grm-sheet__item[aria-pressed="true"] .grm-sheet__check { visibility: visible; }
+  .grm-sheet__item[aria-pressed="true"] { color: var(--v2-brand); font-weight: 600; }
+
+  .interaction-notes code { overflow-wrap: anywhere; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .grm-move, .grm-ready { transition: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="phone-stage">
+  <div data-ui="toolbar" data-states="normal,loading,empty,error,forbidden,offline"></div>
+
+  <div class="phone phone--scroll">
+    <div data-ui="statusbar"></div>
+    <div data-ui="navbar" data-title="语法结构" data-back="home.html" data-action="<a class='hit-44' href='settings.html' aria-label='设置'><span data-icon='settings' data-icon-size='22'></span></a>"></div>
+
+    <div class="phone__scroll">
+      <div class="grm-page">
+
+        <header class="grm-head">
+          <p class="grm-kicker"><span data-icon="book" data-icon-size="16"></span>句子实验室</p>
+          <h1 class="grm-title">读懂句子的秘密。</h1>
+          <p class="grm-intro">拆解结构、调整语序，把语法变成表达的底气。</p>
+        </header>
+
+        <!-- 正常态：语法知识树 + 长难句 X 光机 + 规则练习 -->
+        <div data-state-block="normal" class="grm-state">
+
+          <div class="grm-toolbar">
+            <span class="grm-count" id="point-count">语法知识树 · 3 个知识点</span>
+            <button type="button" class="chip grm-quality" data-open-overlay="quality-sheet" aria-haspopup="dialog" aria-label="画质：舒适">
+              <span>画质 · <span class="grm-quality__label" id="quality-label">舒适</span></span>
+              <span data-icon="chevron-down" data-icon-size="14"></span>
+            </button>
+          </div>
+
+          <div class="grm-banner" id="stale-banner" role="status" hidden>
+            <div>
+              <p class="grm-banner__title">内容版本已失效</p>
+              <p class="grm-banner__text">当前版本已下线或发生变化，请重新读取。</p>
+            </div>
+            <button type="button" class="btn btn--secondary btn--sm" id="stale-reload">
+              <span class="btn__spinner" aria-hidden="true"></span><span class="btn__label">重试</span>
+            </button>
+          </div>
+
+          <p class="grm-ready" id="ready-note" role="status" aria-live="polite" hidden>
+            <span data-icon="check-circle" data-icon-size="18"></span>
+            <span class="grm-ready__body">
+              <span class="grm-ready__title">已准备好，可以开始</span>
+              <span>语法结构已更新。</span>
+            </span>
+          </p>
+
+          <div class="grm-stack">
+
+            <div class="grm-banner grm-banner--info" id="no-graph-note" role="status" hidden>
+              <div>
+                <p class="grm-banner__title">当前知识点还没有发布可解析的长难句。</p>
+                <p class="grm-banner__text">可以先在下方完成病句改错，或切换其他知识点。</p>
+              </div>
+            </div>
+
+            <section class="card" aria-labelledby="tree-title">
+              <p class="grm-eyebrow"><span data-icon="book" data-icon-size="14"></span>语法知识树</p>
+              <h2 class="grm-section-title" id="tree-title">选择要拆解的语法点</h2>
+              <div class="grm-points" id="point-list" role="group" aria-label="语法知识点"></div>
+              <p class="grm-switching" id="switching-note" role="status" hidden>正在读取语法结构…</p>
+              <div class="grm-rule" id="rule-detail">
+                <span class="grm-rule__code" id="rule-code">B2 · GR-03</span>
+                <h3 class="grm-rule__title" id="rule-title">定语从句：that 与 which</h3>
+                <p class="grm-rule__copy" id="rule-copy">用从句补充说明前面的名词。</p>
+                <p class="grm-formula" id="rule-formula">名词 + that/which + 不完整从句</p>
+                <p class="grm-rule__meta" id="rule-meta">前置知识点：名词性从句 · 掌握投影：62%</p>
+              </div>
+            </section>
+
+            <section class="card" id="sentence-card" aria-labelledby="sentence-title">
+              <div class="grm-sentence-head">
+                <div class="grm-sentence-head__copy">
+                  <p class="grm-eyebrow"><span data-icon="grid" data-icon-size="14"></span>长难句 X 光机</p>
+                  <h2 class="grm-sentence" id="sentence-title">The book that you lent me last week is on the desk.</h2>
+                </div>
+                <span class="badge badge--mut" id="mode-label">结构图</span>
+              </div>
+              <p class="grm-translation" id="translation">你上周借给我的那本书在桌子上。</p>
+              <p class="grm-notice" id="degraded-note" hidden>结构图加载失败，已降级为线性句法。</p>
+
+              <div class="grm-nodes" id="node-list"></div>
+
+              <div class="grm-relations" id="edge-block">
+                <span class="grm-relations__title" id="edge-title">依存关系 3 条</span>
+                <span class="grm-relations__line" id="edge-list"></span>
+              </div>
+              <div class="grm-relations" id="linear-block" hidden>
+                <span class="grm-relations__title">线性切片</span>
+                <span class="grm-relations__line" id="linear-list"></span>
+              </div>
+
+              <div class="grm-section">
+                <p class="grm-eyebrow"><span data-icon="list" data-icon-size="14"></span>调整句子积木顺序</p>
+                <p class="grm-hint">用上下按钮调整顺序，再提交由服务端规则判定。</p>
+                <div class="grm-blocks" id="block-list"></div>
+                <p class="grm-inline-bad" id="submit-error" role="alert" hidden>
+                  <span data-icon="alert-circle" data-icon-size="18"></span>
+                  <span>句子积木提交失败，当前顺序已保留。</span>
+                </p>
+                <button type="button" class="btn btn--primary btn--block" id="blocks-submit">
+                  <span class="btn__spinner" aria-hidden="true"></span><span class="btn__label">提交规则练习</span>
+                </button>
+              </div>
+
+              <div class="grm-section">
+                <p class="grm-eyebrow"><span data-icon="pencil" data-icon-size="14"></span>按结构槽位仿写</p>
+                <p class="grm-hint">照着结构填入自己的内容；所有槽位填写后可提交。</p>
+                <div class="grm-slots" id="slot-list"></div>
+                <button type="button" class="btn btn--primary btn--block" id="imitate-submit" disabled>
+                  <span class="btn__spinner" aria-hidden="true"></span><span class="btn__label">提交规则练习</span>
+                </button>
+              </div>
+            </section>
+
+            <p class="grm-pack" id="pack-notice" hidden>
+              <span data-icon="list" data-icon-size="14"></span><span id="pack-notice-text"></span>
+            </p>
+
+            <section class="card grm-exercise" id="exercise-card" aria-labelledby="exercise-title">
+              <p class="grm-eyebrow"><span data-icon="pencil" data-icon-size="14"></span>语法练习</p>
+              <h2 class="grm-exercise__prompt" id="exercise-title">选择正确的引导词补全句子：The book ____ you lent me is on the desk.</h2>
+              <p class="grm-exercise__status" id="exercise-status" role="status">本题由服务端规则判分，不使用生成式 AI。</p>
+              <div class="grm-options" id="exercise-options" role="group" aria-label="练习选项"></div>
+            </section>
+
+            <section class="card grm-feedback grm-feedback--ok" id="feedback-card" aria-labelledby="feedback-title" hidden>
+              <div class="grm-feedback__head">
+                <span class="grm-feedback__title" id="feedback-title" tabindex="-1">规则命中</span>
+                <span class="badge badge--mut" id="feedback-source">句子积木</span>
+              </div>
+              <p class="grm-feedback__text" id="feedback-text"></p>
+              <p class="grm-feedback__save" id="feedback-save">答案已保存，记录可在学习报告中查看。</p>
+              <div class="grm-feedback__evidence">
+                <span class="grm-feedback__label">规则依据</span>
+                <div class="grm-evidence">
+                  <span class="grm-evidence__label" id="evidence-label"></span>
+                  <span class="grm-evidence__explain" id="evidence-explain"></span>
+                  <span class="grm-evidence__source" id="evidence-source"></span>
+                </div>
+              </div>
+              <p class="grm-feedback__next" id="feedback-next"></p>
+              <p class="grm-ai">练习方式：规则反馈与自评</p>
+            </section>
+
+            <section class="card" aria-labelledby="correction-title">
+              <p class="grm-eyebrow"><span data-icon="alert-circle" data-icon-size="14"></span>病句改错</p>
+              <h2 class="grm-section-title" id="correction-title">找出并改正下面的病句</h2>
+              <p class="grm-sentence grm-sentence--sm" id="correction-task">The book what you lent me is on the desk.</p>
+              <div class="field">
+                <label class="field__label" for="correction-input">你的改法与依据</label>
+                <textarea class="grm-textarea" id="correction-input" maxlength="12000" placeholder="指出错误并给出规则依据。"></textarea>
+                <span class="field__hint">提交后由版本化规则判定，不使用生成式 AI。</span>
+              </div>
+              <button type="button" class="btn btn--primary btn--block" id="correction-submit" disabled>
+                <span class="btn__spinner" aria-hidden="true"></span><span class="btn__label">提交改错</span>
+              </button>
+            </section>
+
+            <div class="grm-links">
+              <a class="btn btn--secondary" href="b10-report.html">错题与报告</a>
+              <a class="btn btn--secondary" href="b3-writing.html">写作练习</a>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- 加载：读取语法知识树 -->
+        <div data-state-block="loading" class="grm-state" aria-busy="true">
+          <p class="grm-loading-status" role="status" aria-live="polite">正在加载学习内容…</p>
+          <div class="card grm-skeleton-card" aria-hidden="true">
+            <div class="skeleton skeleton-line skeleton-line--sm" style="width: 34%"></div>
+            <div style="display: flex; gap: 8px;">
+              <div class="skeleton skeleton-block" style="height: 44px; width: 38%"></div>
+              <div class="skeleton skeleton-block" style="height: 44px; width: 32%"></div>
+            </div>
+            <div class="skeleton skeleton-block" style="height: 120px; margin-top: 4px"></div>
+          </div>
+          <div class="card grm-skeleton-card" style="margin-top: 16px" aria-hidden="true">
+            <div class="skeleton skeleton-line skeleton-line--sm" style="width: 30%"></div>
+            <div class="skeleton skeleton-block" style="height: 28px; width: 92%"></div>
+            <div class="skeleton skeleton-block" style="height: 56px"></div>
+            <div class="skeleton skeleton-block" style="height: 56px"></div>
+            <div class="skeleton skeleton-block" style="height: 56px"></div>
+          </div>
+        </div>
+
+        <!-- 空：没有可用的句法结构 -->
+        <div data-state-block="empty" class="grm-state">
+          <div class="state-block" role="status">
+            <span class="state-block__icon" data-icon="book" data-icon-size="24"></span>
+            <span class="state-block__title">暂时没有可用的句法结构。</span>
+            <span class="state-block__text">内容准备好后会在这里显示。</span>
+            <span class="state-block__actions">
+              <button type="button" class="btn btn--primary btn--sm" data-retry-state="normal" data-retry-label="正在读取…">
+                <span class="btn__spinner" aria-hidden="true"></span><span class="btn__label">重试</span>
+              </button>
+            </span>
+          </div>
+        </div>
+
+        <!-- 错误：语法知识树不可用 -->
+        <div data-state-block="error" class="grm-state">
+          <div class="state-block" role="alert">
+            <span class="state-block__icon state-block__icon--bad" data-icon="alert-triangle" data-icon-size="24"></span>
+            <span class="state-block__title">语法知识树暂时不可用</span>
+            <span class="state-block__text">请检查网络后重试；当前顺序与草稿不会被清空。</span>
+            <span class="state-block__actions">
+              <button type="button" class="btn btn--primary btn--sm" data-retry-state="normal" data-retry-label="正在重试…">
+                <span class="btn__spinner" aria-hidden="true"></span><span class="btn__label">重试</span>
+              </button>
+            </span>
+          </div>
+        </div>
+
+        <!-- 无权限 -->
+        <div data-state-block="forbidden" class="grm-state">
+          <div class="state-block" role="alert">
+            <span class="state-block__icon state-block__icon--warn" data-icon="lock" data-icon-size="24"></span>
+            <span class="state-block__title">当前会话没有访问权限</span>
+            <span class="state-block__text">内容准备好后会在这里显示。</span>
+            <span class="state-block__actions">
+              <a class="btn btn--primary btn--sm" href="login.html?returnTo=%2Fpages%2Fb3-grammar%2Fb3-grammar">去登录</a>
+            </span>
+          </div>
+        </div>
+
+        <!-- 离线：待同步不等于已结算 -->
+        <div data-state-block="offline" class="grm-state">
+          <div class="state-block" role="alert">
+            <span class="state-block__icon state-block__icon--warn" data-icon="globe" data-icon-size="24"></span>
+            <span class="state-block__title">网络暂时不可用</span>
+            <span class="state-block__text">待同步不等于已结算。</span>
+            <span class="state-block__actions">
+              <button type="button" class="btn btn--primary btn--sm" data-retry-state="normal" data-retry-label="正在重试…">
+                <span class="btn__spinner" aria-hidden="true"></span><span class="btn__label">重试</span>
+              </button>
+            </span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="toast-host" role="status" aria-live="polite"></div>
+
+    <!-- 画质弹层 -->
+    <div class="overlay-layer" id="quality-sheet" aria-hidden="true">
+      <div class="overlay__scrim" data-close></div>
+      <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="quality-title">
+        <div class="sheet__handle"></div>
+        <p class="sheet__title" id="quality-title">画质</p>
+        <p class="sheet__sub">选择适合当前设备的画质。</p>
+        <div class="sheet__list" id="quality-list"></div>
+        <button type="button" class="sheet__cancel" data-close>取消</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="interaction-notes">
+  <h2>交互说明（b3-grammar）</h2>
+  <ul>
+    <li><strong>主题与直达参数</strong> → 工具条「浅色 / 深色」切换整页 token 并写入 <code>localStorage['uispec-theme']</code>；<code>?theme=light|dark</code> 固定主题；<code>?state=normal|loading|empty|error|forbidden|offline</code> 直达页面状态；<code>?mock=degraded|feedback-ok|feedback-bad|stale|no-graph|submit-error|exercise</code> 演示线性句法、提交命中 / 需要修复、版本失效、无可解析长难句、提交失败与已作答的会话练习。截图：<code>b3-grammar-{light,dark}.png</code> 与 <code>b3-grammar-{loading,empty,error,forbidden,offline,degraded,feedback-ok,feedback-bad,stale,no-graph,submit-error,exercise}-{light,dark}.png</code>。</li>
+    <li><strong>页面状态</strong> → 工具条「正常 / 加载 / 空 / 错误 / 无权限 / 离线」：正常为语法知识树、长难句 X 光机、会话练习与规则练习；加载为「正在加载学习内容…」+ 骨架屏（<code>aria-busy</code>）；空为「暂时没有可用的句法结构。」+「内容准备好后会在这里显示。」+「重试」；错误为「语法知识树暂时不可用 / 请检查网络后重试；当前顺序与草稿不会被清空。」+「重试」；无权限为「当前会话没有访问权限 / 内容准备好后会在这里显示。」（说明取 <code>b10.status.noSample</code>）+ 单个「去登录」→ <code>login.html?returnTo=%2Fpages%2Fb3-grammar%2Fb3-grammar</code>（不提供重试）；离线为「网络暂时不可用 / 待同步不等于已结算。」+「重试」。</li>
+    <li><strong>状态恢复</strong> → 空、错误与离线「重试」转圈 → 1.1s 后回到正常态，不弹成功 Toast；无权限不提供重试。</li>
+    <li><strong>语法知识树</strong> → 三个知识点 chip 单选，选中项 brand 描边与 <code>aria-pressed</code>；切换时显示 <code>role=status</code>「正在读取语法结构…」并短暂禁用 chip，随后更新规则标题、说明、结构公式、前置知识点与掌握投影，同时重置句子积木顺序、清空仿写槽位、会话练习作答与反馈。</li>
+    <li><strong>长难句 X 光机</strong> → 展示原句、中文翻译和按角色拆分的结构行（主语 / 定语从句 / 谓语 / 状语）；下方给出「依存关系 n 条」明细，不只依赖颜色表达角色。</li>
+    <li><strong>画质降级</strong> → 顶部「画质 · 舒适」打开底部弹层，四档「精致 / 舒适 / 轻量 / 省资源」；选择「省资源」后句子卡切换为线性句法（隐藏依存关系、显示线性切片与说明「结构图加载失败，已降级为线性句法。」，取 <code>b10.grammar.degraded</code> 原文；真实页在画质为省资源或结构图为降级状态时都用这条），选回其他档位恢复结构图；<code>?mock=degraded</code> 直接以省资源档打开。遮罩、取消与 Esc 均可关闭，选择后焦点回到画质按钮。</li>
+    <li><strong>调整句子积木顺序</strong> → 每行积木带序号与上移 / 下移 44px 按钮，首行上移与末行下移为真实禁用态（透明底、mut 字、虚线边框、not-allowed）；移动后立即更新顺序，可反复调整。</li>
+    <li><strong>提交句子积木</strong> → 主按钮「提交规则练习」（取 <code>b10.grammar.submit</code>，与结构仿写同文案）→ 转圈「正在提交…」→ 0.9s 后出现规则反馈卡：顺序正确为 ok 底「规则命中」，错误为 bad 底「需要修复」并说明原因；反馈卡同时给出「答案已保存，记录可在学习报告中查看。」、规则依据（标签 / 解释 / 原句）与下一步；焦点移到反馈标题。反馈卡用「句子积木」徽标标明来源。</li>
+    <li><strong>提交失败</strong> → <code>?mock=submit-error</code> 在积木区显示 bad 色 <code>role=alert</code>「句子积木提交失败，当前顺序已保留。」，顺序不变，可再次提交；错误在下一次提交开始时清除。</li>
+    <li><strong>按结构槽位仿写</strong> → 两个槽位（主语 / 定语从句）带占位提示；未填满时「提交规则练习」为真实禁用态，填满后可提交，转圈「正在提交…」0.9s 后显示「规则命中」反馈（来源徽标为「结构仿写」）。</li>
+    <li><strong>病句改错</strong> → 固定病句「The book what you lent me is on the desk.」；输入为空时「提交改错」为真实禁用态；提交转圈后按改法给出反馈：含 that 为「规则命中」，否则为「需要修复」并提示 what 不能引导定语从句，来源徽标为「病句改错」。</li>
+    <li><strong>版本失效</strong> → <code>?mock=stale</code> 显示 warn 横幅「内容版本已失效 / 当前版本已下线或发生变化，请重新读取。」+「重试」，两个「提交规则练习」、会话练习选项与「提交改错」全部禁用；点击转圈「正在读取…」0.9s 后横幅消失、提交恢复，顶部显示 ok 色 <code>role=status</code>「已准备好，可以开始 / 语法结构已更新。」2.4s 后淡出。</li>
+    <li><strong>无可解析长难句</strong> → <code>?mock=no-graph</code> 隐藏句子卡与反馈卡，显示 info 横幅「当前知识点还没有发布可解析的长难句。」+「可以先在下方完成病句改错，或切换其他知识点。」，病句改错仍可用（对齐真实页 graph 为空时的分支）。</li>
+    <li><strong>直接演示反馈</strong> → <code>?mock=feedback-ok</code> 直接显示顺序正确的「规则命中」反馈；<code>?mock=feedback-bad</code> 显示「需要修复」反馈与规则依据，便于核对深色与对比度。</li>
+    <li><strong>练习数量</strong> → 会话练习区上方显示一行说明「本次语法练习 2 道」（对齐 <code>packNotice('GRAMMAR', n)</code>；2 道 = 引导词选择 + 已内联为句子积木的排序题）。没有练习数时不显示该行，与真实页一致。</li>
+    <li><strong>会话练习卡</strong> → 对齐真实页 <code>B10ExerciseCard</code> 的 CHOICE 分支：题干「选择正确的引导词补全句子：The book ____ you lent me is on the desk.」+ 三个选项（A that / B what / C who）+ 说明「本题由服务端规则判分，不使用生成式 AI。」；点击选项立即按服务端规则给出反馈（that 为「练习正确：that 在从句中作宾语，修饰 The book。」，其余为「练习需要修复：what 不能引导定语从句，who 只指人。」），选项保持 <code>aria-pressed</code> 选中态，反馈文字用 ok / bad 色但不只依赖颜色；版本失效或提交中所有选项进入真实禁用态。<code>?mock=exercise</code> 直接演示已答对的状态。真实页的 <code>DRAG_SORTER</code> 由本页「调整句子积木顺序」内联承载，不另起一张练习卡，故本原型不覆盖全部题型。</li>
+    <li><strong>出口</strong> → 页尾两个次按钮：错题与报告 → <code>b10-report.html</code>、写作练习 → <code>b3-writing.html</code>；正常态保留，不随反馈出现或消失。</li>
+    <li><strong>导航</strong> → 二级页：导航栏标题「语法结构」+ 返回（<code>backMobile</code>：返回上一页；无历史时回首页，原型 <code>data-back="home.html"</code>）；右上角设置 → <code>settings.html</code>；不显示底部 TabBar（TabBar「练习」指向 <code>b2-practice.html</code>）。</li>
+    <li><strong>文案边界</strong> → 不显示内部错误码、反馈代码、规则版本号或原始题型枚举；知识点的 CEFR 级别只作小字标识；反馈用「规则命中 / 需要修复」与规则依据表达，不只依赖颜色。</li>
+  </ul>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var params = new URLSearchParams(location.search);
+  // 截图工具会在地址后追加 ?theme=…；若前序参数已带 ?，取到分隔符为止
+  function q(name) {
+    var value = params.get(name) || '';
+    var cut = value.indexOf('?');
+    return cut >= 0 ? value.slice(0, cut) : value;
+  }
+  // 截图工具可能把 ?theme=… 追加在已有参数之后；取最后一个 theme 值
+  function themedParam() {
+    var match = /[?&]theme=(light|dark)/g;
+    var found = null;
+    var item;
+    while ((item = match.exec(location.search))) found = item[1];
+    return found;
+  }
+  var THEME_PARAM = themedParam();
+  if (THEME_PARAM) UISpec.setTheme(THEME_PARAM);
+
+  var MOCK = q('mock');
+  var STATE_PARAM = q('state');
+  var VALID_STATES = ['normal', 'loading', 'empty', 'error', 'forbidden', 'offline'];
+  var INITIAL_STATE = VALID_STATES.indexOf(STATE_PARAM) >= 0 ? STATE_PARAM : 'normal';
+
+  // 与 apps/mobile/src/pages/b3-grammar/b3-grammar.vue 的知识点 / 句法结构 / 规则练习一致：
+  // 语法知识树 → 长难句 X 光机 → 句子积木 → 槽位仿写 → 病句改错
+  var POINTS = [
+    {
+      code: 'B2 · GR-03',
+      title: '定语从句：that 与 which',
+      meaning: '用从句补充说明前面的名词。',
+      formula: '名词 + that/which + 不完整从句',
+      prereq: '名词性从句',
+      mastery: 62,
+      sentence: 'The book that you lent me last week is on the desk.',
+      translation: '你上周借给我的那本书在桌子上。',
+      nodes: [
+        { role: '主语', text: 'The book' },
+        { role: '定语从句', text: 'that you lent me last week' },
+        { role: '谓语', text: 'is' },
+        { role: '状语', text: 'on the desk' }
+      ],
+      edges: ['that → book · 修饰', 'lent → me · 间接宾语', 'is → desk · 地点状语'],
+      slices: ['主语：The book', '定语从句：that you lent me last week', '谓语：is on the desk'],
+      blocks: [
+        { id: 'b1', text: 'that you lent me last week' },
+        { id: 'b2', text: 'The book' },
+        { id: 'b3', text: 'is on the desk' }
+      ],
+      correct: ['b2', 'b1', 'b3'],
+      slots: [
+        { label: '主语', placeholder: 'The book' },
+        { label: '定语从句', placeholder: 'that you lent me last week' }
+      ],
+      okText: '句子顺序正确：主语 + 定语从句 + 谓语 + 状语。',
+      badText: '定语从句要紧跟被修饰的名词；当前顺序把谓语放到了从句前。',
+      evidence: {
+        label: '定语从句',
+        explain: 'that 在从句中作宾语，可省略。',
+        source: 'The book that you lent me last week'
+      },
+      next: '下一步：按同一结构仿写一句。'
+    },
+    {
+      code: 'B2 · GR-05',
+      title: '状语从句：although 与 but',
+      meaning: '用让步从句先交代背景，再给出主句。',
+      formula: 'Although + 完整从句，主句',
+      prereq: '简单句与并列句',
+      mastery: 48,
+      sentence: 'Although it was raining, we finished the walk along the river.',
+      translation: '虽然当时在下雨，我们还是走完了沿河的这段路。',
+      nodes: [
+        { role: '让步状语', text: 'Although it was raining' },
+        { role: '主语', text: 'we' },
+        { role: '谓语', text: 'finished the walk' },
+        { role: '状语', text: 'along the river' }
+      ],
+      edges: ['Although → raining · 让步', 'finished → walk · 动宾', 'along → river · 地点修饰'],
+      slices: ['让步状语从句：Although it was raining', '主句：we finished the walk', '地点状语：along the river'],
+      blocks: [
+        { id: 'c1', text: 'we finished the walk' },
+        { id: 'c2', text: 'Although it was raining' },
+        { id: 'c3', text: 'along the river' }
+      ],
+      correct: ['c2', 'c1', 'c3'],
+      slots: [
+        { label: '让步状语', placeholder: 'Although it was raining' },
+        { label: '主句', placeholder: 'we finished the walk' }
+      ],
+      okText: '顺序正确：让步状语从句 + 主句 + 地点状语。',
+      badText: '让步状语从句应放在主句前，并用逗号隔开。',
+      evidence: {
+        label: '让步状语从句',
+        explain: 'although 引导完整从句，不能与 but 连用。',
+        source: 'Although it was raining, we finished the walk.'
+      },
+      next: '下一步：用 although 改写一句自己的经历。'
+    },
+    {
+      code: 'B2 · GR-07',
+      title: '非谓语：doing 与 done',
+      meaning: '用分词短语补充动作的状态或条件。',
+      formula: 'Done + 名词，主句',
+      prereq: '被动语态',
+      mastery: 35,
+      sentence: 'Written in simple English, the story is easy to follow.',
+      translation: '这个故事用简单的英语写成，很容易读懂。',
+      nodes: [
+        { role: '非谓语状语', text: 'Written in simple English' },
+        { role: '主语', text: 'the story' },
+        { role: '谓语', text: 'is' },
+        { role: '表语', text: 'easy to follow' }
+      ],
+      edges: ['Written → story · 逻辑主语', 'is → easy · 表语', 'follow → story · 动宾'],
+      slices: ['非谓语状语：Written in simple English', '主句：the story is easy to follow'],
+      blocks: [
+        { id: 'd1', text: 'is easy to follow' },
+        { id: 'd2', text: 'Written in simple English' },
+        { id: 'd3', text: 'the story' }
+      ],
+      correct: ['d2', 'd3', 'd1'],
+      slots: [
+        { label: '非谓语状语', placeholder: 'Written in simple English' },
+        { label: '主语', placeholder: 'the story' }
+      ],
+      okText: '顺序正确：非谓语状语 + 主语 + 谓语。',
+      badText: '过去分词短语作状语时，逻辑主语应与主句主语一致。',
+      evidence: {
+        label: '非谓语',
+        explain: '过去分词作状语表示被动或完成。',
+        source: 'Written in simple English, the story is easy to follow.'
+      },
+      next: '下一步：用 done 结构描述一本书。'
+    }
+  ];
+
+  var QUALITY = [
+    { id: 'ultra', label: '精致' },
+    { id: 'high', label: '舒适' },
+    { id: 'medium', label: '轻量' },
+    { id: 'performance', label: '省资源' }
+  ];
+
+  /* ---------- 元素 ---------- */
+  var pointList = document.getElementById('point-list');
+  var switchingNote = document.getElementById('switching-note');
+  var ruleDetail = document.getElementById('rule-detail');
+  var ruleCode = document.getElementById('rule-code');
+  var ruleTitle = document.getElementById('rule-title');
+  var ruleCopy = document.getElementById('rule-copy');
+  var ruleFormula = document.getElementById('rule-formula');
+  var ruleMeta = document.getElementById('rule-meta');
+  var sentenceCard = document.getElementById('sentence-card');
+  var sentenceTitle = document.getElementById('sentence-title');
+  var translationEl = document.getElementById('translation');
+  var modeLabel = document.getElementById('mode-label');
+  var degradedNote = document.getElementById('degraded-note');
+  var nodeList = document.getElementById('node-list');
+  var edgeBlock = document.getElementById('edge-block');
+  var edgeTitle = document.getElementById('edge-title');
+  var edgeList = document.getElementById('edge-list');
+  var linearBlock = document.getElementById('linear-block');
+  var linearList = document.getElementById('linear-list');
+  var blockList = document.getElementById('block-list');
+  var slotList = document.getElementById('slot-list');
+  var blocksSubmit = document.getElementById('blocks-submit');
+  var imitateSubmit = document.getElementById('imitate-submit');
+  var submitError = document.getElementById('submit-error');
+  var correctionInput = document.getElementById('correction-input');
+  var correctionSubmit = document.getElementById('correction-submit');
+  var feedbackCard = document.getElementById('feedback-card');
+  var feedbackTitle = document.getElementById('feedback-title');
+  var feedbackSource = document.getElementById('feedback-source');
+  var feedbackText = document.getElementById('feedback-text');
+  var feedbackNext = document.getElementById('feedback-next');
+  var evidenceLabel = document.getElementById('evidence-label');
+  var evidenceExplain = document.getElementById('evidence-explain');
+  var evidenceSource = document.getElementById('evidence-source');
+  var packNotice = document.getElementById('pack-notice');
+  var packNoticeText = document.getElementById('pack-notice-text');
+  var exerciseOptions = document.getElementById('exercise-options');
+  var staleBanner = document.getElementById('stale-banner');
+  var staleReload = document.getElementById('stale-reload');
+  var readyNote = document.getElementById('ready-note');
+  var noGraphNote = document.getElementById('no-graph-note');
+  var qualityLabel = document.getElementById('quality-label');
+  var qualityButton = document.querySelector('.grm-quality');
+  var qualityList = document.getElementById('quality-list');
+  var exerciseStatus = document.getElementById('exercise-status');
+
+  // 会话练习（对齐 B10ExerciseCard 的 CHOICE 分支；服务端规则判分）
+  var EXERCISE = {
+    prompt: '选择正确的引导词补全句子：The book ____ you lent me is on the desk.',
+    options: [
+      { key: 'A', text: 'that' },
+      { key: 'B', text: 'what' },
+      { key: 'C', text: 'who' }
+    ],
+    correct: 'A',
+    okText: '练习正确：that 在从句中作宾语，修饰 The book。',
+    badText: '练习需要修复：what 不能引导定语从句，who 只指人。'
+  };
+  var EXERCISE_DEFAULT_STATUS = '本题由服务端规则判分，不使用生成式 AI。';
+
+  /* ---------- 状态 ---------- */
+  var state = {
+    point: 0,
+    order: [],
+    slots: [],
+    feedback: null,
+    stale: MOCK === 'stale',
+    noGraph: MOCK === 'no-graph',
+    submitError: MOCK === 'submit-error',
+    submitErrorPending: MOCK === 'submit-error',
+    switching: false,
+    quality: MOCK === 'degraded' ? 'performance' : 'high',
+    exercise: null,
+    busy: ''
+  };
+
+  function point() { return POINTS[state.point]; }
+
+  function resetPointInputs() {
+    var item = point();
+    state.order = item.blocks.map(function (block) { return block.id; });
+    state.slots = item.slots.map(function () { return ''; });
+    state.feedback = null;
+    state.exercise = null;
+  }
+
+  /* ---------- 画质 ---------- */
+  function qualityLabelOf(id) {
+    for (var i = 0; i < QUALITY.length; i++) {
+      if (QUALITY[i].id === id) return QUALITY[i].label;
+    }
+    return '舒适';
+  }
+
+  function renderQuality() {
+    qualityLabel.textContent = qualityLabelOf(state.quality);
+    qualityButton.setAttribute('aria-label', '画质：' + qualityLabelOf(state.quality));
+    qualityList.innerHTML = QUALITY.map(function (item) {
+      return '<button type="button" class="sheet__item grm-sheet__item" data-quality="' + item.id + '" aria-pressed="' +
+        String(item.id === state.quality) + '"><span>' + item.label + '</span><span class="grm-sheet__check">' +
+        UISpec.icon('check', 18) + '</span></button>';
+    }).join('');
+  }
+
+  qualityList.addEventListener('click', function (event) {
+    var item = event.target.closest('[data-quality]');
+    if (!item) return;
+    state.quality = item.getAttribute('data-quality');
+    renderQuality();
+    var layer = document.getElementById('quality-sheet');
+    if (layer) UISpec.closeOverlay(layer);
+    render();
+    qualityButton.focus({ preventScroll: true });
+  });
+
+  /* ---------- 渲染 ---------- */
+  function renderPoints() {
+    pointList.innerHTML = POINTS.map(function (item, index) {
+      return '<button type="button" class="chip grm-point" data-point="' + index + '" aria-pressed="' +
+        String(index === state.point) + '"' + (state.switching ? ' disabled' : '') + '>' +
+        item.title + '</button>';
+    }).join('');
+    pointList.setAttribute('aria-busy', String(state.switching));
+    switchingNote.hidden = !state.switching;
+    ruleDetail.classList.toggle('is-loading', state.switching);
+  }
+
+  function renderRule() {
+    var item = point();
+    ruleCode.textContent = item.code;
+    ruleTitle.textContent = item.title;
+    ruleCopy.textContent = item.meaning;
+    ruleFormula.textContent = item.formula;
+    ruleMeta.textContent = '前置知识点：' + item.prereq + ' · 掌握投影：' + item.mastery + '%';
+  }
+
+  function renderGraph() {
+    sentenceCard.hidden = state.noGraph;
+    noGraphNote.hidden = !state.noGraph;
+    if (state.noGraph) return;
+
+    var item = point();
+    var degraded = state.quality === 'performance';
+    sentenceTitle.textContent = item.sentence;
+    translationEl.textContent = item.translation;
+    modeLabel.textContent = degraded ? '线性句法' : '结构图';
+    degradedNote.hidden = !degraded;
+
+    nodeList.innerHTML = item.nodes.map(function (node) {
+      return '<div class="grm-node"><span class="grm-node__role">' + node.role + '</span><span class="grm-node__text">' + node.text + '</span></div>';
+    }).join('');
+
+    edgeBlock.hidden = degraded;
+    linearBlock.hidden = !degraded;
+    edgeTitle.textContent = '依存关系 ' + item.edges.length + ' 条';
+    edgeList.innerHTML = item.edges.map(function (line) { return '<span>' + line + '</span>'; }).join('<br>');
+    linearList.innerHTML = item.slices.map(function (line) { return '<span>' + line + '</span>'; }).join('<br>');
+  }
+
+  function renderBlocks() {
+    var item = point();
+    blockList.innerHTML = state.order.map(function (id, index) {
+      var block = item.blocks.filter(function (entry) { return entry.id === id; })[0];
+      var text = block ? block.text : id;
+      var locked = state.stale || state.busy === 'blocks';
+      return '<div class="grm-block">' +
+        '<span class="grm-block__index">' + (index + 1) + '</span>' +
+        '<span class="grm-block__text">' + text + '</span>' +
+        '<button type="button" class="grm-move" data-block-move="' + index + '" data-dir="-1" aria-label="上移第 ' + (index + 1) + ' 块"' +
+        (locked || index === 0 ? ' disabled' : '') + '>' + UISpec.icon('chevron-up', 18) + '</button>' +
+        '<button type="button" class="grm-move" data-block-move="' + index + '" data-dir="1" aria-label="下移第 ' + (index + 1) + ' 块"' +
+        (locked || index === state.order.length - 1 ? ' disabled' : '') + '>' + UISpec.icon('chevron-down', 18) + '</button>' +
+        '</div>';
+    }).join('');
+  }
+
+  function renderSlots() {
+    var item = point();
+    slotList.innerHTML = item.slots.map(function (slot, index) {
+      return '<div class="grm-slot">' +
+        '<label class="grm-slot__label" for="slot-' + index + '">' + slot.label + '</label>' +
+        '<input class="grm-slot__input" id="slot-' + index + '" data-slot="' + index + '" type="text" ' +
+        'placeholder="' + slot.placeholder + '" value="' + state.slots[index].replace(/"/g, '&quot;') + '"' +
+        (state.stale ? ' disabled' : '') + '>' +
+        '</div>';
+    }).join('');
+  }
+
+  function renderFeedback() {
+    if (!state.feedback) {
+      feedbackCard.hidden = true;
+      return;
+    }
+    var item = point();
+    var view = state.feedback;
+    feedbackCard.hidden = false;
+    feedbackCard.classList.toggle('grm-feedback--ok', view.kind === 'ok');
+    feedbackCard.classList.toggle('grm-feedback--bad', view.kind !== 'ok');
+    feedbackTitle.textContent = view.kind === 'ok' ? '规则命中' : '需要修复';
+    feedbackSource.textContent = view.source;
+    feedbackText.textContent = view.text;
+    feedbackNext.textContent = view.next;
+    evidenceLabel.textContent = item.evidence.label;
+    evidenceExplain.textContent = item.evidence.explain;
+    evidenceSource.textContent = item.evidence.source;
+  }
+
+  function renderStatus() {
+    staleBanner.hidden = !state.stale;
+    noGraphNote.hidden = !state.noGraph || state.feedback !== null;
+    submitError.hidden = !state.submitError;
+  }
+
+  /* 会话练习数：对齐 grammar-reading-pack.ts 的 packNotice('GRAMMAR', n)
+   * mock 会话含 2 道：引导词选择（渲染为练习卡）+ 句子积木排序（已内联）。 */
+  function renderPackNotice() {
+    var count = 2;
+    packNotice.hidden = false;
+    packNoticeText.textContent = '本次语法练习 ' + count + ' 道';
+  }
+
+  function renderExercise() {
+    var locked = state.stale || state.busy !== '';
+    exerciseOptions.innerHTML = EXERCISE.options.map(function (option) {
+      return '<button type="button" class="grm-option" data-exercise="' + option.key + '" aria-pressed="' +
+        String(state.exercise === option.key) + '"' + (locked ? ' disabled' : '') + '>' +
+        '<span class="grm-option__key">' + option.key + ' ·</span><span>' + option.text + '</span>' +
+        '</button>';
+    }).join('');
+    exerciseStatus.textContent = state.exercise === null
+      ? EXERCISE_DEFAULT_STATUS
+      : (state.exercise === EXERCISE.correct ? EXERCISE.okText : EXERCISE.badText);
+    exerciseStatus.style.color = state.exercise === null
+      ? ''
+      : (state.exercise === EXERCISE.correct ? 'var(--v2-ok)' : 'var(--v2-bad)');
+  }
+
+  function renderSubmitStates() {
+    var locked = state.stale;
+    var slotsFilled = state.slots.length > 0 && state.slots.every(function (value) { return value.trim().length > 0; });
+    if (state.busy !== 'blocks') blocksSubmit.disabled = locked || state.noGraph;
+    if (state.busy !== 'imitate') imitateSubmit.disabled = locked || state.noGraph || !slotsFilled;
+    if (state.busy !== 'correction') {
+      correctionSubmit.disabled = locked || correctionInput.value.trim().length === 0;
+      correctionInput.disabled = locked;
+    }
+  }
+
+  function render() {
+    renderPoints();
+    renderRule();
+    renderGraph();
+    renderBlocks();
+    renderSlots();
+    renderFeedback();
+    renderStatus();
+    renderPackNotice();
+    renderExercise();
+    renderSubmitStates();
+  }
+
+  function focusSoon(el) {
+    if (!el) return;
+    try { el.focus(); } catch (e) { /* ignore */ }
+  }
+
+  /* ---------- 切换知识点 ---------- */
+  pointList.addEventListener('click', function (event) {
+    var chip = event.target.closest('[data-point]');
+    if (!chip || state.switching || state.stale || state.busy) return;
+    var index = parseInt(chip.getAttribute('data-point'), 10);
+    if (index === state.point) return;
+    state.switching = true;
+    state.point = index;
+    state.submitError = false;
+    state.submitErrorPending = false;
+    resetPointInputs();
+    render();
+    setTimeout(function () {
+      state.switching = false;
+      render();
+      focusSoon(ruleTitle);
+    }, 600);
+  });
+
+  /* ---------- 句子积木 ---------- */
+  blockList.addEventListener('click', function (event) {
+    var move = event.target.closest('[data-block-move]');
+    if (!move || move.disabled || state.stale || state.busy) return;
+    var index = parseInt(move.getAttribute('data-block-move'), 10);
+    var target = index + parseInt(move.getAttribute('data-dir'), 10);
+    if (target < 0 || target >= state.order.length) return;
+    var swapped = state.order[index];
+    state.order[index] = state.order[target];
+    state.order[target] = swapped;
+    renderBlocks();
+    var buttons = blockList.querySelectorAll('.grm-move');
+    var next = buttons[Math.min(index + 1, buttons.length - 1)];
+    if (next) next.focus({ preventScroll: true });
+  });
+
+  blocksSubmit.addEventListener('click', function () {
+    if (blocksSubmit.disabled || state.busy) return;
+    state.busy = 'blocks';
+    state.submitError = false;
+    UISpec.setBusy(blocksSubmit, true, '正在提交…');
+    renderStatus();
+    renderExercise();
+    setTimeout(function () {
+      UISpec.setBusy(blocksSubmit, false);
+      state.busy = '';
+      if (state.submitErrorPending) {
+        state.submitErrorPending = false;
+        state.submitError = true;
+        renderStatus();
+        renderSubmitStates();
+        focusSoon(submitError);
+        return;
+      }
+      var item = point();
+      var correct = state.order.join(',') === item.correct.join(',');
+      state.feedback = {
+        kind: correct ? 'ok' : 'bad',
+        source: '句子积木',
+        text: correct ? item.okText : item.badText,
+        next: correct ? item.next : '下一步：对照规则依据，再调整一次顺序。'
+      };
+      render();
+      focusSoon(feedbackTitle);
+    }, 900);
+  });
+
+  /* ---------- 槽位仿写 ---------- */
+  slotList.addEventListener('input', function (event) {
+    var input = event.target.closest('[data-slot]');
+    if (!input) return;
+    state.slots[parseInt(input.getAttribute('data-slot'), 10)] = input.value;
+    renderSubmitStates();
+  });
+
+  imitateSubmit.addEventListener('click', function () {
+    if (imitateSubmit.disabled || state.busy) return;
+    state.busy = 'imitate';
+    UISpec.setBusy(imitateSubmit, true, '正在提交…');
+    renderBlocks();
+    renderExercise();
+    setTimeout(function () {
+      UISpec.setBusy(imitateSubmit, false);
+      state.busy = '';
+      var item = point();
+      state.feedback = {
+        kind: 'ok',
+        source: '结构仿写',
+        text: '仿写结构完整：' + item.slots.map(function (slot) { return slot.label; }).join(' + ') + '。',
+        next: item.next
+      };
+      render();
+      focusSoon(feedbackTitle);
+    }, 900);
+  });
+
+  /* ---------- 病句改错 ---------- */
+  correctionInput.addEventListener('input', renderSubmitStates);
+
+  correctionSubmit.addEventListener('click', function () {
+    if (correctionSubmit.disabled || state.busy) return;
+    state.busy = 'correction';
+    UISpec.setBusy(correctionSubmit, true, '正在提交…');
+    renderExercise();
+    setTimeout(function () {
+      UISpec.setBusy(correctionSubmit, false);
+      state.busy = '';
+      var value = correctionInput.value.trim();
+      var fixed = /that/i.test(value);
+      state.feedback = {
+        kind: fixed ? 'ok' : 'bad',
+        source: '病句改错',
+        text: fixed
+          ? '改错正确：what 不能引导定语从句，应改为 that。'
+          : '还需要指出错误位置：what 不能引导定语从句。',
+        next: fixed ? '下一步：在错题与报告中查看同类改错。' : '下一步：对照规则依据，补充你的改法。'
+      };
+      render();
+      focusSoon(feedbackTitle);
+    }, 800);
+  });
+
+  /* ---------- 会话练习（B10ExerciseCard） ---------- */
+  exerciseOptions.addEventListener('click', function (event) {
+    var option = event.target.closest('[data-exercise]');
+    if (!option || option.disabled || state.stale || state.busy) return;
+    var key = option.getAttribute('data-exercise');
+    state.exercise = key;
+    renderExercise();
+    if (key === EXERCISE.correct) focusSoon(document.getElementById('exercise-title'));
+  });
+
+  /* ---------- 版本失效 ---------- */
+  var readyTimer = null;
+
+  function showReadyNote() {
+    if (readyTimer) { clearTimeout(readyTimer); readyTimer = null; }
+    readyNote.classList.remove('is-leaving');
+    readyNote.hidden = false;
+    readyTimer = setTimeout(function () {
+      readyTimer = null;
+      readyNote.classList.add('is-leaving');
+      setTimeout(function () {
+        readyNote.hidden = true;
+        readyNote.classList.remove('is-leaving');
+      }, 200);
+    }, 2400);
+  }
+
+  staleReload.addEventListener('click', function () {
+    if (staleReload.classList.contains('is-busy')) return;
+    UISpec.setBusy(staleReload, true, '正在读取…');
+    setTimeout(function () {
+      UISpec.setBusy(staleReload, false);
+      state.stale = false;
+      MOCK = '';
+      render();
+      showReadyNote();
+      focusSoon(qualityButton);
+    }, 900);
+  });
+
+  /* ---------- 页面级状态重试 ---------- */
+  document.addEventListener('click', function (event) {
+    var btn = event.target.closest('[data-retry-state]');
+    if (!btn) return;
+    event.preventDefault();
+    if (btn.classList.contains('is-busy')) return;
+    UISpec.setBusy(btn, true, btn.getAttribute('data-retry-label') || '正在重试…');
+    setTimeout(function () {
+      UISpec.setBusy(btn, false);
+      UISpec.setScreenState(btn.getAttribute('data-retry-state'));
+    }, 1100);
+  });
+
+  /* 离开正常态：关闭弹层、结束未完成的提交，避免延迟反馈 */
+  document.addEventListener('uispec:state', function (event) {
+    if (event.detail.state === 'normal') { render(); return; }
+    UISpec.closeAllOverlays();
+    if (state.busy) {
+      if (state.busy === 'blocks') UISpec.setBusy(blocksSubmit, false);
+      if (state.busy === 'imitate') UISpec.setBusy(imitateSubmit, false);
+      if (state.busy === 'correction') UISpec.setBusy(correctionSubmit, false);
+      state.busy = '';
+      render();
+    }
+  });
+
+  /* ---------- 初始渲染 ---------- */
+  resetPointInputs();
+  if (MOCK === 'exercise') state.exercise = EXERCISE.correct;
+  if (MOCK === 'feedback-ok') {
+    state.order = point().correct.slice();
+    state.feedback = {
+      kind: 'ok',
+      source: '句子积木',
+      text: point().okText,
+      next: point().next
+    };
+  } else if (MOCK === 'feedback-bad') {
+    state.feedback = {
+      kind: 'bad',
+      source: '句子积木',
+      text: point().badText,
+      next: '下一步：对照规则依据，再调整一次顺序。'
+    };
+  }
+  renderQuality();
+  render();
+
+  if (INITIAL_STATE !== 'normal') {
+    document.addEventListener('DOMContentLoaded', function () {
+      UISpec.setScreenState(INITIAL_STATE);
+    });
+  }
+})();
+</script>
+
+</body>
+</html>

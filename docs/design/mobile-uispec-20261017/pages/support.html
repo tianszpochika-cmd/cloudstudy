@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>客服与帮助 · 语学星移动端 UI 稿</title>
+<link rel="stylesheet" href="../shared.css">
+<script src="../shared.js"></script>
+<style>
+  /* 仅本页布局；组件与 token 全部来自 shared.css */
+  .sp-page { padding: 4px 20px 28px; }
+  .sp-page [hidden] { display: none !important; }
+
+  /* 页头（MobilePageHeader：kicker + 标题）；说明行按 support.vue 隐藏 */
+  .sp-head { margin: 4px 0 20px; }
+  .sp-kicker {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0 0 4px;
+    color: var(--v2-brand);
+    font-size: 13px;
+    line-height: 1.6;
+    font-weight: 600;
+    letter-spacing: .04em;
+  }
+  .sp-kicker .icon { flex: none; }
+  .sp-title {
+    margin: 0;
+    color: var(--v2-ink);
+    font-size: 28px;
+    line-height: 1.4;
+    font-weight: 650;
+    letter-spacing: -.01em;
+  }
+
+  /* 卡片 */
+  .sp-card { display: grid; gap: 12px; }
+  .sp-card + .sp-card { margin-top: 16px; }
+  .sp-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--v2-mut);
+    font-size: 12px;
+    line-height: 1.6;
+    font-weight: 600;
+    letter-spacing: .04em;
+  }
+  .sp-eyebrow .icon { flex: none; }
+  .sp-note {
+    margin: 0;
+    color: var(--v2-mut);
+    font-size: 14px;
+    line-height: 1.75;
+    overflow-wrap: anywhere;
+  }
+  .sp-supportno { font-variant-numeric: tabular-nums; }
+
+  /* 卡内状态（对齐 support.vue 的加载 / 错误 / 空分支） */
+  .sp-state {
+    margin: 0;
+    color: var(--v2-mut);
+    font-size: 14px;
+    line-height: 1.75;
+    overflow-wrap: anywhere;
+  }
+  .sp-state--bad { color: var(--v2-bad); }
+  .sp-state--empty {
+    padding: 12px 14px;
+    border: 1px dashed var(--v2-line);
+    border-radius: var(--v2-radius-md);
+  }
+
+  /* 工单列表：两行纯文本，无徽标、无预计处理时间、无详情入口 */
+  .sp-list { display: grid; }
+  .sp-ticket {
+    display: grid;
+    gap: 2px;
+    padding: 12px 0;
+    border-top: 1px solid var(--v2-line);
+  }
+  .sp-list > .sp-ticket:first-child { border-top: 0; padding-top: 0; }
+  .sp-list > .sp-ticket:last-child { padding-bottom: 0; }
+  .sp-ticket__name {
+    color: var(--v2-ink);
+    font-size: 16px;
+    line-height: 1.5;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+  }
+  .sp-ticket__meta {
+    color: var(--v2-mut);
+    font-size: 13px;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+  }
+
+  /* 卡片底部唯一的整宽 opt 按钮：文字在前，refresh 图标在后 */
+  .sp-refresh {
+    min-height: 48px;
+    padding: 0 16px;
+    border: 1px solid var(--v2-line);
+    border-radius: var(--v2-radius-md);
+    background: var(--v2-card);
+    color: var(--v2-ink);
+    font-size: 16px;
+    font-weight: 600;
+  }
+  .sp-refresh:hover:not(:disabled) { border-color: var(--v2-brand); }
+  .sp-refresh:focus-visible { outline: none; box-shadow: var(--v2-focus); }
+  .sp-refresh:disabled {
+    background: var(--v2-surface);
+    color: var(--v2-mut);
+    border: 1px dashed var(--v2-line);
+    cursor: not-allowed;
+  }
+  .sp-refresh.is-busy { cursor: progress; }
+  .sp-refresh.is-busy .btn__spinner { display: inline-block; }
+  .sp-refresh.is-busy .sp-refresh__icon { display: none; }
+  .sp-refresh__icon { display: inline-flex; }
+  .sp-refresh .btn__spinner { width: 16px; height: 16px; }
+
+  /* 无权限时只保留页头与登录入口（真实页会直接跳转登录） */
+  html[data-screen-state="forbidden"] .sp-main { display: none; }
+
+  /* 高对比度下的边框加强（仅本页预览） */
+  html[data-contrast="high"] .sp-page .card { border: 1px solid var(--v2-ink); box-shadow: none; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sp-refresh.is-busy .btn__spinner { animation: none; opacity: .6; }
+  }
+</style>
+</head>
+<body>
+
+<div class="phone-stage">
+  <div data-ui="toolbar" data-states="normal,loading,empty,error,forbidden"></div>
+
+  <div class="phone phone--scroll" id="phone">
+    <div data-ui="statusbar"></div>
+    <div data-ui="navbar" data-title="客服与帮助" data-back="profile.html"></div>
+
+    <div class="phone__scroll">
+      <div class="sp-page">
+
+        <!-- MobilePageHeader：kicker / 标题；说明行按 support.vue 隐藏 -->
+        <header class="sp-head">
+          <p class="sp-kicker"><span data-icon="help" data-icon-size="16"></span>我们来帮你</p>
+          <h1 class="sp-title">有疑问，我们一起解决。</h1>
+        </header>
+
+        <div class="sp-main" id="sp-main">
+
+          <!-- 客服与帮助：仅 eyebrow 与三行说明，没有标题与新建工单按钮 -->
+          <section class="card sp-card" aria-label="客服与帮助">
+            <span class="sp-eyebrow"><span data-icon="help" data-icon-size="14"></span>客服与帮助</span>
+            <p class="sp-note">暂不能提交新工单，可查看已有工单。</p>
+            <p class="sp-note" id="sp-ticket-copy"></p>
+            <p class="sp-note sp-supportno" id="sp-supportno" hidden></p>
+          </section>
+
+          <!-- 我的工单：读取 / 错误 / 空都在卡内，底部只有一个整宽刷新按钮 -->
+          <section class="card sp-card" aria-label="我的工单">
+            <span class="sp-eyebrow"><span data-icon="ticket" data-icon-size="14"></span>我的工单</span>
+
+            <p class="sp-state" id="sp-loading" role="status" hidden>正在读取工单…</p>
+            <p class="sp-state sp-state--bad" id="sp-read-error" role="alert" hidden>工单暂不可用，请重试。</p>
+            <p class="sp-state sp-state--empty" id="sp-inline-empty" role="status" hidden>暂无可见工单。</p>
+
+            <div class="sp-list" id="sp-list"></div>
+
+            <button type="button" class="btn btn--block sp-refresh" id="sp-refresh">
+              <span class="btn__label">刷新</span>
+              <span class="btn__spinner" aria-hidden="true"></span>
+              <span class="sp-refresh__icon" data-icon="refresh" data-icon-size="16"></span>
+            </button>
+          </section>
+
+        </div>
+
+        <!-- 无权限：未登录（真实页 ensureMobilePageAccess 会直接跳转登录） -->
+        <div data-state-block="forbidden">
+          <div class="state-block" role="alert">
+            <span class="state-block__icon state-block__icon--warn" data-icon="lock" data-icon-size="24"></span>
+            <span class="state-block__title">登录后查看你的帮助请求。</span>
+            <span class="state-block__actions">
+              <a class="btn btn--primary btn--sm" href="login.html?returnTo=%2Fpages%2Fsupport%2Fsupport">去登录</a>
+            </span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="toast-host" role="status" aria-live="polite"></div>
+  </div>
+</div>
+
+<div class="interaction-notes">
+  <h2>交互说明（support）</h2>
+  <ul>
+    <li>主题与直达参数 → 工具条「浅色 / 深色」切换整页 token 并写入 <code>localStorage['uispec-theme']</code>；<code>?theme=light|dark</code> 固定主题；<code>?state=normal|loading|empty|error|forbidden</code> 直达页面状态；<code>?mock=no-tickets|load-error|refresh-error|board</code> 演示无工单、首次读取失败、刷新失败后的结果、显示支持编号。截图（每项 <code>?theme=light|dark</code> 各一张）：<code>support-{light,dark}.png</code>；<code>support-{loading,empty,error,forbidden}-{light,dark}.png</code>；<code>support-{no-tickets,load-error,refresh-error,board}-{light,dark}.png</code>。</li>
+    <li>页头与导航 → 导航栏「客服与帮助」（<code>pages.json</code> 标题）+ 返回 <code>profile.html</code>（真实入口「我的 › 帮助中心」）；<code>MobilePageHeader</code> 的 kicker「我们来帮你」（<code>ZH_KICKERS</code>）、标题「有疑问，我们一起解决。」；<code>support.vue</code> 用 <code>.mobile-page-description{display:none}</code> 隐藏说明行，本稿不渲染说明「选择问题类型，查看与跟进你的帮助请求。」；不显示底部 TabBar。</li>
+    <li>客服与帮助卡 → 只有 eyebrow：help 图标 +「客服与帮助」，没有标题「提交问题」；正文三行依次为「暂不能提交新工单，可查看已有工单。」（<code>support.vue</code> 原文）、<code>ticketNotice(closure)</code>、<code>supportNotice(closure)</code>（有编号时才显示）。默认 mock 的 board 为 <code>null</code>，第二行逐字显示 <code>ticketNotice</code> 的兜底文案「受控正文尚未批准。这里不能提交一份客服能够理解并闭环处理的工单。只有摘要的记录会标成信息不足。」；不提供「新建工单」按钮与「提交入口暂未开放。」。</li>
+    <li>支持编号 → <code>?mock=board</code> 时第二行显示 mock 的 <code>ticketCopy</code>「工单提交暂未开放。你可以在这里查看已有工单的编号与处理状态。」，第三行显示「支持编号 YS-2026-1042」（<code>supportNotice(closure)</code>，纯文本无图标）；默认 mock 无编号，该行隐藏。</li>
+    <li>我的工单卡 → 只有 eyebrow：ticket 图标 +「我的工单」，没有「工单记录」、标题「我的工单」、说明「按类型筛选，点开查看详情。」与数量徽标；没有类型筛选 chip，也不读取 <code>?filter=</code>。卡片底部是唯一的整宽 opt 按钮：文字在前、refresh 图标在后；出错时文字为「重试」，其余为「刷新」；忙碌时只转圈并禁用，文字不变。</li>
+    <li>工单行 → 两行纯文本：「工单 {ticketId}」+「{categoryNames} · {stateNames}」，分类与状态中文名对齐 <code>support.vue</code>；未知分类回落「历史分类」、未知状态回落「历史状态」。没有状态徽标、预计处理时间、chevron、整行点击或「工单详情」弹层（vue 没有详情入口）。</li>
+    <li>读取失败 → 对齐 vue <code>load()</code> 的 catch：清空列表，卡内显示 danger 色单行「工单暂不可用，请重试。」（<code>role="alert"</code>），底部按钮文字改为「重试」，点击后重新读取；成功时不弹 Toast。卡内不再有第二个「重试」。<code>?mock=load-error</code> 打开即为该结果，点「重试」恢复列表；<code>?mock=refresh-error</code> 打开即处于首次刷新失败后的结果（列表清空、按钮为「重试」），点「重试」成功恢复。</li>
+    <li>空态 → 正常页面，卡内一行虚线框「暂无可见工单。」（<code>support.vue</code> 原文），底部保留「刷新」；不显示整页空态或「提交问题后，可以在这里查看处理进度。」。刷新成功后若仍无工单保持该行。</li>
+    <li>页面状态 → 加载：正常页面 + 卡内「正在读取工单…」（<code>role="status"</code>），按钮禁用且文字保持「刷新」并转圈；错误：正常页面（第一张卡照常），只在「我的工单」卡内显示错误行与「重试」，没有整页错误块；空：正常页面 + 卡内虚线空态与「刷新」；无权限：仅「登录后查看你的帮助请求。」+「去登录」→ <code>login.html?returnTo=%2Fpages%2Fsupport%2Fsupport</code>（真实页 <code>ensureMobilePageAccess</code> 未登录直接跳转，本态为<strong>设计新增</strong>）。<code>document.title</code> 同步：正常「客服与帮助」、加载「正在读取工单…」、空「暂无可见工单」、错误「工单暂不可用，请重试。」、无权限「登录后查看你的帮助请求。」。</li>
+    <li>状态恢复 → 切换状态会取消未完成的读取计时并恢复按钮；错误与空态「重试 / 刷新」转圈后回到可读结果，不弹成功 Toast；切回正常态按 <code>?mock</code> 重新预置列表与支持编号。</li>
+    <li>登录门禁 → 对齐真实页 <code>onShow</code>：先 <code>ensureMobilePageAccess</code>，未登录直接跳转登录页，不渲染本页；原型以无权限态承载该分支。</li>
+    <li>文案边界 → 不显示原始分类 / 状态枚举、内部错误码、工单正文或受控流程说明；工单编号与支持编号为用户可读的 mock；状态只用文字表达，不使用颜色徽标。</li>
+  </ul>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  /* 本页额外的线性图标（路径对齐 apps/mobile/src/theme/v2-icons.ts），
+   * 只在本页注册，不改 shared.js。 */
+  if (window.UISpec && UISpec.icons) {
+    if (!UISpec.icons.help) UISpec.icons.help = '<circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.6M12 17h.01"/>';
+    if (!UISpec.icons.ticket) UISpec.icons.ticket = '<path d="M3 8a2 2 0 0 0 2-2h14a2 2 0 0 0 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 0-2 2H5a2 2 0 0 0-2-2v-2a2 2 0 0 0 0-4z"/><path d="M14 6v12" stroke-dasharray="2 2.5"/>';
+  }
+
+  var params = new URLSearchParams(location.search);
+  function q(name) {
+    var value = params.get(name) || '';
+    var cut = value.indexOf('?');
+    return cut >= 0 ? value.slice(0, cut) : value;
+  }
+  function themedParam() {
+    var match = /[?&]theme=(light|dark)/g;
+    var found = null;
+    var item;
+    while ((item = match.exec(location.search))) found = item[1];
+    return found;
+  }
+  var THEME_PARAM = themedParam();
+  if (THEME_PARAM) UISpec.setTheme(THEME_PARAM);
+
+  var MOCK = q('mock');
+  var STATE_PARAM = q('state');
+  var VALID_STATES = ['normal', 'loading', 'empty', 'error', 'forbidden'];
+  var INITIAL_STATE = VALID_STATES.indexOf(STATE_PARAM) >= 0 ? STATE_PARAM : 'normal';
+
+  /* 对齐 apps/mobile/src/pages/support/support.vue 与 api/support.ts：
+   * loadMobileSupportDesk() 读取工单摘要与 closure board；
+   * 读取失败时 tickets 清空并显示卡内错误；当前版本不能提交新工单。 */
+
+  var CATEGORY_LABELS = {
+    CONTENT_CORRECTION: '内容纠错',
+    ACCOUNT_ACCESS: '账号访问',
+    BILLING: '订单权益',
+    LEARNING_DATA: '学习记录',
+    PRIVACY_REQUEST: '隐私请求',
+    TECHNICAL: '设备问题'
+  };
+  var STATE_LABELS = {
+    OPEN: '已提交',
+    ACKNOWLEDGED: '已受理',
+    IN_PROGRESS: '处理中',
+    WAITING_CUSTOMER: '等待补充',
+    RESOLVED: '已解决',
+    CLOSED: '已关闭'
+  };
+
+  /* ticketNotice() 的兜底文案（apps/mobile/src/domain/it7-closure.ts，逐字保留） */
+  var TICKET_NOTICE_FALLBACK = '受控正文尚未批准。这里不能提交一份客服能够理解并闭环处理的工单。只有摘要的记录会标成信息不足。';
+  /* ?mock=board 时 closure board 的已批准正文 */
+  var BOARD_TICKET_COPY = '工单提交暂未开放。你可以在这里查看已有工单的编号与处理状态。';
+
+  function categoryLabel(code) {
+    return CATEGORY_LABELS[String(code || '').toUpperCase()] || '历史分类';
+  }
+  function stateLabel(code) {
+    return STATE_LABELS[String(code || '').toUpperCase()] || '历史状态';
+  }
+
+  /* 工单 mock（摘要字段对齐 MobileSupportTicket） */
+  var TICKETS = [
+    { ticketId: 'YX-2410-0186', categoryCode: 'CONTENT_CORRECTION', state: 'IN_PROGRESS' },
+    { ticketId: 'YX-2410-0142', categoryCode: 'ACCOUNT_ACCESS', state: 'WAITING_CUSTOMER' },
+    { ticketId: 'YX-2409-0971', categoryCode: 'BILLING', state: 'RESOLVED' },
+    { ticketId: 'YX-2409-0803', categoryCode: 'TECHNICAL', state: 'CLOSED' }
+  ];
+
+  function copy(value) { return JSON.parse(JSON.stringify(value)); }
+
+  var state = {
+    tickets: copy(TICKETS),
+    status: 'ready',
+    busy: false
+  };
+
+  var gen = 0;
+  function later(fn, ms) {
+    var g = gen;
+    setTimeout(function () { if (g === gen) fn(); }, ms);
+  }
+
+  var $ = function (id) { return document.getElementById(id); };
+  var refreshBtn = $('sp-refresh');
+  var refreshLabel = refreshBtn.querySelector('.btn__label');
+  var loadingEl = $('sp-loading');
+  var readError = $('sp-read-error');
+  var inlineEmpty = $('sp-inline-empty');
+  var listEl = $('sp-list');
+  var ticketCopyEl = $('sp-ticket-copy');
+  var supportNoEl = $('sp-supportno');
+
+  /* ---------- 渲染 ---------- */
+  function renderList() {
+    listEl.innerHTML = state.tickets.map(function (ticket) {
+      return '<div class="sp-ticket">' +
+        '<span class="sp-ticket__name">工单 ' + ticket.ticketId + '</span>' +
+        '<span class="sp-ticket__meta">' + categoryLabel(ticket.categoryCode) + ' · ' + stateLabel(ticket.state) + '</span>' +
+      '</div>';
+    }).join('');
+  }
+
+  function render() {
+    var loading = state.status === 'loading';
+    var busy = state.busy || loading;
+    loadingEl.hidden = !loading;
+    readError.hidden = state.status !== 'error';
+    inlineEmpty.hidden = state.status !== 'empty';
+    listEl.hidden = state.status !== 'ready' || state.tickets.length === 0;
+    refreshLabel.textContent = state.status === 'error' ? '重试' : '刷新';
+    refreshBtn.disabled = busy;
+    refreshBtn.classList.toggle('is-busy', busy);
+    refreshBtn.setAttribute('aria-busy', String(busy));
+  }
+
+  function renderBoard() {
+    var board = MOCK === 'board'
+      ? { ticketCopy: BOARD_TICKET_COPY, supportNumber: 'YS-2026-1042' }
+      : null;
+    ticketCopyEl.textContent = (board && board.ticketCopy) || TICKET_NOTICE_FALLBACK;
+    var notice = board && board.supportNumber ? '支持编号 ' + board.supportNumber : '';
+    supportNoEl.textContent = notice;
+    supportNoEl.hidden = !notice;
+  }
+
+  /* ---------- 读取 ---------- */
+  function load() {
+    if (state.busy) return;
+    state.busy = true;
+    state.status = 'loading';
+    /* 对齐 vue load()：读取前清空旧列表 */
+    state.tickets = [];
+    renderList();
+    render();
+    later(function () {
+      /* 失败 mock 只作用于首次预置；之后点「重试 / 刷新」按 vue 的成功分支恢复 */
+      state.busy = false;
+      state.tickets = MOCK === 'no-tickets' ? [] : copy(TICKETS);
+      state.status = state.tickets.length ? 'ready' : 'empty';
+      renderList();
+      render();
+    }, 900);
+  }
+
+  refreshBtn.addEventListener('click', load);
+
+  /* ---------- 状态预置 ---------- */
+  function applyPreset() {
+    gen += 1;
+    state.busy = false;
+    if (MOCK === 'no-tickets') {
+      state.tickets = [];
+      state.status = 'empty';
+    } else if (MOCK === 'load-error' || MOCK === 'refresh-error') {
+      /* refresh-error 预置为「首次刷新失败后」的结果，便于直接截图与演示 */
+      state.tickets = [];
+      state.status = 'error';
+    } else {
+      state.tickets = copy(TICKETS);
+      state.status = 'ready';
+    }
+    renderBoard();
+    renderList();
+    render();
+  }
+
+  document.addEventListener('uispec:state', function (event) {
+    gen += 1;
+    state.busy = false;
+    var next = event.detail.state;
+    if (next === 'normal') {
+      applyPreset();
+    } else if (next === 'loading') {
+      state.tickets = [];
+      state.status = 'loading';
+      renderList();
+      render();
+    } else if (next === 'empty') {
+      state.tickets = [];
+      state.status = 'empty';
+      renderList();
+      render();
+    } else if (next === 'error') {
+      state.tickets = [];
+      state.status = 'error';
+      renderList();
+      render();
+    }
+    var titles = {
+      normal: '客服与帮助',
+      loading: '正在读取工单…',
+      empty: '暂无可见工单',
+      error: '工单暂不可用，请重试。',
+      forbidden: '登录后查看你的帮助请求。'
+    };
+    document.title = (titles[next] || '客服与帮助') + ' · 语学星移动端 UI 稿';
+  });
+
+  /* ---------- 初始渲染 ---------- */
+  applyPreset();
+
+  if (INITIAL_STATE !== 'normal') {
+    document.addEventListener('DOMContentLoaded', function () {
+      UISpec.setScreenState(INITIAL_STATE);
+    });
+  }
+})();
+</script>
+</body>
+</html>

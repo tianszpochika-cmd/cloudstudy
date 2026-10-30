@@ -1,0 +1,1165 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>设置 · 语学星移动端 UI 稿</title>
+<link rel="stylesheet" href="../shared.css">
+<script src="../shared.js"></script>
+<style>
+  /* 仅本页布局；组件与 token 全部来自 shared.css */
+  .st-page { padding: 4px 20px 28px; }
+  .st-page [hidden] { display: none !important; }
+
+  /* 页头 */
+  .st-head { margin: 4px 0 20px; }
+  .st-kicker {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0 0 4px;
+    color: var(--v2-brand);
+    font-size: 13px;
+    line-height: 1.6;
+    font-weight: 600;
+    letter-spacing: .04em;
+  }
+  .st-kicker .icon { flex: none; }
+  .st-title {
+    margin: 0;
+    color: var(--v2-ink);
+    font-size: 28px;
+    line-height: 1.4;
+    font-weight: 650;
+    letter-spacing: -.01em;
+  }
+  .st-intro { margin: 6px 0 0; color: var(--v2-mut); font-size: 14px; line-height: 1.75; }
+
+  /* 卡片通用（对齐 settings.vue 的 v2-settings-card） */
+  .st-card { display: grid; gap: 10px; }
+  .st-card + .st-card { margin-top: 16px; }
+  .st-cardhead { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+  .st-cardhead__titles { display: grid; gap: 2px; min-width: 0; }
+  .st-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--v2-mut);
+    font-size: 12px;
+    line-height: 1.6;
+    font-weight: 600;
+    letter-spacing: .04em;
+  }
+  .st-eyebrow .icon { flex: none; }
+  .st-cardtitle { margin: 0; color: var(--v2-ink); font-size: 16px; line-height: 1.5; font-weight: 600; }
+  .st-cardlink {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    min-height: 44px;
+    margin: -10px -4px -10px 0;
+    padding: 0 4px;
+    border-radius: var(--v2-radius-sm);
+    color: var(--v2-brand);
+    font-size: 13px;
+    line-height: 1.6;
+    font-weight: 500;
+    text-decoration: none;
+  }
+  .st-cardlink:hover { color: var(--v2-brand2); }
+  .st-cardlink:focus-visible { outline: none; box-shadow: var(--v2-focus); }
+  .st-cardlink .icon { flex: none; }
+
+  .st-note { margin: 0; color: var(--v2-mut); font-size: 13px; line-height: 1.7; }
+  .st-label { display: block; margin: 4px 0 0; color: var(--v2-ink); font-size: 14px; font-weight: 500; line-height: 1.6; }
+  .st-label__aside { color: var(--v2-mut); font-size: 12px; font-weight: 400; }
+
+  /* 只读资料行 */
+  .st-rows { display: grid; }
+  .st-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-height: 44px;
+    padding: 6px 0;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  .st-rows > .st-row + .st-row,
+  .st-rows > .st-link + .st-row,
+  .st-rows > .st-row + .st-link { border-top: 1px solid var(--v2-line); }
+  .st-row__label { color: var(--v2-mut); min-width: 0; }
+  .st-row__value { color: var(--v2-ink); font-weight: 500; text-align: right; overflow-wrap: anywhere; }
+  .st-row__value.is-quiet { color: var(--v2-mut); font-weight: 400; }
+
+  /* 分段控件：整行三 / 四等分 */
+  .st-seg .segmented__item { font-size: 14px; padding: 0 4px; }
+
+  /* 选项 chip 行 */
+  .st-chiprow { display: flex; flex-wrap: wrap; gap: 8px; }
+  .st-chiprow .chip { min-height: 40px; }
+
+  /* 带箭头的出口行 */
+  .st-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    min-height: 48px;
+    padding: 8px 0;
+    color: var(--v2-brand);
+    font-size: 14px;
+    line-height: 1.6;
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .st-link:hover { color: var(--v2-brand2); }
+  .st-link:focus-visible { outline: none; box-shadow: var(--v2-focus); border-radius: var(--v2-radius-sm); }
+  .st-link .icon { flex: none; color: var(--v2-mut); }
+
+  /* 开关行 */
+  .st-switchrow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-height: 52px;
+    padding: 6px 0;
+  }
+  .st-rows > .st-switchrow + .st-switchrow,
+  .st-rows > .st-row + .st-switchrow,
+  .st-rows > .st-switchrow + .st-row { border-top: 1px solid var(--v2-line); }
+  .st-switchrow__body { flex: 1 1 auto; min-width: 0; }
+  .st-switchrow__title { display: flex; align-items: center; gap: 6px; color: var(--v2-ink); font-size: 14px; line-height: 1.6; }
+  .st-switchrow__desc { margin: 1px 0 0; color: var(--v2-mut); font-size: 13px; line-height: 1.6; }
+  .st-rowstate { flex: none; color: var(--v2-mut); font-size: 12px; line-height: 1.6; font-variant-numeric: tabular-nums; }
+
+  /* 时间选择 */
+  .st-times { display: flex; flex-wrap: wrap; gap: 12px; padding-top: 2px; }
+  .st-time {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 44px;
+    padding: 0 14px;
+    border: 1px solid var(--v2-line);
+    border-radius: var(--v2-radius-md);
+    background: var(--v2-card);
+    color: var(--v2-ink);
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    cursor: pointer;
+  }
+  .st-time:hover { border-color: var(--v2-brand); }
+  .st-time:focus-visible { outline: none; box-shadow: var(--v2-focus); }
+  .st-time:disabled { background: var(--v2-surface); color: var(--v2-mut); border-color: transparent; cursor: not-allowed; }
+  .st-time .icon { flex: none; color: var(--v2-mut); }
+
+  .st-divider { display: grid; gap: 8px; margin-top: 6px; padding-top: 14px; border-top: 1px solid var(--v2-line); }
+
+  /* 反馈条 / 内联状态 */
+  .st-feedback {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 12px 14px;
+    border-radius: var(--v2-radius-md);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .st-feedback:focus { outline: none; }
+  .st-feedback .icon { flex: none; margin-top: 1px; }
+  .st-feedback__body { flex: 1 1 180px; min-width: 0; overflow-wrap: anywhere; }
+  .st-feedback--ok { background: var(--v2-ok-soft); color: var(--v2-ok); }
+  .st-feedback--bad { background: var(--v2-bad-soft); color: var(--v2-bad); }
+  .st-feedback--warn { background: var(--v2-warn-soft); color: var(--v2-warn); }
+  .st-feedback--info { background: var(--v2-soft); color: var(--v2-ink); }
+  .st-feedback .btn { flex: none; margin-left: auto; }
+
+  .st-savebar { display: grid; gap: 8px; margin-top: 6px; }
+  .st-hint { margin: 0; color: var(--v2-mut); font-size: 12px; line-height: 1.6; }
+
+  /* 学习同意的行内确认 */
+  .st-confirm-actions { display: flex; gap: 12px; }
+  .st-confirm-actions .btn { flex: 1 1 0; }
+
+  /* 高对比度：加强边框与正文对比（仅本页预览效果） */
+  html[data-contrast="high"] .st-page .card { border: 1px solid var(--v2-ink); box-shadow: none; }
+  html[data-contrast="high"] .st-page .st-note,
+  html[data-contrast="high"] .st-page .st-row__label,
+  html[data-contrast="high"] .st-page .st-switchrow__desc { color: var(--v2-ink); }
+  html[data-contrast="high"] .st-page .chip:not([aria-pressed="true"]),
+  html[data-contrast="high"] .st-page .st-time,
+  html[data-contrast="high"] .st-page .segmented { border: 1px solid var(--v2-ink); }
+
+  /* 动效偏好：只影响本页过渡时长 */
+  html[data-motion="reduced"] .phone { --v2-motion-fast: 60ms; --v2-motion-base: 120ms; --v2-motion-slow: 180ms; }
+  html[data-motion="off"] .phone { --v2-motion-fast: 0ms; --v2-motion-base: 0ms; --v2-motion-slow: 0ms; }
+
+  /* 真实页没有整页错误 / 离线页：卡片始终渲染；无权限时只保留标题与「去登录」 */
+  html[data-screen-state="forbidden"] .st-main { display: none; }
+</style>
+</head>
+<body>
+
+<div class="phone-stage">
+  <div data-ui="toolbar" data-states="normal,loading,error,forbidden"></div>
+
+  <div class="phone phone--scroll" id="phone">
+    <div data-ui="statusbar"></div>
+    <div data-ui="navbar" data-title="设置" data-back="profile.html"></div>
+
+    <div class="phone__scroll">
+      <div class="st-page">
+
+        <header class="st-head">
+          <p class="st-kicker"><span data-icon="settings" data-icon-size="16"></span>舒适设置</p>
+          <h1 class="st-title">舒服的节奏，才走得更远。</h1>
+          <p class="st-intro">调整学习目标、外观与动效，让这里更适合你。</p>
+        </header>
+
+        <div class="st-main" id="st-main">
+
+          <!-- 学习目标 -->
+          <section class="card st-card" aria-labelledby="goal-title">
+            <div class="st-cardhead">
+              <span class="st-cardhead__titles">
+                <span class="st-eyebrow"><span data-icon="target" data-icon-size="14"></span>学习</span>
+                <h2 class="st-cardtitle" id="goal-title">学习目标</h2>
+              </span>
+            </div>
+            <div class="st-rows">
+              <div class="st-row"><span class="st-row__label">当前目标</span><span class="st-row__value">四六级备考</span></div>
+              <div class="st-row"><span class="st-row__label">每日目标</span><span class="st-row__value">15 分钟</span></div>
+              <a class="st-link" href="onboarding.html"><span>修改目标</span><span data-icon="chevron-right" data-icon-size="18"></span></a>
+            </div>
+          </section>
+
+          <!-- 偏好设置 -->
+          <section class="card st-card" aria-labelledby="prefs-title">
+            <div class="st-cardhead">
+              <span class="st-cardhead__titles">
+                <span class="st-eyebrow">
+                  <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>偏好
+                </span>
+                <h2 class="st-cardtitle" id="prefs-title">偏好设置</h2>
+              </span>
+            </div>
+            <p class="st-note">主题、高对比度和动效会立即在本机预览；点保存后同步到账户。</p>
+
+            <div class="st-feedback st-feedback--info" id="account-loading" role="status" hidden>
+              <span data-icon="refresh" data-icon-size="16"></span>
+              <span class="st-feedback__body">正在读取账户偏好…</span>
+            </div>
+            <div class="st-feedback st-feedback--warn" id="account-state" role="alert" hidden>
+              <span data-icon="alert-triangle" data-icon-size="16"></span>
+              <span class="st-feedback__body">账户偏好暂时无法读取；本机设置仍可使用。</span>
+              <button type="button" class="btn btn--secondary btn--sm" id="account-retry">
+                <span class="btn__spinner" aria-hidden="true"></span><span class="btn__label">重试读取</span>
+              </button>
+            </div>
+
+            <span class="st-label" id="theme-label">主题</span>
+            <div class="segmented st-seg" role="group" aria-labelledby="theme-label">
+              <button type="button" class="segmented__item is-selected" data-theme-opt="system" aria-pressed="true">跟随系统</button>
+              <button type="button" class="segmented__item" data-theme-opt="light" aria-pressed="false">浅色</button>
+              <button type="button" class="segmented__item" data-theme-opt="dark" aria-pressed="false">深色</button>
+            </div>
+
+            <span class="st-label" id="motion-label">动效</span>
+            <div class="segmented st-seg" role="group" aria-labelledby="motion-label">
+              <button type="button" class="segmented__item is-selected" data-motion-opt="full" aria-pressed="true">完整动效</button>
+              <button type="button" class="segmented__item" data-motion-opt="reduced" aria-pressed="false">减少动效</button>
+              <button type="button" class="segmented__item" data-motion-opt="off" aria-pressed="false">关闭动效</button>
+            </div>
+            <p class="st-note">减少动效会缩短过渡；关闭动效会停用动画。系统设置优先。</p>
+
+            <div class="st-rows">
+              <div class="st-switchrow">
+                <span class="st-switchrow__body">
+                  <span class="st-switchrow__title">高对比度</span>
+                </span>
+                <button type="button" class="switch" id="contrast-switch" role="switch" aria-checked="false" aria-label="高对比度"></button>
+              </div>
+            </div>
+
+            <span class="st-label">画质 <span class="st-label__aside">（本机生效）</span></span>
+            <div class="st-chiprow" id="quality-row" role="group" aria-label="画质">
+              <button type="button" class="chip" data-quality="ultra" aria-pressed="false">超高</button>
+              <button type="button" class="chip" data-quality="high" aria-pressed="true">高</button>
+              <button type="button" class="chip" data-quality="medium" aria-pressed="false">均衡</button>
+              <button type="button" class="chip" data-quality="performance" aria-pressed="false">省资源</button>
+            </div>
+            <p class="st-note" id="quality-note">低帧率或内存不足时，画质可能自动降低。</p>
+            <a class="st-link" href="b6-platform.html"><span>性能帮助与设备适配说明</span><span data-icon="chevron-right" data-icon-size="18"></span></a>
+
+            <div class="st-rows">
+              <div class="st-row"><span class="st-row__label">界面语言（本机，只读）</span><span class="st-row__value">简体中文</span></div>
+              <div class="st-row">
+                <span class="st-row__label">学习内容语言</span>
+                <button type="button" class="st-time" id="locale-btn" aria-haspopup="dialog">
+                  <span class="btn__label" id="locale-value">英语</span><span data-icon="chevron-down" data-icon-size="16"></span>
+                </button>
+              </div>
+            </div>
+            <div class="st-feedback st-feedback--ok" id="locale-feedback" role="status" hidden>
+              <span data-icon="check-circle" data-icon-size="16"></span>
+              <span class="st-feedback__body">学习内容语言已同步到账户。</span>
+            </div>
+            <div class="st-feedback st-feedback--bad" id="locale-error" role="alert" hidden>
+              <span data-icon="alert-circle" data-icon-size="16"></span>
+              <span class="st-feedback__body">学习内容语言未保存，请重试。</span>
+            </div>
+
+            <p class="st-note">恢复默认仅重置显示设置和画质；保存后同步账户。</p>
+            <button type="button" class="btn btn--secondary btn--block" id="restore-btn">恢复显示默认</button>
+
+            <div class="st-savebar">
+              <button type="button" class="btn btn--primary btn--block" id="save-btn" disabled>
+                <span data-icon="check" data-icon-size="18"></span><span class="btn__label">保存主题、对比度与动效</span>
+              </button>
+              <p class="st-hint" id="save-hint">修改上面的主题、对比度或动效后即可保存。</p>
+            </div>
+            <div class="st-feedback st-feedback--ok" id="save-feedback" role="status" tabindex="-1" hidden>
+              <span data-icon="check-circle" data-icon-size="16"></span>
+              <span class="st-feedback__body">主题、对比度与动效已同步到账户。</span>
+            </div>
+            <div class="st-feedback st-feedback--bad" id="save-error" role="alert" tabindex="-1" hidden>
+              <span data-icon="alert-circle" data-icon-size="16"></span>
+              <span class="st-feedback__body">本机设置已立即生效，但未同步到账户，请检查网络后重试。</span>
+            </div>
+          </section>
+
+          <!-- 隐私与数据 -->
+          <section class="card st-card" aria-labelledby="privacy-title">
+            <div class="st-cardhead">
+              <span class="st-cardhead__titles">
+                <span class="st-eyebrow"><span data-icon="lock" data-icon-size="14"></span>隐私</span>
+                <h2 class="st-cardtitle" id="privacy-title">隐私与数据</h2>
+              </span>
+            </div>
+            <div class="st-rows">
+              <p class="st-note">删除申请受理后，访问停止和各服务处理完成要分开看。受理不等于数据已经删除。</p>
+              <p class="st-note">音频保留策略尚未批准，不会采集长期原始录音，也不填写保留天数。</p>
+              <p class="st-note">普通退出后可以重新登录。删除申请受理后不会提示登录继续学习。</p>
+              <p class="st-note">跨服务导出和删除还没有全部完成。</p>
+              <p class="st-note">当前没有全部完成的处理结果。</p>
+            </div>
+
+            <div class="st-divider">
+              <span class="st-label" style="margin-top:0">学习同意</span>
+              <p class="st-note" id="withdraw-copy">确认撤回后，学习能力会收回。账号仍会保留。</p>
+              <button type="button" class="btn btn--secondary btn--block" id="withdraw-btn">撤回学习同意</button>
+              <div class="st-confirm-actions" id="withdraw-confirm-block" hidden>
+                <button type="button" class="btn btn--danger" id="withdraw-confirm">确认撤回</button>
+                <button type="button" class="btn btn--secondary" id="withdraw-cancel">取消</button>
+              </div>
+              <div class="st-feedback st-feedback--bad" id="withdraw-error" role="alert" hidden>
+                <span data-icon="alert-circle" data-icon-size="16"></span>
+                <span class="st-feedback__body">撤回没有完成。学习同意仍在。</span>
+              </div>
+              <div class="st-feedback st-feedback--ok" id="withdraw-ok" role="status" hidden>
+                <span data-icon="check-circle" data-icon-size="16"></span>
+                <span class="st-feedback__body">学习同意已撤回。学习能力已收回，账号仍保留。</span>
+              </div>
+            </div>
+          </section>
+
+          <!-- 设备与会话 -->
+          <section class="card st-card" aria-labelledby="devices-title">
+            <div class="st-cardhead">
+              <span class="st-cardhead__titles">
+                <span class="st-eyebrow">
+                  <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>设备
+                </span>
+                <h2 class="st-cardtitle" id="devices-title">设备与会话</h2>
+              </span>
+            </div>
+            <p class="st-note">查看当前账号已登录的设备，或退出其他设备上的会话。</p>
+            <a class="st-link" href="devices.html"><span>管理设备与会话</span><span data-icon="chevron-right" data-icon-size="18"></span></a>
+          </section>
+
+          <!-- 站内通知偏好 -->
+          <section class="card st-card" aria-labelledby="notif-title">
+            <div class="st-cardhead">
+              <span class="st-cardhead__titles">
+                <span class="st-eyebrow">
+                  <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 13h5l2 3h4l2-3h5"/><path d="M5 5h14l2 8v6a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-6z"/></svg>通知
+                </span>
+                <h2 class="st-cardtitle" id="notif-title">站内通知偏好</h2>
+              </span>
+              <a class="st-cardlink" href="b4-social.html"><span>查看消息</span><span data-icon="chevron-right" data-icon-size="16"></span></a>
+            </div>
+            <p class="st-note">未设置的类型默认关闭；这里只管理站内消息。</p>
+
+            <div class="st-feedback st-feedback--info" id="notif-loading" role="status" hidden>
+              <span data-icon="refresh" data-icon-size="16"></span>
+              <span class="st-feedback__body">正在读取…</span>
+            </div>
+            <div class="st-feedback st-feedback--bad" id="notif-read-error" role="alert" hidden>
+              <span data-icon="alert-circle" data-icon-size="16"></span>
+              <span class="st-feedback__body">通知偏好暂时无法读取。</span>
+              <button type="button" class="btn btn--secondary btn--sm" id="notif-retry">
+                <span class="btn__spinner" aria-hidden="true"></span><span class="btn__label">重试</span>
+              </button>
+            </div>
+
+            <div class="st-rows" id="notif-list"></div>
+
+            <div class="st-divider" id="dnd-block">
+              <div class="st-switchrow" style="padding-top:0">
+                <span class="st-switchrow__body">
+                  <span class="st-switchrow__title">站内免打扰</span>
+                  <span class="st-switchrow__desc" id="dnd-desc">已关闭；只影响站内提醒</span>
+                </span>
+                <span class="st-rowstate" id="dnd-state"></span>
+                <button type="button" class="switch" id="dnd-switch" role="switch" aria-checked="false" aria-label="站内免打扰"></button>
+              </div>
+              <p class="st-note" id="dnd-conflict" hidden>各类型的免打扰时段不一致；保存后会统一。</p>
+              <div class="st-times" id="dnd-times">
+                <button type="button" class="st-time" id="dnd-start-btn" aria-haspopup="dialog">
+                  <span>开始</span><strong id="dnd-start">22:00</strong><span data-icon="chevron-down" data-icon-size="16"></span>
+                </button>
+                <button type="button" class="st-time" id="dnd-end-btn" aria-haspopup="dialog">
+                  <span>结束</span><strong id="dnd-end">07:00</strong><span data-icon="chevron-down" data-icon-size="16"></span>
+                </button>
+              </div>
+              <button type="button" class="btn btn--secondary btn--sm" id="dnd-save" hidden>保存时段</button>
+            </div>
+
+            <div class="st-feedback st-feedback--bad" id="notif-action-error" role="alert" hidden>
+              <span data-icon="alert-circle" data-icon-size="16"></span>
+              <span class="st-feedback__body"></span>
+              <button type="button" class="btn btn--secondary btn--sm" id="notif-action-retry" hidden>
+                <span class="btn__spinner" aria-hidden="true"></span><span class="btn__label">重试统一设置</span>
+              </button>
+            </div>
+
+            <div class="st-feedback st-feedback--ok" id="notif-ok" role="status" hidden>
+              <span data-icon="check-circle" data-icon-size="16"></span>
+              <span class="st-feedback__body">设置已保存。</span>
+            </div>
+          </section>
+
+        </div>
+
+        <!-- 无权限：未登录（真实页 ensureMobilePageAccess 直接跳登录，本态为设计新增） -->
+        <div data-state-block="forbidden">
+          <div class="state-block" role="alert">
+            <span class="state-block__icon state-block__icon--warn" data-icon="lock" data-icon-size="24"></span>
+            <span class="state-block__title">登录后管理设置。</span>
+            <span class="state-block__actions">
+              <a class="btn btn--primary btn--sm" href="login.html?returnTo=%2Fpages%2Fsettings%2Fsettings">去登录</a>
+            </span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="toast-host" role="status" aria-live="polite"></div>
+
+    <!-- 学习内容语言 -->
+    <div class="overlay-layer" id="locale-sheet" aria-hidden="true">
+      <div class="overlay__scrim" data-close></div>
+      <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="locale-title">
+        <div class="sheet__handle"></div>
+        <p class="sheet__title" id="locale-title">学习内容语言</p>
+        <p class="sheet__sub">切换后同步到账户，只影响学习内容。</p>
+        <div class="sheet__list" id="locale-list"></div>
+        <button type="button" class="sheet__cancel" data-close>取消</button>
+      </div>
+    </div>
+
+    <!-- 免打扰时间 -->
+    <div class="overlay-layer" id="time-sheet" aria-hidden="true">
+      <div class="overlay__scrim" data-close></div>
+      <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="time-title">
+        <div class="sheet__handle"></div>
+        <p class="sheet__title" id="time-title">选择时间</p>
+        <p class="sheet__sub" id="time-sub">站内免打扰开始时间</p>
+        <div class="sheet__list" id="time-list"></div>
+        <button type="button" class="sheet__cancel" data-close>取消</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="interaction-notes">
+  <h2>交互说明（settings）</h2>
+  <ul>
+    <li>主题与直达参数 → 工具条「浅色 / 深色」切换整页 token 并写入 <code>localStorage['uispec-theme']</code>；<code>?theme=light|dark</code> 固定主题；<code>?state=normal|loading|error|forbidden</code> 直达页面状态；<code>?mock=account-error|notif-error|notif-save-error|save-error|withdraw-failed|dnd-conflict|dnd-save-error|locale-error</code> 演示账户偏好读取失败、通知偏好读取 / 保存失败、保存到账户失败、撤回失败、免打扰时段不一致、免打扰统一保存失败与学习内容语言未保存；<code>?view=withdraw-confirm</code> 直接进入学习同意的行内确认态。截图（每项 <code>?theme=light|dark</code> 各一张）：<code>settings-{light,dark}.png</code>；<code>settings-{loading,error,forbidden}-{light,dark}.png</code>；<code>settings-{account-error,notif-error,notif-save-error,save-error,withdraw-failed,dnd-conflict,dnd-save-error,withdraw-confirm,locale-error}-{light,dark}.png</code>。</li>
+    <li>页面状态 → 真实页没有整页错误 / 离线页，卡片始终渲染，失败都显示在卡内：加载为偏好卡「正在读取账户偏好…」+ 通知卡「正在读取…」（不显示通知列表与免打扰区）；错误为偏好卡 warn 条「账户偏好暂时无法读取；本机设置仍可使用。」+「重试读取」，同时通知卡「通知偏好暂时无法读取。」+「重试」；离线不设整页态，已从工具条移除。无权限只保留标题「登录后管理设置。」+「去登录」→ <code>login.html?returnTo=%2Fpages%2Fsettings%2Fsettings</code>（真实页 <code>ensureMobilePageAccess</code> 未登录直接跳转，本态为设计新增）。</li>
+    <li>状态恢复 → 错误态「重试读取 / 重试」转圈后恢复卡内内容，不弹成功 Toast；无权限只保留「去登录」。切换离开正常态会关闭全部弹层、取消未完成的保存 / 撤回 / 读取计时并恢复按钮与开关；切回正常态保留已预览的主题、动效与通知开关。</li>
+    <li>页头与导航 → 导航栏「设置」（<code>pages.json</code> 标题）+ 返回 <code>profile.html</code>（真实页由「我的」进入）；页内 kicker「舒适设置」（<code>ZH_KICKERS</code>）、标题「舒服的节奏，才走得更远。」、说明「调整学习目标、外观与动效，让这里更适合你。」（<code>pages.settings</code>）；不显示底部 TabBar。</li>
+    <li>卡片顺序与 eyebrow 图标 → 按 <code>settings.vue</code>：学习目标（target）→ 偏好设置（gear）→ 隐私与数据（lock）→ 设备与会话（grid）→ 站内通知偏好（inbox）；图标路径取自 <code>apps/mobile/src/theme/v2-icons.ts</code> 同名图标；不显示「关于语学星」卡。</li>
+    <li>学习目标卡 → 只读两行「当前目标 / 四六级备考」「每日目标 / 15 分钟」，底部「修改目标」→ <code>onboarding.html</code>（真实页 <code>/pages/onboarding/onboarding</code>）。</li>
+    <li>主题 → 分段控件「跟随系统 / 浅色 / 深色」默认跟随系统；选择后在当前原型内立即预览对应主题（真实页 <code>watch(themeMode)</code> 调用 <code>mobileThemeController.setTheme</code>），并标记为待保存。工具条主题与页内主题是两套控制：工具条只切换设计稿预览，页内选择模拟用户的真实偏好。</li>
+    <li>动效 → 分段控件「完整动效 / 减少动效 / 关闭动效」，切换后把本页过渡时长改为较短或 0（对齐 <code>setMobileMotion</code> 的预览语义），并标记为待保存；系统「减少动效」仍优先。</li>
+    <li>高对比度 → 开关只有标题、没有附加说明（真实页无说明文案）；打开后本页卡片边框、说明文字和控件边框立即加强（模拟高对比主题预览），并标记为待保存。</li>
+    <li>画质 → 四个 chip「超高 / 高 / 均衡 / 省资源」默认「高」，选择立即生效；说明固定为「低帧率或内存不足时，画质可能自动降低。」，不随选择变化；画质不进入保存按钮（真实页 <code>setMobileQuality</code> 本机生效），不显示帧率或内存数值。</li>
+    <li>保存偏好 → 修改主题、动效或高对比度后主按钮才可点击；未修改时为真实禁用态（surface 底、mut 字、not-allowed）并显示提示「修改上面的主题、对比度或动效后即可保存。」。点击后转圈「保存中…」→ 0.9s 后按钮恢复禁用态、显示成功条「主题、对比度与动效已同步到账户。」；<code>?mock=save-error</code> 打开即预置一个已改动的偏好（「减少动效」已选、保存按钮可点）并显示失败条「本机设置已立即生效，但未同步到账户，请检查网络后重试。」（真实页原文），点击保存得到同样结果。</li>
+    <li>恢复显示默认 → 一键回到「跟随系统 / 完整动效 / 高对比度关闭 / 高画质」，立即预览并标记为待保存；不自动提交，仍需点保存同步到账户。</li>
+    <li>界面语言 → 只读行「简体中文」（真实页本机只读）；学习内容语言默认「英语」，点击打开底部弹层选择「英语 / 简体中文」，当前值带 brand 对勾；选择后按钮转圈「保存中…」→ 0.9s 后更新值并显示成功条「学习内容语言已同步到账户。」（真实页原文）；<code>?mock=locale-error</code> 打开即在语言行下方预置 bad 条「学习内容语言未保存，请重试。」（真实页原文），再次选择同样得到该提示。</li>
+    <li>账户偏好读取失败 → <code>?mock=account-error</code> 在偏好卡顶部显示 warn 条「账户偏好暂时无法读取；本机设置仍可使用。」+「重试读取」，其余控件保持可操作；点重试转圈「正在读取…」→ 0.9s 后隐藏并保留当前本机选择。</li>
+    <li>站内通知 → 14 类通知逐行开关（学习进度 / 复习提醒 / 连续学习 / 考试安排 / 学习检查点 / 自习室互动 / 奖励动态 / 课程更新 / 会员服务 / 活动资讯 / 安全提醒 / 账户通知 / 支付与订单 / 系统消息），默认仅「学习进度 / 复习提醒 / 安全提醒」开启（真实页「未设置的类型默认关闭」）；「课程更新」行下方显示「摘要投递暂不可用」（真实页 <code>unsupportedCadence</code>）。切换时该行显示「保存中…」、所有开关暂时禁用 → 0.7s 后保存完成并显示「设置已保存。」。</li>
+    <li>通知保存失败 → 通知卡底部 error 条「保存失败，已更新最新设置，请确认后重试。」（真实页原文），列表与免打扰区保留，开关回退；<code>?mock=notif-save-error</code> 打开即预置该条，点击任意开关得到同样结果。不复用「通知偏好暂时无法读取。」读取失败条。</li>
+    <li>通知读取失败 → <code>?mock=notif-error</code> 隐藏通知列表与免打扰区，只显示 bad 条「通知偏好暂时无法读取。」+「重试」；点重试转圈「正在读取…」→ 0.9s 后恢复列表与免打扰区，不弹 Toast。</li>
+    <li>站内免打扰 → 通知读取成功后，开始 / 结束时间始终显示（<code>DEFAULT_NOTIFICATION_DND_WINDOW</code>：22:00 / 07:00），不随开关隐藏；开关说明为「已关闭 / 开启中；只影响站内提醒」。「保存时段」只在改过时间后出现，保存时按开启提交（<code>enabled=true</code>），0.7s 后说明更新并显示「设置已保存。」。开始与结束相同则拒绝并把「开始和结束时间不能相同。」显示在通知卡底部 error 条。<code>?mock=dnd-conflict</code> 额外显示「各类型的免打扰时段不一致；保存后会统一。」；<code>?mock=dnd-save-error</code> 打开即显示底部 error 条「12 项已保存，2 项未保存。已更新最新版本，可重试统一时段。」+「重试统一设置」，点击重试 0.9s 后完成并显示「设置已保存。」。</li>
+    <li>隐私与数据 → 五行说明来自 <code>privacyNotices()</code> 默认回退（删除申请、音频保留、退出与登录、跨服务导出、全部完成结果），不显示内部编号或完成百分比。</li>
+    <li>撤回学习同意（行内确认）→ 点「撤回学习同意」后该按钮隐藏，原位显示 <code>role="alert"</code> 文案「确认撤回后，学习能力会收回。账号仍会保留。」+「取消」「确认撤回」两个按钮；确认中「确认撤回」显示「正在撤回…」且两个按钮都禁用；成功后退出确认态、按钮恢复为可点的「撤回学习同意」，下方显示成功条「学习同意已撤回。学习能力已收回，账号仍保留。」（<code>WITHDRAW_DONE_COPY</code>）；失败时保持确认态并显示「撤回没有完成。学习同意仍在。」（<code>WITHDRAW_FAILED_COPY</code>）。<code>?mock=withdraw-failed</code> 打开即预置确认态与失败文案；<code>?view=withdraw-confirm</code> 直接进入行内确认态。</li>
+    <li>设备与会话 / 出口 → 「管理设备与会话」→ <code>devices.html</code>；「性能帮助与设备适配说明」→ <code>b6-platform.html</code>；「查看消息」带 chevron → <code>b4-social.html</code>。</li>
+    <li>文案边界 → 不显示账户 ID、策略版本、内部错误码、原始枚举或设备指纹；所有保存结果以服务端确认为准，失败时明确说明「本机已生效但未同步」，不把本机预览说成已保存到账户。</li>
+  </ul>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var params = new URLSearchParams(location.search);
+  function q(name) {
+    var value = params.get(name) || '';
+    var cut = value.indexOf('?');
+    return cut >= 0 ? value.slice(0, cut) : value;
+  }
+  function themedParam() {
+    var match = /[?&]theme=(light|dark)/g;
+    var found = null;
+    var item;
+    while ((item = match.exec(location.search))) found = item[1];
+    return found;
+  }
+  var THEME_PARAM = themedParam();
+  if (THEME_PARAM) UISpec.setTheme(THEME_PARAM);
+
+  var MOCK = q('mock');
+  var VIEW = q('view');
+  var STATE_PARAM = q('state');
+  var VALID_STATES = ['normal', 'loading', 'error', 'forbidden'];
+  var INITIAL_STATE = VALID_STATES.indexOf(STATE_PARAM) >= 0 ? STATE_PARAM : 'normal';
+
+  /* 对齐 apps/mobile/src/pages/settings/settings.vue：
+   * 主题 / 动效 / 高对比度本机预览后统一保存到账户；画质本机生效；
+   * 通知偏好逐类读写；免打扰时段统一保存；撤回学习同意为行内确认。
+   * 数据全部为 mock，不访问服务端。 */
+
+  var CATEGORIES = [
+    '学习进度', '复习提醒', '连续学习', '考试安排', '学习检查点',
+    '自习室互动', '奖励动态', '课程更新', '会员服务', '活动资讯',
+    '安全提醒', '账户通知', '支付与订单', '系统消息'
+  ];
+  var DEFAULT_ON = { '学习进度': true, '复习提醒': true, '安全提醒': true };
+  var UNSUPPORTED_CADENCE = { '课程更新': true };
+  var LOCALES = [
+    { id: 'en-US', label: '英语' },
+    { id: 'zh-CN', label: '简体中文' }
+  ];
+  var SAVE_FAIL_COPY = '保存失败，已更新最新设置，请确认后重试。';
+  var DND_SAVE_FAIL_COPY = '12 项已保存，2 项未保存。已更新最新版本，可重试统一时段。';
+
+  var state = {
+    theme: 'system',
+    motion: MOCK === 'save-error' ? 'reduced' : 'full',
+    contrast: false,
+    saved: { theme: 'system', motion: 'full', contrast: false },
+    quality: 'high',
+    contentLocale: 'en-US',
+    notifications: {},
+    accountStatus: MOCK === 'account-error' ? 'error' : 'ready',
+    notifStatus: MOCK === 'notif-error' ? 'error' : 'ready',
+    saveFails: MOCK === 'save-error',
+    notifSaveFails: MOCK === 'notif-save-error',
+    localeFails: MOCK === 'locale-error',
+    localeSaved: false,
+    localeError: MOCK === 'locale-error',
+    withdrawFails: MOCK === 'withdraw-failed',
+    dndConflict: MOCK === 'dnd-conflict',
+    dndSaveFails: MOCK === 'dnd-save-error',
+    dndEnabled: false,
+    dndStart: '22:00',
+    dndEnd: '07:00',
+    dndDirty: false,
+    confirming: VIEW === 'withdraw-confirm' || MOCK === 'withdraw-failed',
+    withdrawn: false,
+    withdrawFailed: MOCK === 'withdraw-failed',
+    busy: '',
+    timeTarget: 'start'
+  };
+  CATEGORIES.forEach(function (label) { state.notifications[label] = DEFAULT_ON[label] === true; });
+
+  /* 工具条状态退出后回到打开时的初始状态（含 mock 预置） */
+  var BASE = { account: state.accountStatus, notif: state.notifStatus };
+
+  var gen = 0;
+  function later(fn, ms) {
+    var g = gen;
+    setTimeout(function () { if (g === gen) fn(); }, ms);
+  }
+
+  /* ---------- 元素 ---------- */
+  var $ = function (id) { return document.getElementById(id); };
+  var themeButtons = Array.prototype.slice.call(document.querySelectorAll('[data-theme-opt]'));
+  var motionButtons = Array.prototype.slice.call(document.querySelectorAll('[data-motion-opt]'));
+  var qualityButtons = Array.prototype.slice.call(document.querySelectorAll('[data-quality]'));
+  var contrastSwitch = $('contrast-switch');
+  var accountLoading = $('account-loading');
+  var accountState = $('account-state');
+  var accountRetry = $('account-retry');
+  var saveBtn = $('save-btn');
+  var saveHint = $('save-hint');
+  var saveFeedback = $('save-feedback');
+  var saveError = $('save-error');
+  var restoreBtn = $('restore-btn');
+  var localeBtn = $('locale-btn');
+  var localeValue = $('locale-value');
+  var localeFeedback = $('locale-feedback');
+  var localeError = $('locale-error');
+  var localeList = $('locale-list');
+  var notifList = $('notif-list');
+  var notifLoading = $('notif-loading');
+  var notifReadError = $('notif-read-error');
+  var notifRetry = $('notif-retry');
+  var notifActionError = $('notif-action-error');
+  var notifActionRetry = $('notif-action-retry');
+  var notifOk = $('notif-ok');
+  var dndBlock = $('dnd-block');
+  var dndSwitch = $('dnd-switch');
+  var dndDesc = $('dnd-desc');
+  var dndState = $('dnd-state');
+  var dndConflict = $('dnd-conflict');
+  var dndStartEl = $('dnd-start');
+  var dndEndEl = $('dnd-end');
+  var dndStartBtn = $('dnd-start-btn');
+  var dndEndBtn = $('dnd-end-btn');
+  var dndSave = $('dnd-save');
+  var timeList = $('time-list');
+  var timeSub = $('time-sub');
+  var withdrawBtn = $('withdraw-btn');
+  var withdrawCopy = $('withdraw-copy');
+  var withdrawConfirmBlock = $('withdraw-confirm-block');
+  var withdrawConfirm = $('withdraw-confirm');
+  var withdrawCancel = $('withdraw-cancel');
+  var withdrawOk = $('withdraw-ok');
+  var withdrawError = $('withdraw-error');
+
+  /* ---------- 偏好 ---------- */
+  function prefsDirty() {
+    return state.theme !== state.saved.theme ||
+      state.motion !== state.saved.motion ||
+      state.contrast !== state.saved.contrast;
+  }
+
+  function applyPreview() {
+    var theme = state.theme;
+    if (theme === 'system') {
+      theme = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+    UISpec.setTheme(theme);
+    document.documentElement.dataset.contrast = state.contrast ? 'high' : 'normal';
+    document.documentElement.dataset.motion = state.motion;
+  }
+
+  function renderPrefs() {
+    themeButtons.forEach(function (btn) {
+      var on = btn.getAttribute('data-theme-opt') === state.theme;
+      btn.classList.toggle('is-selected', on);
+      btn.setAttribute('aria-pressed', String(on));
+    });
+    motionButtons.forEach(function (btn) {
+      var on = btn.getAttribute('data-motion-opt') === state.motion;
+      btn.classList.toggle('is-selected', on);
+      btn.setAttribute('aria-pressed', String(on));
+    });
+    contrastSwitch.setAttribute('aria-checked', String(state.contrast));
+    qualityButtons.forEach(function (btn) {
+      btn.setAttribute('aria-pressed', String(btn.getAttribute('data-quality') === state.quality));
+    });
+    var dirty = prefsDirty();
+    saveBtn.disabled = !dirty || state.busy === 'save';
+    saveHint.hidden = dirty || state.busy === 'save';
+    restoreBtn.disabled = Boolean(state.busy);
+    themeButtons.concat(motionButtons).forEach(function (btn) { btn.disabled = Boolean(state.busy); });
+  }
+
+  function renderAccountState() {
+    accountLoading.hidden = state.accountStatus !== 'loading';
+    accountState.hidden = state.accountStatus !== 'error';
+  }
+
+  function clearPrefFeedback() {
+    saveFeedback.hidden = true;
+    saveError.hidden = true;
+  }
+
+  function markPrefsChanged() {
+    clearPrefFeedback();
+    renderPrefs();
+  }
+
+  themeButtons.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      if (state.busy) return;
+      state.theme = btn.getAttribute('data-theme-opt');
+      applyPreview();
+      markPrefsChanged();
+    });
+  });
+
+  motionButtons.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      if (state.busy) return;
+      state.motion = btn.getAttribute('data-motion-opt');
+      applyPreview();
+      markPrefsChanged();
+    });
+  });
+
+  qualityButtons.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      state.quality = btn.getAttribute('data-quality');
+      /* 说明文案固定为真实页原文，不随选择变化 */
+      renderPrefs();
+    });
+  });
+
+  function onContrastToggle(checked) {
+    /* shared.js 的点击委托已翻转 aria-checked 并派发 uispec:switch；
+     * 这里只同步到本页状态，避免重复翻转。 */
+    if (state.busy) {
+      contrastSwitch.setAttribute('aria-checked', String(state.contrast));
+      return;
+    }
+    state.contrast = checked;
+    applyPreview();
+    markPrefsChanged();
+  }
+
+  saveBtn.addEventListener('click', function () {
+    if (state.busy || !prefsDirty()) return;
+    state.busy = 'save';
+    clearPrefFeedback();
+    UISpec.setBusy(saveBtn, true, '保存中…');
+    renderPrefs();
+    later(function () {
+      UISpec.setBusy(saveBtn, false);
+      state.busy = '';
+      if (state.saveFails) {
+        saveError.hidden = false;
+        saveError.focus({ preventScroll: true });
+      } else {
+        state.saved = { theme: state.theme, motion: state.motion, contrast: state.contrast };
+        saveFeedback.hidden = false;
+        saveFeedback.focus({ preventScroll: true });
+      }
+      renderPrefs();
+    }, 900);
+  });
+
+  restoreBtn.addEventListener('click', function () {
+    if (state.busy) return;
+    state.theme = 'system';
+    state.motion = 'full';
+    state.contrast = false;
+    state.quality = 'high';
+    applyPreview();
+    markPrefsChanged();
+  });
+
+  accountRetry.addEventListener('click', function () {
+    if (state.busy) return;
+    state.busy = 'account';
+    UISpec.setBusy(accountRetry, true, '正在读取…');
+    later(function () {
+      UISpec.setBusy(accountRetry, false);
+      state.busy = '';
+      state.accountStatus = 'ready';
+      BASE.account = 'ready';
+      renderAccountState();
+      renderPrefs();
+    }, 900);
+  });
+
+  /* ---------- 学习内容语言 ---------- */
+  function renderLocale() {
+    localeValue.textContent = state.contentLocale === 'zh-CN' ? '简体中文' : '英语';
+    localeList.innerHTML = LOCALES.map(function (item) {
+      var current = item.id === state.contentLocale;
+      return '<button type="button" class="sheet__item" data-locale="' + item.id + '" aria-pressed="' +
+        String(current) + '"><span>' + item.label + '</span><span class="spacer"></span>' +
+        (current ? UISpec.icon('check', 18) : '') + '</button>';
+    }).join('');
+  }
+
+  function renderLocaleFeedback() {
+    localeFeedback.hidden = !state.localeSaved;
+    localeError.hidden = !state.localeError;
+  }
+
+  localeBtn.addEventListener('click', function () {
+    if (state.busy) return;
+    renderLocale();
+    UISpec.openOverlay('locale-sheet');
+  });
+
+  localeList.addEventListener('click', function (event) {
+    var item = event.target.closest('[data-locale]');
+    if (!item) return;
+    var next = item.getAttribute('data-locale');
+    UISpec.closeOverlay($('locale-sheet'));
+    if (next === state.contentLocale) { localeBtn.focus({ preventScroll: true }); return; }
+    state.busy = 'locale';
+    state.localeSaved = false;
+    state.localeError = false;
+    renderLocaleFeedback();
+    UISpec.setBusy(localeBtn, true, '保存中…');
+    later(function () {
+      UISpec.setBusy(localeBtn, false);
+      state.busy = '';
+      if (state.localeFails) {
+        state.localeError = true;
+      } else {
+        state.contentLocale = next;
+        state.localeSaved = true;
+      }
+      renderLocale();
+      renderLocaleFeedback();
+      localeBtn.focus({ preventScroll: true });
+    }, 900);
+  });
+
+  /* ---------- 通知偏好 ---------- */
+  function renderNotifRows() {
+    notifList.innerHTML = CATEGORIES.map(function (label) {
+      var note = UNSUPPORTED_CADENCE[label] ? '<p class="st-switchrow__desc">摘要投递暂不可用</p>' : '';
+      return '<div class="st-switchrow">' +
+        '<span class="st-switchrow__body"><span class="st-switchrow__title">' + label + '</span>' + note + '</span>' +
+        '<span class="st-rowstate" data-rowstate="' + label + '"></span>' +
+        '<button type="button" class="switch" role="switch" data-cat="' + label + '" aria-label="' + label + '" aria-checked="' +
+        String(state.notifications[label] === true) + '"></button>' +
+        '</div>';
+    }).join('');
+  }
+
+  function renderNotifVisibility() {
+    var ready = state.notifStatus === 'ready';
+    notifList.hidden = !ready;
+    dndBlock.hidden = !ready;
+    notifLoading.hidden = state.notifStatus !== 'loading';
+    notifReadError.hidden = state.notifStatus !== 'error';
+    if (!ready) {
+      notifOk.hidden = true;
+      hideNotifActionError();
+    }
+  }
+
+  function setNotifDisabled(disabled) {
+    Array.prototype.forEach.call(notifList.querySelectorAll('.switch'), function (sw) { sw.disabled = disabled; });
+    dndSwitch.disabled = disabled;
+    dndSave.disabled = disabled;
+    dndStartBtn.disabled = disabled;
+    dndEndBtn.disabled = disabled;
+  }
+
+  function setRowState(label, text) {
+    var el = notifList.querySelector('[data-rowstate="' + label + '"]');
+    if (el) el.textContent = text || '';
+  }
+
+  function hideNotifActionError() {
+    notifActionError.hidden = true;
+    notifActionRetry.hidden = true;
+  }
+
+  function showNotifActionError(text, withRetry) {
+    notifActionError.querySelector('.st-feedback__body').textContent = text;
+    notifActionError.hidden = false;
+    notifActionRetry.hidden = !withRetry;
+  }
+
+  function clearNotifFeedback() {
+    notifOk.hidden = true;
+    hideNotifActionError();
+  }
+
+  function toggleNotification(sw) {
+    var label = sw.getAttribute('data-cat');
+    if (state.notifStatus !== 'ready' || state.busy) {
+      sw.setAttribute('aria-checked', String(state.notifications[label] === true));
+      return;
+    }
+    var next = sw.getAttribute('aria-checked') === 'true';
+    state.busy = 'notif';
+    clearNotifFeedback();
+    setNotifDisabled(true);
+    setRowState(label, '保存中…');
+    later(function () {
+      state.busy = '';
+      setNotifDisabled(false);
+      setRowState(label, '');
+      if (state.notifSaveFails) {
+        sw.setAttribute('aria-checked', String(!next));
+        state.notifications[label] = !next;
+        showNotifActionError(SAVE_FAIL_COPY, false);
+      } else {
+        state.notifications[label] = next;
+        notifOk.hidden = false;
+      }
+    }, 700);
+  }
+
+  function onSwitchEvent(event) {
+    var sw = event.target.closest ? event.target.closest('.switch') : null;
+    if (!sw) return;
+    var checked = event.detail && event.detail.checked === true;
+    if (sw.getAttribute('data-cat')) toggleNotification(sw);
+    else if (sw === dndSwitch) toggleDnd(checked);
+    else if (sw === contrastSwitch) onContrastToggle(checked);
+  }
+  document.addEventListener('uispec:switch', onSwitchEvent);
+
+  notifRetry.addEventListener('click', function () {
+    if (state.busy) return;
+    state.busy = 'notif-read';
+    UISpec.setBusy(notifRetry, true, '正在读取…');
+    later(function () {
+      UISpec.setBusy(notifRetry, false);
+      state.busy = '';
+      state.notifStatus = 'ready';
+      BASE.notif = 'ready';
+      renderNotifRows();
+      renderNotifVisibility();
+      renderDnd();
+    }, 900);
+  });
+
+  /* ---------- 免打扰 ---------- */
+  function renderDnd() {
+    dndSwitch.setAttribute('aria-checked', String(state.dndEnabled));
+    dndDesc.textContent = (state.dndEnabled ? '开启中' : '已关闭') + '；只影响站内提醒';
+    dndStartEl.textContent = state.dndStart;
+    dndEndEl.textContent = state.dndEnd;
+    /* 开始 / 结束时间始终显示（真实页通知 ready 后不随开关隐藏） */
+    dndSave.hidden = !state.dndDirty;
+    dndConflict.hidden = !state.dndConflict;
+    dndState.textContent = state.busy === 'dnd' ? '保存中…' : '';
+  }
+
+  function toggleDnd(checked) {
+    if (state.busy) {
+      dndSwitch.setAttribute('aria-checked', String(state.dndEnabled));
+      return;
+    }
+    if (checked && state.dndStart === state.dndEnd) {
+      dndSwitch.setAttribute('aria-checked', 'false');
+      showNotifActionError('开始和结束时间不能相同。', false);
+      return;
+    }
+    clearNotifFeedback();
+    state.busy = 'dnd';
+    setNotifDisabled(true);
+    renderDnd();
+    later(function () {
+      state.busy = '';
+      setNotifDisabled(false);
+      state.dndEnabled = checked;
+      state.dndDirty = false;
+      renderDnd();
+      notifOk.hidden = false;
+    }, 700);
+  }
+
+  function openTimeSheet(target) {
+    if (state.busy) return;
+    state.timeTarget = target;
+    timeSub.textContent = target === 'start' ? '站内免打扰开始时间' : '站内免打扰结束时间';
+    var current = target === 'start' ? state.dndStart : state.dndEnd;
+    var items = [];
+    for (var h = 0; h < 24; h++) {
+      var value = (h < 10 ? '0' : '') + h + ':00';
+      items.push(value);
+    }
+    timeList.innerHTML = items.map(function (value) {
+      return '<button type="button" class="sheet__item" data-time="' + value + '" aria-pressed="' +
+        String(value === current) + '"><span>' + value + '</span><span class="spacer"></span>' +
+        (value === current ? UISpec.icon('check', 18) : '') + '</button>';
+    }).join('');
+    UISpec.openOverlay('time-sheet');
+  }
+
+  dndStartBtn.addEventListener('click', function () { openTimeSheet('start'); });
+  dndEndBtn.addEventListener('click', function () { openTimeSheet('end'); });
+
+  timeList.addEventListener('click', function (event) {
+    var item = event.target.closest('[data-time]');
+    if (!item) return;
+    var value = item.getAttribute('data-time');
+    if (state.timeTarget === 'start') state.dndStart = value;
+    else state.dndEnd = value;
+    state.dndDirty = true;
+    hideNotifActionError();
+    UISpec.closeOverlay($('time-sheet'));
+    renderDnd();
+  });
+
+  dndSave.addEventListener('click', function () {
+    if (state.busy) return;
+    if (state.dndStart === state.dndEnd) {
+      showNotifActionError('开始和结束时间不能相同。', false);
+      return;
+    }
+    hideNotifActionError();
+    notifOk.hidden = true;
+    state.busy = 'dnd';
+    setNotifDisabled(true);
+    renderDnd();
+    later(function () {
+      state.busy = '';
+      setNotifDisabled(false);
+      state.dndEnabled = true;
+      state.dndDirty = false;
+      renderDnd();
+      notifOk.hidden = false;
+    }, 700);
+  });
+
+  notifActionRetry.addEventListener('click', function () {
+    if (state.busy) return;
+    state.busy = 'dnd';
+    UISpec.setBusy(notifActionRetry, true, '保存中…');
+    setNotifDisabled(true);
+    later(function () {
+      UISpec.setBusy(notifActionRetry, false);
+      state.busy = '';
+      state.dndSaveFails = false;
+      state.dndEnabled = true;
+      state.dndDirty = false;
+      setNotifDisabled(false);
+      hideNotifActionError();
+      renderDnd();
+      notifOk.hidden = false;
+    }, 900);
+  });
+
+  /* ---------- 撤回学习同意（行内确认） ---------- */
+  function renderWithdraw() {
+    var confirming = state.confirming;
+    withdrawBtn.hidden = confirming;
+    withdrawConfirmBlock.hidden = !confirming;
+    withdrawConfirm.textContent = state.busy === 'withdraw' ? '正在撤回…' : '确认撤回';
+    withdrawConfirm.disabled = state.busy === 'withdraw';
+    withdrawCancel.disabled = state.busy === 'withdraw';
+    withdrawOk.hidden = !state.withdrawn;
+    withdrawError.hidden = !(confirming && state.withdrawFailed);
+    if (confirming) withdrawCopy.setAttribute('role', 'alert');
+    else withdrawCopy.removeAttribute('role');
+  }
+
+  withdrawBtn.addEventListener('click', function () {
+    if (state.busy) return;
+    state.confirming = true;
+    state.withdrawFailed = false;
+    state.withdrawn = false;
+    renderWithdraw();
+  });
+
+  withdrawCancel.addEventListener('click', function () {
+    if (state.busy === 'withdraw') return;
+    state.confirming = false;
+    state.withdrawFailed = false;
+    renderWithdraw();
+  });
+
+  withdrawConfirm.addEventListener('click', function () {
+    if (state.busy) return;
+    state.busy = 'withdraw';
+    state.withdrawFailed = false;
+    renderWithdraw();
+    later(function () {
+      state.busy = '';
+      if (state.withdrawFails) {
+        /* 失败保持确认态 */
+        state.withdrawFailed = true;
+      } else {
+        state.withdrawn = true;
+        state.confirming = false;
+        state.withdrawFailed = false;
+      }
+      renderWithdraw();
+    }, 1000);
+  });
+
+  /* ---------- 页面状态 ---------- */
+  function restoreMockFeedback() {
+    if (state.saveFails) saveError.hidden = false;
+    if (state.localeFails) {
+      state.localeSaved = false;
+      state.localeError = true;
+      renderLocaleFeedback();
+    }
+    if (MOCK === 'notif-save-error') showNotifActionError(SAVE_FAIL_COPY, false);
+    else if (MOCK === 'dnd-save-error' && state.dndSaveFails) showNotifActionError(DND_SAVE_FAIL_COPY, true);
+    if (state.dndConflict) dndConflict.hidden = false;
+  }
+
+  document.addEventListener('uispec:state', function (event) {
+    gen += 1;
+    UISpec.closeAllOverlays();
+    state.busy = '';
+    document.querySelectorAll('.is-busy').forEach(function (btn) { UISpec.setBusy(btn, false); });
+    var next = event.detail.state;
+    if (next === 'loading') {
+      state.accountStatus = 'loading';
+      state.notifStatus = 'loading';
+    } else if (next === 'error') {
+      state.accountStatus = 'error';
+      state.notifStatus = 'error';
+    } else if (next === 'normal') {
+      state.accountStatus = BASE.account;
+      state.notifStatus = BASE.notif;
+      restoreMockFeedback();
+    }
+    renderPrefs();
+    renderAccountState();
+    renderNotifRows();
+    renderNotifVisibility();
+    renderDnd();
+    renderWithdraw();
+    renderLocaleFeedback();
+    var titles = {
+      loading: '正在加载设置…',
+      error: '设置暂时无法读取',
+      forbidden: '登录后管理设置'
+    };
+    document.title = (titles[next] || '设置') + ' · 语学星移动端 UI 稿';
+  });
+
+  /* ---------- 初始渲染 ---------- */
+  document.documentElement.dataset.motion = state.motion;
+  renderNotifRows();
+  renderNotifVisibility();
+  renderDnd();
+  renderLocale();
+  renderLocaleFeedback();
+  renderPrefs();
+  renderAccountState();
+  renderWithdraw();
+  if (state.saveFails) saveError.hidden = false;
+  if (MOCK === 'notif-save-error') showNotifActionError(SAVE_FAIL_COPY, false);
+  if (MOCK === 'dnd-save-error') showNotifActionError(DND_SAVE_FAIL_COPY, true);
+  if (state.dndConflict) dndConflict.hidden = false;
+
+  if (INITIAL_STATE !== 'normal') {
+    document.addEventListener('DOMContentLoaded', function () {
+      UISpec.setScreenState(INITIAL_STATE);
+    });
+  }
+})();
+</script>
+</body>
+</html>

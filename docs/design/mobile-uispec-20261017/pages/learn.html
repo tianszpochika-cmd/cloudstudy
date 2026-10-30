@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>课程与练习 · 语学星移动端 UI 稿</title>
+<link rel="stylesheet" href="../shared.css">
+<script src="../shared.js"></script>
+<style>
+  /* 仅本页布局；组件与 token 全部来自 shared.css */
+  .learn-page { padding: 4px 20px 28px; }
+  .learn-page [hidden] { display: none !important; }
+
+  /* 顶部品牌行 + 设置出口（一级 Tab 页） */
+  .learn-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-height: 44px;
+  }
+  .learn-top__settings {
+    flex: none;
+    width: 44px;
+    height: 44px;
+    margin-right: -10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--v2-radius-md);
+    color: var(--v2-ink);
+  }
+  .learn-top__settings:hover { background: var(--v2-surface); }
+  .learn-top__settings:focus-visible { outline: none; box-shadow: var(--v2-focus); }
+
+  /* 页头 */
+  .learn-head { margin: 8px 0 24px; }
+  .learn-kicker {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0 0 6px;
+    color: var(--v2-brand);
+    font-size: 13px;
+    line-height: 1.6;
+    font-weight: 600;
+    letter-spacing: .04em;
+  }
+  .learn-kicker .icon { flex: none; }
+  .learn-title {
+    margin: 0;
+    color: var(--v2-ink);
+    font-size: 28px;
+    line-height: 1.4;
+    font-weight: 650;
+    letter-spacing: -.01em;
+  }
+  .learn-intro {
+    margin: 6px 0 0;
+    color: var(--v2-mut);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  /* 练习灵感（MobileFeatureGrid 非紧凑模式：两列，卡片带说明） */
+  .learn-section { margin: 0; }
+  .learn-section__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 0 0 12px;
+  }
+  .learn-section__title {
+    margin: 0;
+    color: var(--v2-ink);
+    font-size: 16px;
+    line-height: 1.5;
+    font-weight: 600;
+  }
+  .learn-section__note {
+    flex: none;
+    color: var(--v2-mut);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .inspire-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .inspire {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    min-height: 84px;
+    padding: 16px 14px;
+    border: 1px solid var(--v2-line);
+    border-radius: var(--v2-radius-lg);
+    background: var(--v2-card);
+    color: var(--v2-ink);
+    text-decoration: none;
+    cursor: pointer;
+    transition: border-color var(--v2-motion-fast) ease, background var(--v2-motion-fast) ease;
+  }
+  .inspire:hover { border-color: var(--v2-brand); }
+  .inspire:focus-visible { outline: none; box-shadow: var(--v2-focus); }
+  .inspire__icon {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: var(--v2-soft);
+    color: var(--v2-brand);
+  }
+  .inspire__label {
+    font-size: 14px;
+    line-height: 1.4;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+  }
+  .inspire__desc {
+    margin: 0;
+    color: var(--v2-mut);
+    font-size: 12px;
+    line-height: 1.7;
+    overflow-wrap: anywhere;
+  }
+
+  /* 卡片 */
+  .learn-card {
+    margin-top: 16px;
+    padding: 20px;
+    border-radius: var(--v2-radius-lg);
+    background: var(--v2-card);
+    box-shadow: var(--v2-shadow);
+  }
+  .learn-section + .learn-card { margin-top: 24px; }
+  .learn-card + .learn-card { margin-top: 16px; }
+
+  .learn-eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0 0 4px;
+    color: var(--v2-mut);
+    font-size: 12px;
+    line-height: 1.6;
+    font-weight: 700;
+    letter-spacing: .08em;
+  }
+  .learn-eyebrow .icon { flex: none; }
+  .learn-card__title {
+    margin: 0;
+    color: var(--v2-ink);
+    font-size: 16px;
+    line-height: 1.5;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+  }
+  .learn-card__desc {
+    margin: 8px 0 0;
+    color: var(--v2-mut);
+    font-size: 14px;
+    line-height: 1.75;
+  }
+
+  /* 课程内容 */
+  .course-status {
+    margin: 10px 0 0;
+    color: var(--v2-mut);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  .course-loading { margin-top: 4px; }
+
+  .course-detail__title {
+    margin: 8px 0 0;
+    color: var(--v2-ink);
+    font-size: 20px;
+    line-height: 1.4;
+    font-weight: 650;
+    overflow-wrap: anywhere;
+  }
+  .course-detail__title:focus { outline: none; }
+  .course-detail__meta {
+    margin: 4px 0 0;
+    color: var(--v2-mut);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .course-detail__summary {
+    margin: 8px 0 0;
+    color: var(--v2-mut);
+    font-size: 14px;
+    line-height: 1.75;
+  }
+  .unit-list { display: block; margin-top: 14px; }
+  .unit { padding: 12px 0; border-top: 1px solid var(--v2-line); }
+  .unit:first-child { border-top: 0; padding-top: 0; }
+  .unit__text {
+    margin: 0;
+    color: var(--v2-ink);
+    font-size: 16px;
+    line-height: 1.6;
+    font-weight: 500;
+    overflow-wrap: anywhere;
+  }
+  .unit__options {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+    margin-top: 8px;
+  }
+  .unit__option {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    min-width: 0;
+    padding: 6px 8px;
+    border-radius: var(--v2-radius-sm);
+    background: var(--v2-surface);
+    color: var(--v2-mut);
+    font-size: 13px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+  }
+  .unit__key {
+    flex: none;
+    color: var(--v2-ink);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+  .course-detail__notice { margin-top: 14px; }
+
+  .learn-empty-inline {
+    margin: 10px 0 0;
+    color: var(--v2-mut);
+    font-size: 14px;
+    line-height: 1.75;
+  }
+
+  .course-error-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  /* 练习入口：真实页是三个纯按钮，第一个为主按钮 */
+  .practice-list {
+    display: grid;
+    gap: 10px;
+    margin-top: 14px;
+  }
+  .practice-btn {
+    width: 100%;
+    justify-content: space-between;
+    padding: 0 16px;
+    text-align: left;
+  }
+  .practice-btn .icon { flex: none; }
+
+  /* 复习 */
+  .review-line {
+    margin: 6px 0 0;
+    color: var(--v2-mut);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .review-empty-state {
+    margin: 8px 0 0;
+    color: var(--v2-mut);
+    font-size: 14px;
+    line-height: 1.75;
+  }
+  .review-loading { margin-top: 4px; }
+  .review-loading .review-line { margin-top: 0; }
+
+  .review-notice { margin-top: 12px; }
+  .review-notice .btn { margin-top: 10px; }
+
+  .review-fb {
+    margin: 12px 0 0;
+    padding: 12px 14px;
+    border-radius: var(--v2-radius-md);
+    background: var(--v2-surface);
+    color: var(--v2-mut);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .review-rows { margin-top: 10px; }
+  .review-row {
+    padding: 12px 0;
+    border-top: 1px solid var(--v2-line);
+  }
+  .review-row:first-child { padding-top: 6px; }
+  .review-row__head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .review-row__label {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--v2-ink);
+    font-size: 16px;
+    line-height: 1.5;
+    font-weight: 500;
+    overflow-wrap: anywhere;
+  }
+  .review-row__label .icon { flex: none; color: var(--v2-mut); }
+  .review-row__reason {
+    margin: 4px 0 0 26px;
+    color: var(--v2-mut);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .review-action {
+    flex: none;
+    min-height: 44px;
+    min-width: 88px;
+    padding: 0 14px;
+    font-size: 14px;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  /* 工具条状态复用同一套卡片分支（课程 / 复习各自进入真实分支） */
+  html[data-screen-state] .learn-page [data-state-block="normal"] { display: block; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .inspire { transition: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="phone-stage">
+  <div data-ui="toolbar" data-states="normal,loading,empty,error,forbidden,offline"></div>
+
+  <div class="phone phone--scroll">
+    <div data-ui="statusbar"></div>
+
+    <div class="phone__scroll">
+      <div class="learn-page">
+
+        <!-- 品牌行常驻（一级 Tab 页不显示返回） -->
+        <div class="learn-top">
+          <span class="auth-brand"><span data-icon="brand" data-icon-size="22"></span>语学星</span>
+          <a class="learn-top__settings" href="settings.html" aria-label="设置"><span data-icon="settings" data-icon-size="22"></span></a>
+        </div>
+
+        <div data-state-block="normal" class="learn-state">
+          <header class="learn-head">
+            <p class="learn-kicker"><span data-icon="book" data-icon-size="16"></span>COURSES</p>
+            <h1 class="learn-title">课程与练习</h1>
+            <p class="learn-intro">继续课程，查看复习内容。</p>
+          </header>
+
+          <section class="learn-section" aria-labelledby="inspire-title">
+            <div class="learn-section__head">
+              <h2 class="learn-section__title" id="inspire-title">找到今天的练习灵感</h2>
+              <span class="learn-section__note">听 · 说 · 读 · 写</span>
+            </div>
+            <div class="inspire-grid">
+              <a class="inspire" href="b2-vocabulary.html">
+                <span class="inspire__icon" data-icon="pencil" data-icon-size="20"></span>
+                <span class="inspire__label">单词复习</span>
+                <span class="inspire__desc">先回想，再揭晓。用适合你的节奏巩固记忆。</span>
+              </a>
+              <a class="inspire" href="b11-reading.html">
+                <span class="inspire__icon" data-icon="book" data-icon-size="20"></span>
+                <span class="inspire__label">分级阅读</span>
+                <span class="inspire__desc">选择适合的阅读难度，把好表达收入日常。</span>
+              </a>
+              <a class="inspire" href="b3-grammar.html">
+                <span class="inspire__icon" data-icon="grid" data-icon-size="20"></span>
+                <span class="inspire__label">语法结构</span>
+                <span class="inspire__desc">拆解结构、调整语序，把语法变成表达的底气。</span>
+              </a>
+            </div>
+          </section>
+
+          <!-- 课程 -->
+          <section class="learn-card" aria-labelledby="course-title">
+            <p class="learn-eyebrow"><span data-icon="book" data-icon-size="14"></span>课程</p>
+            <h2 class="learn-card__title" id="course-title">选择课程</h2>
+            <p class="learn-card__desc" id="course-desc">从首页选择一门课程。</p>
+
+            <div class="course-detail" id="course-detail" hidden>
+              <h3 class="course-detail__title" id="course-detail-title" tabindex="-1"></h3>
+              <p class="course-detail__meta" id="course-detail-meta"></p>
+              <p class="course-detail__summary" id="course-detail-summary"></p>
+              <div class="unit-list" id="unit-list"></div>
+              <p class="learn-empty-inline" id="content-empty" hidden>暂无可展示的学习单元。</p>
+              <div class="inline-state inline-state--info course-detail__notice" id="task-notice" role="status" hidden>
+                <span data-icon="info" data-icon-size="18"></span>
+                <span>可浏览课程，完成记录暂不可用。</span>
+              </div>
+            </div>
+
+            <div class="course-loading" id="course-loading" hidden aria-busy="true">
+              <p class="course-status" role="status">正在读取课程…</p>
+              <div aria-hidden="true">
+                <div class="skeleton skeleton-line" style="width: 58%; height: 24px; margin-top: 12px"></div>
+                <div class="skeleton skeleton-line skeleton-line--sm" style="width: 42%; margin-top: 10px"></div>
+                <div class="skeleton skeleton-line skeleton-line--sm" style="width: 88%; margin-top: 14px"></div>
+                <div class="skeleton skeleton-block" style="height: 64px; margin-top: 16px"></div>
+                <div class="skeleton skeleton-block" style="height: 64px; margin-top: 10px"></div>
+              </div>
+            </div>
+
+            <div id="course-error-block" hidden>
+              <div class="inline-state inline-state--bad" role="alert">
+                <span data-icon="alert-circle" data-icon-size="18"></span>
+                <span id="course-error-text">课程内容暂时不可用。</span>
+              </div>
+              <div class="course-error-actions">
+                <button type="button" class="btn btn--secondary btn--sm" id="content-retry">
+                  <span class="btn__spinner" aria-hidden="true"></span><span class="btn__label">重试</span><span data-icon="refresh" data-icon-size="16"></span>
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <!-- 练习入口 -->
+          <section class="learn-card" aria-labelledby="practice-title">
+            <p class="learn-eyebrow"><span data-icon="target" data-icon-size="14"></span>练习</p>
+            <h2 class="learn-card__title" id="practice-title">练习入口</h2>
+            <div class="practice-list">
+              <a class="btn btn--primary practice-btn" href="assessment.html">
+                <span>基础练习</span><span data-icon="chevron-right" data-icon-size="18"></span>
+              </a>
+              <a class="btn btn--secondary practice-btn" href="b11-reading.html">
+                <span>分级阅读</span><span data-icon="chevron-right" data-icon-size="18"></span>
+              </a>
+              <a class="btn btn--secondary practice-btn" href="b3-grammar.html">
+                <span>语法练习</span><span data-icon="chevron-right" data-icon-size="18"></span>
+              </a>
+            </div>
+          </section>
+
+          <!-- 复习 -->
+          <section class="learn-card" aria-labelledby="review-title">
+            <p class="learn-eyebrow"><span data-icon="clock" data-icon-size="14"></span>复习</p>
+            <h2 class="learn-card__title" id="review-title">复习安排</h2>
+
+            <p class="review-line" id="review-weakness">尚不能判断</p>
+
+            <div class="review-loading" id="review-loading" hidden aria-busy="true">
+              <p class="review-line" role="status">正在读取复习安排…</p>
+              <div aria-hidden="true">
+                <div class="skeleton skeleton-line skeleton-line--sm" style="width: 74%; margin-top: 14px"></div>
+                <div class="skeleton skeleton-line skeleton-line--sm" style="width: 60%; margin-top: 10px"></div>
+                <div class="skeleton skeleton-line skeleton-line--sm" style="width: 68%; margin-top: 10px"></div>
+              </div>
+            </div>
+
+            <p class="review-empty-state" id="review-empty-state" hidden>暂无待复习内容。</p>
+            <p class="review-line" id="review-stage" hidden></p>
+            <p class="review-line" id="review-empty-copy" hidden></p>
+            <p class="review-line" id="review-history" hidden></p>
+
+            <p class="review-fb" id="review-illegal" hidden>这个操作现在不能用</p>
+
+            <div class="review-notice" id="review-notice" hidden>
+              <div class="inline-state inline-state--bad" role="alert">
+                <span data-icon="alert-circle" data-icon-size="18"></span>
+                <span id="review-notice-text"></span>
+              </div>
+              <button type="button" class="btn btn--secondary btn--sm" id="review-retry">
+                <span class="btn__spinner" aria-hidden="true"></span><span class="btn__label">重试</span><span data-icon="refresh" data-icon-size="16"></span>
+              </button>
+            </div>
+
+            <div class="review-rows" id="review-rows"></div>
+          </section>
+        </div>
+
+      </div>
+    </div>
+
+    <div data-ui="tabbar" data-active="learn"></div>
+    <div class="toast-host" role="status" aria-live="polite"></div>
+  </div>
+</div>
+
+<div class="interaction-notes">
+  <h2>交互说明（learn）</h2>
+  <ul>
+    <li><strong>主题与直达参数</strong> → 工具条「浅色 / 深色」切换整页 token 并写入 <code>localStorage['uispec-theme']</code>；<code>?theme=light|dark</code> 固定主题；<code>?state=normal|loading|empty|error|forbidden|offline</code> 直达页面状态；<code>?contentCode=…</code>（兼容 <code>?content=</code>）直达课程内容，未知 code 按读取失败显示「课程内容暂时不可用。」。</li>
+    <li><strong>课程直达</strong> → <code>?contentCode=b2-grammar-present|b1-daily-greetings|b1-listening-campus|b1-reading-city</code> 打开对应课程；附 <code>&amp;taskId=…</code> 时与真实页一致，在单元列表下方显示 <code>role=status</code>「可浏览课程，完成记录暂不可用。」。</li>
+    <li><strong>Mock 参数</strong> → <code>?mock=content-loading|content-error|content-empty|review-loading|review-empty|review-no-due|review-deferred|review-error|review-offline|review-permission|review-illegal|review-recovery</code> 演示课程与复习卡各分支。</li>
+    <li><strong>页面状态</strong> → 工具条映射真实分支：空 = 课程卡空闲（「选择课程 / 从首页选择一门课程。」）与复习空态；错误 / 离线 = 课程卡读取失败与复习读取失败，各自一个「重试」，转圈「正在重试…」，不弹成功 Toast；无权限 = 复习权限分支（无重试）与空闲课程卡；加载 = 课程「正在读取课程…」与复习「正在读取复习安排…」骨架屏。切换状态会取消未完成的读取、复习与重试计时。</li>
+    <li><strong>练习灵感</strong> → 三张入口卡（含说明）：单词复习「先回想，再揭晓。用适合你的节奏巩固记忆。」→ <code>b2-vocabulary.html</code>、分级阅读「选择适合的阅读难度，把好表达收入日常。」→ <code>b11-reading.html</code>、语法结构「拆解结构、调整语序，把语法变成表达的底气。」→ <code>b3-grammar.html</code>；卡片有 44px 以上命中区与键盘焦点环。</li>
+    <li><strong>课程卡</strong> → 无 <code>contentCode</code> 时只显示「课程 / 选择课程 / 从首页选择一门课程。」，不列出课程；带 <code>contentCode</code> 时标题为「课程内容」并显示课程内容，<code>?mock=content-loading</code> 与工具条「加载」演示「正在读取课程…」骨架屏。</li>
+    <li><strong>课程内容</strong> → 课程标题、语言与类型、简介、学习单元（题干 + 四个选项）；无单元时显示「暂无可展示的学习单元。」；带 <code>taskId</code> 时显示「可浏览课程，完成记录暂不可用。」。真实页没有「换一门课程」或返回列表的操作，原型同样不提供。</li>
+    <li><strong>内容读取失败</strong> → 课程卡内 bad 色 <code>role=alert</code>「课程内容暂时不可用。」（模板兜底「课程暂不可用。」）+ 一个带刷新图标的次要「重试」；转圈「正在重试…」1s 后恢复当前课程，不弹 Toast。</li>
+    <li><strong>练习入口</strong> → 三个纯按钮：「基础练习」为主按钮（brand）→ <code>assessment.html</code>（真实页把 b2-practice 指向测评），「分级阅读」→ <code>b11-reading.html</code>，「语法练习」→ <code>b3-grammar.html</code>；没有说明小字与「更多练习与学习报告」。</li>
+    <li><strong>复习标题与说明</strong> → 有队列时标题「待复习 n 项」，说明「已有复习证据」，随后是首项阶段 <code>stageLabel</code>（如「待复习」）；空队列时说明「尚不能判断」（<code>weaknessView(0)</code>）；读取中标题「复习安排」并显示 <code>role=status</code>「正在读取复习安排…」。</li>
+    <li><strong>复习空态</strong> → <code>?mock=review-empty</code>：标题「待复习 0 项」、「暂无待复习内容。」与「还没有复习记录」（<code>reviewEmpty</code> 默认）；<code>?mock=review-no-due</code> 显示服务端 <code>emptyCopy</code>「暂无到期复习」并保留历史「最近已完成 3 项复习」。</li>
+    <li><strong>复习历史</strong> → 只要存在历史就显示：全部完成时「最近已完成 n 项复习」，有延期时「最近已完成 n 项，延期 m 项」（<code>?mock=review-deferred</code>）。</li>
+    <li><strong>开始复习</strong> → 点击后按钮禁用并转圈，随后按真实 <code>store.complete()</code> 进入恢复分支：标题回落「复习安排」、复习行消失、bad 色 <code>role=alert</code>「缺少可核验的答题结果，请从练习进入复习。」且没有「重试」；不改变计数、不写历史、不弹 Toast。</li>
+    <li><strong>复习读取失败 / 离线 / 无权限</strong> → 标题「复习安排」，bad 色 <code>role=alert</code>「移动复习队列暂时不可用。」并附带空队列说明「复习列表暂时没有读出来」+「重试」；离线同文案；<code>?mock=review-permission</code> 显示「当前账号无法查看复习安排。」且不提供重试。</li>
+    <li><strong>复习不可用操作</strong> → <code>?mock=review-illegal</code> 显示纯说明行「这个操作现在不能用」（<code>reviewFailureCopy</code>），不出现 <code>role=alert</code> 与「重试」；点击「开始复习」同样不弹 Toast。</li>
+    <li><strong>TabBar</strong> → 底部 5 项，「课程」选中并带 <code>aria-current="page"</code>；其余跳转 <code>home.html</code> / <code>b2-practice.html</code> / <code>world.html</code> / <code>profile.html</code>。右上角设置入口跳转 <code>settings.html</code>。</li>
+    <li><strong>文案边界</strong> → 不显示内部投影版本、错误码或「等待加载」类静态占位；加载使用骨架屏，复习计数与状态同时用文字表达，不只依赖颜色。</li>
+  </ul>
+  <p class="notes-links"><strong>原型直达课程</strong>：
+    <a href="learn.html?contentCode=b2-grammar-present">一般现在时与频率副词</a> ·
+    <a href="learn.html?contentCode=b1-daily-greetings">日常问候与自我介绍</a> ·
+    <a href="learn.html?contentCode=b1-listening-campus">校园对话精听</a> ·
+    <a href="learn.html?contentCode=b1-reading-city">分级阅读 · 城市一日</a>
+  </p>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var params = new URLSearchParams(location.search);
+  // 截图工具会在地址后追加 ?theme=…；若前序参数已带 ?，取到分隔符为止
+  function q(name) {
+    var value = params.get(name) || '';
+    var cut = value.indexOf('?');
+    return cut >= 0 ? value.slice(0, cut) : value;
+  }
+  // 截图工具可能把 ?theme=… 追加在已有参数之后；取最后一个 theme 值，保证工具条与页面一致
+  function themedParam() {
+    var match = /[?&]theme=(light|dark)/g;
+    var found = null;
+    var item;
+    while ((item = match.exec(location.search))) found = item[1];
+    return found;
+  }
+  var THEME_PARAM = themedParam();
+  if (THEME_PARAM) UISpec.setTheme(THEME_PARAM);
+
+  var MOCK = q('mock');
+  var STATE_PARAM = q('state');
+  var INITIAL_STATE = ['normal', 'loading', 'empty', 'error', 'forbidden', 'offline'].indexOf(STATE_PARAM) >= 0 ? STATE_PARAM : 'normal';
+  var TASK_ID = q('taskId');
+
+  var ILLEGAL_REVIEW = '这个操作现在不能用';
+  var UNTRUSTED_REVIEW = 'UNTRUSTED_REVIEW_EVIDENCE';
+  var READ_FAILED_COPY = '复习列表暂时没有读出来';
+  var QUEUE_UNAVAILABLE_COPY = '移动复习队列暂时不可用。';
+  var RECOVERY_COPY = '缺少可核验的答题结果，请从练习进入复习。';
+
+  /* 课程 mock：与首页课程书架同一批 contentCode */
+  var COURSES = [
+    {
+      code: 'b2-grammar-present',
+      title: '一般现在时与频率副词',
+      meta: '英语 · 语法 · 2 个单元',
+      summary: '用一般现在时描述日常习惯，并区分 always、usually、often 等频率副词的位置。',
+      items: [
+        {
+          text: 'She ___ to work by bus every day.',
+          options: [
+            { key: 'A', text: 'go' }, { key: 'B', text: 'goes' },
+            { key: 'C', text: 'going' }, { key: 'D', text: 'went' }
+          ]
+        },
+        {
+          text: 'Which sentence is correct?',
+          options: [
+            { key: 'A', text: 'He usually walks to school.' },
+            { key: 'B', text: 'He walks usually to school.' },
+            { key: 'C', text: 'Usually he walk to school.' },
+            { key: 'D', text: 'He walk usually to school.' }
+          ]
+        }
+      ]
+    },
+    {
+      code: 'b1-daily-greetings',
+      title: '日常问候与自我介绍',
+      meta: '英语 · 词汇 · 2 个单元',
+      summary: '12 个核心词与 3 组自我介绍句型，先会说，再写下来。',
+      items: [
+        {
+          text: 'How do you reply to “How are you?”',
+          options: [
+            { key: 'A', text: 'I’m fine, thanks.' }, { key: 'B', text: 'I’m fine, thank.' },
+            { key: 'C', text: 'Fine, thanks you.' }, { key: 'D', text: 'I fine.' }
+          ]
+        },
+        {
+          text: '“Nice to meet you.” Which reply is the most natural?',
+          options: [
+            { key: 'A', text: 'Nice to meet you too.' }, { key: 'B', text: 'Nice meet you.' },
+            { key: 'C', text: 'Meet you nice.' }, { key: 'D', text: 'You too meet.' }
+          ]
+        }
+      ]
+    },
+    {
+      code: 'b1-listening-campus',
+      title: '校园对话精听',
+      meta: '英语 · 听力 · 2 个单元',
+      summary: '4 段校园短对话，逐句跟读，听清时间、地点与人物关系。',
+      items: [
+        {
+          text: 'What time does the library open?',
+          options: [
+            { key: 'A', text: 'At eight.' }, { key: 'B', text: 'At nine.' },
+            { key: 'C', text: 'At ten.' }, { key: 'D', text: 'At seven.' }
+          ]
+        },
+        {
+          text: 'Where does the conversation take place?',
+          options: [
+            { key: 'A', text: 'In a classroom.' }, { key: 'B', text: 'In a café.' },
+            { key: 'C', text: 'In a library.' }, { key: 'D', text: 'In a gym.' }
+          ]
+        }
+      ]
+    },
+    {
+      code: 'b1-reading-city',
+      title: '分级阅读 · 城市一日',
+      meta: '英语 · 阅读 · 2 个单元',
+      summary: '600 词短文，跟着作者走过一座城市的一天，再完成 8 道理解题。',
+      items: [
+        {
+          text: 'What is the best title for the passage?',
+          options: [
+            { key: 'A', text: 'A Day in the City.' }, { key: 'B', text: 'A Long Journey.' },
+            { key: 'C', text: 'The Morning Train.' }, { key: 'D', text: 'A Quiet Village.' }
+          ]
+        },
+        {
+          text: 'Why did the writer take the early bus?',
+          options: [
+            { key: 'A', text: 'To avoid the traffic.' }, { key: 'B', text: 'To meet a friend.' },
+            { key: 'C', text: 'To find a seat.' }, { key: 'D', text: 'To see the sunrise.' }
+          ]
+        }
+      ]
+    }
+  ];
+
+  function defaultQueue() {
+    return [
+      { id: 'rv-1', source: 'REVIEW', state: 'REVIEW', completable: true },
+      { id: 'rv-2', source: 'MISTAKE', state: 'REVIEW', completable: true },
+      { id: 'rv-3', source: 'NEW', state: 'NEW', completable: false },
+      { id: 'rv-4', source: 'RETRY', state: 'LEARNING', completable: false }
+    ];
+  }
+
+  function defaultHistory() {
+    return [{ disposition: 'COMPLETED' }, { disposition: 'COMPLETED' }, { disposition: 'COMPLETED' }];
+  }
+
+  function clone(value) {
+    return JSON.parse(JSON.stringify(value));
+  }
+
+  function findCourse(code) {
+    for (var i = 0; i < COURSES.length; i++) {
+      if (COURSES[i].code === code) return COURSES[i];
+    }
+    return null;
+  }
+
+  function esc(value) {
+    return String(value).replace(/[&<>"]/g, function (ch) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch];
+    });
+  }
+
+  /* ---------- 初始状态（与 learn.vue / b18-learning.ts 的分支一一对应） ---------- */
+
+  var content = { mode: 'idle', code: '', errorText: '', noUnits: false };
+  var review = { state: 'ready', queue: defaultQueue(), history: defaultHistory(), emptyCopy: '', lastError: '' };
+
+  var initialCode = q('contentCode') || q('content');
+  var initialCourse = findCourse(initialCode);
+  if (initialCode) {
+    if (initialCourse) {
+      content.mode = 'ready';
+      content.code = initialCourse.code;
+    } else {
+      // loadContent 读取失败：catch 兜底文案
+      content.mode = 'error';
+      content.code = initialCode;
+      content.errorText = '课程内容暂时不可用。';
+    }
+  }
+
+  if (MOCK === 'content-loading') {
+    content.mode = 'loading';
+    content.code = (initialCourse || COURSES[0]).code;
+  }
+  if (MOCK === 'content-error') {
+    content.mode = 'error';
+    content.code = (initialCourse || COURSES[0]).code;
+    content.errorText = '课程内容暂时不可用。';
+  }
+  if (MOCK === 'content-empty') {
+    content.mode = 'ready';
+    content.code = (initialCourse || COURSES[0]).code;
+    content.noUnits = true;
+  }
+
+  if (MOCK === 'review-loading') {
+    // store.load() 一开始 state=loading，首次加载时队列与历史尚未返回
+    review.state = 'loading';
+    review.queue = [];
+    review.history = [];
+  }
+  if (MOCK === 'review-empty') {
+    review.state = 'empty';
+    review.queue = [];
+    review.history = [];
+    review.emptyCopy = '';
+  }
+  if (MOCK === 'review-no-due') {
+    review.state = 'empty';
+    review.queue = [];
+    review.history = defaultHistory();
+    review.emptyCopy = '暂无到期复习';
+  }
+  if (MOCK === 'review-deferred') {
+    review.history = [{ disposition: 'COMPLETED' }, { disposition: 'COMPLETED' }, { disposition: 'DEFERRED' }];
+  }
+  if (MOCK === 'review-error' || MOCK === 'review-offline') {
+    review.state = MOCK === 'review-offline' ? 'offline' : 'error';
+    review.queue = [];
+    review.history = [];
+    review.emptyCopy = READ_FAILED_COPY;
+    review.lastError = QUEUE_UNAVAILABLE_COPY;
+  }
+  if (MOCK === 'review-permission') {
+    review.state = 'permission';
+    review.queue = [];
+    review.history = [];
+    review.emptyCopy = READ_FAILED_COPY;
+    review.lastError = '';
+  }
+  if (MOCK === 'review-recovery') {
+    review.state = 'recovery';
+    review.lastError = RECOVERY_COPY;
+  }
+  if (MOCK === 'review-illegal') {
+    review.lastError = ILLEGAL_REVIEW;
+  }
+
+  var baseline = {
+    content: clone(content),
+    review: clone(review)
+  };
+
+  /* ---------- 元素 ---------- */
+  var courseTitle = document.getElementById('course-title');
+  var courseDesc = document.getElementById('course-desc');
+  var courseDetail = document.getElementById('course-detail');
+  var courseLoading = document.getElementById('course-loading');
+  var courseErrorBlock = document.getElementById('course-error-block');
+  var courseErrorText = document.getElementById('course-error-text');
+  var detailTitle = document.getElementById('course-detail-title');
+  var detailMeta = document.getElementById('course-detail-meta');
+  var detailSummary = document.getElementById('course-detail-summary');
+  var unitList = document.getElementById('unit-list');
+  var contentEmpty = document.getElementById('content-empty');
+  var taskNotice = document.getElementById('task-notice');
+
+  var reviewTitle = document.getElementById('review-title');
+  var reviewWeakness = document.getElementById('review-weakness');
+  var reviewLoading = document.getElementById('review-loading');
+  var reviewEmptyState = document.getElementById('review-empty-state');
+  var reviewStage = document.getElementById('review-stage');
+  var reviewEmptyCopy = document.getElementById('review-empty-copy');
+  var reviewHistory = document.getElementById('review-history');
+  var reviewIllegal = document.getElementById('review-illegal');
+  var reviewNotice = document.getElementById('review-notice');
+  var reviewNoticeText = document.getElementById('review-notice-text');
+  var reviewRetry = document.getElementById('review-retry');
+  var reviewRows = document.getElementById('review-rows');
+
+  /* ---------- 课程渲染 ---------- */
+
+  function unitHTML(item) {
+    return '<div class="unit">' +
+      '<p class="unit__text">' + esc(item.text) + '</p>' +
+      '<div class="unit__options">' + item.options.map(function (option) {
+        return '<span class="unit__option"><span class="unit__key">' + esc(option.key) + '</span>' +
+          '<span>' + esc(option.text) + '</span></span>';
+      }).join('') + '</div>' +
+      '</div>';
+  }
+
+  function renderContent() {
+    var course = findCourse(content.code);
+    courseTitle.textContent = content.code ? '课程内容' : '选择课程';
+    courseDesc.hidden = content.mode !== 'idle';
+    courseDetail.hidden = content.mode !== 'ready';
+    courseLoading.hidden = content.mode !== 'loading';
+    courseErrorBlock.hidden = content.mode !== 'error';
+
+    if (content.mode === 'error') {
+      // 真实页：{{ contentError || '课程暂不可用。' }}
+      courseErrorText.textContent = content.errorText || '课程暂不可用。';
+    }
+
+    if (content.mode === 'ready' && course) {
+      detailTitle.textContent = course.title;
+      detailMeta.textContent = course.meta;
+      detailSummary.textContent = course.summary;
+      var items = content.noUnits ? [] : course.items;
+      unitList.innerHTML = items.map(unitHTML).join('');
+      contentEmpty.hidden = items.length > 0;
+      taskNotice.hidden = !TASK_ID;
+    }
+  }
+
+  /* ---------- 复习渲染 ---------- */
+
+  var REVIEW_KNOWN = ['ready', 'empty', 'partial', 'success'];
+
+  function reviewKnown() {
+    return REVIEW_KNOWN.indexOf(review.state) >= 0;
+  }
+
+  function stageLabel(state) {
+    return { NEW: '初学', LEARNING: '巩固中', REVIEW: '待复习', MASTERED: '已掌握' }[state] || '复习中';
+  }
+
+  function reviewFailureCopy(message) {
+    var value = message || '';
+    if (value.indexOf(UNTRUSTED_REVIEW) >= 0 || value === ILLEGAL_REVIEW) return ILLEGAL_REVIEW;
+    return '';
+  }
+
+  // reviewEmpty(readFailed, true, false)：读取失败 → READ_FAILED_COPY；没有历史 → NO_RECORD_COPY
+  function reviewEmptyFallback() {
+    if (review.state === 'error' || review.state === 'offline') return READ_FAILED_COPY;
+    return '还没有复习记录';
+  }
+
+  function historySummary(rows) {
+    if (!rows || !rows.length) return '';
+    var done = rows.filter(function (row) { return row.disposition !== 'DEFERRED'; }).length;
+    var deferred = rows.length - done;
+    return deferred ? '最近已完成 ' + done + ' 项，延期 ' + deferred + ' 项' : '最近已完成 ' + done + ' 项复习';
+  }
+
+  function reviewNoticeCopy() {
+    if (reviewKnown() || review.state === 'idle' || review.state === 'loading') return null;
+    return review.lastError || (review.state === 'permission' ? '当前账号无法查看复习安排。' : '复习安排暂不可用。');
+  }
+
+  function reviewLabel(item) {
+    var source = { NEW: '新内容', REVIEW: '复习', MISTAKE: '错题', RETRY: '重练', UNKNOWN: '复习项' }[item.source] || '复习项';
+    var stage = { NEW: '初学', LEARNING: '巩固中', REVIEW: '待复习', MASTERED: '已掌握' }[item.state] || '复习中';
+    return source === '复习' && stage === '待复习' ? source : [source, stage].join(' · ');
+  }
+
+  function reviewReason(item) {
+    return item.source === 'NEW'
+      ? '新内容需先学一遍，学完后会自动进入复习。'
+      : '复习需要一次可核验的作答：完成练习后自动计入。';
+  }
+
+  function reviewRowHTML(item) {
+    var action = item.completable
+      ? '<button type="button" class="btn btn--secondary btn--sm review-action" data-review-complete="' + esc(item.id) + '">' +
+        '<span class="btn__spinner" aria-hidden="true"></span><span class="btn__label">开始复习</span></button>'
+      : '<a class="btn btn--secondary btn--sm review-action" href="' +
+        (item.source === 'NEW' ? 'b2-vocabulary.html' : 'practice.html') + '">' +
+        (item.source === 'NEW' ? '去学习' : '去练习') + '</a>';
+    return '<div class="review-row" data-review-row="' + esc(item.id) + '">' +
+      '<div class="review-row__head">' +
+      '<span class="review-row__label">' + UISpec.icon('clock', 18) + '<span>' + esc(reviewLabel(item)) + '</span></span>' +
+      action +
+      '</div>' +
+      (item.completable ? '' : '<p class="review-row__reason">' + esc(reviewReason(item)) + '</p>') +
+      '</div>';
+  }
+
+  function renderReview() {
+    var known = reviewKnown();
+    reviewTitle.textContent = known ? '待复习 ' + review.queue.length + ' 项' : '复习安排';
+
+    // 与真实模板顺序一致：先弱点说明，再读取中 / 空态 / 阶段 / 空态说明 / 历史 / 失败提示 / 行
+    reviewWeakness.textContent = review.queue.length ? '已有复习证据' : '尚不能判断';
+    reviewLoading.hidden = !(review.state === 'idle' || review.state === 'loading');
+
+    reviewEmptyState.hidden = review.state !== 'empty';
+    var stage = review.queue[0] ? stageLabel(review.queue[0].state) : '';
+    reviewStage.hidden = !stage;
+    reviewStage.textContent = stage;
+
+    var emptyCopy = review.queue.length === 0 && review.state !== 'loading'
+      ? (review.emptyCopy || reviewEmptyFallback())
+      : '';
+    reviewEmptyCopy.hidden = !emptyCopy;
+    reviewEmptyCopy.textContent = emptyCopy;
+
+    var summary = historySummary(review.history);
+    reviewHistory.hidden = !summary;
+    reviewHistory.textContent = summary;
+
+    var illegal = reviewFailureCopy(review.lastError);
+    reviewIllegal.hidden = !illegal;
+
+    var notice = illegal ? null : reviewNoticeCopy();
+    reviewNotice.hidden = !notice;
+    reviewNoticeText.textContent = notice || '';
+    reviewRetry.hidden = !notice || review.state === 'permission' || review.state === 'recovery';
+
+    reviewRows.innerHTML = known ? review.queue.slice(0, 4).map(reviewRowHTML).join('') : '';
+  }
+
+  /* ---------- 交互 ---------- */
+
+  var contentTimer = null;
+  var reviewTimer = null;
+  var completeTimer = null;
+
+  function cancelTimers() {
+    if (contentTimer) { clearTimeout(contentTimer); contentTimer = null; }
+    if (reviewTimer) { clearTimeout(reviewTimer); reviewTimer = null; }
+    if (completeTimer) { clearTimeout(completeTimer); completeTimer = null; }
+  }
+
+  document.getElementById('content-retry').addEventListener('click', function () {
+    var button = this;
+    if (button.classList.contains('is-busy')) return;
+    UISpec.setBusy(button, true, '正在重试…');
+    contentTimer = setTimeout(function () {
+      contentTimer = null;
+      UISpec.setBusy(button, false);
+      content.mode = 'ready';
+      renderContent();
+      detailTitle.focus({ preventScroll: true });
+    }, 1000);
+  });
+
+  reviewRetry.addEventListener('click', function () {
+    var button = this;
+    if (button.classList.contains('is-busy')) return;
+    UISpec.setBusy(button, true, '正在重试…');
+    reviewTimer = setTimeout(function () {
+      reviewTimer = null;
+      UISpec.setBusy(button, false);
+      review.state = 'ready';
+      review.queue = defaultQueue();
+      review.history = defaultHistory();
+      review.emptyCopy = '';
+      review.lastError = '';
+      renderReview();
+    }, 900);
+  });
+
+  reviewRows.addEventListener('click', function (event) {
+    var button = event.target.closest('[data-review-complete]');
+    if (!button || button.classList.contains('is-busy')) return;
+    var illegalMode = review.lastError === ILLEGAL_REVIEW;
+    // store.complete()：不记录完成，直接进入 recovery 并写入 lastError
+    UISpec.setBusy(button, true);
+    if (completeTimer) clearTimeout(completeTimer);
+    completeTimer = setTimeout(function () {
+      completeTimer = null;
+      review.state = 'recovery';
+      review.lastError = illegalMode ? ILLEGAL_REVIEW : RECOVERY_COPY;
+      renderReview();
+    }, 500);
+  });
+
+  /* ---------- 页面级状态：映射真实分支，不另造文案 ---------- */
+
+  function idleContent() {
+    return { mode: 'idle', code: '', errorText: '', noUnits: false };
+  }
+
+  function applyScreenMode(mode) {
+    cancelTimers();
+    if (mode === 'normal') {
+      content = clone(baseline.content);
+      review = clone(baseline.review);
+    } else if (mode === 'empty') {
+      content = idleContent();
+      review = { state: 'empty', queue: [], history: [], emptyCopy: '', lastError: '' };
+    } else if (mode === 'loading') {
+      content = { mode: 'loading', code: baseline.content.code || COURSES[0].code, errorText: '', noUnits: false };
+      review = { state: 'loading', queue: [], history: [], emptyCopy: '', lastError: '' };
+    } else if (mode === 'error' || mode === 'offline') {
+      content = { mode: 'error', code: baseline.content.code || COURSES[0].code, errorText: '课程内容暂时不可用。', noUnits: false };
+      review = { state: mode, queue: [], history: [], emptyCopy: READ_FAILED_COPY, lastError: QUEUE_UNAVAILABLE_COPY };
+    } else if (mode === 'forbidden') {
+      content = idleContent();
+      review = { state: 'permission', queue: [], history: [], emptyCopy: READ_FAILED_COPY, lastError: '' };
+    }
+    renderContent();
+    renderReview();
+  }
+
+  document.addEventListener('uispec:state', function (event) {
+    applyScreenMode(event.detail.state);
+  });
+
+  /* ---------- 初始渲染 ---------- */
+  renderContent();
+  renderReview();
+
+  if (INITIAL_STATE !== 'normal') {
+    document.addEventListener('DOMContentLoaded', function () {
+      UISpec.setScreenState(INITIAL_STATE);
+    });
+  }
+})();
+</script>
+
+</body>
+</html>

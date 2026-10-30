@@ -1,0 +1,1477 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-screen-state="splash">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>开始使用 · 语学星移动端 UI 稿 v2C</title>
+<link rel="stylesheet" href="../shared.css">
+<script src="../shared.js"></script>
+<style>
+  /* 仅本页布局与自定义流程状态；组件与 token 全部来自 shared.css */
+  .ob-page [hidden] { display: none !important; }
+
+  /* ---------- 状态驱动 ----------
+   * 唯一事实源：<html data-screen-state>（URL ?state= / 工具条 / shared.js API）。 */
+  html[data-screen-state] .ob-page [data-state-block] { display: none !important; }
+  html[data-screen-state="splash"] .ob-page [data-state-block="splash"],
+  html[data-screen-state^="carousel"] .ob-page [data-state-block="carousel"],
+  html[data-screen-state="adult"] .ob-page [data-state-block="adult"],
+  html[data-screen-state="adult-invalid"] .ob-page [data-state-block="adult"],
+  html[data-screen-state="adult-underage"] .ob-page [data-state-block="adult"],
+  html[data-screen-state="consent"] .ob-page [data-state-block="consent"],
+  html[data-screen-state="goal"] .ob-page [data-state-block="goal"],
+  html[data-screen-state="goal-selected"] .ob-page [data-state-block="goal"],
+  html[data-screen-state="goal-saving"] .ob-page [data-state-block="goal"],
+  html[data-screen-state="goal-error"] .ob-page [data-state-block="goal"],
+  html[data-screen-state="sheet"] .ob-page [data-state-block="adult"],
+  html[data-screen-state="loading"] .ob-page [data-state-block="loading"],
+  html[data-screen-state="error"] .ob-page [data-state-block="error"],
+  html[data-screen-state="offline"] .ob-page [data-state-block="offline"] {
+    display: flex !important;
+  }
+
+  .ob-bar { display: none; }
+  html[data-screen-state="carousel-1"] .ob-bar--carousel,
+  html[data-screen-state="carousel-2"] .ob-bar--carousel,
+  html[data-screen-state="carousel-3"] .ob-bar--carousel,
+  html[data-screen-state="adult"] .ob-bar--adult,
+  html[data-screen-state="adult-invalid"] .ob-bar--adult,
+  html[data-screen-state="adult-underage"] .ob-bar--adult,
+  html[data-screen-state="sheet"] .ob-bar--adult,
+  html[data-screen-state="consent"] .ob-bar--consent,
+  html[data-screen-state="goal"] .ob-bar--goal,
+  html[data-screen-state="goal-selected"] .ob-bar--goal,
+  html[data-screen-state="goal-saving"] .ob-bar--goal,
+  html[data-screen-state="goal-error"] .ob-bar--goal { display: block; }
+
+  /* 闪屏：整部手机铺渐变（含状态栏与安全区） */
+  html[data-screen-state="splash"] .ob-phone {
+    background: var(--v2-hero-bg);
+    background-color: var(--v2-hero-1);
+  }
+  html[data-screen-state="splash"] .ob-phone::before,
+  html[data-screen-state="splash"] .ob-phone::after { opacity: 0; }
+  html[data-screen-state="splash"] .ob-phone .statusbar {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 56px;
+    color: #fff;
+    z-index: 6;
+    pointer-events: none;
+  }
+  html[data-screen-state="splash"] .ob-phone .phone__scroll {
+    background: transparent;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  html[data-screen-state="splash"] .ob-page {
+    flex: 1 1 auto;
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .ob-phone { background: var(--v2-bg); }
+
+  /* ---------- 闪屏 ---------- */
+  .ob-splash {
+    position: relative;
+    flex: 1 1 auto;
+    width: 100%;
+    min-height: 100%;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 100px 32px 132px;
+    border: 0;
+    background: var(--v2-hero-bg);
+    background-color: var(--v2-hero-1);
+    color: var(--v2-hero-ink);
+    text-align: center;
+    font-family: inherit;
+    cursor: pointer;
+    overflow: hidden;
+    isolation: isolate;
+  }
+  .ob-splash:focus-visible { outline: none; box-shadow: inset 0 0 0 4px rgba(255,255,255,.55); }
+  .ob-splash::before,
+  .ob-splash::after {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: -1;
+  }
+  .ob-splash::before {
+    width: 360px; height: 360px;
+    left: -150px; top: -130px;
+    background: radial-gradient(circle, rgba(255,255,255,.24), rgba(255,255,255,0) 68%);
+  }
+  .ob-splash::after {
+    width: 420px; height: 420px;
+    right: -190px; bottom: -160px;
+    background: radial-gradient(circle, rgba(255,255,255,.18), rgba(255,255,255,0) 70%);
+  }
+  /* 小星身后的光环 */
+  .ob-splash__halo {
+    position: absolute;
+    width: 300px; height: 300px;
+    top: 50%; left: 50%;
+    margin: -212px 0 0 -150px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 236, 255, .40), rgba(255, 236, 255, 0) 66%);
+    pointer-events: none;
+    animation: halo-breathe 4.8s ease-in-out infinite;
+  }
+  @keyframes halo-breathe {
+    0%, 100% { opacity: .75; transform: scale(.96); }
+    50% { opacity: 1; transform: scale(1.04); }
+  }
+  .ob-splash__mark {
+    position: relative;
+    width: 176px; height: 176px;
+    display: grid;
+    place-items: center;
+    margin-bottom: 22px;
+  }
+  .ob-splash__mark .mascot {
+    width: 168px; height: 168px;
+    filter: drop-shadow(0 22px 40px rgba(40, 6, 80, .38));
+  }
+  /* 小星周围的微光点 */
+  .ob-splash__spark { position: absolute; border-radius: 50%; background: #fff; opacity: .9; }
+  .ob-splash__spark:nth-child(2) { width: 7px; height: 7px; top: 6px; right: 16px; box-shadow: 0 0 12px 2px rgba(255,255,255,.7); }
+  .ob-splash__spark:nth-child(3) { width: 5px; height: 5px; bottom: 22px; left: 2px; background: #ffe28a; box-shadow: 0 0 12px 2px rgba(255,226,138,.7); }
+  .ob-splash__spark:nth-child(4) { width: 4px; height: 4px; top: 54px; left: -14px; }
+
+  .ob-splash__name {
+    position: relative;
+    margin: 0;
+    color: var(--v2-hero-ink);
+    text-shadow: 0 2px 24px rgba(40, 10, 90, .28);
+  }
+  .ob-splash__tag {
+    position: relative;
+    margin: 12px 0 0;
+    color: rgba(255,255,255,.86);
+    letter-spacing: .02em;
+  }
+  .ob-splash__foot {
+    position: absolute;
+    left: 0; right: 0;
+    bottom: 64px;
+    display: flex;
+    justify-content: center;
+    gap: 7px;
+  }
+  .ob-splash__foot span {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.45);
+    animation: ob-pulse 1.6s var(--v2-ease) infinite;
+  }
+  .ob-splash__foot span:nth-child(2) { animation-delay: .18s; }
+  .ob-splash__foot span:nth-child(3) { animation-delay: .36s; }
+  @keyframes ob-pulse {
+    0%, 100% { opacity: .35; transform: scale(.85); }
+    45% { opacity: 1; transform: scale(1.12); }
+  }
+
+  /* ---------- 轮播 ---------- */
+  html[data-screen-state^="carousel"] .phone__scroll {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  html[data-screen-state^="carousel"] .ob-page {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .ob-carousel {
+    flex: 1 1 auto;
+    min-height: 0;
+    min-width: 0;
+    width: 100%;
+    display: none;
+    flex-direction: column;
+    padding: 2px 20px 0;
+    background: transparent;
+    position: relative;
+  }
+  html[data-screen-state^="carousel"] .ob-carousel { display: flex; }
+
+  .ob-head {
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 48px;
+    padding: 0 4px;
+  }
+  .ob-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    color: var(--v2-ink);
+  }
+  .ob-head__count {
+    color: var(--v2-mut);
+    font-variant-numeric: tabular-nums;
+    padding: 4px 10px;
+    border-radius: var(--v2-radius-pill);
+    background: var(--v2-surface);
+  }
+
+  /* 卡片堆叠视差 */
+  .ob-viewport {
+    flex: 1 1 auto;
+    min-height: 0;
+    position: relative;
+    display: flex;
+    overflow: hidden;
+    touch-action: pan-y;
+    user-select: none;
+    perspective: 1200px;
+    padding: 8px 0 4px;
+  }
+  .ob-track {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    align-items: stretch;
+    will-change: transform;
+  }
+  .ob-slide {
+    flex: 0 0 100%;
+    min-width: 100%;
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+    padding: 0 4px;
+  }
+  .ob-card {
+    position: relative;
+    flex: 1 1 auto;
+    max-width: 340px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 22px 20px 20px;
+    border-radius: 32px;
+    background:
+      linear-gradient(160deg, var(--ob-card-a) 0%, var(--ob-card-b) 62%, var(--v2-card) 100%);
+    box-shadow: 0 24px 50px -20px rgba(50, 20, 110, .32), inset 0 0 0 1px rgba(255,255,255,.6);
+    overflow: hidden;
+    transform-origin: 50% 42%;
+    transform: translate3d(var(--ob-x, 0), 0, 0) scale(var(--ob-scale, 1)) rotate(var(--ob-rot, 0deg));
+    transition: transform 460ms var(--v2-ease), opacity 380ms var(--v2-ease);
+    backface-visibility: hidden;
+  }
+  :root[data-theme="dark"] .ob-card {
+    background: linear-gradient(160deg, var(--ob-card-a) 0%, var(--ob-card-b) 64%, var(--v2-card) 100%);
+    box-shadow: 0 24px 54px -18px rgba(0, 0, 0, .62), inset 0 0 0 1px rgba(255,255,255,.09);
+  }
+  .ob-card::before {
+    content: "";
+    position: absolute;
+    width: 260px; height: 260px;
+    right: -100px; top: -120px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,255,255,.55), rgba(255,255,255,0) 68%);
+    pointer-events: none;
+    z-index: 0;
+    transform: translateX(var(--ob-bgx, 0));
+  }
+  .ob-card::after {
+    content: "";
+    position: absolute;
+    width: 200px; height: 200px;
+    left: -90px; bottom: -110px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,255,255,.32), rgba(255,255,255,0) 70%);
+    pointer-events: none;
+    z-index: 0;
+    transform: translateX(var(--ob-bgx, 0));
+  }
+  .ob-card--violet { --ob-card-a: #efe7ff; --ob-card-b: #f8f2ff; --ob-art-ring: #ffffff; --ob-art-soft: rgba(255,255,255,.78); }
+  .ob-card--mint { --ob-card-a: #ddf7ec; --ob-card-b: #f1fcf7; }
+  .ob-card--peach { --ob-card-a: #ffe8d8; --ob-card-b: #fff7ef; --ob-art-soft: #ffffff; --ob-art-ink: #c9a58e; }
+  :root[data-theme="dark"] .ob-card--violet { --ob-card-a: #2b2150; --ob-card-b: #1d1735; --ob-art-ring: rgba(196, 181, 253, .26); --ob-art-soft: rgba(167, 139, 250, .16); }
+  :root[data-theme="dark"] .ob-card--mint { --ob-card-a: #12362c; --ob-card-b: #122420; }
+  :root[data-theme="dark"] .ob-card--peach { --ob-card-a: #3c2718; --ob-card-b: #2a1d16; --ob-art-soft: #2a1d16; --ob-art-ink: #a67a5e; }
+
+  .ob-art {
+    position: relative;
+    z-index: 1;
+    flex: none;
+    width: 100%;
+    height: 248px;
+    margin-bottom: 12px;
+    display: grid;
+    place-items: center;
+    transform: translate3d(var(--ob-fgx, 0), 0, 0);
+  }
+  .ob-art svg { display: block; width: 100%; height: 100%; overflow: visible; }
+  .ob-card__title {
+    position: relative;
+    z-index: 1;
+    margin: 0;
+    max-width: 300px;
+    color: var(--v2-ink);
+    text-align: center;
+  }
+  .ob-card__desc {
+    position: relative;
+    z-index: 1;
+    margin: 10px 0 0;
+    max-width: 280px;
+    color: var(--v2-ink-2);
+    text-align: center;
+  }
+  .ob-card__chip {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 14px;
+    padding: 6px 12px;
+    border-radius: var(--v2-radius-pill);
+    background: rgba(255,255,255,.72);
+    color: var(--v2-ink-2);
+    white-space: nowrap;
+    box-shadow: 0 4px 12px rgba(40, 20, 90, .08);
+  }
+  :root[data-theme="dark"] .ob-card__chip { background: rgba(255,255,255,.10); color: var(--v2-ink-2); }
+
+  .ob-dots {
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 16px 0 18px;
+  }
+  .ob-dot {
+    width: 8px; height: 8px;
+    padding: 0;
+    border: 0;
+    border-radius: var(--v2-radius-pill);
+    background: var(--v2-line);
+    cursor: pointer;
+    transition: width 320ms var(--v2-spring), background 320ms var(--v2-ease);
+  }
+  .ob-dot.is-active { width: 28px; background: var(--v2-brand); }
+  .ob-dot:focus-visible { outline: none; box-shadow: var(--v2-focus); }
+
+  /* ---------- 步骤页（成人确认 / 学习目标） ---------- */
+  .ob-step {
+    display: none;
+    flex-direction: column;
+    min-height: calc(844px - 44px - 128px);
+    padding: 4px 24px 24px;
+  }
+  .ob-top {
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 52px;
+  }
+  .ob-icon-btn {
+    width: 44px; height: 44px;
+    display: inline-flex; align-items: center; justify-content: center;
+    border: 0;
+    border-radius: var(--v2-radius-pill);
+    background: var(--v2-surface);
+    color: var(--v2-ink);
+    cursor: pointer;
+    transition: transform 320ms var(--v2-spring), background var(--v2-motion-fast) ease;
+  }
+  .ob-icon-btn:hover { background: var(--v2-soft); color: var(--v2-brand); }
+  .ob-icon-btn.is-pressed { transform: scale(.92); transition-duration: 110ms; }
+  .ob-icon-btn:focus-visible { outline: none; box-shadow: var(--v2-focus); }
+
+  .ob-title {
+    margin: 20px 0 0;
+    color: var(--v2-ink);
+    max-width: 100%;
+  }
+  .ob-sub {
+    margin: 10px 0 0;
+    color: var(--v2-mut);
+    max-width: 100%;
+  }
+
+  .ob-form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    margin-top: 28px;
+  }
+  .ob-consent {
+    margin: 4px 0 0;
+    color: var(--v2-mut);
+  }
+  .ob-consent a { color: var(--v2-brand); text-decoration: none; font-weight: 650; }
+
+  /* 勾选行 */
+  .check-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    min-height: 52px;
+    padding: 12px 16px;
+    border-radius: var(--v2-radius-md);
+    background: var(--v2-surface);
+    cursor: pointer;
+    color: var(--v2-ink);
+    transition: background var(--v2-motion-fast) ease;
+  }
+  .check-row:hover { background: var(--v2-soft); }
+  .check-row__input {
+    position: absolute;
+    width: 1px; height: 1px;
+    margin: -1px; overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+  }
+  .check-row__box {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px; height: 24px;
+    border-radius: 8px;
+    background: var(--v2-card);
+    box-shadow: inset 0 0 0 1.5px var(--v2-line);
+    color: transparent;
+    transition: background var(--v2-motion-fast) ease, box-shadow var(--v2-motion-fast) ease, transform 320ms var(--v2-spring);
+  }
+  .check-row__box .icon { display: block; }
+  /* v2C：勾选后白色对勾（shared 的 .icon 默认描边色不会继承 color） */
+  .check-row__input:checked + .check-row__box .icon { stroke: var(--v2-on-brand); }
+  .check-row__input:checked + .check-row__box {
+    background: var(--v2-brand);
+    box-shadow: inset 0 0 0 1.5px var(--v2-brand);
+    color: var(--v2-on-brand);
+    transform: scale(1.06);
+  }
+  .check-row__input:focus-visible + .check-row__box { box-shadow: var(--v2-focus); }
+  .check-row__text { flex: 1 1 auto; min-width: 0; }
+
+  .ob-error {
+    margin: 0;
+    color: var(--v2-bad);
+  }
+  .ob-error[hidden] { display: none; }
+
+  /* 学习目标：彩色图标瓦片行 */
+  .ob-group { display: flex; flex-direction: column; gap: 10px; margin-top: 22px; }
+  .ob-group__label {
+    margin: 0 0 2px;
+    color: var(--v2-mut);
+    letter-spacing: .02em;
+  }
+  .goal {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+    min-height: 68px;
+    padding: 12px 14px;
+    border: 0;
+    border-radius: var(--v2-radius-lg);
+    background: var(--v2-card);
+    box-shadow: var(--v2-shadow-sm);
+    color: var(--v2-ink);
+    font-family: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+  .goal:hover { box-shadow: var(--v2-shadow); }
+  .goal:focus-visible { outline: none; box-shadow: var(--v2-focus); }
+  .goal__body { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+  .goal__title { color: var(--v2-ink); }
+  .goal__desc { color: var(--v2-mut); }
+  .goal__check {
+    flex: none;
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: var(--v2-surface);
+    color: transparent;
+    transition: background var(--v2-motion-fast) ease, color var(--v2-motion-fast) ease, transform 320ms var(--v2-spring);
+  }
+  .goal.is-selected { background: var(--v2-soft); box-shadow: inset 0 0 0 2px var(--v2-brand), var(--v2-shadow-sm); }
+  .goal.is-selected .goal__check { background: var(--v2-brand); color: var(--v2-on-brand); transform: scale(1.08); }
+
+  .ob-quota { margin-top: 4px; }
+
+  /* ---------- 同意步：可读条款列表（不展示内部来源与文档版本） ---------- */
+  .ob-terms {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 6px;
+  }
+  .ob-term {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 14px 16px;
+    border-radius: var(--v2-radius-lg);
+    background: var(--v2-card);
+    box-shadow: var(--v2-shadow-sm);
+  }
+  .ob-term__icon {
+    flex: none;
+    width: 40px; height: 40px;
+    border-radius: 13px;
+    display: grid;
+    place-items: center;
+    background: var(--v2-tile-violet);
+    color: var(--v2-tile-violet-ink);
+  }
+  .ob-term:nth-child(2) .ob-term__icon { background: var(--v2-tile-mint); color: var(--v2-tile-mint-ink); }
+  .ob-term:nth-child(3) .ob-term__icon { background: var(--v2-tile-sky); color: var(--v2-tile-sky-ink); }
+  .ob-term__body { flex: 1 1 auto; min-width: 0; }
+  .ob-term__title { display: flex; align-items: center; gap: 8px; color: var(--v2-ink); }
+  .ob-term__tag {
+    padding: 2px 8px;
+    border-radius: var(--v2-radius-pill);
+    background: var(--v2-surface);
+    color: var(--v2-mut);
+    white-space: nowrap;
+  }
+  .ob-term__desc { margin: 2px 0 0; color: var(--v2-mut); }
+  .ob-term__check { flex: none; align-self: center; color: var(--v2-brand); display: inline-flex; }
+  :root[data-theme="dark"] .ob-term__check { color: var(--v2-brand); }
+
+  .ob-optional {
+    margin: 12px 0 0;
+    color: var(--v2-mut);
+  }
+  .ob-optional a { color: var(--v2-brand); font-weight: 650; text-decoration: none; }
+
+  /* ---------- 读取 / 错误 / 离线整页态 ---------- */
+  .ob-state {
+    flex-direction: column;
+    min-height: calc(844px - 44px - 128px);
+    padding: 8px 24px 24px;
+  }
+  .ob-state .state-block { padding-top: 56px; }
+  .ob-state .state-block__actions { max-width: 260px; margin-left: auto; margin-right: auto; }
+  .ob-state .state-block__actions .btn { width: 100%; }
+  .ob-loading .ob-skel {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 12px 0;
+  }
+  .ob-loading .ob-skel__row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    border-radius: var(--v2-radius-lg);
+    background: var(--v2-card);
+    box-shadow: var(--v2-shadow-sm);
+  }
+  .ob-loading .ob-skel__lines { flex: 1 1 auto; display: flex; flex-direction: column; gap: 8px; }
+
+  /* ---------- 底部弹层中的退出 ---------- */
+  .ob-sheet-exit {
+    width: 100%;
+    min-height: 56px;
+    margin-top: 8px;
+    border: 0;
+    border-radius: var(--v2-radius-pill);
+    background: var(--v2-bad-soft);
+    color: var(--v2-bad);
+    font-family: inherit;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  /* shared.css 把 .sheet 内链接统一inherit，这里把「退出登录」恢复为危险色 */
+  .sheet .ob-sheet-exit,
+  .sheet .ob-sheet-exit:link,
+  .sheet .ob-sheet-exit:visited { color: var(--v2-bad) !important; }
+  .ob-sheet-exit:hover { background: var(--v2-bad-soft); }
+  .ob-sheet-exit:focus-visible { outline: none; box-shadow: var(--v2-focus); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ob-card { transition: none; }
+    .ob-splash__foot span,
+    .ob-splash__halo { animation: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="phone-stage">
+  <div data-ui="toolbar"
+       data-states="splash,carousel-1,carousel-2,carousel-3,adult,adult-invalid,adult-underage,consent,goal,goal-selected,goal-saving,goal-error,sheet,loading,error,offline"></div>
+
+  <div class="phone phone--scroll ob-phone">
+    <div data-ui="statusbar"></div>
+
+    <div class="phone__scroll">
+      <div class="ob-page">
+
+        <!-- ========== 闪屏 ========== -->
+        <div data-state-block="splash" class="ob-splash" id="splash" role="button" tabindex="0" aria-label="语学星，轻触继续">
+          <span class="ob-splash__halo" aria-hidden="true"></span>
+          <span class="ob-splash__mark">
+            <span data-mascot="168" data-mascot-mood="celebrate" data-mascot-class="mascot--float" aria-hidden="true"></span>
+            <span class="ob-splash__spark" aria-hidden="true"></span>
+            <span class="ob-splash__spark" aria-hidden="true"></span>
+            <span class="ob-splash__spark" aria-hidden="true"></span>
+          </span>
+          <h1 class="ob-splash__name t-display">语学星</h1>
+          <p class="ob-splash__tag t-body">每天一点点，学会一门语言</p>
+          <span class="ob-splash__foot" aria-hidden="true"><span></span><span></span><span></span></span>
+        </div>
+
+        <!-- ========== 价值轮播（卡片堆叠） ========== -->
+        <div data-state-block="carousel" class="ob-carousel">
+          <header class="ob-head">
+            <span class="ob-brand t-label"><span data-icon="brand" data-icon-size="20" data-icon-weight="gradient"></span>语学星</span>
+            <span class="ob-head__count t-micro" id="slide-count">1 / 3</span>
+          </header>
+
+          <div class="ob-viewport" id="ob-viewport">
+            <div class="ob-track" id="ob-track">
+
+              <!-- 第 1 屏 · 紫 -->
+              <section class="ob-slide" aria-label="第 1 屏，共 3 屏">
+                <div class="ob-card ob-card--violet">
+                  <div class="ob-art" aria-hidden="true">
+                    <svg viewBox="0 0 300 248" fill="none">
+                      <!-- 背景：色斑 + 细环（0.4x 视差） -->
+                      <g class="ob-bg">
+                        <circle cx="250" cy="52" r="46" fill="#7c4dff" opacity=".10"/>
+                        <circle cx="52" cy="206" r="30" fill="#f472b6" opacity=".12"/>
+                        <circle cx="150" cy="124" r="88" stroke="#7c4dff" stroke-width="1.5" stroke-dasharray="3 8" opacity=".26"/>
+                      </g>
+                      <!-- 前景：进度环 + 小星 -->
+                      <g class="ob-fg">
+                        <circle cx="150" cy="122" r="78" stroke="var(--ob-art-ring)" stroke-width="16"/>
+                        <circle cx="150" cy="122" r="78" stroke="#7c4dff" stroke-width="16" stroke-linecap="round"
+                                stroke-dasharray="490" stroke-dashoffset="122" transform="rotate(-90 150 122)" opacity=".85"/>
+                        <circle cx="150" cy="122" r="56" fill="var(--ob-art-soft)"/>
+                        <g transform="translate(88 58) scale(.95)">
+                          <path d="M60 12.5 L73.2 42.6 L105.9 46.1 L81.4 68.1 L88 100.2 L60 83.4 L32 100.2 L38.6 68.1 L14.1 46.1 L46.8 42.6 Z"
+                                fill="url(#obStarGrad)" stroke="url(#obStarGrad)" stroke-width="11" stroke-linejoin="round"/>
+                          <ellipse cx="46" cy="55" rx="4.4" ry="5.2" fill="#2b1259"/>
+                          <ellipse cx="75" cy="55" rx="4.4" ry="5.2" fill="#2b1259"/>
+                          <circle cx="47.4" cy="53.2" r="1.5" fill="#fff"/>
+                          <circle cx="76.4" cy="53.2" r="1.5" fill="#fff"/>
+                          <path d="M52 66c2.8 4.6 8.4 4.6 11.2 0" stroke="#2b1259" stroke-width="3.2" stroke-linecap="round"/>
+                          <ellipse cx="37" cy="65" rx="6" ry="3.6" fill="#fb7185" opacity=".48"/>
+                          <ellipse cx="83" cy="65" rx="6" ry="3.6" fill="#fb7185" opacity=".48"/>
+                        </g>
+                        <!-- 10 分钟徽标 -->
+                        <g transform="translate(206 88)">
+                          <rect width="88" height="36" rx="18" fill="#7c4dff"/>
+                          <text x="44" y="24" text-anchor="middle" font-family="'PingFang SC', sans-serif" font-size="15" font-weight="800" fill="#fff">10 分钟</text>
+                        </g>
+                        <path d="M52 74l2.4 5.6 5.6 2.4-5.6 2.4L52 90l-2.4-5.6-5.6-2.4 5.6-2.4z" fill="#ffe28a"/>
+                        <path d="M236 170l2 4.6 4.6 2-4.6 2-2 4.6-2-4.6-4.6-2 4.6-2z" fill="#f472b6" opacity=".8"/>
+                      </g>
+                      <defs>
+                        <linearGradient id="obStarGrad" x1="14" y1="12" x2="106" y2="100" gradientUnits="userSpaceOnUse">
+                          <stop stop-color="#a78bfa"/><stop offset=".55" stop-color="#c084fc"/><stop offset="1" stop-color="#f472b6"/>
+                        </linearGradient>
+                      </defs>
+                    </svg>
+                  </div>
+                  <h2 class="ob-card__title t-title">每天 10 分钟，<br class="br-sem">稳稳进步</h2>
+                  <p class="ob-card__desc t-body">小步走，也能走到很远。</p>
+                  <span class="ob-card__chip t-micro"><span data-icon="fire" data-icon-size="14" data-icon-weight="fill"></span>连续 12 天</span>
+                </div>
+              </section>
+
+              <!-- 第 2 屏 · 薄荷 -->
+              <section class="ob-slide" aria-label="第 2 屏，共 3 屏">
+                <div class="ob-card ob-card--mint">
+                  <div class="ob-art" aria-hidden="true">
+                    <svg viewBox="0 0 300 248" fill="none">
+                      <g class="ob-bg">
+                        <circle cx="46" cy="54" r="34" fill="#10b981" opacity=".10"/>
+                        <circle cx="256" cy="196" r="30" fill="#3b82f6" opacity=".10"/>
+                        <path d="M150 124 L96 78 M150 124 L204 78 M150 124 L96 172 M150 124 L204 172"
+                              stroke="#10b981" stroke-width="2" stroke-dasharray="4 7" opacity=".35"/>
+                      </g>
+                      <g class="ob-fg">
+                        <!-- 四个技能瓦片（80×80，白色图形居中） -->
+                        <g transform="translate(46 40)">
+                          <rect width="88" height="88" rx="26" fill="#10b981"/>
+                          <rect width="88" height="88" rx="26" fill="url(#obTileHi)"/>
+                          <g transform="translate(24 24)" fill="#fff">
+                            <path d="M8 5h22a7 7 0 0 1 7 7v14a7 7 0 0 1-7 7H20l-9 6v-6H8a7 7 0 0 1-7-7V12a7 7 0 0 1 7-7Z" opacity=".38"/>
+                            <rect x="10" y="14" width="26" height="4.5" rx="2.25"/>
+                            <rect x="10" y="24" width="17" height="4.5" rx="2.25"/>
+                          </g>
+                        </g>
+                        <g transform="translate(160 40)">
+                          <rect width="88" height="88" rx="26" fill="#3b82f6"/>
+                          <rect width="88" height="88" rx="26" fill="url(#obTileHi)"/>
+                          <g fill="#fff">
+                            <rect x="34" y="20" width="20" height="34" rx="10"/>
+                            <path d="M25 44a19 19 0 0 0 38 0" stroke="#fff" stroke-width="5.5" stroke-linecap="round" fill="none"/>
+                            <path d="M44 63v7M34 72h20" stroke="#fff" stroke-width="5.5" stroke-linecap="round"/>
+                          </g>
+                        </g>
+                        <g transform="translate(46 138)">
+                          <rect width="88" height="88" rx="26" fill="#fb923c"/>
+                          <rect width="88" height="88" rx="26" fill="url(#obTileHi)"/>
+                          <g fill="#fff">
+                            <path d="M44 24c-6-5-14-6-22-6v42c8 0 16 1 22 6Z" opacity=".5"/>
+                            <path d="M44 24c6-5 14-6 22-6v42c-8 0-16 1-22 6Z"/>
+                            <path d="M44 24v42" stroke="#fb923c" stroke-width="2" opacity=".35"/>
+                          </g>
+                        </g>
+                        <g transform="translate(160 138)">
+                          <rect width="88" height="88" rx="26" fill="#ec4899"/>
+                          <rect width="88" height="88" rx="26" fill="url(#obTileHi)"/>
+                          <path d="M50 20 28 50h14l-4 22 22-30H46Z" fill="#fff"/>
+                        </g>
+                        <!-- 中心连接点 -->
+                        <circle cx="147" cy="133" r="15" fill="#fff" opacity=".95"/>
+                        <path d="M141 133h12M147 127v12" stroke="#10b981" stroke-width="3.4" stroke-linecap="round"/>
+                      <defs>
+                        <linearGradient id="obTileHi" x1="0" y1="0" x2="0" y2="80" gradientUnits="userSpaceOnUse">
+                          <stop stop-color="#fff" stop-opacity=".34"/><stop offset=".7" stop-color="#fff" stop-opacity="0"/>
+                        </linearGradient>
+                      </defs>
+                    </svg>
+                  </div>
+                  <h2 class="ob-card__title t-title">听说读写，<br class="br-sem">一个 App 练全</h2>
+                  <p class="ob-card__desc t-body">输入和输出，都在同一条学习线上。</p>
+                  <span class="ob-card__chip t-micro"><span data-icon="translate" data-icon-size="14"></span>四种技能 · 一条路径</span>
+                </div>
+              </section>
+
+              <!-- 第 3 屏 · 杏 -->
+              <section class="ob-slide" aria-label="第 3 屏，共 3 屏">
+                <div class="ob-card ob-card--peach">
+                  <div class="ob-art" aria-hidden="true">
+                    <svg viewBox="0 0 300 248" fill="none">
+                      <g class="ob-bg">
+                        <circle cx="248" cy="48" r="34" fill="#fb923c" opacity=".12"/>
+                        <circle cx="48" cy="204" r="24" fill="#f472b6" opacity=".12"/>
+                        <path d="M52 60l2.4 5.6 5.6 2.4-5.6 2.4L52 76l-2.4-5.6-5.6-2.4 5.6-2.4z" fill="#fb923c" opacity=".7"/>
+                      </g>
+                      <g class="ob-fg">
+                        <!-- 错题卡堆叠 -->
+                        <g transform="rotate(-7 150 120)">
+                          <rect x="66" y="64" width="168" height="112" rx="26" fill="var(--ob-art-soft)" opacity=".55"/>
+                        </g>
+                        <g transform="rotate(3 156 128)">
+                          <rect x="72" y="72" width="168" height="112" rx="26" fill="var(--ob-art-soft)"/>
+                          <circle cx="206" cy="100" r="9" fill="#f472b6" opacity=".55"/>
+                          <path d="M96 110h92M96 130h64" stroke="var(--ob-art-ink)" stroke-width="7" stroke-linecap="round" opacity=".45"/>
+                          <rect x="96" y="150" width="62" height="20" rx="10" fill="#ffe8d8"/>
+                          <text x="127" y="164" text-anchor="middle" font-family="'PingFang SC', sans-serif" font-size="11" font-weight="700" fill="#a34d12">明天再见</text>
+                        </g>
+                        <!-- 奖杯 -->
+                        <g transform="translate(196 150)">
+                          <circle cx="44" cy="44" r="46" fill="var(--ob-art-soft)"/>
+                          <g transform="translate(20 18) scale(.19)" fill="#f59e0b">
+                            <path d="M232 64H208V48a8 8 0 0 0-8-8H56a8 8 0 0 0-8 8V64H24A16 16 0 0 0 8 80V96a40 40 0 0 0 40 40h3.65A80.13 80.13 0 0 0 120 191.61V216H96a8 8 0 0 0 0 16h64a8 8 0 0 0 0-16H136V191.58c31.94-3.23 58.44-25.64 68.08-55.58H208a40 40 0 0 0 40-40V80A16 16 0 0 0 232 64ZM48 120A24 24 0 0 1 24 96V80H48v32q0 4 .39 8Zm144-8.9c0 35.52-29 64.64-64 64.9a64 64 0 0 1-64-64V56H192ZM232 96a24 24 0 0 1-24 24h-.5a81.81 81.81 0 0 0 .5-8.9V80h24Z"/>
+                          </g>
+                        </g>
+                        <path d="M60 96l2.6 6 6 2.6-6 2.6-2.6 6-2.6-6-6-2.6 6-2.6z" fill="#ffe28a"/>
+                        <path d="M258 132l1.8 4.2 4.2 1.8-4.2 1.8-1.8 4.2-1.8-4.2-4.2-1.8 4.2-1.8z" fill="#f472b6" opacity=".8"/>
+                      </g>
+                    </svg>
+                  </div>
+                  <h2 class="ob-card__title t-title">错题会自己回来找你</h2>
+                  <p class="ob-card__desc t-body">按遗忘曲线安排复习，忘不掉才叫学会。</p>
+                  <span class="ob-card__chip t-micro"><span data-icon="clock" data-icon-size="14"></span>到点提醒 · 不用自己记</span>
+                </div>
+              </section>
+
+            </div>
+          </div>
+
+          <div class="ob-dots" role="tablist" aria-label="选择介绍页">
+            <button type="button" class="ob-dot is-active" role="tab" aria-selected="true" aria-label="第 1 屏" data-slide="0"></button>
+            <button type="button" class="ob-dot" role="tab" aria-selected="false" aria-label="第 2 屏" data-slide="1"></button>
+            <button type="button" class="ob-dot" role="tab" aria-selected="false" aria-label="第 3 屏" data-slide="2"></button>
+          </div>
+        </div>
+
+        <!-- ========== 成人确认 ========== -->
+        <div data-state-block="adult" class="ob-step">
+          <div class="ob-top">
+            <button type="button" class="ob-icon-btn" data-ob-back="carousel-3" aria-label="返回">
+              <span data-icon="caret-left" data-icon-size="22"></span>
+            </button>
+            <button type="button" class="ob-icon-btn" data-open-overlay="exit-sheet" aria-label="更多选项" aria-haspopup="dialog">
+              <span data-icon="dots-three-outline" data-icon-size="22"></span>
+            </button>
+          </div>
+
+          <h1 class="ob-title t-title" id="adult-title" tabindex="-1">先确认你的年龄</h1>
+          <p class="ob-sub t-body">仅限 18 岁以上用户使用。</p>
+
+          <form class="ob-form" id="adult-form" novalidate>
+            <div class="field" id="field-year">
+              <label class="field__label" for="birth-year">出生年份</label>
+              <div class="field__control">
+                <input id="birth-year" name="birthYear" type="text" inputmode="numeric" maxlength="4"
+                       placeholder="例如 1995" autocomplete="bday-year">
+              </div>
+              <span class="field__error" id="year-error" role="alert"></span>
+            </div>
+
+            <label class="check-row" for="adult-confirm">
+              <input type="checkbox" id="adult-confirm" class="check-row__input">
+              <span class="check-row__box" aria-hidden="true"><span data-icon="check" data-icon-size="15"></span></span>
+              <span class="check-row__text t-label">我确认自己已满 18 周岁</span>
+            </label>
+            <span class="ob-error t-caption" id="age-error" role="alert" hidden></span>
+
+            <p class="ob-consent t-caption">继续即表示你已同意<a href="support.html">《用户协议》</a>和<a href="support.html">《隐私政策》</a>。</p>
+          </form>
+        </div>
+
+        <!-- ========== 条款同意 ========== -->
+        <div data-state-block="consent" class="ob-step">
+          <div class="ob-top">
+            <button type="button" class="ob-icon-btn" data-ob-back="adult" aria-label="返回">
+              <span data-icon="caret-left" data-icon-size="22"></span>
+            </button>
+            <button type="button" class="ob-icon-btn" data-open-overlay="exit-sheet" aria-label="更多选项" aria-haspopup="dialog">
+              <span data-icon="dots-three-outline" data-icon-size="22"></span>
+            </button>
+          </div>
+
+          <h1 class="ob-title t-title" id="consent-title" tabindex="-1">开始学习前，先看这几条</h1>
+          <p class="ob-sub t-body">你已同意过必要条款，可以直接继续。</p>
+
+          <div class="ob-terms" aria-label="已同意的条款">
+            <div class="ob-term">
+              <span class="ob-term__icon"><span data-icon="article" data-icon-size="20"></span></span>
+              <div class="ob-term__body">
+                <div class="ob-term__title t-label">用户协议<span class="ob-term__tag t-micro">必要</span></div>
+                <p class="ob-term__desc t-caption">账号与学习服务的基本约定。</p>
+              </div>
+              <span class="ob-term__check"><span data-icon="check-circle" data-icon-size="22" data-icon-weight="fill"></span></span>
+            </div>
+            <div class="ob-term">
+              <span class="ob-term__icon"><span data-icon="lock-key" data-icon-size="20"></span></span>
+              <div class="ob-term__body">
+                <div class="ob-term__title t-label">隐私政策<span class="ob-term__tag t-micro">必要</span></div>
+                <p class="ob-term__desc t-caption">说明收集哪些信息，以及怎么保护。</p>
+              </div>
+              <span class="ob-term__check"><span data-icon="check-circle" data-icon-size="22" data-icon-weight="fill"></span></span>
+            </div>
+            <div class="ob-term">
+              <span class="ob-term__icon"><span data-icon="users-three" data-icon-size="20"></span></span>
+              <div class="ob-term__body">
+                <div class="ob-term__title t-label">成人学习资格<span class="ob-term__tag t-micro">必要</span></div>
+                <p class="ob-term__desc t-caption">仅向 18 岁以上成人开放。</p>
+              </div>
+              <span class="ob-term__check"><span data-icon="check-circle" data-icon-size="22" data-icon-weight="fill"></span></span>
+            </div>
+          </div>
+
+          <p class="ob-optional t-caption">这些条款之后可以在<a href="settings.html">设置</a>里随时查看。</p>
+        </div>
+
+        <!-- ========== 学习目标 ========== -->
+        <div data-state-block="goal" class="ob-step">
+          <div class="ob-top">
+            <button type="button" class="ob-icon-btn" data-ob-back="consent" aria-label="返回">
+              <span data-icon="caret-left" data-icon-size="22"></span>
+            </button>
+            <button type="button" class="ob-icon-btn" data-open-overlay="exit-sheet" aria-label="更多选项" aria-haspopup="dialog">
+              <span data-icon="dots-three-outline" data-icon-size="22"></span>
+            </button>
+          </div>
+
+          <h1 class="ob-title t-title" id="goal-title" tabindex="-1">你想先达成什么？</h1>
+          <p class="ob-sub t-body">选一个目标，我们据此安排每天的内容。</p>
+
+          <div class="ob-group" role="radiogroup" aria-label="学习目标">
+            <p class="ob-group__label t-micro">学习目标</p>
+            <button type="button" class="goal" role="radio" aria-checked="false" data-goal="FOUNDATION">
+              <span class="feature-tile" data-goal-tile="vocab"></span>
+              <span class="goal__body">
+                <span class="goal__title t-label">成人零基础</span>
+                <span class="goal__desc t-caption">从发音、核心词和短句开始</span>
+              </span>
+              <span class="goal__check" aria-hidden="true"><span data-icon="check" data-icon-size="14"></span></span>
+            </button>
+            <button type="button" class="goal" role="radio" aria-checked="false" data-goal="COLLEGE_CET">
+              <span class="feature-tile" data-goal-tile="reading"></span>
+              <span class="goal__body">
+                <span class="goal__title t-label">四六级备考</span>
+                <span class="goal__desc t-caption">词汇、听力与真题节奏</span>
+              </span>
+              <span class="goal__check" aria-hidden="true"><span data-icon="check" data-icon-size="14"></span></span>
+            </button>
+            <button type="button" class="goal" role="radio" aria-checked="false" data-goal="POSTGRADUATE_ENGLISH">
+              <span class="feature-tile" data-goal-tile="grammar"></span>
+              <span class="goal__body">
+                <span class="goal__title t-label">考研英语</span>
+                <span class="goal__desc t-caption">长难句、阅读和高频表达</span>
+              </span>
+              <span class="goal__check" aria-hidden="true"><span data-icon="check" data-icon-size="14"></span></span>
+            </button>
+            <button type="button" class="goal" role="radio" aria-checked="false" data-goal="WORKPLACE_DAILY">
+              <span class="feature-tile" data-goal-tile="listening"></span>
+              <span class="goal__body">
+                <span class="goal__title t-label">职场与日常</span>
+                <span class="goal__desc t-caption">会话、场景和邮件表达</span>
+              </span>
+              <span class="goal__check" aria-hidden="true"><span data-icon="check" data-icon-size="14"></span></span>
+            </button>
+          </div>
+
+          <div class="ob-group">
+            <p class="ob-group__label t-micro" id="quota-label">每天愿意投入多久？</p>
+            <div class="segmented ob-quota" role="radiogroup" aria-labelledby="quota-label">
+              <button type="button" class="segmented__item" role="radio" aria-checked="false" data-quota="5">5 分钟</button>
+              <button type="button" class="segmented__item is-selected" role="radio" aria-checked="true" data-quota="15">15 分钟</button>
+              <button type="button" class="segmented__item" role="radio" aria-checked="false" data-quota="30">30 分钟</button>
+              <button type="button" class="segmented__item" role="radio" aria-checked="false" data-quota="45">45 分钟</button>
+            </div>
+          </div>
+
+          <p class="ob-error t-caption" id="goal-error" role="alert" hidden>学习目标没保存成功，再试一次就好。</p>
+        </div>
+
+        <!-- ========== 加载：读取已保存的设置 ========== -->
+        <div data-state-block="loading" class="ob-step ob-state ob-loading" aria-busy="true">
+          <span class="sr-only">正在读取已保存的设置</span>
+          <div class="ob-top" aria-hidden="true">
+            <span class="skeleton skeleton-circle" style="width:44px;height:44px"></span>
+            <span class="skeleton skeleton-circle" style="width:44px;height:44px"></span>
+          </div>
+          <div class="ob-skel" aria-hidden="true">
+            <div class="skeleton skeleton-line" style="width: 62%; height: 34px; margin-top: 20px"></div>
+            <div class="skeleton skeleton-line skeleton-line--sm" style="width: 78%; margin-bottom: 12px"></div>
+            <div class="ob-skel__row">
+              <span class="skeleton skeleton-block" style="width:48px;height:48px;border-radius:14px"></span>
+              <span class="ob-skel__lines">
+                <span class="skeleton skeleton-line" style="width: 46%"></span>
+                <span class="skeleton skeleton-line skeleton-line--sm" style="width: 70%"></span>
+              </span>
+            </div>
+            <div class="ob-skel__row">
+              <span class="skeleton skeleton-block" style="width:48px;height:48px;border-radius:14px"></span>
+              <span class="ob-skel__lines">
+                <span class="skeleton skeleton-line" style="width: 38%"></span>
+                <span class="skeleton skeleton-line skeleton-line--sm" style="width: 64%"></span>
+              </span>
+            </div>
+            <div class="ob-skel__row">
+              <span class="skeleton skeleton-block" style="width:48px;height:48px;border-radius:14px"></span>
+              <span class="ob-skel__lines">
+                <span class="skeleton skeleton-line" style="width: 52%"></span>
+                <span class="skeleton skeleton-line skeleton-line--sm" style="width: 58%"></span>
+              </span>
+            </div>
+            <div class="skeleton skeleton-block" style="height: 56px; margin-top: 12px"></div>
+          </div>
+        </div>
+
+        <!-- ========== 错误：设置没读出来 ========== -->
+        <div data-state-block="error" class="ob-step ob-state">
+          <div class="state-block" role="alert">
+            <div class="state-block__art state-block__art--bare" data-mascot="124" data-mascot-mood="cheer" aria-hidden="true"></div>
+            <h1 class="state-block__title t-title">设置没读出来</h1>
+            <p class="state-block__text t-body">刚才保存的内容还在，重新加载就能接着设置。</p>
+            <div class="state-block__actions">
+              <button type="button" class="btn btn--primary" data-retry-state="adult" data-retry-label="正在加载…" data-retry-toast="可以继续了">
+                <span class="btn__spinner" aria-hidden="true"></span><span class="btn__label">重新加载</span>
+              </button>
+              <a class="auth-link" href="login.html">退出登录</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- ========== 离线 ========== -->
+        <div data-state-block="offline" class="ob-step ob-state">
+          <div class="state-block" role="alert">
+            <div class="state-block__art state-block__art--bare" data-mascot="124" data-mascot-mood="puzzled" aria-hidden="true"></div>
+            <h1 class="state-block__title t-title">网络断开了</h1>
+            <p class="state-block__text t-body">连上网络后就能继续设置，刚才填的内容还在。</p>
+            <div class="state-block__actions">
+              <button type="button" class="btn btn--primary" data-retry-state="adult" data-retry-label="正在重连…" data-retry-toast="网络已恢复">
+                <span class="btn__spinner" aria-hidden="true"></span><span class="btn__label">重试</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 底部固定操作条：每步只有一个主按钮 -->
+    <div class="action-bar ob-bar ob-bar--carousel">
+      <button type="button" class="btn btn--primary btn--block" data-ob-start>
+        <span class="btn__label">开始学习</span><span data-icon="arrow-right" data-icon-size="18"></span>
+      </button>
+      <p class="action-bar__hint" style="margin-top:10px; margin-bottom:0">
+        <a class="auth-link" href="login.html">我已有账号</a>
+      </p>
+    </div>
+
+    <div class="action-bar ob-bar ob-bar--adult">
+      <button type="button" class="btn btn--primary btn--block" id="adult-next">
+        <span class="btn__spinner" aria-hidden="true"></span><span class="btn__label">继续</span>
+      </button>
+    </div>
+
+    <div class="action-bar ob-bar ob-bar--consent">
+      <button type="button" class="btn btn--primary btn--block" id="consent-next">
+        <span class="btn__spinner" aria-hidden="true"></span><span class="btn__label">同意并继续</span>
+      </button>
+    </div>
+
+    <div class="action-bar ob-bar ob-bar--goal">
+      <button type="button" class="btn btn--primary btn--block" id="goal-next" disabled>
+        <span class="btn__spinner" aria-hidden="true"></span><span class="btn__label">保存，开始学习</span>
+      </button>
+    </div>
+
+    <div class="toast-host" role="status" aria-live="polite"></div>
+
+    <!-- 退出：收进「⋯」 -->
+    <div class="overlay-layer" id="exit-sheet" aria-hidden="true">
+      <div class="overlay__scrim" data-close></div>
+      <div class="sheet" role="dialog" aria-modal="true" tabindex="-1" aria-labelledby="exit-title" aria-describedby="exit-text">
+        <div class="sheet__handle" data-close></div>
+        <h2 class="sheet__title t-headline" id="exit-title">要退出吗？</h2>
+        <p class="sheet__sub t-body" id="exit-text">设置还没保存，退出后需要重新登录。</p>
+        <a class="ob-sheet-exit t-label" href="login.html" style="display:flex;align-items:center;justify-content:center;text-decoration:none">退出登录</a>
+        <button type="button" class="sheet__cancel t-label" data-close>继续设置</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="interaction-notes">
+  <h2>交互说明（onboarding · v2C 试点 · 一致性收口）</h2>
+  <ul>
+    <li><strong>主题</strong> → 工具条「浅色 / 深色」切换整页 token 并记住选择；深色为深海军蓝底，卡片为深色渐变卡。</li>
+    <li><strong>状态</strong> → 工具条按流程顺序覆盖「闪屏 / 轮播 1–3 / 成人确认 / 年龄校验 / 未满 18 / 条款同意 / 学习目标 / 已选目标 / 保存中 / 保存失败 / 打开 sheet / 加载 / 错误 / 离线」；也可用 <code>?state=splash|carousel-1|carousel-2|carousel-3|adult|adult-invalid|adult-underage|consent|goal|goal-selected|goal-saving|goal-error|sheet|loading|error|offline</code> 直达。<span>【文案相对 Vue 已改，需同步 i18n】</span></li>
+    <li><strong>闪屏</strong> → 渐变全屏 + 小星（庆祝表情，168px，带光环与浮动）+「语学星」+ 一句品牌说明；轻触、回车或空格进入轮播第 1 屏。仅展示品牌，不出现加载百分比或版本号。</li>
+    <li><strong>轮播卡片堆叠</strong> → 每屏是一张 32px 圆角渐变卡（紫 / 薄荷 / 杏），相邻卡片按 <code>--ob-scale / --ob-rot</code> 缩小后倾，形成堆叠层次；插画与卡片背景按 1.0x / 0.4x 视差位移。<span>【文案相对 Vue 已改，需同步 i18n】</span></li>
+    <li><strong>自动 / 手势切换</strong> → 停留在轮播时每 4.5s 自动前进一屏（循环），按下、拖拽或切到其它步骤即暂停；可左右拖拽跟手切换（阈值 18% 宽）、点指示点、按方向键。尊重 <code>prefers-reduced-motion</code>（关闭自动轮播与过渡）。</li>
+    <li><strong>指示点</strong> → 选中项拉长为 28px 胶囊，320ms 弹簧伸缩；计数「1 / 3」在右上角 chip 中同步。</li>
+    <li><strong>图标</strong> → 全站统一 Phosphor Icons v2.1.1（MIT）：TabBar 选中 fill + 渐变；功能瓦片白色 duotone；本页目标行瓦片用 duotone 图标。</li>
+    <li><strong>底部固定</strong> → 轮播与后续步骤共用固定操作条，每屏只有一个实心主按钮；轮播底部为「开始学习」+ 文字链「我已有账号」→ <code>login.html</code>。文字链不与主按钮并排。</li>
+    <li><strong>成人确认</strong> → 标题「先确认你的年龄」+ 出生年份 + 「我确认自己已满 18 周岁」；主按钮「继续」。年份为空 / 非四位 / 未满 18 时在字段下用 13px 红字说明；勾选未选时在勾选行下提示。不展示年龄校验的实现细节。工具条「年龄校验 / 未满 18」两个演示态对应「请填写四位出生年份 / 请先确认你已满 18 周岁」与「仅限 18 岁以上用户使用」；未满 18 只停在字段提示，不进入下一步。<span>【文案相对 Vue 已改，需同步 i18n】</span></li>
+    <li><strong>条款同意</strong> → 标题「开始学习前，先看这几条」+ 三行可读条款（用户协议 / 隐私政策 / 成人学习资格，均标「必要」且带对勾）+ 一句「之后可以在设置里随时查看」；主按钮「同意并继续」。只展示可读条款，不展示内部记录、摘要或文档版本。<span>【文案相对 Vue 已改，需同步 i18n】</span></li>
+    <li><strong>学习目标</strong> → 四个带彩色图标瓦片的目标行 + 每日时长分段控件（默认 15 分钟）；分段控件用 260ms 滑动白块指示；未选目标时主按钮「保存，开始学习」为真实禁用态；选择后可用，保存成功进入 <code>home.html</code>。工具条「已选目标 / 保存中 / 保存失败」分别对应选中「四六级备考」、按钮转圈、行内「学习目标没保存成功，再试一次就好。」Vue 目标保存后进入的「设置已完成 / 开始定级」步不在本页重画，由后续 assessment 页承载。<span>【文案相对 Vue 已改，需同步 i18n】</span></li>
+    <li><strong>退出</strong> → 成人确认、条款同意与学习目标步骤的右上角「⋯」打开底部弹层（380ms 弹簧上滑、带抓手），提供「退出登录」与「继续设置」，遮罩 / 抓手 / Esc 可关闭；工具条「打开 sheet」可直达该态。</li>
+    <li><strong>加载 / 错误 / 离线</strong> → 加载为读取已保存设置的骨架屏（<code>aria-busy</code>），不出整页大横幅；错误为小星 + 「设置没读出来」+「重新加载」；离线为小星 + 「网络断开了」+「重试」；重试按钮转圈 1.1s 后回到成人确认并轻 Toast。<span>【文案相对 Vue 已改，需同步 i18n】</span></li>
+    <li><strong>设计新增</strong> → 闪屏、三屏价值轮播与卡片堆叠、条款同意步骤的可读条款行、加载骨架、错误 / 离线整页态，以及本条列出的演示直达状态；不含新业务、新奖励或新规则。</li>
+    <li><strong>按压与触感</strong> → 按钮 / 目标行按下 scale(.96)，120ms 压下、320ms 弹簧回弹；真机主按钮 light impact、错误 warning。</li>
+    <li><strong>无障碍</strong> → 轮播滑动区支持左右方向键；指示点有 <code>role="tab"</code> 与「第 N 屏」标签；步骤标题使用 <code>tabindex="-1"</code> 便于切换后聚焦。</li>
+  </ul>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var params = new URLSearchParams(location.search);
+  var stateParam = params.get('state');
+  var VALID = ['splash', 'carousel-1', 'carousel-2', 'carousel-3', 'adult', 'adult-invalid', 'adult-underage',
+    'consent', 'goal', 'goal-selected', 'goal-saving', 'goal-error', 'sheet', 'loading', 'error', 'offline'];
+  if (stateParam && VALID.indexOf(stateParam) >= 0) {
+    document.documentElement.dataset.screenState = stateParam;
+  }
+
+  var track = document.getElementById('ob-track');
+  var viewport = document.getElementById('ob-viewport');
+  var cards = Array.prototype.slice.call(document.querySelectorAll('.ob-card'));
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.ob-slide'));
+  var dots = Array.prototype.slice.call(document.querySelectorAll('.ob-dot'));
+  var slideCount = document.getElementById('slide-count');
+  var slideIndex = 0;
+
+  function reduced() {
+    try { return window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { return false; }
+  }
+
+  /* ---------- 卡片堆叠 + 视差 ---------- */
+
+  var dragX = 0;
+
+  function layout() {
+    cards.forEach(function (card, i) {
+      var offset = i - slideIndex;
+      var abs = Math.abs(offset);
+      var clamped = Math.max(-2, Math.min(2, offset));
+      // 堆叠：越远越小、越淡、越倾
+      var scale = 1 - Math.min(abs, 2) * 0.07;
+      var rot = clamped * 2.2;
+      var x = dragX * (i === slideIndex ? 0.12 : 0.06) + clamped * 10;
+      card.style.setProperty('--ob-scale', scale.toFixed(3));
+      card.style.setProperty('--ob-rot', rot.toFixed(2) + 'deg');
+      card.style.setProperty('--ob-x', x.toFixed(1) + 'px');
+      card.style.opacity = abs > 1.6 ? '0' : String(Math.max(0, 1 - abs * 0.28));
+      // 视差：前景 1.0x，背景 0.4x（相对拖动位移）
+      card.style.setProperty('--ob-fgx', (dragX * (i === slideIndex ? 0.22 : 0.08)).toFixed(1) + 'px');
+      card.style.setProperty('--ob-bgx', (dragX * (i === slideIndex ? 0.09 : 0.03)).toFixed(1) + 'px');
+      card.style.zIndex = String(10 - Math.min(abs, 2));
+    });
+  }
+
+  function setSlide(index) {
+    slideIndex = Math.min(Math.max(0, index), dots.length - 1);
+    track.style.transform = 'translateX(' + (-slideIndex * 100) + '%)';
+    dots.forEach(function (dot, i) {
+      var active = i === slideIndex;
+      dot.classList.toggle('is-active', active);
+      dot.setAttribute('aria-selected', String(active));
+    });
+    slideCount.textContent = (slideIndex + 1) + ' / ' + dots.length;
+    dragX = 0;
+    layout();
+  }
+
+  function goToSlide(index, fromAuto) {
+    var next = index;
+    if (next < 0) next = dots.length - 1;
+    if (next > dots.length - 1) next = 0;
+    setSlide(next);
+    UISpec.setScreenState('carousel-' + (slideIndex + 1));
+    if (!fromAuto) restartAuto();
+  }
+
+  /* ---------- 自动轮播（4.5s） ---------- */
+
+  var autoTimer = null;
+  function stopAuto() {
+    if (autoTimer) { clearInterval(autoTimer); autoTimer = null; }
+  }
+  function startAuto() {
+    stopAuto();
+    if (reduced()) return;
+    autoTimer = setInterval(function () { goToSlide(slideIndex + 1, true); }, 4500);
+  }
+  function restartAuto() {
+    if (/^carousel-/.test(UISpec.getScreenState())) startAuto();
+    else stopAuto();
+  }
+
+  /* ---------- 闪屏 ---------- */
+
+  var splash = document.getElementById('splash');
+  function leaveSplash() {
+    goToSlide(0);
+    var title = document.querySelector('.ob-card__title');
+    if (title) title.setAttribute('tabindex', '-1');
+    startAuto();
+  }
+  splash.addEventListener('click', leaveSplash);
+  splash.addEventListener('keydown', function (event) {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      leaveSplash();
+    }
+  });
+
+  dots.forEach(function (dot) {
+    dot.addEventListener('click', function () {
+      goToSlide(parseInt(dot.getAttribute('data-slide'), 10));
+    });
+  });
+
+  /* ---------- 手势：跟手拖拽 ---------- */
+
+  var startX = null;
+  var startY = null;
+  var dragging = false;
+  var width = 390;
+
+  viewport.addEventListener('pointerdown', function (event) {
+    startX = event.clientX;
+    startY = event.clientY;
+    dragging = false;
+    width = viewport.clientWidth || 390;
+    stopAuto();
+    track.style.transition = 'none';
+    cards.forEach(function (card) { card.style.transition = 'none'; });
+    try { viewport.setPointerCapture(event.pointerId); } catch (e) { /* 忽略 */ }
+  });
+  viewport.addEventListener('pointermove', function (event) {
+    if (startX === null) return;
+    var dx = event.clientX - startX;
+    var dy = event.clientY - startY;
+    if (!dragging) {
+      if (Math.abs(dx) < 6 || Math.abs(dx) < Math.abs(dy)) return;
+      dragging = true;
+    }
+    dragX = dx;
+    track.style.transform = 'translateX(calc(' + (-slideIndex * 100) + '% + ' + dx + 'px))';
+    layout();
+  });
+  function endDrag(event) {
+    if (startX === null) return;
+    var dx = (event && typeof event.clientX === 'number' ? event.clientX : startX + dragX) - startX;
+    startX = null;
+    track.style.transition = '';
+    cards.forEach(function (card) { card.style.transition = ''; });
+    if (!dragging) { dragX = 0; layout(); restartAuto(); return; }
+    dragging = false;
+    if (Math.abs(dx) > width * 0.18) {
+      goToSlide(slideIndex + (dx < 0 ? 1 : -1));
+    } else {
+      dragX = 0;
+      layout();
+      restartAuto();
+    }
+  }
+  viewport.addEventListener('pointerup', endDrag);
+  viewport.addEventListener('pointercancel', endDrag);
+  viewport.addEventListener('lostpointercapture', endDrag);
+
+  document.addEventListener('keydown', function (event) {
+    if (!/^carousel-/.test(UISpec.getScreenState())) return;
+    if (event.key === 'ArrowRight') { event.preventDefault(); goToSlide(slideIndex + 1); }
+    if (event.key === 'ArrowLeft') { event.preventDefault(); goToSlide(slideIndex - 1); }
+  });
+
+  // 工具条切换轮播屏时同步轨道位置
+  document.addEventListener('uispec:state', function (event) {
+    var match = /^carousel-(\d)$/.exec(event.detail.state);
+    if (match) setSlide(parseInt(match[1], 10) - 1);
+    UISpec.closeAllOverlays();
+    if (/^carousel-/.test(event.detail.state)) startAuto();
+    else stopAuto();
+  });
+
+  // 「开始学习」→ 成人确认
+  document.querySelectorAll('[data-ob-start]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      UISpec.setScreenState('adult');
+      focusTitle('adult-title');
+    });
+  });
+
+  function focusTitle(id) {
+    var title = document.getElementById(id);
+    if (title) setTimeout(function () { title.focus({ preventScroll: true }); }, 80);
+  }
+
+  // 返回
+  document.addEventListener('click', function (event) {
+    var back = event.target.closest('[data-ob-back]');
+    if (!back) return;
+    var target = back.getAttribute('data-ob-back');
+    UISpec.setScreenState(target);
+    if (target === 'adult') focusTitle('adult-title');
+    if (target === 'consent') focusTitle('consent-title');
+    if (target === 'goal') focusTitle('goal-title');
+  });
+
+  /* ---------- 成人确认 ---------- */
+  var yearInput = document.getElementById('birth-year');
+  var adultCheck = document.getElementById('adult-confirm');
+  var yearError = document.getElementById('year-error');
+  var ageError = document.getElementById('age-error');
+  var adultNext = document.getElementById('adult-next');
+  var THIS_YEAR = new Date().getFullYear();
+
+  function clearAdultErrors() {
+    yearError.textContent = '';
+    ageError.hidden = true;
+    document.getElementById('field-year').classList.remove('is-invalid');
+  }
+
+  yearInput.addEventListener('input', function () {
+    yearInput.value = yearInput.value.replace(/[^\d]/g, '').slice(0, 4);
+    clearAdultErrors();
+  });
+  adultCheck.addEventListener('change', function () { ageError.hidden = true; });
+
+  adultNext.addEventListener('click', function () {
+    clearAdultErrors();
+    var year = parseInt(yearInput.value, 10);
+    var ok = true;
+
+    if (!yearInput.value.trim() || yearInput.value.length !== 4) {
+      UISpec.setFieldError(document.getElementById('field-year'), '请填写四位出生年份');
+      ok = false;
+    } else if (THIS_YEAR - year < 18 || year <= 0) {
+      UISpec.setFieldError(document.getElementById('field-year'), '仅限 18 岁以上用户使用');
+      ok = false;
+    }
+
+    if (!adultCheck.checked) {
+      ageError.textContent = '请先确认你已满 18 周岁';
+      ageError.hidden = false;
+      ok = false;
+    }
+
+    if (!ok) return;
+
+    UISpec.setBusy(adultNext, true, '正在保存…');
+    setTimeout(function () {
+      UISpec.setBusy(adultNext, false);
+      UISpec.setScreenState('consent');
+      focusTitle('consent-title');
+    }, 700);
+  });
+
+  /* ---------- 条款同意 ---------- */
+  var consentNext = document.getElementById('consent-next');
+
+  consentNext.addEventListener('click', function () {
+    UISpec.setBusy(consentNext, true, '正在保存…');
+    setTimeout(function () {
+      UISpec.setBusy(consentNext, false);
+      UISpec.setScreenState('goal');
+      focusTitle('goal-title');
+    }, 700);
+  });
+
+  /* ---------- 学习目标 ---------- */
+  var goalBtns = Array.prototype.slice.call(document.querySelectorAll('[data-goal]'));
+  var goalNext = document.getElementById('goal-next');
+  var goalError = document.getElementById('goal-error');
+  var selectedGoal = '';
+  var goalSaveFailed = false;
+
+  function applyGoal(code) {
+    selectedGoal = code || '';
+    goalBtns.forEach(function (item) {
+      var active = item.getAttribute('data-goal') === selectedGoal;
+      item.classList.toggle('is-selected', active);
+      item.setAttribute('aria-checked', String(active));
+    });
+    goalNext.disabled = !selectedGoal;
+  }
+
+  goalBtns.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      goalError.hidden = true;
+      applyGoal(btn.getAttribute('data-goal'));
+    });
+  });
+
+  Array.prototype.slice.call(document.querySelectorAll('[data-quota]')).forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      document.querySelectorAll('[data-quota]').forEach(function (item) {
+        var active = item === btn;
+        item.classList.toggle('is-selected', active);
+        item.setAttribute('aria-checked', String(active));
+      });
+    });
+  });
+
+  goalNext.addEventListener('click', function () {
+    if (!selectedGoal || goalNext.disabled) return;
+    // 演示态「保存失败」之后再点一次即重试成功
+    goalSaveFailed = false;
+    goalError.hidden = true;
+    UISpec.setBusy(goalNext, true, '正在保存…');
+    setTimeout(function () {
+      UISpec.setBusy(goalNext, false);
+      if (goalSaveFailed) {
+        goalError.hidden = false;
+        return;
+      }
+      UISpec.toast('目标已保存', 'ok');
+      setTimeout(function () { location.href = 'home.html'; }, 700);
+    }, 900);
+  });
+
+  /* ---------- 演示态：?state= / 工具条 ---------- */
+  function resetAdultDemo() {
+    yearInput.value = '';
+    adultCheck.checked = false;
+    clearAdultErrors();
+    UISpec.setBusy(adultNext, false);
+  }
+
+  function applyDemoState(state) {
+    // 每次切换先复原，避免截图之间残留
+    resetAdultDemo();
+    UISpec.setBusy(goalNext, false);
+    goalError.hidden = true;
+    if (state !== 'goal-selected' && state !== 'goal-saving') applyGoal('');
+
+    if (state === 'adult-invalid') {
+      UISpec.setFieldError(document.getElementById('field-year'), '请填写四位出生年份');
+      ageError.textContent = '请先确认你已满 18 周岁';
+      ageError.hidden = false;
+    } else if (state === 'adult-underage') {
+      yearInput.value = String(THIS_YEAR - 10);
+      adultCheck.checked = true;
+      UISpec.setFieldError(document.getElementById('field-year'), '仅限 18 岁以上用户使用');
+    } else if (state === 'goal-selected') {
+      applyGoal('COLLEGE_CET');
+    } else if (state === 'goal-saving') {
+      applyGoal('COLLEGE_CET');
+      UISpec.setBusy(goalNext, true, '正在保存…');
+    } else if (state === 'goal-error') {
+      applyGoal('COLLEGE_CET');
+      goalSaveFailed = true;
+      goalError.hidden = false;
+    } else if (state === 'sheet') {
+      UISpec.openOverlay('exit-sheet');
+    }
+    if (state !== 'goal-error') goalSaveFailed = false;
+  }
+
+  // 错误 / 离线态「重试」：转圈后回到对应步骤
+  document.addEventListener('click', function (event) {
+    var retry = event.target.closest('[data-retry-state]');
+    if (!retry) return;
+    event.preventDefault();
+    if (retry.classList.contains('is-busy')) return;
+    UISpec.setBusy(retry, true, retry.getAttribute('data-retry-label') || '正在加载…');
+    setTimeout(function () {
+      UISpec.setBusy(retry, false);
+      UISpec.setScreenState(retry.getAttribute('data-retry-state'));
+      UISpec.toast(retry.getAttribute('data-retry-toast') || '已恢复', 'ok');
+    }, 1100);
+  });
+
+  document.addEventListener('uispec:state', function (event) {
+    var state = event.detail.state;
+    if (VALID.indexOf(state) >= 0) applyDemoState(state);
+    if (state !== 'goal-error') goalSaveFailed = false;
+  });
+
+  document.addEventListener('DOMContentLoaded', function () {
+    // 目标行图标：沿用首页的渐变功能瓦片语言（48px）
+    Array.prototype.slice.call(document.querySelectorAll('[data-goal-tile]')).forEach(function (host) {
+      var id = host.getAttribute('data-goal-tile');
+      var f = UISpec.features[id];
+      if (!f) return;
+      host.outerHTML = UISpec.featureTile(id, 48);
+    });
+
+    var state = UISpec.getScreenState();
+    var match = /^carousel-(\d)$/.exec(state);
+    if (match) { setSlide(parseInt(match[1], 10) - 1); startAuto(); }
+    else setSlide(0);
+    if (VALID.indexOf(state) >= 0) applyDemoState(state);
+  });
+
+  window.addEventListener('resize', layout);
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>学习首页 · 语学星移动端 UI 稿 v2C</title>
+<link rel="stylesheet" href="../shared.css">
+<script src="../shared.js"></script>
+<style>
+  /* 仅本页布局；组件与 token 全部来自 shared.css */
+  .home-page { padding: 4px 24px 28px; }
+  .home-page [hidden] { display: none !important; }
+  .home-state { display: none; }
+  /* 正常内容块：默认态 + 所有在其之上叠加的交互 / mock 态 */
+  html:is([data-screen-state="normal"],[data-screen-state="celebrate"],[data-screen-state="sheet"],
+    [data-screen-state="pressed"],[data-screen-state="guide"],[data-screen-state="guide-goal"],
+    [data-screen-state="first-learning"],[data-screen-state="plan-completed"],[data-screen-state="plan-no-due"],
+    [data-screen-state="plan-failed"],[data-screen-state="course-empty"],[data-screen-state="course-no-match"],
+    [data-screen-state="course-error"],[data-screen-state="course-unavailable"],[data-screen-state="cached"]) .home-state[data-state-block="normal"] { display: block; }
+  html[data-screen-state="loading"] .home-state[data-state-block="loading"],
+  html[data-screen-state="empty"] .home-state[data-state-block="empty"],
+  html[data-screen-state="error"] .home-state[data-state-block="error"],
+  html[data-screen-state="offline"] .home-state[data-state-block="offline"] { display: block; }
+
+  /* 顶栏：品牌 + 头像入口（无齿轮） */
+  .home-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-height: 48px;
+    margin-bottom: 18px;
+  }
+  .home-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    color: var(--v2-ink);
+    font-weight: 750;
+    letter-spacing: -.01em;
+  }
+  .home-brand .icon { color: var(--v2-brand); }
+  .home-avatar {
+    width: 42px; height: 42px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(140deg, #ffe28a, #fbbf24);
+    color: #6b4300;
+    font-size: 16px;
+    font-weight: 750;
+    text-decoration: none;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.6), 0 4px 12px rgba(234, 179, 8, .28);
+  }
+  .home-avatar:focus-visible { outline: none; box-shadow: var(--v2-focus); }
+
+  /* Hero 卡：文字区占满整宽，进度环收进右上角 —— 360 宽下文字列仍 ≥ 240px */
+  .home-hero {
+    display: block;
+    padding: 22px 20px 20px;
+  }
+  .home-hero__top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 14px;
+  }
+  .home-hero__copy { flex: 1 1 auto; min-width: 0; }
+  .home-hero__hi {
+    margin: 0 0 2px;
+    color: var(--v2-hero-mut);
+  }
+  .home-hero__streak {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin: 0;
+    color: var(--v2-hero-ink);
+    font-size: 54px;
+    line-height: 1;
+    font-weight: 800;
+    letter-spacing: -.03em;
+    font-variant-numeric: tabular-nums;
+    font-family: var(--v2-font-display);
+  }
+  .home-hero__streak small {
+    font-size: 16px;
+    line-height: 1.4;
+    font-weight: 700;
+    letter-spacing: 0;
+    color: var(--v2-hero-mut);
+  }
+  .home-hero__sub {
+    margin: 10px 0 0;
+    color: var(--v2-hero-mut);
+  }
+  .home-hero__flame {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px; height: 30px;
+    margin-bottom: 2px;
+    color: #ffd7a3;
+    filter: drop-shadow(0 0 10px rgba(255, 190, 120, .55));
+  }
+  .home-hero__flame svg { width: 28px; height: 28px; }
+  .home-hero__cta { margin-top: 16px; --btn-h: 52px; font-size: 16px; }
+  .home-hero__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 7px;
+    margin-top: 12px;
+    color: var(--v2-hero-mut);
+  }
+  .home-hero__meta .dot { width: 3px; height: 3px; border-radius: 50%; background: currentColor; opacity: .7; }
+  .home-hero__meta > span { white-space: nowrap; }
+
+  /* 进度环 */
+  .home-ring { width: 96px; height: 96px; margin-top: 2px; }
+  .home-ring .ring__track { stroke: rgba(255,255,255,.24); }
+  .home-ring .ring__value { stroke: #ffffff; }
+  .home-ring .ring__num { font-size: 22px; }
+  .home-ring .ring__label { font-size: 11px; }
+
+  /* 达标后的 Hero 微调 */
+  .home-hero__done {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 10px;
+    padding: 4px 10px 4px 8px;
+    border-radius: var(--v2-radius-pill);
+    background: rgba(255,255,255,.18);
+    color: #fff;
+  }
+  .home-hero__done .icon { width: 15px; height: 15px; }
+
+  /* 练习瓦片区 */
+  .home-practice-head { margin: 28px 0 10px; }
+  .home-practice { margin-bottom: 2px; }
+
+  /* 今日任务 */
+  .home-section-head { margin: 26px 0 12px; }
+  .home-tasks { padding: 4px 16px 6px; }
+  .home-tasks__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 6px 4px 4px;
+  }
+  .home-tasks__title { margin: 0; }
+  .home-tasks__more {
+    width: 36px; height: 36px;
+    margin-right: -4px;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--v2-mut);
+    display: inline-flex; align-items: center; justify-content: center;
+    cursor: pointer;
+  }
+  .home-tasks__more:hover { background: var(--v2-surface); color: var(--v2-ink); }
+  .home-tasks__more:focus-visible { outline: none; box-shadow: var(--v2-focus); }
+  .home-tasks__foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 4px;
+    padding: 12px 4px 4px;
+    border-top: 1px solid var(--v2-hairline);
+    color: var(--v2-mut);
+  }
+  .home-tasks__foot > span { flex: 1 1 auto; min-width: 0; }
+  .home-tasks__foot .btn--text { min-height: 40px; flex: none; }
+  .home-tasks .task-row { padding: 9px 4px; }
+  .home-tasks .task-row__tail { gap: 4px; }
+  .home-tasks .swipe-row__inner { margin: 0 -4px; padding: 0 4px; }
+
+  /* 左滑提示：首次出现的微量提示 */
+  .home-swipe-hint {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 6px 4px 0;
+    color: var(--v2-mut);
+    line-height: 1.4;
+  }
+  .home-swipe-hint .icon { opacity: .7; }
+
+  /* 达标庆祝卡 */
+  .celebrate-card {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 18px;
+    padding: 14px 16px 14px 12px;
+    border-radius: var(--v2-radius-lg);
+    background:
+      linear-gradient(135deg, rgba(167, 139, 250, .18), rgba(244, 114, 182, .16)),
+      var(--v2-card);
+    box-shadow: var(--v2-shadow), inset 0 0 0 1px rgba(167, 139, 250, .22);
+    overflow: hidden;
+    animation: celebrate-in 520ms var(--v2-spring) both;
+  }
+  .celebrate-card::after {
+    content: "";
+    position: absolute;
+    width: 130px; height: 130px;
+    right: -46px; top: -66px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 255, 255, .55), transparent 68%);
+    pointer-events: none;
+  }
+  @keyframes celebrate-in {
+    from { opacity: 0; transform: translateY(10px) scale(.97); }
+    to { opacity: 1; transform: none; }
+  }
+  .celebrate-card__art { flex: none; width: 72px; height: 72px; display: grid; place-items: center; }
+  .celebrate-card__art .mascot { width: 72px; height: 72px; }
+  .celebrate-card__body { flex: 1 1 auto; min-width: 0; }
+  .celebrate-card__title { margin: 0; }
+  .celebrate-card__sub { margin: 3px 0 0; color: var(--v2-mut); }
+
+  /* 按压态定格：工具条「按压态」时主按钮保持按下 */
+  html[data-screen-state="pressed"] .home-hero__cta {
+    transform: scale(.96);
+    box-shadow: 0 4px 12px rgba(28, 8, 70, .18);
+  }
+  html[data-screen-state="pressed"] .home-hero__cta::after {
+    content: "";
+    position: absolute;
+    inset: -6px;
+    border-radius: inherit;
+    border: 2px solid rgba(255, 255, 255, .5);
+    animation: press-ring 1.8s ease-out infinite;
+  }
+  @keyframes press-ring {
+    0% { opacity: .8; transform: scale(.98); }
+    100% { opacity: 0; transform: scale(1.06); }
+  }
+
+  /* 离线提示（有缓存可读：轻提示 + 内容照常） */
+  .home-offline-note { margin: 0 0 16px; }
+
+  /* 学习引导：一行说明 + 文字链，不做第二颗实心钮 */
+  .home-guide {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0 0 16px;
+    padding: 12px 14px;
+    border-radius: var(--v2-radius-md);
+    background: var(--v2-soft);
+    color: var(--v2-brand);
+  }
+  .home-guide .icon { flex: none; }
+  .home-guide__copy { flex: 1 1 auto; min-width: 0; }
+  .home-guide__title { display: block; color: var(--v2-ink); }
+  .home-guide__steps { display: block; margin-top: 2px; color: var(--v2-mut); }
+  .home-guide .btn--text { flex: none; min-height: 36px; padding: 0 2px; color: var(--v2-brand); }
+
+  .home-first-guide {
+    margin: 0 0 16px;
+    padding: 10px 14px;
+    border-radius: var(--v2-radius-md);
+    background: var(--v2-surface-2);
+    color: var(--v2-mut);
+  }
+
+  /* 达标 Toast：落在顶栏品牌行之下，避免压住品牌字 */
+  .phone > .toast-host { top: 104px; }
+
+  /* 加载骨架 */
+  .home-loading .skeleton-block { border-radius: var(--v2-radius-hero); }
+  .home-loading-strip { display: flex; gap: 14px; margin-top: 14px; }
+
+  /* 计划空态（卡内） */
+  .home-plan-empty { padding: 8px 4px 12px; }
+  .home-plan-empty__title { margin: 0; }
+  .home-plan-empty__desc { margin: 4px 0 10px; color: var(--v2-mut); }
+  .home-plan-empty .btn { --btn-h: 44px; }
+
+  /* 课程内容 */
+  .home-shelf { margin-top: 18px; padding: 4px 16px 10px; }
+  .home-search {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 8px 4px 4px;
+    padding: 0 14px;
+    min-height: 44px;
+    border-radius: var(--v2-radius-pill);
+    background: var(--v2-surface-2);
+  }
+  .home-search input {
+    flex: 1 1 auto;
+    min-width: 0;
+    border: 0;
+    background: transparent;
+    font: inherit;
+    font-size: 15px;
+    color: var(--v2-ink);
+    outline: none;
+  }
+  .home-search input::placeholder { color: var(--v2-mut); opacity: 1; }
+  .home-search:focus-within { box-shadow: var(--v2-focus); }
+  .home-shelf__list .task-row { min-height: 56px; }
+  .home-shelf__note { margin: 8px 4px 4px; color: var(--v2-mut); }
+  .home-shelf__retry { padding: 4px 4px 6px; }
+  .home-shelf__retry .btn { --btn-h: 44px; }
+
+  /* 未登录：整页替换（对应 Vue ?auth=guest 分支） */
+  .home-guest { display: none; }
+  html[data-screen-state="guest"] .home-guest { display: block; }
+  html[data-screen-state="guest"] .home-state,
+  html[data-screen-state="guest"] .home-guide,
+  html[data-screen-state="guest"] .home-first-guide { display: none !important; }
+  html[data-screen-state="guest"] .home-top { margin-bottom: 0; }
+
+  /* 状态页 */
+  .home-state-block { padding: 8px 0 0; }
+  .home-state-block .state-block { padding-top: 26px; }
+
+  /* 任务选项 sheet */
+  .sheet__row-hint { color: var(--v2-mut); font-weight: 500; margin-left: auto; }
+  .home-sheet__goal {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px;
+    margin: 4px 0 16px;
+    padding: 14px 16px;
+    border-radius: var(--v2-radius-md);
+    background: var(--v2-surface-2);
+    color: var(--v2-ink-2);
+  }
+  .home-sheet__goal > span { white-space: nowrap; }
+  .home-sheet__goal strong { font-weight: 750; color: var(--v2-ink); }
+</style>
+</head>
+<body>
+
+<div class="phone-stage">
+  <div data-ui="toolbar" data-states="normal,celebrate,sheet,pressed,guide,guide-goal,first-learning,plan-completed,plan-no-due,plan-failed,course-empty,course-no-match,course-error,course-unavailable,cached,loading,empty,error,offline,guest"></div>
+
+  <div class="phone phone--scroll has-tabbar" id="home-phone">
+    <div data-ui="statusbar"></div>
+
+    <div class="phone__scroll">
+      <div class="home-page">
+
+        <div class="home-top">
+          <span class="home-brand t-headline"><span data-icon="brand" data-icon-size="20" data-icon-weight="gradient"></span>语学星</span>
+          <a class="home-avatar" href="profile.html" aria-label="我的">你</a>
+        </div>
+
+        <!-- 学习引导：对应 Vue onboardingResume（设计新增：单行卡 + 文字链出口） -->
+        <div class="home-guide" id="home-guide" role="status" hidden>
+          <span class="home-guide__icon" data-icon="target" data-icon-size="18"></span>
+          <span class="home-guide__copy">
+            <span class="home-guide__title t-label" id="home-guide-title">目标已保存，下一步进入定级</span>
+            <span class="home-guide__steps t-caption" id="home-guide-steps">剩余：定级</span>
+          </span>
+          <a class="btn btn--text t-caption" href="assessment.html" id="home-guide-cta">继续设置</a>
+        </div>
+
+        <!-- 首次学习引导：对应 firstLearningGuideCopy -->
+        <p class="home-first-guide t-caption" id="home-first-guide" role="status" hidden>继续完成第一次学习</p>
+
+        <!-- ========== 正常 / 达标庆祝 / sheet / 按压 ========== -->
+        <div data-state-block="normal" class="home-state page-enter">
+
+          <div class="inline-note inline-note--warn home-offline-note" id="offline-note" role="status" hidden>
+            <span data-icon="wifi-slash" data-icon-size="18"></span>
+            <span class="inline-note__body t-caption">网络断开了，已下载的内容还能继续。</span>
+          </div>
+
+          <section class="hero home-hero" aria-labelledby="home-title">
+            <div class="home-hero__top">
+              <div class="home-hero__copy">
+                <p class="home-hero__hi t-caption">下午好</p>
+                <h1 class="home-hero__streak" id="home-title">
+                  <span class="home-hero__flame" aria-hidden="true"><span data-icon="fire" data-icon-size="28"></span></span>
+                  <span class="t-num">12</span><small class="t-label">天连续</small>
+                </h1>
+                <p class="home-hero__sub t-caption" id="hero-sub">今天还差 3 个任务，就能达成目标。</p>
+                <span class="home-hero__done t-micro" id="hero-done" hidden><span data-icon="check-circle" data-icon-size="15"></span>今日目标已完成</span>
+              </div>
+
+              <div class="ring home-ring" id="home-ring" role="img" aria-label="今日目标完成 40%" data-ring="draw" data-ring-value="40">
+                <svg viewBox="0 0 120 120">
+                  <defs>
+                    <linearGradient id="ringGrad" x1="0" y1="0" x2="120" y2="120" gradientUnits="userSpaceOnUse">
+                      <stop stop-color="#ffffff"/>
+                      <stop offset="1" stop-color="#ffe3f1"/>
+                    </linearGradient>
+                  </defs>
+                  <circle class="ring__track" cx="60" cy="60" r="48"/>
+                  <circle class="ring__value" cx="60" cy="60" r="48" id="ring-value"/>
+                </svg>
+                <div class="ring__center">
+                  <span class="ring__num t-num" id="ring-num">40%</span>
+                  <span class="ring__label">今日目标</span>
+                </div>
+              </div>
+            </div>
+
+            <a class="btn btn--on-hero btn--block home-hero__cta t-label" href="b3-grammar.html" id="hero-cta">
+              <span class="btn__label" id="hero-cta-label">继续学习</span><span data-icon="arrow-right" data-icon-size="18"></span>
+            </a>
+            <p class="home-hero__meta t-micro">
+              <span>今日 15 分钟</span><span class="dot" aria-hidden="true"></span><span id="hero-progress-text">已完成 2 / 5</span>
+            </p>
+          </section>
+
+          <div class="celebrate-card" id="celebrate-card" hidden>
+            <div class="celebrate-card__art" data-mascot="72" data-mascot-mood="celebrate" aria-hidden="true"></div>
+            <div class="celebrate-card__body">
+              <p class="celebrate-card__title t-label">今天的目标完成了</p>
+              <p class="celebrate-card__sub t-caption">连续 12 天，明天也来见小星。</p>
+            </div>
+          </div>
+
+          <div class="section-head home-practice-head">
+            <h2 class="section-title t-headline">练习</h2>
+            <span class="section-meta t-caption">8 个入口</span>
+          </div>
+          <div class="feature-strip home-practice" data-feature-strip aria-label="练习入口"></div>
+
+          <section class="card home-tasks" aria-labelledby="tasks-title">
+            <div class="home-tasks__head">
+              <h2 class="home-tasks__title t-headline" id="tasks-title">今日任务</h2>
+              <button type="button" class="home-tasks__more" data-open-overlay="task-sheet"
+                      aria-label="更多任务选项" aria-haspopup="dialog">
+                <span data-icon="dots-three-outline" data-icon-size="22"></span>
+              </button>
+            </div>
+            <div id="task-list">
+
+              <div class="swipe-row" data-swipe-row>
+                <button type="button" class="swipe-row__action" aria-hidden="true" tabindex="-1">
+                  <span data-icon="clock" data-icon-size="18"></span><span>稍后</span>
+                </button>
+                <div class="swipe-row__inner">
+                  <div class="task-row task-row--done">
+                    <span class="tile tile--mint"><span data-icon="check" data-icon-size="22"></span></span>
+                    <span class="task-row__body">
+                      <span class="task-row__title t-label">词汇复习：日常问候</span>
+                      <span class="task-row__meta t-caption">已完成 · 5 分钟</span>
+                    </span>
+                    <span class="task-row__tail"><span data-icon="check-circle" data-icon-size="20" data-icon-weight="fill"></span></span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="swipe-row" data-swipe-row>
+                <button type="button" class="swipe-row__action" aria-hidden="true" tabindex="-1">
+                  <span data-icon="clock" data-icon-size="18"></span><span>稍后</span>
+                </button>
+                <div class="swipe-row__inner">
+                  <a class="task-row" href="b3-grammar.html">
+                    <span class="tile tile--violet"><span data-icon="pencil-simple-line" data-icon-size="22" data-icon-weight="duotone"></span></span>
+                    <span class="task-row__body">
+                      <span class="task-row__title t-label">语法：一般现在时</span>
+                      <span class="task-row__meta t-caption">进行中 · 还剩 3 分钟</span>
+                    </span>
+                    <span class="task-row__tail"><span data-icon="caret-right" data-icon-size="18"></span></span>
+                  </a>
+                </div>
+              </div>
+
+              <div class="swipe-row" data-swipe-row>
+                <button type="button" class="swipe-row__action" aria-hidden="true" tabindex="-1">
+                  <span data-icon="clock" data-icon-size="18"></span><span>稍后</span>
+                </button>
+                <div class="swipe-row__inner">
+                  <a class="task-row" href="b11-reading.html">
+                    <span class="tile tile--peach"><span data-icon="book-open-text" data-icon-size="22" data-icon-weight="duotone"></span></span>
+                    <span class="task-row__body">
+                      <span class="task-row__title t-label">阅读：城市一日</span>
+                      <span class="task-row__meta t-caption">新内容 · 约 6 分钟</span>
+                    </span>
+                    <span class="task-row__tail"><span data-icon="caret-right" data-icon-size="18"></span></span>
+                  </a>
+                </div>
+              </div>
+
+              <div class="swipe-row" data-swipe-row>
+                <button type="button" class="swipe-row__action" aria-hidden="true" tabindex="-1">
+                  <span data-icon="clock" data-icon-size="18"></span><span>稍后</span>
+                </button>
+                <div class="swipe-row__inner">
+                  <a class="task-row" href="b11-listening.html">
+                    <span class="tile tile--sky"><span data-icon="headphones" data-icon-size="22" data-icon-weight="duotone"></span></span>
+                    <span class="task-row__body">
+                      <span class="task-row__title t-label">听力：校园对话</span>
+                      <span class="task-row__meta t-caption">新内容 · 约 5 分钟</span>
+                    </span>
+                    <span class="task-row__tail"><span data-icon="caret-right" data-icon-size="18"></span></span>
+                  </a>
+                </div>
+              </div>
+
+              <div class="swipe-row" data-swipe-row>
+                <button type="button" class="swipe-row__action" aria-hidden="true" tabindex="-1">
+                  <span data-icon="clock" data-icon-size="18"></span><span>稍后</span>
+                </button>
+                <div class="swipe-row__inner">
+                  <a class="task-row" href="b4-social.html">
+                    <span class="tile tile--lemon"><span data-icon="sparkle" data-icon-size="22" data-icon-weight="duotone"></span></span>
+                    <span class="task-row__body">
+                      <span class="task-row__title t-label">复习：昨日错题</span>
+                      <span class="task-row__meta t-caption">新内容 · 约 4 分钟</span>
+                    </span>
+                    <span class="task-row__tail"><span data-icon="caret-right" data-icon-size="18"></span></span>
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <p class="home-swipe-hint t-micro"><span data-icon="caret-left" data-icon-size="13"></span>向左滑任务，可以放到稍后</p>
+
+            <!-- 计划空态（卡内）：对应 emptyStateView -->
+            <div class="home-plan-empty" id="plan-empty" hidden>
+              <p class="home-plan-empty__title t-label" id="plan-empty-title">今天的学习已经完成</p>
+              <p class="home-plan-empty__desc t-caption" id="plan-empty-desc">已保存的练习还在。</p>
+              <button type="button" class="btn btn--soft btn--sm t-label" id="plan-empty-action">结束学习</button>
+            </div>
+
+            <div class="home-tasks__foot">
+              <span class="t-caption">今天还有 3 个任务</span>
+              <a class="btn btn--text t-caption" href="b10-report.html">看错题</a>
+            </div>
+          </section>
+
+          <!-- 课程内容：搜索 + 单卡行（对应 Vue 课程书架） -->
+          <section class="card home-shelf" aria-labelledby="shelf-title">
+            <div class="home-tasks__head">
+              <h2 class="home-tasks__title t-headline" id="shelf-title">课程内容</h2>
+              <span class="section-meta t-caption" id="shelf-count">共 3 门</span>
+            </div>
+            <label class="home-search">
+              <span class="sr-only">搜索课程</span>
+              <input type="search" id="shelf-query" placeholder="搜索课程" autocomplete="off">
+            </label>
+            <div class="home-shelf__list" id="shelf-list">
+              <a class="task-row" href="learn.html">
+                <span class="tile tile--violet"><span data-icon="book-open-text" data-icon-size="22" data-icon-weight="duotone"></span></span>
+                <span class="task-row__body">
+                  <span class="task-row__title t-label">日常英语 · 起步</span>
+                  <span class="task-row__meta t-caption">问候、点单与问路</span>
+                </span>
+                <span class="task-row__tail"><span data-icon="caret-right" data-icon-size="18"></span></span>
+              </a>
+              <a class="task-row" href="learn.html">
+                <span class="tile tile--sky"><span data-icon="headphones" data-icon-size="22" data-icon-weight="duotone"></span></span>
+                <span class="task-row__body">
+                  <span class="task-row__title t-label">听力入门</span>
+                  <span class="task-row__meta t-caption">短对话与校园场景</span>
+                </span>
+                <span class="task-row__tail"><span data-icon="caret-right" data-icon-size="18"></span></span>
+              </a>
+              <a class="task-row" href="learn.html">
+                <span class="tile tile--peach"><span data-icon="article" data-icon-size="22" data-icon-weight="duotone"></span></span>
+                <span class="task-row__body">
+                  <span class="task-row__title t-label">分级阅读 · 生活</span>
+                  <span class="task-row__meta t-caption">每天一篇短文</span>
+                </span>
+                <span class="task-row__tail"><span data-icon="caret-right" data-icon-size="18"></span></span>
+              </a>
+            </div>
+            <p class="home-shelf__note t-caption" id="shelf-note" hidden></p>
+            <div class="home-shelf__retry" id="shelf-retry" hidden>
+              <button type="button" class="btn btn--soft btn--sm t-label" data-shelf-retry>重新加载</button>
+            </div>
+          </section>
+        </div>
+
+        <!-- ========== 未登录 ========== -->
+        <div class="home-guest" id="home-guest">
+          <div class="state-block" role="status">
+            <div class="state-block__art state-block__art--bare" data-mascot="124" data-mascot-mood="happy" aria-hidden="true"></div>
+            <h1 class="state-block__title t-title">登录后，继续今天的学习</h1>
+            <p class="state-block__text t-body">你的进度都已经保存好。</p>
+            <div class="state-block__actions">
+              <a class="btn btn--primary" href="login.html">登录后继续</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- ========== 加载 ========== -->
+        <div data-state-block="loading" class="home-state home-loading" aria-busy="true">
+          <span class="sr-only">正在准备今天的内容</span>
+          <div aria-hidden="true">
+            <div class="skeleton skeleton-block" style="height: 226px; margin-top: 4px"></div>
+            <div class="skeleton skeleton-line" style="width: 34%; height: 20px; margin-top: 30px"></div>
+            <div class="home-loading-strip">
+              <div class="skeleton skeleton-block" style="width:56px;height:56px;border-radius:18px"></div>
+              <div class="skeleton skeleton-block" style="width:56px;height:56px;border-radius:18px"></div>
+              <div class="skeleton skeleton-block" style="width:56px;height:56px;border-radius:18px"></div>
+              <div class="skeleton skeleton-block" style="width:56px;height:56px;border-radius:18px"></div>
+              <div class="skeleton skeleton-block" style="width:56px;height:56px;border-radius:18px"></div>
+            </div>
+            <div class="skeleton skeleton-line" style="width: 30%; height: 20px; margin-top: 30px"></div>
+            <div class="skeleton skeleton-block" style="height: 250px; margin-top: 14px"></div>
+          </div>
+        </div>
+
+        <!-- ========== 空 ========== -->
+        <div data-state-block="empty" class="home-state">
+          <div class="home-state-block">
+            <div class="state-block">
+              <div class="state-block__art state-block__art--bare" data-mascot="124" data-mascot-mood="puzzled" aria-hidden="true"></div>
+              <h1 class="state-block__title t-title">今天还没有学习计划</h1>
+              <p class="state-block__text t-body">花一分钟设个目标，我们帮你把每天的内容排好。</p>
+              <div class="state-block__actions">
+                <a class="btn btn--primary" href="onboarding.html">设定目标</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ========== 错误 ========== -->
+        <div data-state-block="error" class="home-state">
+          <div class="home-state-block">
+            <div class="state-block" role="alert">
+              <div class="state-block__art state-block__art--bare" data-mascot="124" data-mascot-mood="cheer" aria-hidden="true"></div>
+              <h1 class="state-block__title t-title">今天的内容没加载出来</h1>
+              <p class="state-block__text t-body">已完成的练习都还在，重新加载一下就能继续。</p>
+              <div class="state-block__actions">
+                <button type="button" class="btn btn--primary" data-retry-state="normal"
+                        data-retry-label="正在重试…">
+                  <span class="btn__spinner" aria-hidden="true"></span><span class="btn__label">重试</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ========== 离线 ========== -->
+        <div data-state-block="offline" class="home-state">
+          <div class="home-state-block">
+            <div class="state-block" role="alert">
+              <div class="state-block__art state-block__art--bare" data-mascot="124" data-mascot-mood="puzzled" aria-hidden="true"></div>
+              <h1 class="state-block__title t-title">网络断开了</h1>
+              <p class="state-block__text t-body">已下载的内容还能继续，连上后今天的内容会自动出现。</p>
+              <div class="state-block__actions">
+                <button type="button" class="btn btn--primary" data-retry-state="normal"
+                        data-retry-label="正在重连…">
+                  <span class="btn__spinner" aria-hidden="true"></span><span class="btn__label">重试</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div data-ui="tabbar" data-active="home"></div>
+    <div class="toast-host" role="status" aria-live="polite"></div>
+
+    <!-- 达标庆祝：彩纸层 -->
+    <div class="confetti-host" id="confetti-host" aria-hidden="true"></div>
+
+    <!-- 任务选项：从卡片右上「⋯」打开 -->
+    <div class="overlay-layer" id="task-sheet" aria-hidden="true">
+      <div class="overlay__scrim" data-close></div>
+      <div class="sheet" role="dialog" aria-modal="true" tabindex="-1" aria-labelledby="task-sheet-title">
+        <div class="sheet__handle" data-close></div>
+        <h2 class="sheet__title t-headline" id="task-sheet-title">今天的学习</h2>
+        <p class="sheet__sub t-body">按今天的节奏来，随时可以调整。</p>
+        <div class="home-sheet__goal">
+          <span>今日目标 · <strong>15 分钟</strong></span>
+          <a class="auth-link" href="settings.html">调整</a>
+        </div>
+        <div class="sheet__list">
+          <a class="sheet__item" href="b2-vocabulary.html">
+            <span data-icon="cards" data-icon-size="22" data-icon-weight="duotone"></span><span>复习今天的词</span>
+            <span class="sheet__row-hint t-caption">5 分钟</span>
+          </a>
+          <a class="sheet__item" href="b10-report.html">
+            <span data-icon="chart-line-up" data-icon-size="22"></span><span>查看错题与报告</span>
+          </a>
+          <button type="button" class="sheet__item" data-snooze-all>
+            <span data-icon="clock" data-icon-size="22"></span><span>剩下的放到稍后</span>
+          </button>
+        </div>
+        <button type="button" class="sheet__cancel t-label" data-close>继续学习</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="interaction-notes">
+  <h2>交互说明（home · v2C 试点 · 图标与动效）</h2>
+  <ul>
+    <li><strong>主题</strong> → 工具条「浅色 / 深色」切换整页 token 并记住选择。深色为深海军蓝底（#0b1020）+ 卡片 #141a2e，强调色带柔光。</li>
+    <li><strong>状态</strong> → 工具条覆盖本页全部状态与 mock：正常 / 达标庆祝 / 打开 sheet / 按压态 / 学习引导 / 补充目标 / 首次学习 / 今日完成 / 无到期复习 / 任务失败 / 书架为空 / 搜索无结果 / 课程失败 / 课程不可用 / 离线可读 / 加载 / 空 / 错误 / 离线 / 未登录。也可用 <code>?state=</code> 同名直达（如 <code>?state=plan-completed</code>、<code>?state=guest</code>）。加载为整块骨架屏（<code>aria-busy</code>，1.4s shimmer）；空/错/离线为「小星 + 一句人话 + 一个按钮」。<span>【文案相对 Vue 已改，需同步 i18n】</span></li>
+    <li><strong>学习引导</strong> → 对应 Vue <code>onboardingResume</code>：单行卡「目标已保存，下一步进入定级 / 剩余：定级」+ 文字链「继续设置」；<code>?state=guide-goal</code> 为更早的「还需要保存学习目标」。只保留一个文字出口，不做第二颗实心钮。<span>【文案相对 Vue 已改，需同步 i18n】</span></li>
+    <li><strong>首次学习</strong> → <code>?state=first-learning</code> 在引导下显示一行「继续完成第一次学习」（对应 <code>firstLearningGuideCopy</code>）。<span>【文案相对 Vue 已改，需同步 i18n】</span></li>
+    <li><strong>计划空态（卡内）</strong> → 对应 <code>emptyStateView</code>：<code>?state=plan-completed</code>「今天的学习已经完成」+「结束学习」；<code>?state=plan-no-due</code>「今天没有到期的复习」+「新学一节」；<code>?state=plan-failed</code>「今日任务没有加载成功」+「重试」（1s 转圈后恢复列表）。<span>【文案相对 Vue 已改，需同步 i18n】</span></li>
+    <li><strong>课程内容</strong> → 搜索框即时筛选课程标题与简介；无结果显示「没有匹配的课程。」。书架空 / 失败 / 不可用分别为「书架里还没有可学习的课程。」「课程暂时没能加载。」+「重新加载」（1s 后恢复并轻 Toast）「课程列表暂不可用，稍后再试。」。<span>【文案相对 Vue 已改，需同步 i18n】</span></li>
+    <li><strong>未登录</strong> → <code>?state=guest</code>：整页替换为「登录后，继续今天的学习」+「登录后继续」单主按钮，隐藏引导与课程内容。<span>【文案相对 Vue 已改，需同步 i18n】</span></li>
+    <li><strong>离线可读</strong> → <code>?state=cached</code>：保留已加载的今日内容，仅顶部一条 warn 轻提示「网络断开了，已下载的内容还能继续。」，不做整页替换。</li>
+    <li><strong>图标</strong> → 全站统一 Phosphor Icons v2.1.1（MIT，本地 vendored 于 <code>../icons/{regular,fill,duotone}/</code>，内联进 <code>shared.js</code> 并保留 MIT 来源注释）：通用 UI 用 regular 24px；TabBar 未选中 regular、选中 fill + 品牌渐变；功能瓦片用白色 duotone 28px。旧线性图标已全部替换。</li>
+    <li><strong>功能瓦片</strong> → 56×56、圆角 18、每个功能一组渐变（紫 / 薄荷 / 杏 / 天蓝 / 玫红 / 柠檬 / 紫罗兰 / 青），顶部白 38%→0 inner highlight、底部柔和彩色投影；深色下改为外发光。</li>
+    <li><strong>练习瓦片区</strong> → Hero 下新增一行「练习」，8 个 56px 渐变瓦片（词汇 / 语法 / 阅读 / 听力 / 口语 / 写作 / 游戏 / 社交），每个瓦片带顶部 inner highlight、彩色投影与白色 duotone 图标；横向可滑，全部指向现有功能页。这 8 个入口均来自现有功能，不新增业务。<span>【文案相对 Vue 已改，需同步 i18n】</span></li>
+    <li><strong>吉祥物「小星」</strong> → 渐变五角星（#a78bfa→#f472b6）带高光、腮红、眼睛与柔光；本页用于达标庆祝（庆祝表情）与空/离线态（困惑）、错误态（加油）。<span>【文案相对 Vue 已改，需同步 i18n】</span></li>
+    <li><strong>进度环</strong> → <code>stroke-dashoffset</code> 900ms 绘制 + 白色渐变描边与柔光；达标态 100% 且中心数字切换为「100%」。</li>
+    <li><strong>达标庆祝</strong> → 工具条切到「达标庆祝」：进度环补满 100%、Hero 显示「今日目标已完成」、出现小星庆祝卡、彩纸从顶部飘落（≤1.9s）、短 Toast「今日目标达成 · 连续 12 天」。彩纸与闪光在 <code>prefers-reduced-motion</code> 下完全关闭，仅保留静态卡片与 Toast。<span>【文案相对 Vue 已改，需同步 i18n】</span></li>
+    <li><strong>TabBar</strong> → 悬浮毛玻璃胶囊（<code>backdrop-filter: blur(20px) saturate(180%)</code>，半透明白 / 深海军蓝），选中项有 260ms 弹簧滑动指示器；选中图标为 fill + 品牌渐变，未选中为 regular。内容区底部预留 96px 避让。</li>
+    <li><strong>按压弹簧</strong> → 所有按钮 / 瓦片 / 任务行 / 分段项按下 scale(.96)，120ms 压下、320ms <code>cubic-bezier(.34,1.56,.64,1)</code> 回弹；工具条「按压态」用 class 把主按钮固定为按下并显示触感圈。</li>
+    <li><strong>左滑任务</strong> → 任务行左滑露出「稍后」操作（拖拽跟手，松手按 42% 阈值吸附）；点击「稍后」收起并提示「已放到稍后，今天结束前都能做」。行下方有一行浅色提示说明该手势。</li>
+    <li><strong>任务选项 sheet</strong> → 任务卡右上「⋯」打开 28px 顶角底部弹层，带抓手条、今日目标与三个出口；遮罩 / 抓手 / Esc 均可关闭。弹层用 380ms 弹簧上滑。</li>
+    <li><strong>排版（v2T）</strong> → 字号只取 v2T 阶梯：品牌行与任务卡标题 <code>.t-headline</code>、Hero 问候/进度说明 <code>.t-caption</code>、连续天数 <code>.t-num</code>、任务标题与按钮 <code>.t-label</code>、元信息/提示 <code>.t-caption</code> 或 <code>.t-micro</code>。Hero 改为「文字占满整宽 + 进度环收右上」，360 宽下标题与副文案仍≥240px 列宽；副文案「今天还差 3 个任务，/ 就能达成目标。」在两处标点处自然断行，不出现孤字行。所有单行标签（瓦片名、任务标题、按钮、Tab）不换行；标题仅两种形态：一行，或在语义边界用 <code>.br-sem</code>。<span>【文案相对 Vue 已改，需同步 i18n】</span></li>
+    <li><strong>质感</strong> → 页面底色叠加 3 个模糊色斑的渐变网格与 3.5% SVG 噪点（深色 5%），卡片不再靠描边分隔。</li>
+    <li><strong>触感（真机实现备注）</strong> → 主按钮 light impact；达标 success notification；错误 / 离线 warning。</li>
+    <li><strong>文案边界</strong> → 无「服务端」「已结算」「版本」等工程词；无常驻同步条或画质条；头像入口去「我的」，设置留在「我的」页。</li>
+  </ul>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  function themedParam() {
+    var match = /[?&]theme=(light|dark)/g;
+    var found = null;
+    var item;
+    while ((item = match.exec(location.search))) found = item[1];
+    return found;
+  }
+  var THEME_PARAM = themedParam();
+  if (THEME_PARAM) UISpec.setTheme(THEME_PARAM);
+
+  var params = new URLSearchParams(location.search);
+  var stateParam = params.get('state');
+  var STATES = ['normal', 'celebrate', 'sheet', 'pressed', 'guide', 'guide-goal', 'first-learning',
+    'plan-completed', 'plan-no-due', 'plan-failed', 'course-empty', 'course-no-match', 'course-error',
+    'course-unavailable', 'cached', 'loading', 'empty', 'error', 'offline', 'guest'];
+  if (stateParam && STATES.indexOf(stateParam) >= 0) {
+    document.documentElement.dataset.screenState = stateParam;
+  }
+  if (params.get('offline') === '1' && stateParam !== 'offline' && stateParam !== 'cached') {
+    var note = document.getElementById('offline-note');
+    if (note) note.hidden = false;
+  }
+
+  var retryTimer = null;
+  var retryButton = null;
+  var celebrateTimer = null;
+
+  function cancelRetry() {
+    if (retryTimer) { clearTimeout(retryTimer); retryTimer = null; }
+    if (retryButton && retryButton.classList.contains('is-busy')) UISpec.setBusy(retryButton, false);
+    retryButton = null;
+  }
+
+  function showNormalChrome() {
+    document.getElementById('celebrate-card').hidden = true;
+    document.getElementById('hero-done').hidden = true;
+    document.getElementById('hero-sub').hidden = false;
+    document.getElementById('ring-num').textContent = '40%';
+    document.getElementById('hero-progress-text').textContent = '已完成 2 / 5';
+    document.getElementById('hero-cta-label').textContent = '继续学习';
+    document.getElementById('home-ring').setAttribute('data-ring-value', '40'); UISpec.ring(document.getElementById('home-ring'), 40);
+  }
+
+  var celebratedOnce = false;
+  function celebrate() {
+    if (celebratedOnce) return;
+    celebratedOnce = true;
+    document.getElementById('celebrate-card').hidden = false;
+    document.getElementById('hero-done').hidden = false;
+    document.getElementById('hero-sub').hidden = true;
+    document.getElementById('ring-num').textContent = '100%';
+    document.getElementById('hero-progress-text').textContent = '已完成 5 / 5';
+    document.getElementById('hero-cta-label').textContent = '再练一组';
+
+    var ring = document.getElementById('home-ring');
+    ring.setAttribute('aria-label', '今日目标完成 100%');
+    ring.setAttribute('data-ring-value', '100'); UISpec.ring(ring, 100); setTimeout(function () { UISpec.ring(ring, 100); }, 80);
+
+    var host = document.getElementById('confetti-host');
+    host.innerHTML = '<span class="celebrate-flash"></span>';
+    UISpec.confetti(host, 30);
+    setTimeout(function () {
+      if (UISpec.getScreenState() === 'celebrate') UISpec.toast('今日目标达成 · 连续 12 天', 'ok', 2400);
+    }, 420);
+
+    if (celebrateTimer) clearTimeout(celebrateTimer);
+    celebrateTimer = setTimeout(function () {
+      var flash = host.querySelector('.celebrate-flash');
+      if (flash) flash.remove();
+    }, 1400);
+  }
+
+  function openTaskSheet() {
+    UISpec.openOverlay('task-sheet');
+  }
+
+  /* ---------- 演示 mock：引导 / 计划空态 / 课程书架 / 未登录 ---------- */
+  var PLAN_EMPTY = {
+    'plan-completed': { title: '今天的学习已经完成', desc: '已保存的练习还在。', action: '结束学习' },
+    'plan-no-due': { title: '今天没有到期的复习', desc: '可以新学一节，或先结束今天。', action: '新学一节' },
+    'plan-failed': { title: '今日任务没有加载成功', desc: '已保存的进度还在，重新加载试试。', action: '重试' }
+  };
+  var SHELF_NOTE = {
+    'course-empty': '书架里还没有可学习的课程。',
+    'course-no-match': '没有匹配的课程。',
+    'course-error': '课程暂时没能加载。',
+    'course-unavailable': '课程列表暂不可用，稍后再试。'
+  };
+  function $id(id) { return document.getElementById(id); }
+
+  function resetMocks() {
+    $id('home-guide').hidden = true;
+    $id('home-first-guide').hidden = true;
+    $id('offline-note').hidden = params.get('offline') !== '1';
+    $id('task-list').hidden = false;
+    $id('plan-empty').hidden = true;
+    $id('shelf-list').hidden = false;
+    $id('shelf-retry').hidden = true;
+    $id('shelf-note').hidden = true;
+    $id('shelf-count').textContent = '共 3 门';
+    $id('shelf-query').value = '';
+    document.querySelector('.home-tasks__foot').hidden = false;
+    document.querySelector('.home-swipe-hint').hidden = false;
+  }
+
+  function applyMock(state) {
+    resetMocks();
+    if (state === 'guide' || state === 'guide-goal') {
+      var guided = state === 'guide-goal';
+      $id('home-guide').hidden = false;
+      $id('home-guide-title').textContent = guided ? '还需要保存学习目标' : '目标已保存，下一步进入定级';
+      $id('home-guide-steps').textContent = guided ? '剩余：学习目标' : '剩余：定级';
+      $id('home-guide-cta').setAttribute('href', guided ? 'onboarding.html' : 'assessment.html');
+    } else if (state === 'first-learning') {
+      $id('home-first-guide').hidden = false;
+    } else if (PLAN_EMPTY[state]) {
+      var copy = PLAN_EMPTY[state];
+      $id('task-list').hidden = true;
+      $id('plan-empty').hidden = false;
+      $id('plan-empty-title').textContent = copy.title;
+      $id('plan-empty-desc').textContent = copy.desc;
+      $id('plan-empty-action').textContent = copy.action;
+      document.querySelector('.home-tasks__foot').hidden = true;
+      document.querySelector('.home-swipe-hint').hidden = true;
+    } else if (SHELF_NOTE[state]) {
+      $id('shelf-list').hidden = true;
+      $id('shelf-count').textContent = state === 'course-no-match' ? '共 0 门' : '';
+      $id('shelf-note').hidden = false;
+      $id('shelf-note').textContent = SHELF_NOTE[state];
+      $id('shelf-retry').hidden = state !== 'course-error';
+      if (state === 'course-no-match') $id('shelf-query').value = '旅行日语';
+    } else if (state === 'cached') {
+      $id('offline-note').hidden = false;
+    }
+  }
+
+  // 课程搜索：真实筛选（标题 + 简介）
+  document.addEventListener('input', function (event) {
+    var input = event.target.closest('#shelf-query');
+    if (!input) return;
+    var needle = input.value.trim().toLowerCase();
+    var rows = document.querySelectorAll('#shelf-list .task-row');
+    var shown = 0;
+    rows.forEach(function (row) {
+      var match = !needle || row.textContent.toLowerCase().indexOf(needle) >= 0;
+      row.hidden = !match;
+      if (match) shown += 1;
+    });
+    $id('shelf-count').textContent = '共 ' + shown + ' 门';
+    var empty = document.querySelector('#shelf-list');
+    var note = $id('shelf-note');
+    if (!shown && needle) { note.hidden = false; note.textContent = '没有匹配的课程。'; }
+    else { note.hidden = true; }
+    empty.hidden = false;
+  });
+
+  document.addEventListener('click', function (event) {
+    if (event.target.closest('[data-shelf-retry]')) {
+      var btn = event.target.closest('[data-shelf-retry]');
+      UISpec.setBusy(btn, true, '正在重新加载…');
+      setTimeout(function () {
+        UISpec.setBusy(btn, false);
+        applyMock('');
+        UISpec.setScreenState('normal');
+        UISpec.toast('课程已重新加载', 'ok');
+      }, 1000);
+      return;
+    }
+    if (event.target.closest('#plan-empty-action')) {
+      var label = $id('plan-empty-action').textContent;
+      if (label === '重试') {
+        var b2 = $id('plan-empty-action');
+        UISpec.setBusy(b2, true, '正在重试…');
+        setTimeout(function () { UISpec.setBusy(b2, false); applyMock(''); UISpec.setScreenState('normal'); UISpec.toast('已恢复', 'ok'); }, 1000);
+      } else {
+        UISpec.toast('今天先到这里，明天见', 'ok');
+      }
+    }
+  });
+
+  document.addEventListener('uispec:state', function (event) {
+    var state = event.detail.state;
+    if (state !== 'celebrate') celebratedOnce = false;
+    if (['celebrate', 'sheet', 'pressed', 'guide', 'guide-goal', 'first-learning',
+      'plan-completed', 'plan-no-due', 'plan-failed', 'course-empty', 'course-no-match',
+      'course-error', 'course-unavailable', 'cached'].indexOf(state) < 0) {
+      cancelRetry();
+    }
+    if (state === 'sheet') {
+      showNormalChrome();
+      openTaskSheet();
+      applyMock('');
+    } else {
+      if (celebrateTimer) { clearTimeout(celebrateTimer); celebrateTimer = null; }
+      var host = document.getElementById('confetti-host');
+      if (host) host.innerHTML = '';
+      UISpec.closeAllOverlays();
+      showNormalChrome();
+      applyMock(state);
+      if (state === 'celebrate') celebrate();
+    }
+  });
+
+  document.addEventListener('click', function (event) {
+    var retry = event.target.closest('[data-retry-state]');
+    if (retry) {
+      event.preventDefault();
+      if (retry.classList.contains('is-busy')) return;
+      cancelRetry();
+      retryButton = retry;
+      UISpec.setBusy(retry, true, retry.getAttribute('data-retry-label') || '正在重试…');
+      retryTimer = setTimeout(function () {
+        retryTimer = null;
+        UISpec.setBusy(retry, false);
+        retryButton = null;
+        UISpec.setScreenState(retry.getAttribute('data-retry-state'));
+        UISpec.toast(retry.getAttribute('data-retry-toast') || '已恢复', 'ok');
+      }, 1100);
+      return;
+    }
+
+    var snoozeAll = event.target.closest('[data-snooze-all]');
+    if (snoozeAll) {
+      UISpec.closeAllOverlays();
+      UISpec.setScreenState('normal');
+      UISpec.toast('剩下的任务已放到稍后', 'info', 2200);
+      return;
+    }
+
+    // 点击「⋯」：状态机同步到 sheet 态，工具条也能反映
+    var more = event.target.closest('[data-open-overlay="task-sheet"]');
+    if (more) {
+      document.documentElement.dataset.screenState = 'sheet';
+    }
+  });
+
+  // 遮罩 / 抓手 / 完成 关闭后回到正常态
+  document.addEventListener('click', function (event) {
+    var closer = event.target.closest('[data-close]');
+    if (!closer) return;
+    var layer = closer.closest('.overlay-layer');
+    if (layer && layer.id === 'task-sheet' && document.documentElement.dataset.screenState === 'sheet') {
+      setTimeout(function () {
+        if (!layer.classList.contains('is-open')) UISpec.setScreenState('normal');
+      }, 0);
+    }
+  });
+
+  // Esc / 点遮罩 关闭：弹层真正收起后回到正常态，工具条同步
+  document.addEventListener('keydown', function (event) {
+    if (event.key !== 'Escape') return;
+    if (document.documentElement.dataset.screenState === 'sheet') UISpec.setScreenState('normal');
+  });
+
+  // 打开弹层时确保环动画已跑完
+  document.addEventListener('DOMContentLoaded', function () {
+    document.getElementById('home-ring').setAttribute('data-ring-value', '40'); UISpec.ring(document.getElementById('home-ring'), 40);
+    var state = UISpec.getScreenState();
+    applyMock(state);
+    if (state === 'celebrate') celebrate();
+    if (state === 'sheet') openTaskSheet();
+  });
+})();
+</script>
+
+</body>
+</html>

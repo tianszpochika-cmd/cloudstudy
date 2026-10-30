@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>访问权限 · 语学星移动端 UI 稿</title>
+<link rel="stylesheet" href="../shared.css">
+<script src="../shared.js"></script>
+<style>
+  /* 仅本页布局；组件与 token 全部来自 shared.css */
+  .forbidden-page { padding: 20px 20px 28px; }
+  .forbidden-main { margin-top: 56px; }
+  .forbidden-lock {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    margin: 0 0 8px -10px;
+    color: var(--v2-mut);
+  }
+  .forbidden-title {
+    margin: 0 0 12px;
+    color: var(--v2-ink);
+    font-size: 28px;
+    line-height: 1.4;
+    font-weight: 650;
+    overflow-wrap: anywhere;
+  }
+  .forbidden-desc {
+    margin: 0;
+    max-width: 320px;
+    color: var(--v2-mut);
+    font-size: 14px;
+    line-height: 1.75;
+    overflow-wrap: anywhere;
+  }
+  .forbidden-actions { display: grid; gap: 12px; margin-top: 32px; }
+  .forbidden-actions .btn { width: 100%; }
+  .forbidden-actions .auth-error { margin-top: 4px; }
+  .forbidden-status {
+    margin: 0;
+    color: var(--v2-mut);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .forbidden-status[hidden] { display: none; }
+  .forbidden-note {
+    margin: 4px 0 0;
+    color: var(--v2-mut);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .forbidden-note[hidden] { display: none; }
+  .forbidden-exit {
+    margin-top: 48px;
+    padding-top: 12px;
+    border-top: 1px solid var(--v2-line);
+  }
+  .forbidden-exit .btn { width: 100%; }
+  .forbidden-exit .btn:not(:disabled):not(.is-disabled) { color: var(--v2-mut); font-weight: 500; }
+  .forbidden-exit .btn:hover:not(:disabled):not(.is-disabled),
+  .forbidden-exit .btn:focus-visible:not(:disabled):not(.is-disabled) { color: var(--v2-ink); }
+  .forbidden-page .is-hidden { display: none !important; }
+  /* 错误与离线共用正常态视图，按真实页 readFailed 分支渲染；加载态使用骨架屏。 */
+  html[data-screen-state="error"] .forbidden-page [data-state-block="normal"],
+  html[data-screen-state="offline"] .forbidden-page [data-state-block="normal"] { display: block; }
+  .forbidden-loading .skeleton-line,
+  .forbidden-loading .skeleton-circle,
+  .forbidden-loading .skeleton-block { display: block; }
+  .forbidden-loading .forbidden-main { margin-top: 40px; }
+  .forbidden-loading-status {
+    margin: 12px 0 0;
+    color: var(--v2-mut);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .forbidden-actions .btn { transition: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="phone-stage">
+  <div data-ui="toolbar" data-states="normal,loading,error,offline"></div>
+
+  <div class="phone phone--scroll">
+    <div data-ui="statusbar"></div>
+
+    <div class="phone__scroll">
+      <div class="auth-page forbidden-page" id="forbidden-page">
+
+        <!-- 正常态 / 读取失败态（错误、离线复用同一视图） -->
+        <div data-state-block="normal" class="forbidden-state">
+          <header class="auth-top">
+            <span class="auth-brand"><span data-icon="brand" data-icon-size="22"></span>语学星</span>
+          </header>
+
+          <main class="forbidden-main">
+            <span class="forbidden-lock" data-icon="lock" data-icon-size="22"></span>
+            <h1 class="forbidden-title" id="forbidden-title">暂时无法访问这项内容</h1>
+            <p class="forbidden-desc" id="forbidden-desc">当前账号无法打开这项内容。你仍可管理账号或查看帮助。</p>
+
+            <div class="forbidden-actions">
+              <button type="button" class="btn btn--primary btn--block" id="forbidden-primary">管理账号</button>
+              <button type="button" class="btn btn--secondary btn--block" id="forbidden-secondary">帮助与反馈</button>
+              <p class="forbidden-status" id="forbidden-status" role="status" aria-live="polite" hidden></p>
+              <div class="auth-error" id="forbidden-error" role="alert" hidden>
+                <span data-icon="alert-circle" data-icon-size="18"></span>
+                <span id="forbidden-error-text"></span>
+              </div>
+              <button type="button" class="btn btn--text btn--block is-hidden" id="forbidden-reload">重新读取状态</button>
+              <p class="forbidden-note" id="forbidden-offline-note" hidden>当前网络不可用，请连接网络后重新读取。</p>
+            </div>
+          </main>
+
+          <div class="forbidden-exit" id="forbidden-exit">
+            <button type="button" class="btn btn--text" id="forbidden-logout">退出登录</button>
+          </div>
+        </div>
+
+        <!-- 加载态：正在确认账号状态 -->
+        <div data-state-block="loading" class="forbidden-state forbidden-loading" aria-busy="true">
+          <div class="auth-top" aria-hidden="true">
+            <span class="skeleton skeleton-line" style="width: 104px; height: 26px"></span>
+          </div>
+          <p class="forbidden-loading-status" role="status" aria-live="polite">正在确认账号状态…</p>
+          <div class="forbidden-main" aria-hidden="true">
+            <span class="skeleton skeleton-circle" style="width: 44px; height: 44px; margin-bottom: 16px"></span>
+            <span class="skeleton skeleton-line" style="width: 78%; height: 34px; margin-bottom: 12px"></span>
+            <span class="skeleton skeleton-line skeleton-line--sm" style="width: 92%; margin-bottom: 8px"></span>
+            <span class="skeleton skeleton-line skeleton-line--sm" style="width: 64%"></span>
+            <span class="skeleton skeleton-block" style="height: 48px; margin-top: 48px"></span>
+            <span class="skeleton skeleton-block" style="height: 48px; margin-top: 12px"></span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="toast-host" role="status" aria-live="polite"></div>
+  </div>
+</div>
+
+<div class="interaction-notes">
+  <h2>交互说明（forbidden）</h2>
+  <ul>
+    <li><strong>主题与直达参数</strong> → 工具条「浅色 / 深色」切换整页 token 并写入 <code>localStorage['uispec-theme']</code>；<code>?theme=light|dark</code> 固定主题；<code>?reason=adult|paused|generic|unknown</code> 切换受限原因，<code>?auth=guest</code> 演示未登录身份，<code>?state=loading|error|offline</code> 直达页面状态，<code>?view=logout-unconfirmed</code> 直达退出未确认视图，<code>?mock=nav-failed|nav-unconfirmed|logout-failed|logout-unconfirmed</code> 演示动作失败。</li>
+    <li><strong>页面标题</strong> → 文档标题跟随当前标题（对应真实页 <code>setNavigationBarTitle</code>）：显示为 <code>&lt;标题&gt; · 语学星移动端 UI 稿</code>，受限原因或读取失败状态切换时同步更新。</li>
+    <li><strong>页面状态</strong> → 工具条「正常 / 加载 / 错误 / 离线」→ 正常为访问受限说明与可用出口；加载为正在确认账号状态的骨架屏（<code>aria-busy</code>），并显示可见的 <code>role="status"</code>「正在确认账号状态…」；错误与离线共用真实页的读取失败视图。切换离开正常态会取消未完成的模拟请求与跳转。</li>
+    <li><strong>受限原因</strong> → 默认 <code>generic</code>「暂时无法访问这项内容 / 当前账号无法打开这项内容。你仍可管理账号或查看帮助。」；<code>adult</code>「暂时无法开始学习 / 当前版本仅向年满18周岁的用户开放学习。你仍可管理账号或查看帮助。」；<code>paused</code>「学习访问已暂停 / 当前无法继续打开学习内容。你仍可管理账号或查看帮助。」；<code>unknown</code>「暂时无法确认访问状态 / 暂时无法确认账号的访问状态。」。标题与说明同步替换，其他内容不变（对应 <code>forbidden.&lt;reason&gt;Title/Description</code>）。</li>
+    <li><strong>身份出口</strong> → 已登录（默认）显示主按钮「管理账号」、次按钮「帮助与反馈」与底部「退出登录」；<code>?auth=guest</code> 只显示主按钮「返回登录」。文案对齐真实页 <code>forbidden.account / help / logout / login</code>。</li>
+    <li><strong>品牌行</strong> → 只显示品牌图标与「语学星」；真实页没有成人学习说明，页面不再显示「18 岁以上成人学习」。</li>
+    <li><strong>管理账号 / 帮助与反馈 / 返回登录</strong> → 点击 → 按钮保持宽度并显示 16px 转圈「正在打开…」，动作区下方同时显示 <code>role="status"</code>「正在打开…」，其他按钮不可操作 → 0.9s 后分别跳转 <code>settings.html</code> / <code>support.html</code> / <code>login.html?returnTo=%2Fpages%2Fsettings%2Fsettings</code>。所有「返回登录」出口（未登录主按钮、退出成功、退出未确认视图、读取失败视图）统一使用该地址，对应真实页 <code>loginPath</code>。</li>
+    <li><strong>跳转失败（Mock）</strong> → <code>?mock=nav-failed</code> → 转圈结束后停留在本页，动作区下方显示 bad 色 <code>role="alert"</code>「页面未能打开，请重试。」；<code>?mock=nav-unconfirmed</code> → 「暂未确认页面已打开。你可以重试或使用其他入口。」。可再次点击按钮重试，错误在下一次操作开始时清除。</li>
+    <li><strong>退出登录</strong> → 点击 → 按钮转圈「正在退出…」，动作区下方同时显示 <code>role="status"</code>「正在退出…」，其他按钮不可操作 → 1s 后直接跳转 <code>login.html?returnTo=%2Fpages%2Fsettings%2Fsettings</code>（真实页 reLaunch 到登录，无 Toast、无额外延时）。</li>
+    <li><strong>退出失败（Mock）</strong> → <code>?mock=logout-failed</code> → 停留在已登录视图并显示「退出尚未完成，请重试。」；<code>?mock=logout-unconfirmed</code> → 切换到未登录视图（只保留「返回登录」）并显示「此设备已退出登录，但退出请求暂未确认。你可以返回登录。」，对应真实页会话已清除但退出请求未确认的分支；<code>?view=logout-unconfirmed</code> 可直接打开该视图用于截图。</li>
+    <li><strong>读取失败（错误 / 离线）</strong> → 标题与说明改为「暂时无法确认访问状态 / 暂时无法确认账号的访问状态。」，动作区下方显示 bad 色 <code>role="alert"</code>「账号状态暂时无法读取，请重新读取。」，并出现文字按钮「重新读取状态」；身份出口保持不变（已登录：管理账号 / 帮助与反馈 / 退出登录；<code>?auth=guest</code>：返回登录）。对应真实页 <code>readFailed</code> 分支，不另造错误状态块。离线额外显示 mut 提示「当前网络不可用，请连接网络后重新读取。」。</li>
+    <li><strong>「重新读取状态」</strong> → 按钮转圈「正在确认账号状态…」，动作区下方显示同名 <code>role="status"</code>，所有按钮不可操作 → 1.1s 后回到正常视图并恢复当前受限原因标题与说明，不弹成功 Toast。</li>
+    <li><strong>加载态</strong> → 品牌行与正文显示骨架屏，并显示可见的 <code>role="status"</code>「正在确认账号状态…」；不出现「等待确认」类静态框；骨架使用 surface/line token，深色下无白底。</li>
+    <li><strong>文案边界</strong> → 不显示内部错误码、原始版本号或账号是否存在；受限原因只描述当前状态与下一步。</li>
+  </ul>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var COPY = {
+    adult: {
+      title: '暂时无法开始学习',
+      desc: '当前版本仅向年满18周岁的用户开放学习。你仍可管理账号或查看帮助。'
+    },
+    paused: {
+      title: '学习访问已暂停',
+      desc: '当前无法继续打开学习内容。你仍可管理账号或查看帮助。'
+    },
+    generic: {
+      title: '暂时无法访问这项内容',
+      desc: '当前账号无法打开这项内容。你仍可管理账号或查看帮助。'
+    },
+    unknown: {
+      title: '暂时无法确认访问状态',
+      desc: '暂时无法确认账号的访问状态。'
+    }
+  };
+
+  var READ_FAILED = '账号状态暂时无法读取，请重新读取。';
+  var OPENING = '正在打开…';
+  var SIGNING_OUT = '正在退出…';
+  var CHECKING = '正在确认账号状态…';
+  var LOGIN_HREF = 'login.html?returnTo=%2Fpages%2Fsettings%2Fsettings';
+  var LOGOUT_UNCONFIRMED = '此设备已退出登录，但退出请求暂未确认。你可以返回登录。';
+  var DOC_TITLE_SUFFIX = ' · 语学星移动端 UI 稿';
+
+  var params = new URLSearchParams(location.search);
+  var reason = params.get('reason');
+  if (!COPY[reason]) reason = 'generic';
+  var mock = params.get('mock') || '';
+  var member = params.get('auth') !== 'guest';
+  var initialScreenState = params.get('state') || '';
+  if (['loading', 'error', 'offline'].indexOf(initialScreenState) < 0) initialScreenState = '';
+
+  var pageRoot = document.getElementById('forbidden-page');
+  var titleEl = document.getElementById('forbidden-title');
+  var descEl = document.getElementById('forbidden-desc');
+  var primary = document.getElementById('forbidden-primary');
+  var secondary = document.getElementById('forbidden-secondary');
+  var logoutBtn = document.getElementById('forbidden-logout');
+  var exitRow = document.getElementById('forbidden-exit');
+  var errorBox = document.getElementById('forbidden-error');
+  var errorText = document.getElementById('forbidden-error-text');
+  var statusEl = document.getElementById('forbidden-status');
+  var reloadBtn = document.getElementById('forbidden-reload');
+  var offlineNote = document.getElementById('forbidden-offline-note');
+
+  var pending = null;
+  var busyButton = null;
+  var timer = null;
+  var viewUnconfirmed = false;
+
+  function screenState() {
+    return document.documentElement.dataset.screenState || 'normal';
+  }
+
+  function readFailed() {
+    var state = screenState();
+    return state === 'error' || state === 'offline';
+  }
+
+  function renderActions() {
+    if (member) {
+      primary.textContent = '管理账号';
+      primary.setAttribute('data-action', 'account');
+      secondary.classList.remove('is-hidden');
+      exitRow.classList.remove('is-hidden');
+    } else {
+      primary.textContent = '返回登录';
+      primary.setAttribute('data-action', 'login');
+      secondary.classList.add('is-hidden');
+      exitRow.classList.add('is-hidden');
+    }
+  }
+
+  function actionButtons() {
+    return [primary, secondary, logoutBtn, reloadBtn].filter(function (btn) {
+      return !btn.classList.contains('is-hidden');
+    });
+  }
+
+  function showActionError(message) {
+    errorText.textContent = message;
+    errorBox.hidden = false;
+  }
+
+  function hideActionError() {
+    errorBox.hidden = true;
+    errorText.textContent = '';
+  }
+
+  // 正常态显示当前受限原因；错误 / 离线共用真实页 readFailed 分支的标题、说明、提示与「重新读取状态」。
+  function applyView() {
+    var failed = readFailed();
+    var copy = failed ? COPY.unknown : COPY[reason];
+    titleEl.textContent = copy.title;
+    descEl.textContent = copy.desc;
+    document.title = copy.title + DOC_TITLE_SUFFIX;
+    if (failed) {
+      showActionError(READ_FAILED);
+      reloadBtn.classList.remove('is-hidden');
+    } else {
+      if (viewUnconfirmed) showActionError(LOGOUT_UNCONFIRMED);
+      else hideActionError();
+      reloadBtn.classList.add('is-hidden');
+    }
+    offlineNote.hidden = screenState() !== 'offline';
+  }
+
+  function setBusyState(btn, label) {
+    pending = label;
+    busyButton = btn;
+    actionButtons().forEach(function (item) {
+      if (item !== btn) item.disabled = true;
+    });
+    UISpec.setBusy(btn, true, label);
+    statusEl.textContent = label;
+    statusEl.hidden = false;
+    pageRoot.setAttribute('aria-busy', 'true');
+  }
+
+  function clearBusyState() {
+    pending = null;
+    if (busyButton) {
+      UISpec.setBusy(busyButton, false);
+      busyButton = null;
+    }
+    actionButtons().forEach(function (item) { item.disabled = false; });
+    statusEl.hidden = true;
+    statusEl.textContent = '';
+    pageRoot.removeAttribute('aria-busy');
+  }
+
+  function clearTimers() {
+    if (timer) { clearTimeout(timer); timer = null; }
+  }
+
+  function openPage(btn, href) {
+    if (pending) return;
+    hideActionError();
+    setBusyState(btn, OPENING);
+    timer = setTimeout(function () {
+      timer = null;
+      clearBusyState();
+      if (mock === 'nav-failed') {
+        showActionError('页面未能打开，请重试。');
+        return;
+      }
+      if (mock === 'nav-unconfirmed') {
+        showActionError('暂未确认页面已打开。你可以重试或使用其他入口。');
+        return;
+      }
+      location.href = href;
+    }, 900);
+  }
+
+  function signOut() {
+    if (pending) return;
+    hideActionError();
+    setBusyState(logoutBtn, SIGNING_OUT);
+    timer = setTimeout(function () {
+      timer = null;
+      if (mock === 'logout-failed') {
+        clearBusyState();
+        showActionError('退出尚未完成，请重试。');
+        return;
+      }
+      if (mock === 'logout-unconfirmed') {
+        clearBusyState();
+        member = false;
+        renderActions();
+        showActionError('此设备已退出登录，但退出请求暂未确认。你可以返回登录。');
+        return;
+      }
+      // 真实页退出成功后 reLaunch 到登录页：无 Toast、无额外延时。
+      location.href = LOGIN_HREF;
+    }, 1000);
+  }
+
+  function reRead() {
+    if (pending) return;
+    hideActionError();
+    setBusyState(reloadBtn, CHECKING);
+    timer = setTimeout(function () {
+      timer = null;
+      clearBusyState();
+      UISpec.setScreenState('normal');
+    }, 1100);
+  }
+
+  primary.addEventListener('click', function () {
+    if (primary.getAttribute('data-action') === 'login') openPage(primary, LOGIN_HREF);
+    else openPage(primary, 'settings.html');
+  });
+  secondary.addEventListener('click', function () { openPage(secondary, 'support.html'); });
+  logoutBtn.addEventListener('click', signOut);
+  reloadBtn.addEventListener('click', reRead);
+
+  // 切换页面状态时取消未完成的模拟读取 / 跳转，避免离开后仍被跳转或 Toast 打断。
+  document.addEventListener('uispec:state', function (event) {
+    if (event.detail.state !== 'normal') {
+      clearTimers();
+      if (pending) clearBusyState();
+    }
+    applyView();
+  });
+
+  renderActions();
+  applyView();
+
+  // 直达「退出未确认」分支：会话已清除但退出请求未确认，视图切到未登录出口并保留行内提示。
+  if (params.get('view') === 'logout-unconfirmed') {
+    member = false;
+    viewUnconfirmed = true;
+    renderActions();
+    applyView();
+  }
+
+  if (initialScreenState) {
+    document.addEventListener('DOMContentLoaded', function () {
+      UISpec.setScreenState(initialScreenState);
+    });
+  }
+})();
+</script>
+
+</body>
+</html>

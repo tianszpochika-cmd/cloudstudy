@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Avatar 与衣柜 · 语学星移动端 UI 稿</title>
+<link rel="stylesheet" href="../shared.css">
+<script src="../shared.js"></script>
+<style>
+  /* 仅本页布局；组件与 token 全部来自 shared.css */
+  .av-page { padding: 4px 20px 28px; }
+  .av-page [hidden] { display: none !important; }
+
+  /* 页头 */
+  .av-head { margin: 4px 0 20px; }
+  .av-kicker {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0 0 4px;
+    color: var(--v2-brand);
+    font-size: 13px;
+    line-height: 1.6;
+    font-weight: 600;
+    letter-spacing: .04em;
+  }
+  .av-kicker .icon { flex: none; }
+  .av-title {
+    margin: 0;
+    color: var(--v2-ink);
+    font-size: 28px;
+    line-height: 1.4;
+    font-weight: 650;
+    letter-spacing: -.01em;
+  }
+  .av-intro { margin: 6px 0 0; color: var(--v2-mut); font-size: 14px; line-height: 1.75; }
+
+  /* B4StatusPanel 等价状态条 */
+  .av-status {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 8px 12px;
+    margin: 0 0 16px;
+    padding: 12px 14px;
+    border: 1px solid var(--v2-line);
+    border-radius: var(--v2-radius-md);
+    background: var(--v2-card);
+  }
+  .av-status:focus { outline: none; }
+  .av-status.is-error { border-color: var(--v2-bad); }
+  .av-status__copy { display: grid; gap: 2px; flex: 1 1 200px; min-width: 0; }
+  .av-status__title { color: var(--v2-ink); font-size: 14px; line-height: 1.6; font-weight: 600; }
+  .av-status__message { color: var(--v2-mut); font-size: 13px; line-height: 1.6; overflow-wrap: anywhere; }
+  .av-status__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
+    flex: 0 1 auto;
+    max-width: 100%;
+  }
+  .av-status .btn { flex: none; white-space: nowrap; }
+  .av-queue {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    border-radius: var(--v2-radius-pill);
+    background: var(--v2-warn-soft);
+    color: var(--v2-warn);
+    font-size: 12px;
+    line-height: 1.6;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .av-quality {
+    gap: 4px;
+    min-height: 36px;
+    padding: 0 10px;
+    font-size: 13px;
+    white-space: nowrap;
+  }
+  .av-quality .icon { flex: none; color: var(--v2-mut); }
+  .av-quality__label { overflow: hidden; text-overflow: ellipsis; }
+
+  /* 角色信息不可用（真实页 !pageReady 文案） */
+  .av-unavailable {
+    margin: 0 0 16px;
+    padding: 16px 18px;
+    border: 1px dashed var(--v2-line);
+    border-radius: var(--v2-radius-md);
+    background: var(--v2-surface);
+    color: var(--v2-mut);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  /* 卡片通用 */
+  .av-card { display: grid; gap: 10px; }
+  .av-card + .av-card { margin-top: 16px; }
+  .av-cardhead {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .av-titles { display: grid; gap: 2px; min-width: 0; }
+  .av-eyebrow {
+    color: var(--v2-mut);
+    font-size: 12px;
+    line-height: 1.6;
+    font-weight: 600;
+    letter-spacing: .04em;
+  }
+  .av-cardtitle { margin: 0; color: var(--v2-ink); font-size: 16px; line-height: 1.5; font-weight: 600; }
+  .av-side {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    flex: none;
+    color: var(--v2-mut);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .av-side .icon { flex: none; }
+  .av-desc { margin: 0; color: var(--v2-mut); font-size: 13px; line-height: 1.6; overflow-wrap: anywhere; }
+
+  /* 展示预览 */
+  .av-stage {
+    display: grid;
+    place-items: center;
+    align-content: center;
+    gap: 4px;
+    min-height: 168px;
+    padding: 16px;
+    border: 1px solid var(--v2-line);
+    border-radius: var(--v2-radius-md);
+    background: radial-gradient(circle at 50% 32%, var(--v2-soft), var(--v2-surface) 74%);
+    color: var(--v2-brand2);
+    overflow: hidden;
+  }
+  .av-stage--static { border-style: dashed; background: var(--v2-surface); color: var(--v2-mut); }
+  .av-figure { display: block; width: 104px; height: 104px; }
+  .av-stage-label { color: var(--v2-mut); font-size: 13px; line-height: 1.6; font-weight: 500; }
+  .av-current {
+    margin: 0;
+    color: var(--v2-mut);
+    font-size: 14px;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+  }
+  .av-current strong { color: var(--v2-ink); font-weight: 600; }
+
+  /* 衣柜 */
+  .av-loadouts { display: grid; }
+  .av-loadout {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    min-height: 60px;
+    padding: 12px 0;
+    border: 0;
+    border-top: 1px solid var(--v2-line);
+    background: transparent;
+    font-family: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+  .av-loadouts > .av-loadout:first-child { border-top: 0; padding-top: 2px; }
+  .av-loadouts > .av-loadout:last-child { padding-bottom: 2px; }
+  .av-loadout:hover .av-loadout__name { color: var(--v2-brand); }
+  .av-loadout:focus-visible { outline: none; box-shadow: inset var(--v2-focus); border-radius: var(--v2-radius-sm); }
+  .av-loadout__body { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+  .av-loadout__name {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    color: var(--v2-ink);
+    font-size: 16px;
+    line-height: 1.5;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+  }
+  .av-loadout__meta { color: var(--v2-mut); font-size: 13px; line-height: 1.6; }
+  .av-loadout__go {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    flex: none;
+    color: var(--v2-mut);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  .av-empty-line { margin: 2px 0; color: var(--v2-mut); font-size: 14px; line-height: 1.6; }
+
+  /* 装扮素材 */
+  .av-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .av-item {
+    display: grid;
+    gap: 4px;
+    min-width: 0;
+    padding: 14px;
+    border: 1px solid var(--v2-line);
+    border-radius: var(--v2-radius-md);
+    background: var(--v2-card);
+  }
+  .av-item__quality {
+    color: var(--v2-brand);
+    font-size: 12px;
+    line-height: 1.6;
+    font-weight: 600;
+    letter-spacing: .04em;
+    overflow-wrap: anywhere;
+  }
+  .av-item__title {
+    color: var(--v2-ink);
+    font-size: 14px;
+    line-height: 1.5;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+  }
+  .av-reward { margin-top: 2px; }
+
+  /* 套装预览弹层 */
+  .av-sheet-items { display: grid; }
+  .av-sheet-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 52px;
+    padding: 4px;
+    border-top: 1px solid var(--v2-line);
+  }
+  .av-sheet-items > .av-sheet-item:first-child { border-top: 0; }
+  .av-sheet-item__icon { flex: none; color: var(--v2-mut); display: inline-flex; }
+  .av-sheet-item__body { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+  .av-sheet-item__title { color: var(--v2-ink); font-size: 15px; line-height: 1.5; font-weight: 600; overflow-wrap: anywhere; }
+  .av-sheet-item__meta { color: var(--v2-mut); font-size: 13px; line-height: 1.6; }
+  .av-sheet-note { margin: 12px 0 0; color: var(--v2-mut); font-size: 13px; line-height: 1.6; text-align: center; }
+
+  /* 加载 */
+  .av-skeleton { display: grid; gap: 12px; }
+</style>
+</head>
+<body>
+
+<div class="phone-stage">
+  <div data-ui="toolbar" data-states="normal,loading,empty,error,forbidden,offline"></div>
+
+  <div class="phone phone--scroll" id="phone">
+    <div data-ui="statusbar"></div>
+    <div data-ui="navbar" data-title="Avatar 与衣柜" data-back="world.html" data-action="<a class='hit-44' href='settings.html' aria-label='设置'><span data-icon='settings' data-icon-size='22'></span></a>"></div>
+
+    <div class="phone__scroll">
+      <div class="av-page">
+
+        <header class="av-head">
+          <p class="av-kicker"><span data-icon="sparkles" data-icon-size="16"></span>形象</p>
+          <h1 class="av-title">形象与装扮</h1>
+          <p class="av-intro">选择本机画质，查看外观素材。</p>
+        </header>
+
+        <div data-state-block="normal">
+
+          <!-- B4StatusPanel 等价状态条 -->
+          <div class="av-status" id="status-strip" role="status" aria-live="polite" tabindex="-1">
+            <span class="av-status__copy">
+              <span class="av-status__title" id="status-title">网络可用 · 学习同步状态</span>
+              <span class="av-status__message" id="status-message">成长记录会随学习进度更新。</span>
+            </span>
+            <span class="av-status__actions">
+              <span class="av-queue" id="queue-badge" hidden>待同步 2</span>
+              <button type="button" class="btn btn--secondary btn--sm" id="sync-btn" hidden>
+                <span class="btn__spinner" aria-hidden="true"></span><span class="btn__label">同步</span>
+              </button>
+              <button type="button" class="btn btn--secondary btn--sm" id="retry-btn" hidden>
+                <span class="btn__spinner" aria-hidden="true"></span><span class="btn__label">重试</span>
+              </button>
+              <button type="button" class="chip av-quality" data-open-overlay="quality-sheet" aria-haspopup="dialog" aria-label="画质：舒适">
+                <span class="av-quality__label" id="quality-label">舒适</span>
+                <span data-icon="chevron-down" data-icon-size="14"></span>
+              </button>
+            </span>
+          </div>
+
+          <p class="av-unavailable" id="unavailable-copy" hidden>角色信息暂不可用。</p>
+
+          <div id="avatar-content">
+
+            <!-- 展示预览 -->
+            <section class="card av-card" aria-labelledby="preview-title">
+              <div class="av-cardhead">
+                <span class="av-titles">
+                  <span class="av-eyebrow">形象</span>
+                  <h2 class="av-cardtitle" id="preview-title">展示预览</h2>
+                </span>
+                <span class="av-side"><span data-icon="sparkles" data-icon-size="18"></span>本机画质</span>
+              </div>
+              <p class="av-desc">画质只影响本机显示；角色素材尚未就绪。</p>
+              <div class="av-stage" id="avatar-stage">
+                <svg class="av-figure" width="104" height="104" viewBox="0 0 104 104" fill="none" aria-hidden="true" focusable="false">
+                  <circle cx="52" cy="35" r="17" stroke="currentColor" stroke-width="2"/>
+                  <path d="M21 92c2.4-18 14.6-28 31-28s28.6 10 31 28" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  <path d="M52 7l2.2 5.2 5.2 2.2-5.2 2.2L52 21.8l-2.2-5.2-5.2-2.2 5.2-2.2z" fill="currentColor"/>
+                </svg>
+                <span class="av-stage-label" id="stage-label">形象示意</span>
+              </div>
+              <p class="av-current" id="current-loadout">当前套装：<strong>图书馆的午后</strong></p>
+            </section>
+
+            <!-- 衣柜 -->
+            <section class="card av-card" aria-labelledby="wardrobe-title">
+              <div class="av-cardhead">
+                <span class="av-titles">
+                  <span class="av-eyebrow">衣柜</span>
+                  <h2 class="av-cardtitle" id="wardrobe-title">套装素材</h2>
+                </span>
+                <span class="av-side"><span data-icon="grid" data-icon-size="18"></span><span id="loadouts-count">3 套</span></span>
+              </div>
+              <div class="av-loadouts" id="loadout-list" tabindex="-1"></div>
+              <p class="av-empty-line" id="loadouts-empty" hidden>暂无可展示的套装素材。</p>
+            </section>
+
+            <!-- 装扮素材 -->
+            <section class="card av-card" aria-labelledby="items-title">
+              <div class="av-cardhead">
+                <span class="av-titles">
+                  <span class="av-eyebrow">装扮</span>
+                  <h2 class="av-cardtitle" id="items-title">外观素材</h2>
+                </span>
+                <span class="av-side"><span data-icon="star" data-icon-size="18"></span><span id="items-count">5 款</span></span>
+              </div>
+              <p class="av-desc">素材展示不代表已获得奖励。</p>
+              <div class="av-grid" id="item-grid"></div>
+              <p class="av-empty-line" id="items-empty" hidden>暂无可展示的装扮素材。</p>
+              <a class="btn btn--secondary btn--block av-reward" href="world.html">查看奖励</a>
+            </section>
+
+          </div>
+        </div>
+
+        <!-- 加载：读取角色信息 -->
+        <div data-state-block="loading" aria-busy="true">
+          <div class="av-status">
+            <span class="av-status__copy">
+              <span class="av-status__title">网络可用 · 正在加载成长记录</span>
+              <span class="av-status__message">成长记录会随学习进度更新。</span>
+            </span>
+          </div>
+          <div class="card av-skeleton" aria-hidden="true">
+            <div class="skeleton skeleton-line skeleton-line--sm" style="width: 34%"></div>
+            <div class="skeleton skeleton-block" style="height: 168px"></div>
+            <div class="skeleton skeleton-line skeleton-line--sm" style="width: 62%"></div>
+          </div>
+          <div class="card av-skeleton" aria-hidden="true" style="margin-top: 16px">
+            <div class="skeleton skeleton-line skeleton-line--sm" style="width: 28%"></div>
+            <div class="skeleton skeleton-block" style="height: 56px"></div>
+            <div class="skeleton skeleton-block" style="height: 56px"></div>
+            <div class="skeleton skeleton-block" style="height: 56px"></div>
+          </div>
+        </div>
+
+        <!-- 空：素材均不可用 -->
+        <div data-state-block="empty">
+          <div class="state-block" role="status">
+            <span class="state-block__icon" data-icon="sparkles" data-icon-size="24"></span>
+            <span class="state-block__title">暂无可展示的形象素材。</span>
+            <span class="state-block__actions">
+              <a class="btn btn--secondary btn--sm" href="world.html">查看奖励</a>
+            </span>
+          </div>
+        </div>
+
+        <!-- 错误：角色信息读取失败 -->
+        <div data-state-block="error">
+          <div class="state-block" role="alert">
+            <span class="state-block__icon state-block__icon--bad" data-icon="alert-triangle" data-icon-size="24"></span>
+            <span class="state-block__title">网络可用 · 学习同步状态</span>
+            <span class="state-block__text">学习世界暂时无法读取。</span>
+            <span class="state-block__actions">
+              <button type="button" class="btn btn--primary btn--sm" data-retry-state="normal" data-retry-label="正在重试…">
+                <span class="btn__spinner" aria-hidden="true"></span><span class="btn__label">重试</span>
+              </button>
+            </span>
+          </div>
+        </div>
+
+        <!-- 无权限：status=permission -->
+        <div data-state-block="forbidden">
+          <div class="state-block" role="alert">
+            <span class="state-block__icon state-block__icon--warn" data-icon="lock" data-icon-size="24"></span>
+            <span class="state-block__title">网络可用 · 学习同步状态</span>
+            <span class="state-block__text">当前没有读取学习世界的权限。</span>
+            <span class="state-block__actions">
+              <a class="btn btn--primary btn--sm" href="login.html?returnTo=%2Fpages%2Fb4-avatar%2Fb4-avatar">去登录</a>
+            </span>
+          </div>
+        </div>
+
+        <!-- 离线：角色信息读取失败，离线队列保留 -->
+        <div data-state-block="offline">
+          <div class="state-block" role="alert">
+            <span class="state-block__icon state-block__icon--warn" data-icon="globe" data-icon-size="24"></span>
+            <span class="state-block__title">网络不可用 · 学习同步状态</span>
+            <span class="state-block__text" id="offline-message">学习世界暂时无法读取。</span>
+            <span class="state-block__actions">
+              <span class="av-queue" id="offline-queue" hidden>待同步 2</span>
+              <button type="button" class="btn btn--secondary btn--sm" id="offline-sync" hidden>
+                <span class="btn__spinner" aria-hidden="true"></span><span class="btn__label">同步</span>
+              </button>
+              <button type="button" class="btn btn--primary btn--sm" data-retry-state="normal" data-retry-label="正在重试…">
+                <span class="btn__spinner" aria-hidden="true"></span><span class="btn__label">重试</span>
+              </button>
+            </span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="toast-host" role="status" aria-live="polite"></div>
+
+    <!-- 画质弹层（对齐 B4StatusPanel：精致 / 舒适 / 轻量 / 省资源） -->
+    <div class="overlay-layer" id="quality-sheet" aria-hidden="true">
+      <div class="overlay__scrim" data-close></div>
+      <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="quality-title">
+        <div class="sheet__handle"></div>
+        <p class="sheet__title" id="quality-title">画质</p>
+        <p class="sheet__sub">选择适合当前设备的画质。</p>
+        <div class="sheet__list" id="quality-list"></div>
+        <button type="button" class="sheet__cancel" data-close>取消</button>
+      </div>
+    </div>
+
+    <!-- 套装预览弹层 -->
+    <div class="overlay-layer" id="loadout-sheet" aria-hidden="true">
+      <div class="overlay__scrim" data-close></div>
+      <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="loadout-sheet-title">
+        <div class="sheet__handle"></div>
+        <p class="sheet__title" id="loadout-sheet-title">套装预览</p>
+        <p class="sheet__sub" id="loadout-sheet-sub">图书馆的午后 · 4 件素材</p>
+        <div class="av-sheet-items" id="loadout-sheet-items"></div>
+        <p class="av-sheet-note">素材仅作展示，不代表已获得奖励。</p>
+        <button type="button" class="btn btn--primary btn--block" id="equip-btn" style="margin-top: 12px">
+          <span class="btn__spinner" aria-hidden="true"></span><span class="btn__label">设为当前装扮</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="interaction-notes">
+  <h2>交互说明（b4-avatar）</h2>
+  <ul>
+    <li>主题与直达参数 → 工具条「浅色 / 深色」切换整页 token 并写入 <code>localStorage['uispec-theme']</code>；<code>?theme=light|dark</code> 固定主题；<code>?state=normal|loading|empty|error|forbidden|offline</code> 直达页面状态；<code>?mock=queue|sync-rejected|partial|fallback|no-profile|no-loadouts|no-items|unavailable|equip-error|equip-unconfirmed</code> 演示状态条、渲染模式与装备失败分支。截图（每项 <code>?theme=light|dark</code> 各一张）：<code>b4-avatar-{light,dark}.png</code>；<code>b4-avatar-{loading,empty,error,forbidden,offline}-{light,dark}.png</code>；<code>b4-avatar-{queue,sync-rejected,partial,fallback,no-profile,no-loadouts,no-items,unavailable,equip-error,equip-unconfirmed}-{light,dark}.png</code>。</li>
+    <li>页面状态 → 工具条「正常 / 加载 / 空 / 错误 / 无权限 / 离线」，文案对齐 <code>B4StatusPanel</code> 与 <code>stores/b4.ts</code> 的 <code>loadWorld</code> / <code>fail</code>：加载为「网络可用 · 正在加载成长记录」+ 预览与衣柜骨架屏（<code>aria-busy</code>）；空为「暂无可展示的形象素材。」+「查看奖励」→ <code>world.html</code>（**设计新增，需同步实现**：真实页没有整页空态，素材为空时只在各卡内显示单行文案）；错误为「网络可用 · 学习同步状态 / 学习世界暂时无法读取。」+「重试」；无权限为「网络可用 · 学习同步状态 / 当前没有读取学习世界的权限。」+ 单个「去登录」→ <code>login.html?returnTo=%2Fpages%2Fb4-avatar%2Fb4-avatar</code>；离线为「网络不可用 · 学习同步状态 / 学习世界暂时无法读取。」+「重试」，有队列时同时显示「待同步 N」与「同步」。</li>
+    <li>状态恢复 → 错误与离线「重试」转圈「正在重试…」→ 1.1s 后回到正常态，不弹成功 Toast；空态只保留「查看奖励」；无权限只保留「去登录」。切换离开正常态会关闭画质与套装弹层、取消未完成的同步 / 重试 / 装备计时并恢复按钮；切回正常态保留已选画质、当前套装与素材列表。</li>
+    <li>页头与导航 → 导航栏「Avatar 与衣柜」（<code>pages.json</code> 标题）+ 返回 <code>world.html</code>（<code>backMobile</code>：返回上一页，无历史时回 <code>home.html</code>），右上角设置 → <code>settings.html</code>；页内 kicker「形象」（<code>ZH_KICKERS</code>）、标题「形象与装扮」、说明「选择本机画质，查看外观素材。」（<code>pages.b4-avatar</code>）；不显示底部 TabBar。</li>
+    <li>状态条 → 等价 <code>B4StatusPanel</code>：标题「网络可用 · 学习同步状态」，默认说明「成长记录会随学习进度更新。」；<code>?mock=queue</code> 说明为「本机有 2 条待同步记录，联网后可继续同步。」，右侧出现 warn 徽标「待同步 2」与「同步」；<code>?mock=partial</code> 说明为「部分功能暂不可用，已显示可读取的内容。」，内容继续展示；<code>?mock=unavailable</code> 以 <code>status=error</code> 打开：状态条红框 + 说明「角色信息暂不可用。」+「重试」，内容区显示真实页 <code>!pageReady</code> 文案「角色信息暂不可用。」，重试 1.1s 后恢复预览与素材。</li>
+    <li>同步 → 点「同步」转圈「正在同步…」→ 0.9s 后队列清空，说明「服务端已接受 2 条事件。」，不弹 Toast；<code>?mock=sync-rejected</code> 队列保留，说明「服务端未接受事件，队列已保留。」；离线态「同步」说明「网络不可用，队列仍保留。」。</li>
+    <li>画质 → 状态条右侧 chip 只显示当前档位「舒适」+ 下拉箭头（<code>aria-label="画质：舒适"</code>），打开底部弹层「画质」，四档「精致 / 舒适 / 轻量 / 省资源」（<code>B4_PERFORMANCE_LEVELS</code>），当前档带 brand 对勾与 <code>aria-pressed</code>；选择后更新 chip 文案并关闭弹层，焦点回到画质按钮；遮罩、取消与 Esc 均可关闭。画质只影响本机显示，不改服务端外观数据。</li>
+    <li>渲染模式 → 对齐 <code>effectiveAvatarRenderMode</code> 与 <code>b4-avatar.vue</code> 的预览区：预览文案恒为「形象示意」，降级时只把预览区切换为 2D 静态外观（虚线边框、surface 底、mut 图形，对齐 <code>.static</code>），不更换文案；选择「省资源」立即降级，<code>?mock=fallback</code> 以服务端 <code>renderMode=2D_FALLBACK</code> 打开，<code>?mock=no-profile</code> 无角色档案时同样按 2D 静态显示；恢复到「精致 / 舒适 / 轻量」且服务端允许时回到 3D 示意。</li>
+    <li>展示预览 → 卡片 eyebrow「形象」+ 标题「展示预览」+ 右侧 sparks 图标「本机画质」；说明「画质只影响本机显示；角色素材尚未就绪。」；预览区为角色轮廓示意 + 单行「形象示意」，不加载真实 3D 资源；「当前套装」一行（**设计新增，需同步实现**：真实页预览卡不显示当前套装）随装备结果更新，套装名取 <code>avatarProfile.loadoutId</code>；<code>?mock=no-profile</code> 时按 2D 静态显示，套装名回退到服务端 <code>loadouts</code> 中标记「使用中」的那一套，不臆造本地选择。</li>
+    <li>套装素材 → 卡片 eyebrow「衣柜」+ 标题「套装素材」+ 右侧「N 套」；每行显示套装名（<code>name === loadoutId</code> 时回退为「套装 N」，对齐 <code>loadoutTitle</code>）、「N 件素材」、右侧「预览 ›」；当前套装带 ok 徽标「使用中」；<code>?mock=no-loadouts</code> 卡内只显示「暂无可展示的套装素材。」，右侧数量隐藏（不显示「0 套」）。</li>
+    <li>套装预览 → 点击任一套装行打开底部弹层「套装预览」，副标题「套装名 · N 件素材」，逐件列出素材（头部装扮 / 面部装扮 / 服装 / 光效装扮，对齐 <code>itemTitle</code>），说明「素材仅作展示，不代表已获得奖励。」；当前已装备套装的主按钮为真实禁用态「当前使用中」（surface 底、mut 字、not-allowed）；遮罩、Esc 关闭。逐件标题只取 <code>itemTitle</code> 的槽位名，不叠加虚构款式名。</li>
+    <li>设为当前装扮 → 未装备套装点「设为当前装扮」转圈「正在装备…」→ 0.9s 后关闭弹层，该行出现「使用中」、预览卡「当前套装」更新，状态条说明「衣柜装备状态已由服务端确认。」（<code>stores/b4.ts</code> 原文），不弹 Toast，焦点回到该套装行；<code>?mock=equip-error</code> 与 <code>?mock=equip-unconfirmed</code> 对齐 <code>equipLoadout()</code> 的两个失败分支：状态条切换为错误变体（红框，与 <code>?mock=unavailable</code> 相同）并出现「重试」小按钮，说明分别为「衣柜装备失败。」「服务端未返回装备确认。」，内容区继续展示且保留原套装（打开即预填，无需点击即可截图）；点「重试」回到正常面板、不弹 Toast。</li>
+    <li>外观素材 → 卡片 eyebrow「装扮」+ 标题「外观素材」+ 右侧「N 款」；说明「素材展示不代表已获得奖励。」；两列素材卡显示款式（普通款 / 稀有款 / 珍藏款 / 典藏款，对齐 <code>itemQuality</code>）与槽位（对齐 <code>itemTitle</code>）；<code>?mock=no-items</code> 卡内只显示「暂无可展示的装扮素材。」，数量隐藏；底部「查看奖励」→ <code>world.html</code>。</li>
+    <li>登录门禁 → 对齐真实页 <code>onShow</code>：先 <code>session.restore()</code>，未登录直接跳转登录页，不渲染形象页；原型以无权限态承载该分支，登录页回跳地址为 <code>/pages/b4-avatar/b4-avatar</code>。</li>
+    <li>文案边界 → 不显示 avatarId、resourceVersion、manifestHash、loadoutId、itemCode、内部错误码或原始状态枚举；「稀有 / 典藏」等只描述素材款式，不暗示已获得奖励；角色素材未就绪时明确写「示意」，不伪造 3D 模型或未上线资源。</li>
+  </ul>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var params = new URLSearchParams(location.search);
+  function q(name) {
+    var value = params.get(name) || '';
+    var cut = value.indexOf('?');
+    return cut >= 0 ? value.slice(0, cut) : value;
+  }
+  function themedParam() {
+    var match = /[?&]theme=(light|dark)/g;
+    var found = null;
+    var item;
+    while ((item = match.exec(location.search))) found = item[1];
+    return found;
+  }
+  var THEME_PARAM = themedParam();
+  if (THEME_PARAM) UISpec.setTheme(THEME_PARAM);
+
+  var MOCK = q('mock');
+  var STATE_PARAM = q('state');
+  var VALID_STATES = ['normal', 'loading', 'empty', 'error', 'forbidden', 'offline'];
+  var INITIAL_STATE = VALID_STATES.indexOf(STATE_PARAM) >= 0 ? STATE_PARAM : 'normal';
+
+  /* 对齐 apps/mobile/src/pages/b4-avatar/b4-avatar.vue、components/b4/B4StatusPanel.vue
+   * 与 stores/b4.ts：loadWorld() 读取 avatarProfile / avatarItems / loadouts；
+   * setPerformance() 只影响本机；equipLoadout() 由服务端确认。
+   * 数据全部为 mock，不访问服务端。 */
+
+  var DEFAULT_MESSAGE = '成长记录会随学习进度更新。';
+
+  var QUALITY = [
+    { id: 'ultra', label: '精致' },
+    { id: 'high', label: '舒适' },
+    { id: 'medium', label: '轻量' },
+    { id: 'performance', label: '省资源' }
+  ];
+
+  var SLOT_LABELS = { HEAD: '头部装扮', FACE: '面部装扮', BODY: '服装', AURA: '光效装扮' };
+  var SLOT_ICONS = { HEAD: 'user', FACE: 'eye', BODY: 'image', AURA: 'sparkles' };
+  var QUALITY_LABELS = { COMMON: '普通款', RARE: '稀有款', EPIC: '珍藏款', LEGENDARY: '典藏款' };
+
+  /* 套装逐件只显示真实页 itemTitle 的槽位名，不臆造款式名 */
+  var LOADOUT_ITEM_SLOTS = {
+    'head-bob': 'HEAD',
+    'face-round': 'FACE',
+    'body-cardigan': 'BODY',
+    'aura-warm': 'AURA',
+    'head-pony': 'HEAD',
+    'body-sport': 'BODY',
+    'aura-star': 'AURA',
+    'head-ribbon': 'HEAD'
+  };
+
+  var PROFILE = { avatarId: 'avatar-main', resourceVersion: '2026-10', renderMode: '3D', loadoutId: 'outfit-library' };
+
+  var LOADOUTS = [
+    { loadoutId: 'outfit-library', name: '图书馆的午后', equipped: true, items: ['head-bob', 'face-round', 'body-cardigan', 'aura-warm'] },
+    { loadoutId: 'outfit-sprint', name: '晨跑运动装', equipped: false, items: ['head-pony', 'body-sport', 'aura-star'] },
+    { loadoutId: 'outfit-third', name: 'outfit-third', equipped: false, items: ['head-ribbon'] }
+  ];
+
+  var ITEMS = [
+    { itemCode: 'item-ribbon', quality: 'RARE', slot: 'HEAD' },
+    { itemCode: 'item-glasses', quality: 'COMMON', slot: 'FACE' },
+    { itemCode: 'item-coat', quality: 'EPIC', slot: 'BODY' },
+    { itemCode: 'item-aurora', quality: 'LEGENDARY', slot: 'AURA' },
+    { itemCode: 'item-jacket', quality: 'COMMON', slot: 'BODY' }
+  ];
+
+  var FAIL_ACTIONS = { 'equip-error': 'equip', 'equip-unconfirmed': 'equip-unconfirmed' };
+
+  var state = {
+    profile: copy(PROFILE),
+    loadouts: copy(LOADOUTS),
+    items: copy(ITEMS),
+    quality: 'high',
+    queue: 0,
+    online: true,
+    status: 'ready',
+    message: DEFAULT_MESSAGE,
+    contentReady: true,
+    busy: '',
+    failAction: FAIL_ACTIONS[MOCK] || '',
+    syncRejects: MOCK === 'sync-rejected',
+    previewId: '',
+    offlineNote: false
+  };
+
+  if (MOCK === 'queue') {
+    state.queue = 2;
+    state.message = '本机有 2 条待同步记录，联网后可继续同步。';
+  }
+  if (MOCK === 'sync-rejected') {
+    state.queue = 2;
+    state.message = '服务端未接受事件，队列已保留。';
+  }
+  if (MOCK === 'partial') state.message = '部分功能暂不可用，已显示可读取的内容。';
+  if (MOCK === 'fallback') state.profile.renderMode = '2D_FALLBACK';
+  if (MOCK === 'no-profile') state.profile = null;
+  if (MOCK === 'no-loadouts') state.loadouts = [];
+  if (MOCK === 'no-items') state.items = [];
+  if (MOCK === 'unavailable') {
+    state.status = 'error';
+    state.message = '角色信息暂不可用。';
+    state.contentReady = false;
+  }
+  /* 对齐 stores/b4.ts equipLoadout()：两个失败分支都把 status 置为 'error'；
+   * 此时页面已加载（pageReady 仍为 true），内容继续展示，只有状态条转错误变体。 */
+  if (MOCK === 'equip-error') {
+    state.status = 'error';
+    state.message = '衣柜装备失败。';
+  }
+  if (MOCK === 'equip-unconfirmed') {
+    state.status = 'error';
+    state.message = '服务端未返回装备确认。';
+  }
+
+  function copy(value) {
+    return JSON.parse(JSON.stringify(value));
+  }
+
+  function loadoutItemSlot(code) {
+    return LOADOUT_ITEM_SLOTS[code] || '';
+  }
+
+  function findLoadout(loadoutId) {
+    for (var i = 0; i < state.loadouts.length; i++) {
+      if (state.loadouts[i].loadoutId === loadoutId) return state.loadouts[i];
+    }
+    return null;
+  }
+
+  function currentLoadout() {
+    if (!state.loadouts.length) return null;
+    /* profile 读取失败时沿用服务端 loadouts 的 equipped 标记，不在本地臆造装备 */
+    var chosen = state.profile ? findLoadout(state.profile.loadoutId) : null;
+    if (chosen) return chosen;
+    for (var i = 0; i < state.loadouts.length; i++) {
+      if (state.loadouts[i].equipped) return state.loadouts[i];
+    }
+    return null;
+  }
+
+  function loadoutTitle(loadout, index) {
+    return loadout.name !== loadout.loadoutId ? loadout.name : '套装 ' + (index + 1);
+  }
+
+  function itemTitle(item) {
+    return SLOT_LABELS[item.slot] || '装扮素材';
+  }
+
+  function itemQuality(quality) {
+    return QUALITY_LABELS[quality] || '款式待补充';
+  }
+
+  var gen = 0;
+  function later(fn, ms) {
+    var g = gen;
+    setTimeout(function () { if (g === gen) fn(); }, ms);
+  }
+  function focusSoon(el) {
+    if (!el) return;
+    try { el.focus({ preventScroll: true }); } catch (e) { /* ignore */ }
+  }
+
+  /* ---------- 元素 ---------- */
+  var statusStrip = document.getElementById('status-strip');
+  var statusTitle = document.getElementById('status-title');
+  var statusMessage = document.getElementById('status-message');
+  var queueBadge = document.getElementById('queue-badge');
+  var syncBtn = document.getElementById('sync-btn');
+  var retryBtn = document.getElementById('retry-btn');
+  var qualityLabel = document.getElementById('quality-label');
+  var qualityButton = document.querySelector('.av-quality');
+  var qualityList = document.getElementById('quality-list');
+  var unavailableCopy = document.getElementById('unavailable-copy');
+  var avatarContent = document.getElementById('avatar-content');
+  var avatarStage = document.getElementById('avatar-stage');
+  var stageLabel = document.getElementById('stage-label');
+  var currentLoadoutEl = document.getElementById('current-loadout');
+  var loadoutList = document.getElementById('loadout-list');
+  var loadoutsCount = document.getElementById('loadouts-count');
+  var loadoutsEmpty = document.getElementById('loadouts-empty');
+  var itemGrid = document.getElementById('item-grid');
+  var itemsCount = document.getElementById('items-count');
+  var itemsEmpty = document.getElementById('items-empty');
+  var offlineMessage = document.getElementById('offline-message');
+  var offlineQueue = document.getElementById('offline-queue');
+  var offlineSync = document.getElementById('offline-sync');
+  var loadoutSheet = document.getElementById('loadout-sheet');
+  var loadoutSheetSub = document.getElementById('loadout-sheet-sub');
+  var loadoutSheetItems = document.getElementById('loadout-sheet-items');
+  var equipBtn = document.getElementById('equip-btn');
+
+  /* ---------- 状态条 ---------- */
+  function renderStatus() {
+    statusTitle.textContent = (state.online ? '网络可用' : '网络不可用') + ' · ' +
+      (state.status === 'loading' ? '正在加载成长记录' : '学习同步状态');
+    statusMessage.textContent = state.message;
+    statusStrip.classList.toggle('is-error', state.status === 'error');
+    queueBadge.hidden = !state.queue;
+    queueBadge.textContent = '待同步 ' + state.queue;
+    syncBtn.hidden = !state.queue;
+    retryBtn.hidden = state.status !== 'error';
+    offlineQueue.hidden = !state.queue;
+    offlineQueue.textContent = '待同步 ' + state.queue;
+    offlineSync.hidden = !state.queue;
+    unavailableCopy.hidden = state.contentReady;
+    avatarContent.hidden = !state.contentReady;
+  }
+
+  function runSync(button) {
+    if (state.busy || !state.queue) return;
+    state.busy = 'sync';
+    UISpec.setBusy(button, true, '正在同步…');
+    later(function () {
+      UISpec.setBusy(button, false);
+      state.busy = '';
+      if (UISpec.getScreenState() === 'offline') {
+        offlineMessage.textContent = '网络不可用，队列仍保留。';
+        focusSoon(offlineSync);
+        return;
+      }
+      if (state.syncRejects) {
+        state.message = '服务端未接受事件，队列已保留。';
+        renderStatus();
+        focusSoon(statusStrip);
+        return;
+      }
+      var accepted = state.queue;
+      state.queue = 0;
+      state.online = true;
+      state.message = '服务端已接受 ' + accepted + ' 条事件。';
+      renderStatus();
+      focusSoon(statusStrip);
+    }, 900);
+  }
+  syncBtn.addEventListener('click', function () { runSync(syncBtn); });
+  offlineSync.addEventListener('click', function () { runSync(offlineSync); });
+
+  /* 角色信息不可用时的重试：对齐 loadAvatarPage() */
+  retryBtn.addEventListener('click', function () {
+    if (state.busy) return;
+    state.busy = 'retry';
+    UISpec.setBusy(retryBtn, true, '正在重试…');
+    later(function () {
+      UISpec.setBusy(retryBtn, false);
+      state.busy = '';
+      state.status = 'ready';
+      state.online = true;
+      state.message = DEFAULT_MESSAGE;
+      /* 对齐 loadAvatarPage()：重试会重新 loadWorld()，内容随即恢复 */
+      state.contentReady = true;
+      renderStatus();
+      renderAll();
+      focusSoon(avatarContent.querySelector('[data-loadout]'));
+    }, 1100);
+  });
+
+  /* ---------- 画质 ---------- */
+  function qualityLabelOf(id) {
+    for (var i = 0; i < QUALITY.length; i++) {
+      if (QUALITY[i].id === id) return QUALITY[i].label;
+    }
+    return '舒适';
+  }
+  function renderQuality() {
+    var label = qualityLabelOf(state.quality);
+    qualityLabel.textContent = label;
+    qualityButton.setAttribute('aria-label', '画质：' + label);
+    qualityList.innerHTML = QUALITY.map(function (item) {
+      return '<button type="button" class="sheet__item" data-quality="' + item.id + '" aria-pressed="' +
+        String(item.id === state.quality) + '"><span>' + item.label + '</span>' +
+        '<span class="spacer"></span>' + (item.id === state.quality ? UISpec.icon('check', 18) : '') + '</button>';
+    }).join('');
+  }
+  qualityList.addEventListener('click', function (event) {
+    var item = event.target.closest('[data-quality]');
+    if (!item) return;
+    state.quality = item.getAttribute('data-quality');
+    renderQuality();
+    renderPreview();
+    UISpec.closeOverlay(document.getElementById('quality-sheet'));
+    qualityButton.focus({ preventScroll: true });
+  });
+
+  /* ---------- 预览（effectiveAvatarRenderMode） ---------- */
+  function renderPreview() {
+    var fallback = state.quality === 'performance' || !state.profile || state.profile.renderMode === '2D_FALLBACK';
+    /* 对齐 b4-avatar.vue line 72：文案恒为「形象示意」，仅 .static 类随渲染模式切换 */
+    avatarStage.classList.toggle('av-stage--static', fallback);
+    stageLabel.textContent = '形象示意';
+
+    var loadout = currentLoadout();
+    if (loadout) {
+      var index = state.loadouts.indexOf(loadout);
+      currentLoadoutEl.innerHTML = '当前套装：<strong>' + loadoutTitle(loadout, index) + '</strong>';
+    } else {
+      currentLoadoutEl.textContent = '尚未选择套装。';
+    }
+  }
+
+  /* ---------- 衣柜 ---------- */
+  function renderLoadouts() {
+    loadoutsCount.textContent = state.loadouts.length + ' 套';
+    loadoutsCount.hidden = state.loadouts.length === 0;
+    loadoutList.innerHTML = state.loadouts.map(function (loadout, index) {
+      return '<button type="button" class="av-loadout" data-loadout="' + loadout.loadoutId + '">' +
+        '<span class="av-loadout__body">' +
+          '<span class="av-loadout__name">' + loadoutTitle(loadout, index) +
+            (loadout.equipped ? ' <span class="badge badge--ok">使用中</span>' : '') + '</span>' +
+          '<span class="av-loadout__meta">' + loadout.items.length + ' 件素材</span>' +
+        '</span>' +
+        '<span class="av-loadout__go">预览' + UISpec.icon('chevron-right', 16) + '</span>' +
+      '</button>';
+    }).join('');
+    loadoutsEmpty.hidden = state.loadouts.length > 0;
+  }
+
+  loadoutList.addEventListener('click', function (event) {
+    var row = event.target.closest('[data-loadout]');
+    if (!row) return;
+    openLoadout(row.getAttribute('data-loadout'));
+  });
+
+  /* ---------- 套装预览 ---------- */
+  function renderLoadoutSheet(loadout) {
+    var index = state.loadouts.indexOf(loadout);
+    loadoutSheetSub.textContent = loadoutTitle(loadout, index) + ' · ' + loadout.items.length + ' 件素材';
+    loadoutSheetItems.innerHTML = loadout.items.map(function (code) {
+      var slot = loadoutItemSlot(code);
+      return '<div class="av-sheet-item">' +
+        '<span class="av-sheet-item__icon">' + UISpec.icon(SLOT_ICONS[slot] || 'sparkles', 20) + '</span>' +
+        '<span class="av-sheet-item__body">' +
+          '<span class="av-sheet-item__title">' + (SLOT_LABELS[slot] || '装扮素材') + '</span>' +
+        '</span>' +
+      '</div>';
+    }).join('');
+    equipBtn.disabled = loadout.equipped;
+    equipBtn.classList.remove('is-busy');
+    equipBtn.removeAttribute('aria-busy');
+    equipBtn.querySelector('.btn__label').textContent = loadout.equipped ? '当前使用中' : '设为当前装扮';
+  }
+
+  function openLoadout(loadoutId) {
+    var loadout = findLoadout(loadoutId);
+    if (!loadout) return;
+    state.previewId = loadoutId;
+    renderLoadoutSheet(loadout);
+    UISpec.openOverlay('loadout-sheet');
+    focusSoon(equipBtn);
+  }
+
+  equipBtn.addEventListener('click', function () {
+    var loadout = findLoadout(state.previewId);
+    if (!loadout || loadout.equipped || state.busy) return;
+    state.busy = 'equip';
+    UISpec.setBusy(equipBtn, true, '正在装备…');
+    later(function () {
+      UISpec.setBusy(equipBtn, false);
+      state.busy = '';
+      UISpec.closeOverlay(loadoutSheet);
+      if (state.failAction === 'equip') {
+        /* 对齐 fail()：非离线 / 401 / 403 / 409 的装备失败一律 status='error' */
+        state.status = 'error';
+        state.message = '衣柜装备失败。';
+      } else if (state.failAction === 'equip-unconfirmed') {
+        state.status = 'error';
+        state.message = '服务端未返回装备确认。';
+      } else {
+        state.status = 'ready';
+        state.loadouts = state.loadouts.map(function (item) {
+          return { loadoutId: item.loadoutId, name: item.name, equipped: item.loadoutId === loadout.loadoutId, items: item.items };
+        });
+        if (state.profile) state.profile.loadoutId = loadout.loadoutId;
+        state.message = '衣柜装备状态已由服务端确认。';
+      }
+      renderStatus();
+      renderLoadouts();
+      renderPreview();
+      focusSoon(loadoutList.querySelector('[data-loadout="' + loadout.loadoutId + '"]'));
+    }, 900);
+  });
+
+  /* ---------- 外观素材 ---------- */
+  function renderItems() {
+    itemsCount.textContent = state.items.length + ' 款';
+    itemsCount.hidden = state.items.length === 0;
+    itemGrid.innerHTML = state.items.map(function (item) {
+      return '<div class="av-item">' +
+        '<span class="av-item__quality">' + itemQuality(item.quality) + '</span>' +
+        '<span class="av-item__title">' + itemTitle(item) + '</span>' +
+      '</div>';
+    }).join('');
+    itemsEmpty.hidden = state.items.length > 0;
+  }
+
+  /* ---------- 页面级状态重试 ---------- */
+  document.addEventListener('click', function (event) {
+    var btn = event.target.closest('[data-retry-state]');
+    if (!btn) return;
+    event.preventDefault();
+    if (btn.classList.contains('is-busy')) return;
+    UISpec.setBusy(btn, true, btn.getAttribute('data-retry-label') || '正在重试…');
+    later(function () {
+      UISpec.setBusy(btn, false);
+      UISpec.setScreenState(btn.getAttribute('data-retry-state'));
+    }, 1100);
+  });
+
+  /* ---------- 渲染 ---------- */
+  function renderAll() {
+    renderStatus();
+    renderPreview();
+    renderLoadouts();
+    renderItems();
+  }
+
+  document.addEventListener('uispec:state', function (event) {
+    if (event.detail.state === 'normal') {
+      offlineMessage.textContent = '学习世界暂时无法读取。';
+      renderQuality();
+      renderAll();
+      return;
+    }
+    gen += 1;
+    UISpec.closeAllOverlays();
+    state.busy = '';
+    document.querySelectorAll('.is-busy').forEach(function (btn) {
+      UISpec.setBusy(btn, false);
+    });
+    var titles = {
+      loading: '正在加载角色信息…',
+      empty: '暂无可展示的形象素材。',
+      error: '学习世界暂时无法读取',
+      forbidden: '当前没有读取学习世界的权限。',
+      offline: '网络暂时不可用'
+    };
+    document.title = (titles[event.detail.state] || 'Avatar 与衣柜') + ' · 语学星移动端 UI 稿';
+  });
+
+  /* ---------- 初始渲染 ---------- */
+  renderQuality();
+  renderAll();
+
+  if (INITIAL_STATE !== 'normal') {
+    document.addEventListener('DOMContentLoaded', function () {
+      UISpec.setScreenState(INITIAL_STATE);
+    });
+  }
+})();
+</script>
+</body>
+</html>

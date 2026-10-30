@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>画质与设备 · 语学星移动端 UI 稿</title>
+<link rel="stylesheet" href="../shared.css">
+<script src="../shared.js"></script>
+<style>
+  /* 仅本页布局；组件与 token 全部来自 shared.css */
+  .pl-page { padding: 4px 20px 28px; }
+  .pl-page [hidden] { display: none !important; }
+
+  /* 页头（MobilePageHeader：kicker + 标题 + 说明） */
+  .pl-head { margin: 4px 0 16px; }
+  .pl-kicker {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0 0 4px;
+    color: var(--v2-brand);
+    font-size: 13px;
+    line-height: 1.6;
+    font-weight: 600;
+    letter-spacing: .04em;
+  }
+  .pl-kicker .icon { flex: none; }
+  .pl-title {
+    margin: 0;
+    color: var(--v2-ink);
+    font-size: 28px;
+    line-height: 1.4;
+    font-weight: 650;
+    letter-spacing: -.01em;
+  }
+  .pl-intro { margin: 6px 0 0; color: var(--v2-mut); font-size: 14px; line-height: 1.75; }
+
+  /* 页头下方的页级标题行：eyebrow + 说明 + 唯一「刷新」 */
+  .pl-headingrow {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 0 0 16px;
+  }
+  .pl-headingrow__titles { display: grid; gap: 2px; flex: 1 1 auto; min-width: 0; }
+  .pl-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--v2-mut);
+    font-size: 12px;
+    line-height: 1.6;
+    font-weight: 600;
+    letter-spacing: .04em;
+  }
+  .pl-eyebrow .icon { flex: none; }
+  .pl-heading-desc { margin: 0; color: var(--v2-mut); font-size: 14px; line-height: 1.75; overflow-wrap: anywhere; }
+
+  .pl-refresh {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 44px;
+    margin-top: -4px;
+    padding: 0 12px;
+    border: 1px solid var(--v2-line);
+    border-radius: var(--v2-radius-sm);
+    background: var(--v2-card);
+    color: var(--v2-ink);
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.6;
+    cursor: pointer;
+  }
+  .pl-refresh:hover { border-color: var(--v2-brand); color: var(--v2-brand); }
+  .pl-refresh:focus-visible { outline: none; box-shadow: var(--v2-focus); }
+  .pl-refresh:disabled { background: var(--v2-surface); color: var(--v2-mut); border-color: transparent; cursor: not-allowed; }
+  .pl-refresh.is-busy { background: var(--v2-surface); color: var(--v2-ink); border-color: var(--v2-line); cursor: progress; }
+  .pl-refresh .btn__spinner { width: 14px; height: 14px; border-width: 1.5px; }
+  .pl-refresh.is-busy .btn__spinner { display: inline-block; }
+  .pl-refresh.is-busy .pl-refresh__icon { display: none; }
+  .pl-refresh .pl-refresh__icon { display: inline-flex; flex: none; }
+
+  /* 读取失败提示（vue 的 errorMessage，位于标题行下方） */
+  .pl-alert {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin: 0 0 12px;
+    padding: 12px 14px;
+    border-radius: var(--v2-radius-md);
+    background: var(--v2-warn-soft);
+    color: var(--v2-warn);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .pl-alert .icon { flex: none; margin-top: 1px; }
+
+  /* 卡片 */
+  .pl-card { display: grid; gap: 12px; }
+  .pl-card + .pl-card { margin-top: 16px; }
+  .pl-cardhead { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+  .pl-titles { display: grid; gap: 2px; min-width: 0; }
+  .pl-cardtitle { margin: 0; color: var(--v2-ink); font-size: 16px; line-height: 1.5; font-weight: 600; }
+  .pl-note { margin: 2px 0 0; color: var(--v2-mut); font-size: 13px; line-height: 1.6; overflow-wrap: anywhere; }
+  .pl-cardhead .badge { flex: none; margin-top: 2px; }
+
+  /* 目标端矩阵 */
+  .pl-list { display: grid; }
+  .pl-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 0;
+    border-top: 1px solid var(--v2-line);
+  }
+  .pl-list > .pl-row:first-child { border-top: 0; padding-top: 0; }
+  .pl-list > .pl-row:last-child { padding-bottom: 0; }
+  .pl-copy { display: grid; gap: 2px; flex: 1 1 auto; min-width: 0; }
+  .pl-name { color: var(--v2-ink); font-size: 16px; line-height: 1.5; font-weight: 600; overflow-wrap: anywhere; }
+  .pl-sub { color: var(--v2-mut); font-size: 13px; line-height: 1.6; overflow-wrap: anywhere; }
+  .pl-row .badge { margin-top: 2px; }
+
+  .pl-empty { margin: 0; color: var(--v2-mut); font-size: 14px; line-height: 1.75; }
+
+  /* 画质档位 */
+  .pl-levels { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .pl-level {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 48px;
+    padding: 0 12px;
+    border: 1px solid var(--v2-line);
+    border-radius: var(--v2-radius-md);
+    background: var(--v2-card);
+    color: var(--v2-ink);
+    font-family: inherit;
+    font-size: 15px;
+    line-height: 1.6;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .pl-level:hover { border-color: var(--v2-brand); }
+  .pl-level:focus-visible { outline: none; box-shadow: var(--v2-focus); }
+  .pl-level.is-selected { border-color: var(--v2-brand); background: var(--v2-soft); color: var(--v2-brand); }
+
+  .pl-degrade {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin: 0;
+    color: var(--v2-warn);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .pl-degrade .icon { flex: none; margin-top: 1px; }
+
+  /* 画质预算行（budget.levels） */
+  .pl-budget { display: grid; gap: 0; margin-top: 4px; border-top: 1px solid var(--v2-line); }
+  .pl-budgetrow {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--v2-line);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  .pl-budgetrow:last-child { border-bottom: 0; padding-bottom: 0; }
+  .pl-budgetname { color: var(--v2-ink); font-weight: 500; }
+  .pl-budgetval { color: var(--v2-mut); text-align: right; overflow-wrap: anywhere; }
+
+  /* 无障碍检查 */
+  .pl-checks { display: grid; }
+  .pl-checkrow {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 0;
+    border-top: 1px solid var(--v2-line);
+  }
+  .pl-checks > .pl-checkrow:first-child { border-top: 0; padding-top: 0; }
+  .pl-checks > .pl-checkrow:last-child { padding-bottom: 0; }
+  .pl-checkicon {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    margin-top: 1px;
+    border-radius: var(--v2-radius-pill);
+    background: var(--v2-ok-soft);
+    color: var(--v2-ok);
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1;
+  }
+  .pl-checkcopy { display: grid; gap: 2px; flex: 1 1 auto; min-width: 0; }
+  .pl-checktitle { color: var(--v2-ink); font-size: 16px; line-height: 1.5; font-weight: 600; }
+  .pl-checkrule { color: var(--v2-mut); font-size: 13px; line-height: 1.6; overflow-wrap: anywhere; }
+
+  /* 加载骨架 */
+  .pl-loading { display: grid; gap: 16px; }
+  .pl-skeleton { display: grid; gap: 10px; }
+
+  /* 高对比度下的边框加强（仅本页预览） */
+  html[data-contrast="high"] .pl-page .card { border: 1px solid var(--v2-ink); box-shadow: none; }
+  html[data-contrast="high"] .pl-page .pl-level:not(.is-selected) { border-color: var(--v2-ink); }
+
+  /* 无权限：只保留标题与「去登录」，不显示标题行与卡片 */
+  html[data-screen-state="forbidden"] .pl-headingrow { display: none; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pl-refresh.is-busy .btn__spinner { animation: none; opacity: .6; }
+  }
+</style>
+</head>
+<body>
+
+<div class="phone-stage">
+  <div data-ui="toolbar" data-states="normal,loading,error,forbidden"></div>
+
+  <div class="phone phone--scroll" id="phone">
+    <div data-ui="statusbar"></div>
+    <div data-ui="navbar" data-title="画质与设备" data-back="settings.html"></div>
+
+    <div class="phone__scroll">
+      <div class="pl-page">
+
+        <!-- MobilePageHeader：kicker / 标题 / 说明 -->
+        <header class="pl-head">
+          <p class="pl-kicker">
+            <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+            设备适配
+          </p>
+          <h1 class="pl-title">让学习，流畅又舒适。</h1>
+          <p class="pl-intro">选择适合设备的画质，了解无障碍与兼容支持。</p>
+        </header>
+
+        <!-- 页级标题行（对齐 vue 的 b6-mobile-heading） -->
+        <div class="pl-headingrow">
+          <span class="pl-headingrow__titles">
+            <span class="pl-eyebrow">
+              <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+              原生与多端
+            </span>
+            <span class="pl-heading-desc">设备支持情况与画质选项，可在这里查看。</span>
+          </span>
+          <button type="button" class="pl-refresh" id="pl-refresh">
+            <span class="btn__label">刷新</span>
+            <span class="btn__spinner" aria-hidden="true"></span>
+            <span class="pl-refresh__icon" aria-hidden="true">
+              <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M20 11a8 8 0 0 0-14.6-4.5L3 9M4 13a8 8 0 0 0 14.6 4.5L21 15"/><path d="M3 4v5h5M21 20v-5h-5"/></svg>
+            </span>
+          </button>
+        </div>
+
+        <div data-state-block="normal">
+
+          <!-- 读取失败：vue 的 errorMessage 提示 -->
+          <div class="pl-alert" id="pl-alert" role="alert" hidden>
+            <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 3 2 20h20z"/><path d="M12 10v4M12 17.5v.01"/></svg>
+            <span>网络不可用，当前使用本地性能设置。</span>
+          </div>
+
+          <!-- 目标端矩阵 -->
+          <section class="card pl-card" aria-labelledby="pl-matrix-title">
+            <div class="pl-cardhead">
+              <span class="pl-titles">
+                <span class="pl-eyebrow">
+                  <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+                  壳矩阵
+                </span>
+                <h2 class="pl-cardtitle" id="pl-matrix-title">目标端矩阵</h2>
+                <p class="pl-note" id="pl-matrix-status">待测试阶段验证</p>
+              </span>
+              <span class="badge" id="pl-matrix-badge">等待测试阶段</span>
+            </div>
+            <div class="pl-list" id="pl-matrix-body"></div>
+            <p class="pl-empty" id="pl-matrix-empty" hidden>暂无目标端数据。</p>
+          </section>
+
+          <!-- 画质与降级 -->
+          <section class="card pl-card" aria-labelledby="pl-quality-title">
+            <div class="pl-cardhead">
+              <span class="pl-titles">
+                <span class="pl-eyebrow">
+                  <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+                  画质
+                </span>
+                <h2 class="pl-cardtitle" id="pl-quality-title">画质与降级</h2>
+                <p class="pl-note">低帧率、内存压力或离线时自动降级</p>
+              </span>
+              <span class="badge" id="pl-level-tag">高清</span>
+            </div>
+
+            <div class="pl-levels" id="pl-levels" role="radiogroup" aria-label="画质档位">
+              <button type="button" class="pl-level" data-level="Ultra" role="radio" aria-checked="false">极致</button>
+              <button type="button" class="pl-level is-selected" data-level="High" role="radio" aria-checked="true">高清</button>
+              <button type="button" class="pl-level" data-level="Medium" role="radio" aria-checked="false">标准</button>
+              <button type="button" class="pl-level" data-level="Performance" role="radio" aria-checked="false">省电</button>
+            </div>
+
+            <!-- 自动降级结果（?mock=degrade，vue 无此行文案） -->
+            <p class="pl-degrade" id="pl-degrade" role="status" tabindex="-1" hidden>
+              <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 3 2 20h20z"/><path d="M12 10v4M12 17.5v.01"/></svg>
+              <span id="pl-degrade-text"></span>
+            </p>
+
+            <div class="pl-budget" id="pl-budget-body"></div>
+            <p class="pl-empty" id="pl-budget-empty" hidden>暂无画质预算数据。</p>
+          </section>
+
+          <!-- 无障碍替代路径 -->
+          <section class="card pl-card" aria-labelledby="pl-a11y-title">
+            <div class="pl-cardhead">
+              <span class="pl-titles">
+                <span class="pl-eyebrow">
+                  <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m5 12 5 5 9-10"/></svg>
+                  无障碍
+                </span>
+                <h2 class="pl-cardtitle" id="pl-a11y-title">无障碍替代路径</h2>
+                <p class="pl-note" id="pl-a11y-note">上线阻断检查</p>
+              </span>
+              <span class="badge" id="pl-a11y-badge">5 项</span>
+            </div>
+            <div class="pl-checks" id="pl-a11y-body"></div>
+            <p class="pl-empty" id="pl-a11y-empty" hidden>暂无无障碍检查项。</p>
+          </section>
+
+        </div>
+
+        <!-- 加载：页级「刷新」转圈 + 骨架屏（真实页为局部 loading，骨架为设计新增） -->
+        <div data-state-block="loading" aria-busy="true">
+          <div class="pl-loading">
+            <div class="card pl-skeleton" aria-hidden="true">
+              <div class="skeleton skeleton-line skeleton-line--sm" style="width: 30%"></div>
+              <div class="skeleton skeleton-block" style="height: 150px"></div>
+              <div class="skeleton skeleton-line skeleton-line--sm" style="width: 58%"></div>
+            </div>
+            <div class="card pl-skeleton" aria-hidden="true">
+              <div class="skeleton skeleton-line skeleton-line--sm" style="width: 36%"></div>
+              <div class="skeleton skeleton-block" style="height: 200px"></div>
+            </div>
+            <div class="card pl-skeleton" aria-hidden="true">
+              <div class="skeleton skeleton-line skeleton-line--sm" style="width: 26%"></div>
+              <div class="skeleton skeleton-block" style="height: 120px"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 错误：单行原因 + 重试 -->
+        <div data-state-block="error">
+          <div class="state-block" role="alert">
+            <span class="state-block__icon state-block__icon--bad" data-icon="alert-triangle" data-icon-size="24"></span>
+            <span class="state-block__text">网络不可用，当前使用本地性能设置。</span>
+            <span class="state-block__actions">
+              <button type="button" class="btn btn--primary btn--sm" data-retry-state="normal">
+                <span class="btn__spinner" aria-hidden="true"></span><span class="btn__label">重试</span>
+              </button>
+            </span>
+          </div>
+        </div>
+
+        <!-- 无权限：未登录（真实页 onShow 直接跳转登录页，本态为设计新增） -->
+        <div data-state-block="forbidden">
+          <div class="state-block" role="alert">
+            <span class="state-block__icon state-block__icon--warn" data-icon="lock" data-icon-size="24"></span>
+            <span class="state-block__title">登录后查看设备适配与画质设置。</span>
+            <span class="state-block__actions">
+              <a class="btn btn--primary btn--sm" href="login.html?returnTo=%2Fpages%2Fb6-platform%2Fb6-platform">去登录</a>
+            </span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="interaction-notes">
+  <h2>交互说明（b6-platform）</h2>
+  <ul>
+    <li>主题与直达参数 → 工具条「浅色 / 深色」切换整页 token 并写入 <code>localStorage['uispec-theme']</code>；<code>?theme=light|dark</code> 固定主题；<code>?state=normal|loading|error|forbidden</code> 直达页面状态；<code>?mock=load-error|refresh-error|degrade|empty-data</code> 演示首次读取失败、刷新失败、自动降级与三份数据全空；<code>?level=ultra|high|medium|performance</code> 指定初始画质。截图全集（每项 <code>?theme=light|dark</code> 各一张，共 16 张）：<code>b6-platform-light.png</code> / <code>b6-platform-dark.png</code>；<code>b6-platform-loading-{light,dark}.png</code>；<code>b6-platform-error-{light,dark}.png</code>；<code>b6-platform-forbidden-{light,dark}.png</code>；<code>b6-platform-load-error-{light,dark}.png</code>；<code>b6-platform-refresh-error-{light,dark}.png</code>；<code>b6-platform-degrade-{light,dark}.png</code>；<code>b6-platform-empty-data-{light,dark}.png</code>。</li>
+    <li>页头与导航 → 导航栏「画质与设备」（<code>pages.json</code>）+ 返回 <code>settings.html</code>（真实入口「设置 › 性能帮助与设备适配说明」，「我的」也有同名入口）；<code>MobilePageHeader</code> 的 kicker「设备适配」（<code>ZH_KICKERS</code>）、标题「让学习，流畅又舒适。」、说明「选择适合设备的画质，了解无障碍与兼容支持。」（<code>pages.b6-platform</code>）；不显示底部 TabBar。</li>
+    <li>页级标题行 → 对齐 vue 的 <code>b6-mobile-heading</code>：eyebrow「原生与多端」（grid 图标）+ 说明「设备支持情况与画质选项，可在这里查看。」+ 右侧唯一的页面级次按钮「刷新」（文字在前、refresh 图标在后；<code>:loading</code> 时显示转圈并保留「刷新」文字）。矩阵卡头不再有「刷新」。</li>
+    <li>内容顺序 → 与 <code>b6-platform.vue</code> 一致：目标端矩阵 → 画质与降级 → 无障碍替代路径；撤销上一稿把画质提前的「设计调整」。</li>
+    <li>刷新 → 页面级「刷新」重新读取三份数据（矩阵 / 预算 / 无障碍），转圈期间按钮禁用、文案保持「刷新」；成功时不显示任何提示、不弹 Toast，卡内沿用最新数据。失败时标题行下方显示 <code>role="alert"</code> 单行「网络不可用，当前使用本地性能设置。」，卡片继续渲染已有数据（对齐 vue <code>load()</code> 只改 <code>errorMessage</code>、不重置三个 <code>ref</code>）；提示条内没有「重试」，页面「刷新」本身就是重试（<strong>设计明确</strong>）。<code>?mock=load-error</code> 打开即首次读取失败（提示条 + 三张卡的默认空数据），点「刷新」即成功恢复；<code>?mock=refresh-error</code> 打开即处于一次刷新失败后的状态（提示条 + 卡片保留完整数据），再点「刷新」仍失败一次，之后成功（便于反复演示同一分支）。</li>
+    <li>目标端矩阵卡 → eyebrow「壳矩阵」（grid）、标题「目标端矩阵」、说明 = <code>statusLabel(codeLayerStatus)</code>「待测试阶段验证」、右上徽标 = <code>statusLabel(realDeviceEvidenceStatus)</code>「等待测试阶段」；不显示 <code>matrixVersion</code>（<strong>设计调整</strong>，STYLE-BRIEF 不显示原始版本串）。七行 mock 覆盖全部 <code>B6PlatformCode</code>：WEB 网页版 / H5 移动网页 / ANDROID Android App / IOS iOS App / IPAD iPad / WECHAT_MINI_PROGRAM 微信小程序 / WINDOWS_PWA Windows 桌面版（中文名映射为<strong>设计调整</strong>）；每行保留优先级与实现方式一行（如「P0 · 移动端 uni-app」）+ 状态徽标（实现方式的中文译法与英文原值 learner-web / mobile uni-app / uni-app conditional build 的对应关系为<strong>设计调整</strong>）。徽标文案只取本页 <code>STATUS_LABELS</code>：已就绪 / 已构建 / 代码已就绪 / 待测试阶段验证 / 等待测试阶段 / 需测试阶段验证 / 已通过 / 未通过；mock 为代码层证据 <code>CODE_READY</code> →「代码已就绪」；未知值一律显示「待确认」，不出现原始枚举（<strong>设计调整</strong>，vue 会回退显示原始值）。</li>
+    <li>画质与降级卡 → eyebrow 图标取 <code>V2_ICONS.gear</code> 精确路径（非 sparkles），标题「画质与降级」，说明原文「低帧率、内存压力或离线时自动降级」。档位文案取本页 <code>QUALITY_LEVEL_LABELS</code>：极致 / 高清 / 标准 / 省电，徽标与四个按钮一致，默认「高清」；不重命名、不增加每档效果说明。选择只通过选中按钮样式与卡头徽标表达（<code>role="radiogroup"</code> + <code>role="radio"</code> / <code>aria-checked</code>），不显示「画质已切换为…」类反馈、不弹 Toast；点击当前档位是无操作。选择写入 <code>localStorage['uispec-quality-level']</code>，方向键 / Home / End 切换并把焦点留在新档位。文案说明：设置页同一 <code>PerformanceLevel</code> 使用「超高 / 高 / 均衡 / 省资源」，本页保留 vue 的「极致 / 高清 / 标准 / 省电」，跨页差异如实保留、不统一。</li>
+    <li>画质预算行 → 按 vue 渲染 <code>budget.levels</code>：每行「档位名」+「{textureBudgetMb}MB · 粒子 {particleBudget} · 3D|SVG/静态」。mock 四行：极致 512MB · 粒子 100 · 3D；高清 256MB · 粒子 64 · 3D；标准 128MB · 粒子 24 · 3D；省电 64MB · 粒子 0 · SVG/静态（真实 <code>apps/mobile/src/api/b6.ts</code> 不返回 levels，因此为 mock 数据）。</li>
+    <li>自动降级 → <code>?mock=degrade</code> 在初始档位上下调一档（默认「高清」→「标准」）并显示 warn 行「检测到设备压力，画质已自动降为「标准」。」；<code>?mock=degrade&amp;level=performance</code> 保持「省电」。真实页由 <code>AdaptivePerformanceEngine</code> 在低帧率、内存压力、离线或存储压力时自动降级，结果只体现在选中档位；该 warn 行不在 vue 中，属<strong>设计新增</strong>。</li>
+    <li>无障碍替代路径卡 → eyebrow 图标取 <code>V2_ICONS.check</code> 精确路径（非 check-circle），标题「无障碍替代路径」，说明 = <code>releaseBlocking ? '上线阻断检查' : '建议检查'</code>（mock 为「上线阻断检查」），右上徽标「{n} 项」。每行都是 ✓ 成功图标 + 标题 + <code>fallbackRule</code>（vue 对所有项统一渲染 ✓，API 无逐项状态）；mock 五行对齐 api 条目：文字缩放至 200% 不裁切 / 键盘可完成关键流程 / 读屏可理解状态 / 动效可关闭 / 权限拒绝仍可继续。取消上一稿的 warn 图标与「待验证」徽标。</li>
+    <li>读取失败 → 对齐 vue <code>load()</code> 的 catch：标题行下方显示单行 <code>role="alert"</code>「网络不可用，当前使用本地性能设置。」；三张卡继续按默认值渲染（矩阵说明「待测试阶段验证」、徽标「等待测试阶段」、列表为空；画质按钮仍可用；无障碍「0 项」「上线阻断检查」）；不显示卡内「…暂时无法读取」说明，也没有提示条内的「重试」。</li>
+    <li>空数据 → <code>?mock=empty-data</code> 模拟当前 <code>apps/mobile/src/api/b6.ts</code> 的真实回退：三份列表全部为空，页内不显示读取失败提示；各卡只显示单行「暂无目标端数据。」/「暂无画质预算数据。」/「暂无无障碍检查项。」（单行、不写成读取失败，<strong>设计新增</strong>）。</li>
+    <li>页面状态 → 加载：页面级「刷新」转圈（文案保留）+ 三张卡骨架屏（<code>aria-busy</code>，骨架为<strong>设计新增</strong>，不显示「正在读取…」文案）；错误：单行「网络不可用，当前使用本地性能设置。」+「重试」，不再有标题、正文与「继续调整画质」；无权限：「登录后查看设备适配与画质设置。」+「去登录」→ <code>login.html?returnTo=%2Fpages%2Fb6-platform%2Fb6-platform</code>（真实页 <code>ensureMobilePageAccess</code> 未登录直接跳转，本态为设计新增）。<code>document.title</code> 同步：正常「画质与设备」、加载「正在读取设备适配信息…」、错误「网络不可用，当前使用本地性能设置。」、无权限「登录后查看设备适配与画质设置。」。</li>
+    <li>状态恢复 → 工具条切换离开正常态会取消未完成的刷新计时并恢复按钮；错误态「重试」转圈 1.0s 后回到正常态，不弹成功 Toast；切回正常态按 <code>?mock</code> 重新预置失败提示、空数据与降级结果。</li>
+    <li>登录门禁 → 对齐真实页 <code>onShow</code>：先 <code>ensureMobilePageAccess</code>，未登录直接跳转登录页，不渲染本页；原型以无权限态承载该分支。</li>
+    <li>文案边界 → 不显示 <code>platformCode</code>、<code>matrixVersion</code>、原始状态枚举或内部错误码；平台名与实现方式使用中文 mock；未知状态显示「待确认」；纹理 MB 与粒子数按 vue 如实显示，不隐藏。</li>
+  </ul>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var params = new URLSearchParams(location.search);
+  function q(name) {
+    var value = params.get(name) || '';
+    var cut = value.indexOf('?');
+    return cut >= 0 ? value.slice(0, cut) : value;
+  }
+  function themedParam() {
+    var match = /[?&]theme=(light|dark)/g;
+    var found = null;
+    var item;
+    while ((item = match.exec(location.search))) found = item[1];
+    return found;
+  }
+  var THEME_PARAM = themedParam();
+  if (THEME_PARAM) UISpec.setTheme(THEME_PARAM);
+
+  var MOCK = q('mock');
+  var STATE_PARAM = q('state');
+  var VALID_STATES = ['normal', 'loading', 'error', 'forbidden'];
+  var INITIAL_STATE = VALID_STATES.indexOf(STATE_PARAM) >= 0 ? STATE_PARAM : 'normal';
+  var LEVEL_KEY = 'uispec-quality-level';
+
+  /* 对齐 apps/mobile/src/pages/b6-platform/b6-platform.vue：
+   * 三份设备适配说明并行读取；画质由 AdaptivePerformanceEngine 本机生效；
+   * 读取失败只写入 errorMessage，三个 ref 保留原值；
+   * 画质档位文案取本页 QUALITY_LEVEL_LABELS；状态文案取 STATUS_LABELS。
+   * 数据全部为 mock，不访问服务端。 */
+
+  var LEVELS = ['Ultra', 'High', 'Medium', 'Performance'];
+  var QUALITY_LEVEL_LABELS = { Ultra: '极致', High: '高清', Medium: '标准', Performance: '省电' };
+  var STATUS_LABELS = {
+    READY_FOR_TEST_STAGE: '待测试阶段验证',
+    PENDING_TEST_STAGE: '等待测试阶段',
+    TEST_STAGE_REQUIRED: '需测试阶段验证',
+    CODE_READY: '代码已就绪',
+    READY: '已就绪',
+    PASSED: '已通过',
+    FAILED: '未通过',
+    BUILT: '已构建'
+  };
+  function statusLabel(value) {
+    return typeof value === 'string' ? (STATUS_LABELS[value] || '待确认') : '待确认';
+  }
+  function qualityLevelLabel(level) {
+    return QUALITY_LEVEL_LABELS[level] || level;
+  }
+
+  /* 目标端矩阵 mock：覆盖全部 B6PlatformCode，状态为代码层证据 CODE_READY */
+  var TARGETS = [
+    { code: 'WEB', name: '网页版', priority: 'P0', implementation: '学习者 Web 项目', status: 'CODE_READY' },
+    { code: 'H5', name: '移动网页', priority: 'P0', implementation: '移动端 uni-app', status: 'CODE_READY' },
+    { code: 'ANDROID', name: 'Android App', priority: 'P1', implementation: '移动端 uni-app', status: 'CODE_READY' },
+    { code: 'IOS', name: 'iOS App', priority: 'P1', implementation: '移动端 uni-app', status: 'CODE_READY' },
+    { code: 'IPAD', name: 'iPad', priority: 'P1', implementation: '移动端 uni-app', status: 'CODE_READY' },
+    { code: 'WECHAT_MINI_PROGRAM', name: '微信小程序', priority: 'P2', implementation: '移动端条件编译输出', status: 'CODE_READY' },
+    { code: 'WINDOWS_PWA', name: 'Windows 桌面版', priority: 'P1', implementation: '学习者 Web 项目（可安装）', status: 'CODE_READY' }
+  ];
+
+  /* 画质预算 mock（与 core-api / learner-web 的 performanceBudget 一致） */
+  var BUDGET = [
+    { level: 'Ultra', textureBudgetMb: 512, particleBudget: 100, enableThreeD: true },
+    { level: 'High', textureBudgetMb: 256, particleBudget: 64, enableThreeD: true },
+    { level: 'Medium', textureBudgetMb: 128, particleBudget: 24, enableThreeD: true },
+    { level: 'Performance', textureBudgetMb: 64, particleBudget: 0, enableThreeD: false }
+  ];
+
+  /* 无障碍检查 mock（与 api 条目一致） */
+  var CHECKS = [
+    { title: '文字缩放至 200% 不裁切', fallbackRule: '允许内容纵向增长，禁止固定高度裁切' },
+    { title: '键盘可完成关键流程', fallbackRule: '所有主 CTA、表单和弹层拥有可见焦点' },
+    { title: '读屏可理解状态', fallbackRule: '图标提供 aria-label，状态不只依赖颜色' },
+    { title: '动效可关闭', fallbackRule: 'prefers-reduced-motion 或 Performance 档关闭复杂动效' },
+    { title: '权限拒绝仍可继续', fallbackRule: '录音、通知、媒体权限拒绝时提供替代路径' }
+  ];
+
+  var state = {
+    level: 'High',
+    targets: TARGETS,
+    budget: BUDGET,
+    checks: CHECKS,
+    alert: false,
+    failNext: false,
+    degrade: false
+  };
+
+  var gen = 0;
+  function later(fn, ms) {
+    var g = gen;
+    setTimeout(function () { if (g === gen) fn(); }, ms);
+  }
+  function storedLevel() {
+    try {
+      var saved = localStorage.getItem(LEVEL_KEY);
+      return LEVELS.indexOf(saved) >= 0 ? saved : null;
+    } catch (e) { /* 隐私模式忽略 */ }
+    return null;
+  }
+  function paramLevel() {
+    var map = { ultra: 'Ultra', high: 'High', medium: 'Medium', performance: 'Performance' };
+    return map[String(q('level')).toLowerCase()] || null;
+  }
+  function initialLevel() {
+    return paramLevel() || storedLevel() || 'High';
+  }
+  function persistLevel(level) {
+    try { localStorage.setItem(LEVEL_KEY, level); } catch (e) { /* 忽略 */ }
+  }
+  function downOne(level) {
+    var index = LEVELS.indexOf(level);
+    return LEVELS[Math.min(LEVELS.length - 1, index + 1)];
+  }
+
+  var $ = function (id) { return document.getElementById(id); };
+  var alertEl = $('pl-alert');
+  var levelList = $('pl-levels');
+  var levelTag = $('pl-level-tag');
+  var degradeEl = $('pl-degrade');
+  var degradeText = $('pl-degrade-text');
+  var matrixBody = $('pl-matrix-body');
+  var matrixEmpty = $('pl-matrix-empty');
+  var matrixStatus = $('pl-matrix-status');
+  var matrixBadge = $('pl-matrix-badge');
+  var budgetBody = $('pl-budget-body');
+  var budgetEmpty = $('pl-budget-empty');
+  var a11yBody = $('pl-a11y-body');
+  var a11yEmpty = $('pl-a11y-empty');
+  var a11yNote = $('pl-a11y-note');
+  var a11yBadge = $('pl-a11y-badge');
+  var refreshBtn = $('pl-refresh');
+
+  /* ---------- 渲染 ---------- */
+  function renderLevels() {
+    var buttons = levelList.querySelectorAll('[data-level]');
+    Array.prototype.forEach.call(buttons, function (btn) {
+      var on = btn.getAttribute('data-level') === state.level;
+      btn.classList.toggle('is-selected', on);
+      btn.setAttribute('aria-checked', String(on));
+    });
+    levelTag.textContent = qualityLevelLabel(state.level);
+  }
+
+  function renderMatrix() {
+    /* 与 toMatrix({}) 的回退值一致 */
+    matrixStatus.textContent = statusLabel('READY_FOR_TEST_STAGE');
+    matrixBadge.textContent = statusLabel('PENDING_TEST_STAGE');
+    matrixBody.innerHTML = state.targets.map(function (target) {
+      return '<div class="pl-row">' +
+        '<span class="pl-copy">' +
+          '<span class="pl-name">' + target.name + '</span>' +
+          '<span class="pl-sub">' + target.priority + ' · ' + target.implementation + '</span>' +
+        '</span>' +
+        '<span class="badge">' + statusLabel(target.status) + '</span>' +
+      '</div>';
+    }).join('');
+    matrixBody.hidden = state.targets.length === 0;
+    matrixEmpty.hidden = state.targets.length > 0;
+  }
+
+  function renderBudget() {
+    budgetBody.innerHTML = state.budget.map(function (profile) {
+      return '<div class="pl-budgetrow">' +
+        '<span class="pl-budgetname">' + qualityLevelLabel(profile.level) + '</span>' +
+        '<span class="pl-budgetval">' + profile.textureBudgetMb + 'MB · 粒子 ' + profile.particleBudget + ' · ' + (profile.enableThreeD ? '3D' : 'SVG/静态') + '</span>' +
+      '</div>';
+    }).join('');
+    budgetBody.hidden = state.budget.length === 0;
+    budgetEmpty.hidden = state.budget.length > 0;
+  }
+
+  function renderA11y() {
+    a11yNote.textContent = '上线阻断检查';
+    a11yBadge.textContent = state.checks.length + ' 项';
+    a11yBody.innerHTML = state.checks.map(function (check) {
+      return '<div class="pl-checkrow">' +
+        '<span class="pl-checkicon" aria-hidden="true">✓</span>' +
+        '<span class="pl-checkcopy">' +
+          '<span class="pl-checktitle">' + check.title + '</span>' +
+          '<span class="pl-checkrule">' + check.fallbackRule + '</span>' +
+        '</span>' +
+      '</div>';
+    }).join('');
+    a11yBody.hidden = state.checks.length === 0;
+    a11yEmpty.hidden = state.checks.length > 0;
+  }
+
+  function renderAlert() {
+    alertEl.hidden = !state.alert;
+  }
+
+  function renderDegrade() {
+    degradeEl.hidden = !state.degrade;
+    if (state.degrade) {
+      degradeText.textContent = '检测到设备压力，画质已自动降为「' + qualityLevelLabel(state.level) + '」。';
+    }
+  }
+
+  function renderAll() {
+    renderLevels();
+    renderMatrix();
+    renderBudget();
+    renderA11y();
+    renderAlert();
+    renderDegrade();
+  }
+
+  /* ---------- 读取 / 刷新 ---------- */
+  function refresh() {
+    if (refreshBtn.dataset.busy === '1') return;
+    UISpec.setBusy(refreshBtn, true);
+    later(function () {
+      if (state.failNext) {
+        /* 读取失败：只显示提示，卡片保留已有数据（对齐 vue 的 catch 分支） */
+        state.failNext = false;
+        state.alert = true;
+      } else {
+        state.alert = false;
+        state.targets = TARGETS;
+        state.budget = BUDGET;
+        state.checks = CHECKS;
+      }
+      renderAll();
+      UISpec.setBusy(refreshBtn, false);
+    }, 900);
+  }
+  refreshBtn.addEventListener('click', refresh);
+
+  /* ---------- 画质 ---------- */
+  levelList.addEventListener('click', function (event) {
+    var btn = event.target.closest('[data-level]');
+    if (!btn) return;
+    var next = btn.getAttribute('data-level');
+    if (next === state.level) return; /* 点击当前档位无操作 */
+    state.level = next;
+    persistLevel(next);
+    renderLevels();
+  });
+
+  /* 单选组键盘：方向键切换档位，Home / End 跳到首尾 */
+  levelList.addEventListener('keydown', function (event) {
+    var keys = ['ArrowRight', 'ArrowDown', 'ArrowLeft', 'ArrowUp', 'Home', 'End'];
+    if (keys.indexOf(event.key) < 0) return;
+    event.preventDefault();
+    var index = LEVELS.indexOf(state.level);
+    if (event.key === 'Home') index = 0;
+    else if (event.key === 'End') index = LEVELS.length - 1;
+    else if (event.key === 'ArrowRight' || event.key === 'ArrowDown') index = (index + 1) % LEVELS.length;
+    else index = (LEVELS.length + index - 1) % LEVELS.length;
+    state.level = LEVELS[index];
+    persistLevel(state.level);
+    renderLevels();
+    var target = levelList.querySelector('[data-level="' + state.level + '"]');
+    if (target) target.focus();
+  });
+
+  /* ---------- 预置与状态 ---------- */
+  function applyPreset() {
+    gen += 1;
+    UISpec.setBusy(refreshBtn, false);
+    state.level = initialLevel();
+    var empty = MOCK === 'load-error' || MOCK === 'empty-data';
+    state.targets = empty ? [] : TARGETS;
+    state.budget = empty ? [] : BUDGET;
+    state.checks = empty ? [] : CHECKS;
+    state.alert = MOCK === 'load-error' || MOCK === 'refresh-error';
+    state.failNext = MOCK === 'refresh-error';
+    state.degrade = MOCK === 'degrade';
+    if (state.degrade) state.level = downOne(state.level);
+    renderAll();
+  }
+
+  function resetInteraction() {
+    gen += 1;
+    UISpec.closeAllOverlays();
+    UISpec.setBusy(refreshBtn, false);
+  }
+
+  document.addEventListener('uispec:state', function (event) {
+    resetInteraction();
+    var titles = {
+      normal: '画质与设备',
+      loading: '正在读取设备适配信息…',
+      error: '网络不可用，当前使用本地性能设置。',
+      forbidden: '登录后查看设备适配与画质设置。'
+    };
+    if (event.detail.state === 'normal') applyPreset();
+    if (event.detail.state === 'loading') UISpec.setBusy(refreshBtn, true);
+    document.title = (titles[event.detail.state] || '画质与设备') + ' · 语学星移动端 UI 稿';
+  });
+
+  /* 整页状态块的重试（对齐其它页的 :loading 语义） */
+  document.addEventListener('click', function (event) {
+    var btn = event.target.closest('[data-retry-state]');
+    if (!btn) return;
+    event.preventDefault();
+    if (btn.classList.contains('is-busy')) return;
+    UISpec.setBusy(btn, true, '正在重试…');
+    later(function () {
+      UISpec.setBusy(btn, false);
+      UISpec.setScreenState(btn.getAttribute('data-retry-state'));
+    }, 1000);
+  });
+
+  /* ---------- 初始渲染 ---------- */
+  applyPreset();
+
+  if (INITIAL_STATE !== 'normal') {
+    document.addEventListener('DOMContentLoaded', function () {
+      UISpec.setScreenState(INITIAL_STATE);
+    });
+  }
+})();
+</script>
+</body>
+</html>
