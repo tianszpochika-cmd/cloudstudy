@@ -1,6 +1,6 @@
 # 下一组执行提示词：R1-002至R1-005
 
-接续当前Cloudstudy dev-redesign工作。先核对状态墙、主审R1-001/reviewer-11/review.md与approve-8.json；R1-001须为有效ACCEPTED，若漂移先报告，不继承旧父任务完成状态。
+接续当前PhraseStar dev-redesign工作。先核对状态墙、主审R1-001/reviewer-11/review.md与approve-8.json；R1-001须为有效ACCEPTED，若漂移先报告，不继承旧父任务完成状态。
 
 本组边界是002注册、003同键回放、004登录/刷新/撤销、005设备列表/踢出。当前只交R1-002开工准备包，不自标READY、不提前开发或启动共享后台、不越至006。按各卡现行来源与filePlan小步复用旧版实现，先报告可复用/缺失，不推翻重做。
 

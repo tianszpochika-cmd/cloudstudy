@@ -67,7 +67,7 @@ UI 复用现有语义颜色，不新增硬编码品牌/状态色。卡片内说�
 
 ## 交付与接手（2026-10-01）
 
-- 实现与证据提交：[`06d5285a`](https://github.com/tianszpochika-cmd/cloudstudy/commit/06d5285a8ba63205bb40e89e432547cebb8490c3)，已推送到 `origin/dev-redesign`。
+- 实现与证据提交：[`06d5285a`](https://github.com/tianszpochika-cmd/PhraseStar/commit/06d5285a8ba63205bb40e89e432547cebb8490c3)，已推送到 `origin/dev-redesign`。
 - 体验入口：[原型首页](http://127.0.0.1:18283/mobile/#/home)。沿用现有 18283 静态服务，刷新读取资源；浏览器原本机记录会保留，页面数字随实际体验变化。
 - 最新[演示指南](mockups/mobile/DEMO-GUIDE.md)已同步对象 v4、当前导航、目标模板、样例完成/词汇复习分离、写作故障和演示日期规则。
 - 修复前材料继续保留；证据索引已撤下“续读缺陷仍开放”的旧结论。软键盘、读屏、真机与真实媒体等未测项保持未测。

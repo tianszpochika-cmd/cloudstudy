@@ -7,7 +7,7 @@
 ## 运行资源
 
 - 已确认并停止 `learnmath` 的 4 个运行容器；未发现需要停止的其他项目宿主机进程。Docker Desktop 与 Codex 工具进程保留。
-- 已停用旧 Cloudstudy 私有 UAT 栈中原先运行的 24 个容器；该栈目前 26 个容器均处于停止状态。停止前的容器、镜像、端口快照见 `private-uat-archived-snapshot.json`；其数据卷、旧镜像和验收收据均保留。
+- 已停用旧 PhraseStar 私有 UAT 栈中原先运行的 24 个容器；该栈目前 26 个容器均处于停止状态。停止前的容器、镜像、端口快照见 `private-uat-archived-snapshot.json`；其数据卷、旧镜像和验收收据均保留。
 - 运行中的 Docker 容器只有 `yuxuexing-local` 的 MySQL、Redis、Kafka、MinIO、RabbitMQ 5 个。它们按当前本地 Compose 配置强制重建，复用原有数据卷，检查时均为 healthy；此次使用本机现有镜像，没有拉取上游最新标签。
 - 旧私有 UAT 应用镜像混合了旧批次，已不运行，也没有用当前工作树重新构建全部应用 Docker 镜像。本次供浏览器测试的应用使用当前工作区源码：16 个 Java 服务重新构建并由主机进程运行，四个前端运行开发服务。不能把这一状态描述为“全部应用 Docker 镜像已更新”。
 - 当前 16 个 Java 服务健康检查完成；Gateway JWKS 返回 200。构建日志见 `build-services.log`，运行日志见 `backend.stdout.log`。

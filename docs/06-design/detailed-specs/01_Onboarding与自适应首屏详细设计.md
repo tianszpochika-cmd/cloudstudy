@@ -14,7 +14,7 @@
 ## 1. 模块业务目标与边界 (Business Goals & Scope Boundaries)
 
 ### 1.1 业务目标与价值定位
-Onboarding（新手引导与定级）与 Adaptive Home（自适应首屏）是语学星 (EnglishFlow) 链接用户“从注册到进入沉浸式学习状态”的第一道核心转化通道。其根本业务目标为：
+Onboarding（新手引导与定级）与 Adaptive Home（自适应首屏）是语学星 (PhraseStar) 链接用户“从注册到进入沉浸式学习状态”的第一道核心转化通道。其根本业务目标为：
 1. **秒级建立学习锚点**：在 60 秒内通过零门槛的目标与强度选择，精准捕获 18 岁以上成人用户的学习动机。
 2. **5 分钟规则化定级与建立信任**：通过 `P1_PLACEMENT_V1` 的 10 道四维规则题生成 A1-C2 参考等级、置信度、覆盖率与四维规则分；不输出精确词汇量，也不宣称官方 CEFR 认证。
 3. **沉浸式语言世界探索**：打破传统背单词/刷题软件枯燥的列表排版，通过星系/岛屿形态的“语言世界 (Language World)”拓扑大地图，为学员提供具备游戏化驱动力与清晰掌握感的学习路线。
@@ -729,7 +729,7 @@ CREATE TABLE IF NOT EXISTS `usr_continue_context` (
 ```yaml
 openapi: 3.0.3
 info:
-  title: EnglishFlow Onboarding & Adaptive Home API
+  title: PhraseStar Onboarding & Adaptive Home API
   version: 1.0.0
   description: 语学星新手引导、规则化自适应定级、语言世界主地图与自适应首屏核心 API 契约
 paths:

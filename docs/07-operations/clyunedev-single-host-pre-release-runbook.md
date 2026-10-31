@@ -4,7 +4,7 @@
 
 > 状态：**环境准备中，不是正式生产上线或 Phase 1 验收结论**。
 >
-> 本文记录 2026-09-20 起为 Cloudstudy 建设的 `dev` 单机预发布环境。它不改变正式生产域名、产品发布 Gate 或任何 P1R 验收状态。
+> 本文记录 2026-09-20 起为 PhraseStar 建设的 `dev` 单机预发布环境。它不改变正式生产域名、产品发布 Gate 或任何 P1R 验收状态。
 
 跨电脑继续操作时，先阅读 [2026-09-21 clyunedev 跨电脑交接快照](../archive/2026-10-legacy/clyunedev-german-server/clyunedev-cross-device-handoff-2026-09-21.md)。交接文档以已回传的服务器证据为准，避免把本地已提交的部署资产误当作已经在服务器执行。
 
@@ -66,7 +66,7 @@ pnpm services:run -- --all
 1. 不创建 VM；Docker 网络仅用于同一台服务器内的进程隔离。
 2. 数据库与状态卷持久化在本机受控 Docker Volume 中；备份输出写入 `/srv/cloudstudy/backups`，再由后续的异机/对象存储任务处理。
 3. 应用构建使用多阶段容器构建，避免在宿主机长期安装 Java、Maven、Node 或 pnpm 运行时。
-4. 所有映像以不可变 Git 提交短 SHA 标记；部署脚本只保留当前和前一版本，删除更早的**已确认不被任何容器使用**的 Cloudstudy 映像，不执行全局 `docker system prune`。
+4. 所有映像以不可变 Git 提交短 SHA 标记；部署脚本只保留当前和前一版本，删除更早的**已确认不被任何容器使用**的 PhraseStar 映像，不执行全局 `docker system prune`。
 5. `.env`、私钥、数据库密码、服务间密钥、MinIO 凭据和证书仅置于 `/srv/cloudstudy/env` 或 `/srv/cloudstudy/secrets`，权限最小化且不提交 Git。
 6. 任何 MySQL migration 必须在独立的受控步骤运行、保留迁移证据和可验证备份；不允许把本地测试 migration 直接当作发布操作。
 

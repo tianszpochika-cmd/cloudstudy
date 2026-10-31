@@ -1,6 +1,6 @@
 # R1-002 输入收尾：四项任务，不实施业务改造
 
-接续Cloudstudy dev-redesign。读取本目录review.md和R1-002现行执行卡。状态应为revision27、001有效ACCEPTED、002…005 PLANNED；以实际内容为准，有漂移先报告。现有准备报告/收据/证据不可覆盖。主审已补采IAM jar身份，已确认受限权限逻辑和默认密码边界源码，不重复请求owner提供E1/G1/G2/C1，不把这些静态结论当TC PASS。
+接续PhraseStar dev-redesign。读取本目录review.md和R1-002现行执行卡。状态应为revision27、001有效ACCEPTED、002…005 PLANNED；以实际内容为准，有漂移先报告。现有准备报告/收据/证据不可覆盖。主审已补采IAM jar身份，已确认受限权限逻辑和默认密码边界源码，不重复请求owner提供E1/G1/G2/C1，不把这些静态结论当TC PASS。
 
 ## 任务1：建立IAM专用迁移基线
 

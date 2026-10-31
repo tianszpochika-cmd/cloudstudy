@@ -964,7 +964,7 @@
 - 技术与需求基线冻结：确认并固化唯一技术路线为 Vue 3 + TypeScript + uni-app、Java 17 + Spring Boot 3、MySQL 8.x + Redis 7.x；Phase 2 使用 Python FastAPI AI 编排服务。AGENTS.md、PRD v3.3、ADR-0004/0005/0006 和技术栈基线为唯一实现依据。
 - 需求文档重对齐：重写 requirements/README.md、mvp-scope.md、user-stories.md、acceptance-criteria.md 与 Iteration 00，统一 Phase 1 为 18+ 成人/大学生、无生成式 AI 的规则化语言学习产品；AI 归 Phase 2，K12/高中归 Phase 3 合规扩展。
 - 技术文档重对齐：重写技术栈基线、技术规格索引、通用底层规范、跨端性能架构、AI 状态说明和首 30 天计划，删除 React/Next.js/NestJS/PostgreSQL 主线表述。
-- 历史文档清理：删除 superseded 的 Tauri/NestJS ADR、旧 EnglishFlow 产品报告与展示 PDF/PPT/HTML、旧商业支持文档及测试导出文件。新增文档政策，明确 Git 历史仅用于审计，不作为开发依据。
+- 历史文档清理：删除 superseded 的 Tauri/NestJS ADR、旧 PhraseStar 产品报告与展示 PDF/PPT/HTML、旧商业支持文档及测试导出文件。新增文档政策，明确 Git 历史仅用于审计，不作为开发依据。
 
 ## 2026-08-19
 

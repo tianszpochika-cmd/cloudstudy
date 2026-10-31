@@ -1,4 +1,4 @@
-# cloudstudy 接管卡账（Takeover Card Ledger）— dev-redesign
+# PhraseStar 接管卡账（Takeover Card Ledger）— dev-redesign
 
 > 建立：2026-10-10（Asia/Shanghai），接管方：Grok Bot 自主调度（grok CLI 轮次，screen `cs-<round>`）。
 > 本页是调度用账本，**不替代** [CURRENT-PROGRESS](../06-design/v2-980plus/redesign/CURRENT-PROGRESS.md) 的验收事实，也不改写任何历史证据或 Luna 原件。状态冲突时以 CURRENT-PROGRESS 与证据原件为准。

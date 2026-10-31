@@ -112,7 +112,7 @@
 | PRD-ATOM-0037 | 86 | 跨阶段/治理 | CROSS | governance | 0. 产品战略与合规总原则 / 不直接做 | “最新泄题”“换题库”“内部题” | 共享治理主题；必要时新增 SUBFEAT | docs/06-design/v2-980plus/07-跨域契约数据事件与验收设计.md；docs/06-design/v2-980plus/01-统一交互与页面状态设计.md | — |
 | PRD-ATOM-0038 | 87 | 跨阶段/治理 | CROSS | governance | 0. 产品战略与合规总原则 / 不直接做 | 将“参考CEFR”宣传为“官方CEFR认证” | 共享治理主题；必要时新增 SUBFEAT | docs/06-design/v2-980plus/07-跨域契约数据事件与验收设计.md；docs/06-design/v2-980plus/01-统一交互与页面状态设计.md | — |
 | PRD-ATOM-0039 | 103 | 跨阶段/治理 | CROSS | governance | 1. 产品基础信息与技术主线 / 1.1 产品信息 | 产品正式名称 / 语学星 | 共享治理主题；必要时新增 SUBFEAT | docs/06-design/v2-980plus/07-跨域契约数据事件与验收设计.md；docs/06-design/v2-980plus/01-统一交互与页面状态设计.md | — |
-| PRD-ATOM-0040 | 104 | 跨阶段/治理 | CROSS | governance | 1. 产品基础信息与技术主线 / 1.1 产品信息 | 历史研发代号 / EnglishFlow | 共享治理主题；必要时新增 SUBFEAT | docs/06-design/v2-980plus/07-跨域契约数据事件与验收设计.md；docs/06-design/v2-980plus/01-统一交互与页面状态设计.md | — |
+| PRD-ATOM-0040 | 104 | 跨阶段/治理 | CROSS | governance | 1. 产品基础信息与技术主线 / 1.1 产品信息 | 英文名 / 研发代号 / PhraseStar | 共享治理主题；必要时新增 SUBFEAT | docs/06-design/v2-980plus/07-跨域契约数据事件与验收设计.md；docs/06-design/v2-980plus/01-统一交互与页面状态设计.md | — |
 | PRD-ATOM-0041 | 105 | 跨阶段/治理 | CROSS | governance | 1. 产品基础信息与技术主线 / 1.1 产品信息 | 公司 / 深圳云澜深境科技有限公司 | 共享治理主题；必要时新增 SUBFEAT | docs/06-design/v2-980plus/07-跨域契约数据事件与验收设计.md；docs/06-design/v2-980plus/01-统一交互与页面状态设计.md | — |
 | PRD-ATOM-0042 | 106 | 跨阶段/治理 | CROSS | governance | 1. 产品基础信息与技术主线 / 1.1 产品信息 | 域名品牌 / clyune | 共享治理主题；必要时新增 SUBFEAT | docs/06-design/v2-980plus/07-跨域契约数据事件与验收设计.md；docs/06-design/v2-980plus/01-统一交互与页面状态设计.md | — |
 | PRD-ATOM-0043 | 107 | 跨阶段/治理 | CROSS | governance | 1. 产品基础信息与技术主线 / 1.1 产品信息 | 第一阶段主语言 / 英语 | 共享治理主题；必要时新增 SUBFEAT | docs/06-design/v2-980plus/07-跨域契约数据事件与验收设计.md；docs/06-design/v2-980plus/01-统一交互与页面状态设计.md | — |

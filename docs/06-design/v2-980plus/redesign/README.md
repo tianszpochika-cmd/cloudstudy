@@ -32,7 +32,7 @@
 - 产品评审：[2026-09-30 评审快照](mobile-product-review-20260930.md)保留当时的五项 P1 与六能力建议。其实施结果见[六能力改造说明](mobile-learning-upgrade-20260930.md)，评审截图仍为修复前证据。
 - 跨书续读已修正并真实验证：只浏览商务书目录后，首页继续读仍回原来的四级书章；笔记、滚动位置和书章身份分别保存。读屏、软键盘、真机、TTS 真实语音及 3D 联网等仍保留未测。
 - 本次代码范围为 `mockups/mobile/`、`mockups/admin/` 与相关验证脚本；尚不代表 `apps/mobile` / `apps/admin-web` 的正式前端重构完成。后续工作继续遵循先确认前端业务与交互，再安排正式实现的顺序。
-- 代码与本轮证据已推送到 `origin/dev-redesign`，实现提交为 [`06d5285a`](https://github.com/tianszpochika-cmd/cloudstudy/commit/06d5285a8ba63205bb40e89e432547cebb8490c3)。玩法、数据版本与当前未测范围以最新演示指南及六能力说明为准。
+- 代码与本轮证据已推送到 `origin/dev-redesign`，实现提交为 [`06d5285a`](https://github.com/tianszpochika-cmd/PhraseStar/commit/06d5285a8ba63205bb40e89e432547cebb8490c3)。玩法、数据版本与当前未测范围以最新演示指南及六能力说明为准。
 
 ## 0. 全量需求审批结论（商业角度，2026-09-28）
 

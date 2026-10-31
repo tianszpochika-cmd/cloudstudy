@@ -1748,7 +1748,7 @@ CREATE TABLE IF NOT EXISTS lrn_learning_outbox (
 ~~~yaml
 openapi: 3.0.3
 info:
-  title: EnglishFlow Vocabulary and SRS API
+  title: PhraseStar Vocabulary and SRS API
   version: 2.0.0
   description: Phase 1 成人词汇、句块、挖句与确定性 SRS 契约；不包含生成式 AI 能力。
 servers:

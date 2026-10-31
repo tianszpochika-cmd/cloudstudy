@@ -992,7 +992,7 @@ DDL 验收：commerce 表不得把支付私钥或完整卡号写入数据库；A
 ~~~yaml
 openapi: 3.0.3
 info:
-  title: EnglishFlow Commerce CMS Operations API
+  title: PhraseStar Commerce CMS Operations API
   version: 2.0.0
 servers:
   - url: /api/v1

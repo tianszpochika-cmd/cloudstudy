@@ -1,4 +1,4 @@
-# 语学星 (EnglishFlow) 全量功能清单与需求矩阵 (Feature Matrix)
+# 语学星 (PhraseStar) 全量功能清单与需求矩阵 (Feature Matrix)
 
 > **版本**：v3.3 业务功能基线 + v2-980plus 架构绑定版  
 > **关联 PRD**：`requirements/product-requirements.md` (PRD v3.3 记忆与掌握闭环增强版)  

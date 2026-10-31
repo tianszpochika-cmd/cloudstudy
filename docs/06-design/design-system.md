@@ -2,7 +2,7 @@
 
 ## 品牌基础
 
-- 产品名：**语学星**；公司：深圳云澜深境科技有限公司。EnglishFlow 仅为历史研发代号，不得作为新界面中的对外名称。
+- 产品名：**语学星**（英文名 **PhraseStar**）；公司：深圳云澜深境科技有限公司。PhraseStar 为研发代号，并作为新界面中的对外英文名。
 - 域名体系：官网 clyune.com / clyune.cn，学习平台 study.clyune.com，数据管理平台 work.clyune.com，开放接口 api.clyune.com，AI 专栏 clyune.ai，数据服务 clyune.cloud。
 - 品牌露出规则：各端页脚与关于页统一展示产品名与公司主体；App 启动页与商店素材使用统一 Logo 与标准字，源文件与使用规范在 packages/design-tokens 维护。
 

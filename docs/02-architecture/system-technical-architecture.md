@@ -1,6 +1,6 @@
 # 语学星系统技术架构说明书
 
-> **产品名称**：语学星 (EnglishFlow)  
+> **产品名称**：语学星 (PhraseStar)  
 > **核心技术路线**：Vue 3 前端四项目矩阵 + Java 25 LTS/Spring Boot 4.1 微服务目标架构 + Gateway/IAM/RBAC + MySQL 8.x/Redis 7.x  
 > **迁移兼容**：`services/core-api` 仍以 Java 17/Spring Boot 3 运行，作为旧实现和回滚边界，不代表 v2 服务已全部落地。  
 > **演进原则**：严格执行三阶段业务门控，先建设平台能力和成人核心闭环，再按领域渐进拆分并扩展 AI 与受监管能力。完整边界见 [v2 微服务目标架构](./v2-microservices-architecture.md)。
