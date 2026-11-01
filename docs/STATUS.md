@@ -1,6 +1,6 @@
-# 项目当前状态（2026-10-30）
+# 项目状态总览
 
-> 本页是仓库**唯一的当前状态总览**。更新时只改本页对应行；细节以下面链接的签收账与审查原件为准。带日期的报告、证据、签收账和检查点保持原样，不随本页改写。
+> 文档整理：2026-11-02；下列 UI 和部署状态沿用 2026-10-30 的记录，本次未重新核验运行环境。本页是仓库**唯一的当前状态总览**；具名候选的签收不能直接证明后续提交或其他环境已通过验收。细节以下面链接的签收账与审查原件为准。
 
 ## 分支
 
@@ -12,7 +12,7 @@
 | 项目 | 状态 | 依据 |
 |---|---|---|
 | R1 卡墙 | **完成**：R1-001…R1-115 共 115/115 张，IT-1…IT-7 全部签收（2026-10-11，基于合并提交 `7a6ac0a2`） | [CARD-LEDGER](takeover/CARD-LEDGER.md) §0.1、§6；[LUNA-SIGNOFF](takeover/LUNA-SIGNOFF.md) |
-| 原 114 卡墙 | 已被 115 卡账取代，GAP-WALL-114 / RES-WALL-114 已 CLOSED（2026-10-11）；10-26 补入的 114 卡材料已归档 | [归档说明](archive/2026-10-legacy/README.md) |
+| 原 114 卡墙 | 已被 115 卡账取代，GAP-WALL-114 / RES-WALL-114 已 CLOSED（2026-10-11）；过期材料已从当前工作树清理 | [CARD-LEDGER](takeover/CARD-LEDGER.md) §0.1 |
 | R1 计划 | [dev-plan-R1](06-design/v2-980plus/redesign/dev-plan-R1.md)（IT-1～IT-7） | — |
 
 ## 移动端 UI 规格
@@ -39,10 +39,10 @@
 ## 部署
 
 - SJC 服务器 `173.249.208.210`，域名 `clyune.com`：`learn.clyune.com`（学员 Web）、`admin.clyune.com`（后台）、`mobile.clyune.com`（移动 H5）、`api.clyune.com`（网关）。运行版本 `4990dd29`（2026-10-13），落后 `origin/dev`（截至 2026-10-30 落后 132 个提交）。
-- 旧德国服务器 `37.120.160.36` 与 `clyunedev.com` 域名已不是当前环境；其记录已归档到 [clyunedev-german-server](archive/2026-10-legacy/clyunedev-german-server/)。
+- 旧德国服务器 `37.120.160.36` 与 `clyunedev.com` 域名已不是当前环境；其过期记录已从当前工作树清理。
 - 编排资产仍在 `infra/docker/clyunedev/`（目录名沿用历史名称），操作步骤见[单机预发布手册](07-operations/clyunedev-single-host-pre-release-runbook.md)，域名与 IP 以本页为准。
 
 ## 文档入口
 
 - 接手：本页 → [根交接](../CURRENT-HANDOFF.md) → [迭代 2 进度页](06-design/v2-980plus/redesign/CURRENT-PROGRESS.md) → [文档中心](README.md)。
-- 已归档的旧材料：[docs/archive/](archive/README.md)。
+- 旧交接和已取代的卡墙材料可通过 Git 历史追溯；签收账与证据仍在原位置。

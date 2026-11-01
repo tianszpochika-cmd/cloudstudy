@@ -1,5 +1,7 @@
 # Changelog
 
+- [DOC-CONSISTENCY-20261102] 统一当前状态、R1 计划和快速开始需求口径，清理已被取代的旧卡墙、交接及旧环境归档；R1 签收仍绑定原候选和范围，SKIPPED 计划的契约兼容与运行证据仍待核。仅文档变更，不改变接口、数据或部署；旧文件可从本次提交的父提交恢复。验证：`git diff --check`、`node scripts/audit/verify-v2-design-package.mjs`；文档审计仍有既存缺口，`node scripts/check-dod.mjs --json` 的全仓密钥扫描报既存源码项，未做运行验收。
+
 - [UI-WIP-20261021] 用户暂停检查点/WIP（已本地提交 b64db8e9，推送阻塞）：保存MB007真实首页C8会话恢复候选与Learn L2必要跳转修稿；未新增UI验收、未升级旧C7通过、未跑C8浏览器/构建；本地9/远程7未变，auth401/empty/cross-owner仍为未清风险。
 
 

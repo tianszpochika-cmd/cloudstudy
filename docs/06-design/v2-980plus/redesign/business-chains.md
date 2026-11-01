@@ -63,12 +63,12 @@ P1 定级新接口仍为默认路径；B25 只读迁移约定保留。L14/L15、
 | BC-008<a id="bc-008"></a> | 三同意记录（动态读取已发布版本） | 逐项保存同意对象、版本、结果与来源记录；用途/必要性按 DEC-02 明确后实施（DEC待确认）；三项的当前版本均可在签名前读到，任一项读不到版本号时不展示签署按钮；可选授权默认不预勾；不能把未定义的可选授权默认绑到基础学习。 | [IC-003](interaction-chains.md#ic-003) / [IC-006](interaction-chains.md#ic-006) / [IC-056](interaction-chains.md#ic-056) |
 | BC-009<a id="bc-009"></a> | 同意撤回与能力回收 | 撤回有回执且相关能力按既有契约返回 403；清楚列出影响，不扩大到无关能力；历史数据去向按隐私策略，不把撤回等同删除账号；原型本机同意记录不代表服务端授权，用途待 DEC-02。 | [IC-003](interaction-chains.md#ic-003) / [IC-006](interaction-chains.md#ic-006) / [IC-008](interaction-chains.md#ic-008) / [IC-036](interaction-chains.md#ic-036) / [IC-056](interaction-chains.md#ic-056) |
 | BC-010<a id="bc-010"></a> | 画像目标+每日时长保存 | learner_goal 落库并读回；目标/时长用于开始学习；目标与时长必填，标签选填，标签留空不阻塞保存；标签是否必填按字段契约，修订建议可后补。 | [IC-004](interaction-chains.md#ic-004) / [IC-057](interaction-chains.md#ic-057) |
-| BC-011<a id="bc-011"></a> | 首访向导（成人门→必要授权→目标→定级/快速开始） | 按实际完成状态续步；快速开始为现行次入口（契约细节待 DEC-03）；首次建计划确认后进入首学引导，取消不改变有效计划。 | [IC-004](interaction-chains.md#ic-004) / [IC-009](interaction-chains.md#ic-009) / [IC-057](interaction-chains.md#ic-057) |
+| BC-011<a id="bc-011"></a> | 首访向导（成人门→必要授权→目标→定级/快速开始） | 按实际完成状态续步；快速开始为已获准的次入口设计，契约兼容、实现与运行签核见 DEC-03；首次建计划确认后进入首学引导，取消不改变有效计划。 | [IC-004](interaction-chains.md#ic-004) / [IC-009](interaction-chains.md#ic-009) / [IC-057](interaction-chains.md#ic-057) |
 | BC-012<a id="bc-012"></a> | 密码重置不枚举 | 申请无论账号存在与否均返回 202 和一致文案；凭据校验、失效与重试不得泄露账号；完成后给登录出口。 | [IC-002](interaction-chains.md#ic-002) / [IC-007](interaction-chains.md#ic-007) / [IC-054](interaction-chains.md#ic-054) |
 
 ## L2 定级环（R1，BC-013…022，owner：assessment-service）
 
-> 保留 10 题定级和 SKIPPED 基线。定级反馈时点、快速开始输入和本地持久暂存是待定契约，不靠伪造报告或离线成功补齐。
+> 保留 10 题定级和 SKIPPED 基线。快速开始业务路径已获准，其契约兼容、实现及运行签核仍待验证；定级反馈时点和本地持久暂存仍按对应决策处理，不靠伪造报告或离线成功补齐。
 
 | ID | 步骤与范围 | 验收与恢复（含本次修订设计） | 对应交互 |
 |---|---|---|---|
@@ -76,7 +76,7 @@ P1 定级新接口仍为默认路径；B25 只读迁移约定保留。L14/L15、
 | BC-014<a id="bc-014"></a> | 逐题作答（checkpoint 顺序+版本锁） | 成功回执推进检查点；乱序/并发 409 后读最新进度，不盲重发；请求结果未知时先对账，再同键重试。 | [IC-011](interaction-chains.md#ic-011) / [IC-059](interaction-chains.md#ic-059) |
 | BC-015<a id="bc-015"></a> | 规则判分（客观题） | 服务端保留 FULL/ZERO 与规则依据；定级逐题仅反馈已保存与进度、结束统一讲评为演示方案，是否全量切换待 DEC-04 确认，确认前不各自选一种（DEC待确认）；普通练习仍即时判分；不提前下发未答题答案。 | [IC-011](interaction-chains.md#ic-011) |
 | BC-016<a id="bc-016"></a> | 完成出报告（reportId+digest 钉死） | 完成的报告为不可变快照；重复完成返回同一结果；报告未就绪显示处理中，不把空对象当已完成报告。 | [IC-012](interaction-chains.md#ic-012) |
-| BC-017<a id="bc-017"></a> | 跳过定级（fast-track，非权威 hint） | 保留 SKIPPED 基线；以显式来源向 BC-023 传递，不伪造测评分数或报告；跳过入口保持可用（现行 R1 范围），数据契约细节待 DEC-03；单题跳过不计分、可补答，不等同整轮 fast-track。 | [IC-010](interaction-chains.md#ic-010) / [IC-058](interaction-chains.md#ic-058) |
+| BC-017<a id="bc-017"></a> | 跳过定级（fast-track，非权威 hint） | 保留 SKIPPED 基线；以显式来源向 BC-023 传递，不伪造测评分数或报告；跳过入口属于已获准的 R1 设计，契约兼容、实现与运行签核见 DEC-03；单题跳过不计分、可补答，不等同整轮 fast-track。 | [IC-010](interaction-chains.md#ic-010) / [IC-058](interaction-chains.md#ic-058) |
 | BC-018<a id="bc-018"></a> | 定级重测（新 session，旧报告保留） | 用户确认后新开；旧报告可查；说明是否影响当前计划，只有确认重排才走 BC-029，不静默覆盖旧计划。 | [IC-012](interaction-chains.md#ic-012) |
 | BC-019<a id="bc-019"></a> | B25 旧口只读兼容 | 保留原迁移约定：R1.2 切新口时关闭写口，只读到R2 末；实际日期/迁移证据待发布登记，不据文档宣称已下线。 | [IC-010](interaction-chains.md#ic-010) |
 | BC-020<a id="bc-020"></a> | 题库 10 道种子（3/3/2/2，数据·一次性） | 干净库重放 10 行、分布与答案隔离正确；这是种子核验，不代表所有目标/难度已经具备持续内容供给。 | 技术/数据/治理准入验收，无独立用户幕 |
@@ -89,7 +89,7 @@ P1 定级新接口仍为默认路径；B25 只读迁移约定保留。L14/L15、
 
 | ID | 步骤与范围 | 验收与恢复（含本次修订设计） | 对应交互 |
 |---|---|---|---|
-| BC-023<a id="bc-023"></a> | ensure：校验输入→pin→生成计划 | 接受已获准的 ASSESSED 正式报告或 SKIPPED 保守起步来源；快速开始不得要求用户补造正式报告，SKIPPED 固定 UNVERIFIED、coverage=0、aggregateScore/referenceLevel 为空；目标、资格和可学内容满足才建初始计划。DEC-03 只跟踪既有契约的兼容、幂等与运行签核，不再否定该业务路径；首次确认进入首学引导，取消调整不改变有效计划；保存不可变来源快照；输入不足返回可解释状态，不生成空计划冒充成功。 | [IC-013](interaction-chains.md#ic-013) |
+| BC-023<a id="bc-023"></a> | ensure：校验输入→pin→生成计划 | 目标规则接受已获准的 ASSESSED 正式报告或 SKIPPED 保守起步来源；快速开始不得要求用户补造正式报告，SKIPPED 固定 UNVERIFIED、coverage=0、aggregateScore/referenceLevel 为空；目标、资格和可学内容满足才建初始计划。DEC-03 跟踪契约兼容、实现、幂等与运行签核，不能据设计视为已接通；首次确认进入首学引导，取消调整不改变有效计划；保存不可变来源快照；输入不足返回可解释状态，不生成空计划冒充成功。 | [IC-013](interaction-chains.md#ic-013) |
 | BC-024<a id="bc-024"></a> | ensure 幂等重放 | 相同学习者、输入版本与请求返回同一计划；来源/目标改变视为新操作，不能沿用旧幂等键覆盖旧结果。 | [IC-013](interaction-chains.md#ic-013) |
 | BC-025<a id="bc-025"></a> | 首页计划横幅（planningInput+plan 内嵌） | 显示当前目标、预计时长与计划状态；无计划、生成中、可学习、已完成、加载失败分开；不只以 planId 存在判断可开始。 | [IC-020](interaction-chains.md#ic-020) |
 | BC-026<a id="bc-026"></a> | 计划解释（一句话说明来路） | 根据真实输入解释；跳过定级时标“初始安排，后续按练习调整”，不得暗示已经精准测得用户水平。 | [IC-014](interaction-chains.md#ic-014) / [IC-020](interaction-chains.md#ic-020) |

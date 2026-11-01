@@ -1,6 +1,6 @@
 # 迭代 2 · R1 开发计划（按链拆卡，L1 先行）
 
-> **本文件定义任务与依赖，不维护完成状态。** 当前进度唯一见[CURRENT-PROGRESS](CURRENT-PROGRESS.md)。本文件可读拆卡为 L1/L2 共 29 卡；114 卡全量墙的原机器记录尚未形成当前检出的可执行计划，先恢复核对，再合并，不按计数补造卡。
+> **本文件定义任务与依赖，不维护完成状态。** 当前状态见 [STATUS](../../../STATUS.md)，迭代进度见 [CURRENT-PROGRESS](CURRENT-PROGRESS.md)。本计划按实际 BC/IC 拆为 R1-001…R1-115；[权威卡账](../../../takeover/CARD-LEDGER.md)记录 115 张重建卡取代原 114 卡墙及其关闭决定。2026-10-11 基于 `7a6ac0a2` 的签收是具名历史候选范围，不自动覆盖后续提交或部署。
 
 > 卡号 `R1-001…` 连续；每卡：输入 → 交付 → 验收（干净库证据）→ owner → 依赖。
 > 冻结范围：变更单 001 后 R1 108 步（原 107 步），详见[重设计包冻结说明](README.md)；改卡走变更单。本文件只管任务分解，不授权更改其他分支。
@@ -50,7 +50,7 @@ L1 共 17 卡，R1 迭代列车见下节。
 | R1-018 | BC-013 | 前端切 P1 新口（`POST /placement/sessions`，替换 B25 旧调用） | 10 道密封题干，无答案物 → owner: learner-web/mobile；依赖：R1-017 |
 | R1-019 | BC-019 | B25 写口下线（网关路由摘除，只读保留） | 旧会话可读，新开 404 → owner: api-gateway；依赖：R1-018 |
 | R1-020 | BC-014 | 逐题作答 checkpoint（顺序+版本锁） | 乱序并发 409 → owner: assessment-service；依赖：R1-018 |
-| R1-021 | BC-015 | 规则判分 FULL/ZERO（行内即时反馈） | 可解释判分 → owner: assessment-service；依赖：R1-020 |
+| R1-021 | BC-015 | 服务端规则判分 FULL/ZERO 并保存依据；定级逐题反馈时点的修订建议待 DEC-04 确认，普通练习即时反馈不变 | 可解释判分、保留版本化规则；各端不得自行决定未签收的定级反馈方案 → owner: assessment-service；依赖：R1-020；见 [BC-015](business-chains.md#bc-015) 和 [DEC-04](revision-notes.md#dec-04) |
 | R1-022 | BC-016 | 报告快照（reportId+digest 钉死） | 不可变报告 → owner: assessment-service；依赖：R1-021 |
 | R1-023 | BC-017 | 跳过 fast-track（SKIPPED 基线） | 基线落库 → owner: assessment-service；依赖：R1-018 |
 | R1-024 | BC-018 | 重测（新 session，旧报告保留） | 历史可查 → owner: assessment-service；依赖：R1-022 |
@@ -68,7 +68,7 @@ L2 共 12 卡。
 
 | 卡 | BC | 做什么 | 验收 |
 |---|---|---|---|
-| R1-030 | BC-023 | ensure 只接受正式报告指针：校验后 pin，再生成计划。缺报告或输入不足返回可解释失败，不把空计划当成成功。DEC-03 未批，跳过基线不进入 ensure | 缺 `placementReportId` 为 422；正式报告返回 planId、status、targetMinutes、planVersion → owner: learning-service；依赖：R1-022 |
+| R1-030 | BC-023 | 计划输入的业务规则接受 ASSESSED 正式报告或已获准的 SKIPPED 保守起步来源；校验资格与输入后 pin 并生成计划，输入不足返回可解释失败，不把空计划当成功。SKIPPED 必须为 UNVERIFIED、coverage=0、分数和等级为空，不伪造报告。DEC-03 的兼容、实现及运行证据仍需 owner 验证签收 | 正式报告与 SKIPPED 分支分别验证来源、资格、pin 和幂等；返回真实计划状态；当前代码仍要求 `placementReportId`，不能据设计宣称跳过路径已接通 → owner: learning-service；依赖：R1-022；详见 [BC-023](business-chains.md#bc-023) 和 [DEC-03](revision-notes.md#dec-03) |
 | R1-031 | BC-024 | 同一学习者、同一正式报告和稳定幂等键重放同一计划。来源或目标变化用新键，旧键不能覆盖旧结果 | 同键 `replayed=true`；同键异体 409 → owner: learning-service + learner-web/mobile；依赖：R1-030 |
 | R1-032 | BC-025 | 首页计划横幅显示服务端分钟、状态和解释。不能只因为有 planId 就当成可以开始 | Web/H5 两视口横幅对稿 → owner: learner-web/mobile；依赖：R1-030 |
 | R1-033 | BC-026 | 一句话解释只来自目标、每日分钟和 resultKind。SKIPPED 写“初始安排，后续按练习调整”，不暗示已经测准。解释不写入 planningInput 键集 | 纯函数单测锁住文案和键集 → owner: learning-service；依赖：R1-030 |
@@ -172,4 +172,4 @@ L8 共 21 卡。
 | R1-114 | IC-008/036/037/047/049/050/051/053/088/103…108 | 治理、隐私、客服和审计交互验收 | Web/H5，1280 与 390。未签前 lunaStamp 为 false |
 | R1-115 | — | 干净库重放收口链，并冒烟 IT-1…IT-7 主链 | 证据归档。未签前 lunaStamp 为 false |
 
-L9 共 25 卡。本文已细拆合计 115 卡。这不是原 114 卡墙，GAP-WALL-114 仍 OPEN。
+L9 共 25 卡，本文细拆合计 115 卡。该重建卡账取代原 114 卡墙，GAP-WALL-114 与 RES-WALL-114 的关闭决定见[权威卡账](../../../takeover/CARD-LEDGER.md)；两套卡号不能未经核对逐项等同。

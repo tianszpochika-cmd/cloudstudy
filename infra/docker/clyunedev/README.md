@@ -4,7 +4,7 @@
 
 本目录承载 `clyunedev` 的受版本控制单机预发布编排。它服务于 `dev` 分支联调，不替代 Kubernetes/GitOps 目标架构，也不构成正式 `clyune.com` 生产发布。
 
-跨电脑继续服务器操作时，先读 [2026-09-21 clyunedev 单机预发布交接快照](../../../docs/archive/2026-10-legacy/clyunedev-german-server/clyunedev-cross-device-handoff-2026-09-21.md)。其中将“仓库已提交”与“服务器已回传验证”分开记录。
+跨电脑继续服务器操作前，先核对实际服务器、域名、部署版本和运行证据；仓库已提交不等于服务器已部署或验证。以下旧环境域名与配置不得直接套用到当前环境。
 
 ## 不变量
 

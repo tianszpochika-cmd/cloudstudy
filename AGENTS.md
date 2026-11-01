@@ -5,12 +5,12 @@
 
 ## 0. dev 分支接手规则（2026-10-06）
 
-本分支执行**迭代 2（第二轮重设计 / Redesign）**，唯一当前进度入口是 [CURRENT-PROGRESS](docs/06-design/v2-980plus/redesign/CURRENT-PROGRESS.md)，跨会话入口为 [CURRENT-HANDOFF](CURRENT-HANDOFF.md)，卡计划为 [dev-plan-R1](docs/06-design/v2-980plus/redesign/dev-plan-R1.md)。先核对这三个入口再认领任务。迭代 2 不等于 R1 的 IT-2 定级站，也不等于产品 Phase 2。
+本分支执行**迭代 2（第二轮重设计 / Redesign）**，当前状态总览是 [STATUS](docs/STATUS.md)，跨会话入口为 [CURRENT-HANDOFF](CURRENT-HANDOFF.md)，迭代进度与卡计划分别见 [CURRENT-PROGRESS](docs/06-design/v2-980plus/redesign/CURRENT-PROGRESS.md) 和 [dev-plan-R1](docs/06-design/v2-980plus/redesign/dev-plan-R1.md)。先核对这些入口再认领任务。迭代 2 不等于 R1 的 IT-2 定级站，也不等于产品 Phase 2。
 
 - 本分支新工作按 `R1-*` 卡、BC/IC 和依赖推进；旧 `P1R-*`、B/DEV/G 与 PAGE-P1 台账只作历史/复用/冻结门禁来源，不是当前开工队列，不自动迁移完成状态。
 - 每卡继续建立 `FEAT/PRD-ATOM/V2-980 + ARCH + ACT/JNY/PAGE/RULE/INT/E2E`、服务/data owner 与 Evidence 映射；原 P1R 父任务/manifest 只保留追溯，不随 R1 准备检查升级。
-- 全量 114 卡墙与 R1-001 完整验收差量未随前序提交发布；先补齐可审计基线。最近具名工作点为 R1-002 准备收口，未签 READY；不得据历史本地 1/114、旧 75% 或静态原型数宣称本轮完成率。
-- IT-1 干净库全绿并签收后才能开 IT-2；不要看到 IT-2 已有计划就跳站。架构、Phase 1、契约、隐私、端口与 DoD 约束继续有效。
+- 115 张重建卡账取代原 114 卡墙；IT-1…IT-7 的 115/115 卡于 2026-10-11 基于 `7a6ac0a2` 签收，具体范围和限制见 [STATUS](docs/STATUS.md) 与 [LUNA-SIGNOFF](docs/takeover/LUNA-SIGNOFF.md)。历史签收不自动证明当前提交、部署环境或后续变更已通过验收，不得据旧 75% 或静态原型数宣称产品完成率。
+- IT-1 干净库全绿并签收后才能开 IT-2；站点依赖和验收门继续有效。后续候选及环境变更应按其实际范围重新收集证据，不能用历史签收替代。架构、Phase 1、契约、隐私、端口与 DoD 约束继续有效。
 
 ## 1. 产品与业务使命
 
@@ -120,7 +120,7 @@
 
 ## 5. Agent 标准作业流程 (SOP)
 
-1. **审题与范围界定**：先读第 0 节指定的本分支进度/交接/卡计划，再阅读相关 `requirements/` 和 `docs/`，明确改动影响范围并列出简要执行计划。
+1. **审题与范围界定**：先读第 0 节指定的状态/进度/交接/卡计划，再阅读相关 `requirements/` 和 `docs/`，明确改动影响范围并列出简要执行计划。
 2. **建立边界与契约**：先写类型、数据表迁移和接口 Schema，再写业务实现。
 3. **小步迭代与验证**：编写小步代码，运行最小验证（测试/语法检查），严禁一次性大面积破坏性修改。
 4. **架构决策透明化**：遇到架构冲突或新增关键技术选型时，新增 ADR 至 `docs/10-decisions/`，不得静默变更约定。

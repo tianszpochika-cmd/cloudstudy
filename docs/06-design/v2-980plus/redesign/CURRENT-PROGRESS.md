@@ -1,7 +1,7 @@
 # 迭代 2（第二轮重设计）进度 — dev
 
 > 更新：2026-10-30。**当前状态总览见 [docs/STATUS.md](../../../STATUS.md)**，本页不再单独维护第二套状态。
-> 2026-10-21 之前的完整进度页（逐卡收据、站级记录、额度暂停检查点）原文已归档：[CURRENT-PROGRESS-2026-10-21](../../../archive/2026-10-legacy/handoffs/CURRENT-PROGRESS-2026-10-21.md)。其中“GAP-WALL-114 仍 OPEN”“R1-001 完整验收缺口”等表述早于 2026-10-11 的签收，已由 [CARD-LEDGER](../../../takeover/CARD-LEDGER.md) §0.1/§6 关闭。
+> 过期交接和进度快照已从当前工作树清理，可通过 Git 历史追溯。原 GAP-WALL-114 与 R1-001 验收状态以 [CARD-LEDGER](../../../takeover/CARD-LEDGER.md) §0.1/§6 和签收证据为准。
 
 ## 当前结论
 

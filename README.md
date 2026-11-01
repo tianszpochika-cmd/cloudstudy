@@ -4,33 +4,35 @@
 英文名 / 研发代号：**PhraseStar**
 运营主体：**深圳云澜深境科技有限公司**
 
-面向中国大陆成人、大学生及进阶用户的多端全栈语言学习平台。基于 **Vue 3 四项目矩阵 + Java 25 LTS 微服务后端 + Gateway/IAM/RBAC + MySQL** 构建，兼顾跨端学习体验、权限安全和十年运维演进。
+面向中国大陆成人、大学生及进阶用户的多端全栈语言学习平台。目标架构采用 **Vue 3 四项目矩阵 + Java 25 LTS 微服务后端 + Gateway/IAM/RBAC + MySQL**；实际实现与部署状态以具名版本和证据为准。
 
 ---
 
 ## 当前分支：迭代 2（第二轮重设计）
 
-当前状态总览见 [docs/STATUS.md](docs/STATUS.md)（分支、R1、UI 规格、部署）。`dev` 的迭代进度入口是[迭代 2 当前进度](docs/06-design/v2-980plus/redesign/CURRENT-PROGRESS.md)，接手先读[根交接](CURRENT-HANDOFF.md)与[R1 执行计划](docs/06-design/v2-980plus/redesign/dev-plan-R1.md)。该计划包含 IT-1～IT-7；其中 IT-2 是定级站，不能与本轮迭代名称或产品 Phase 2 混用。最近可确认工作点、未发布全量卡墙、验收缺口和接手顺序只在进度页维护。
+当前状态总览见 [docs/STATUS.md](docs/STATUS.md)（分支、R1、UI 规格及带日期的部署记录）。`dev` 的迭代进度入口是[迭代 2 当前进度](docs/06-design/v2-980plus/redesign/CURRENT-PROGRESS.md)，接手还须读[根交接](CURRENT-HANDOFF.md)与[R1 执行计划](docs/06-design/v2-980plus/redesign/dev-plan-R1.md)。该计划包含 IT-1～IT-7；其中 IT-2 是定级站，不能与本轮迭代名称或产品 Phase 2 混用。历史签收记录绑定其候选提交和验收范围，不能替代当前提交、环境的独立验收；接续前须核对现行门禁和未关闭差量。
 
 在迭代目录也可从[迭代 2 索引](requirements/iterations/iteration-02-redesign.md)进入同一计划。旧 P1R、B/DEV/G、PAGE-P1 台账和九月交接保留为历史/复用证据，不构成本分支任务队列。不要用旧完成率、原型覆盖或环境就绪推断本轮业务完成。
 
-## 当前部署
+## 部署记录
 
-SJC 服务器 `173.249.208.210`，域名 `clyune.com`：`learn.clyune.com`（学员 Web）、`admin.clyune.com`（后台）、`mobile.clyune.com`（移动 H5）、`api.clyune.com`（网关）。运行版本 `4990dd29`（2026-10-13），落后 `origin/dev`（截至 2026-10-30 落后 132 个提交）。详见 [STATUS](docs/STATUS.md#部署)。
+截至 2026-10-30 的记录见 [STATUS](docs/STATUS.md#部署)；运行版本和与源码的差距需要在目标环境重新核对，不能将该快照视为实时部署状态。
 
 ## 唯一事实源基线
 
-- **需求事实源**：`requirements/product-requirements.md` (三阶段全量 PRD)
-- **首发范围与边界**：`requirements/mvp-scope.md`
+- **全量业务设计与需求落地基线**：[`docs/06-design/v2-980plus/README.md`](docs/06-design/v2-980plus/README.md)
+- **需求来源和阶段边界**：`requirements/product-requirements.md`、`requirements/mvp-scope.md`，具体事实源关系见文档治理规则
 - **技术与架构约束**：`AGENTS.md` 与 `docs/02-architecture/`
 - **v2 后端目标架构**：[`docs/02-architecture/v2-microservices-architecture.md`](docs/02-architecture/v2-microservices-architecture.md)
 - **v2 平台能力矩阵**：[`docs/02-architecture/v2-platform-capability-matrix.md`](docs/02-architecture/v2-platform-capability-matrix.md)
 - **UI/UX 设计规范**：`docs/06-design/` 与 `packages/design-tokens/`
 - **PRD 全量设计追溯**：[`docs/06-design/traceability/README.md`](docs/06-design/traceability/README.md)（原子需求、设计登记、用户故事、验收与冲突）
-- **980+ 全量设计 v2**：[`docs/06-design/v2-980plus/README.md`](docs/06-design/v2-980plus/README.md)（980 个设计单元、逐条交互/状态/契约/验收登记）
+- **Phase 1 业务运行设计**：[`phase1-business-operation/README.md`](docs/06-design/v2-980plus/phase1-business-operation/README.md)（角色、旅程、页面、规则、联调与验收）
 - **文档治理规则**：[`docs/00-vision/document-governance.md`](docs/00-vision/document-governance.md)
-- **文档树总入口**：[`docs/README.md`](docs/README.md)（12 个顶层目录定位与按任务阅读路径）
+- **文档树总入口**：[`docs/README.md`](docs/README.md)（目录定位与按任务阅读路径）
 - **文档健康检查**：`pnpm docs:audit`（死链 / 孤儿文档 / 缺索引目录，只读）
+
+`V2-980-0001` 至 `V2-980-0980` 是范围登记行；其中的设计成熟度各不相同，不能将登记数量当成可实施设计或已完成功能数量。
 
 ---
 
@@ -56,7 +58,7 @@ Phase 1 **有意设计为覆盖面较大的首发基座**，不是只做一条�
 
 ### 历史批次与验收记录
 
-旧 B0–B6 职责和 P1R 完整度、四端 PAGE-P1 判定及九月测试顺序见[历史交接归档](docs/archive/2026-10-legacy/handoffs/CURRENT-HANDOFF-ARCHIVE-2026-09-28.md)与[历史任务索引](requirements/backlog/README.md)。记录保留当时的提交和验收范围，不再作为本分支当前进度展示。
+旧 B0–B6、P1R 和 PAGE-P1 资料可从[历史任务索引](requirements/backlog/README.md)追溯；历史记录只适用于当时的提交和验收范围，不作为本分支当前进度。
 
 Phase 1 不启用生成式 AI；规则化学习及平台能力仍按本轮 R1 卡计划和服务 owner 边界实现。
 

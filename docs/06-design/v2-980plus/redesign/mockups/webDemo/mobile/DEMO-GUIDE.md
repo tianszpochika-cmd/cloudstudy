@@ -62,15 +62,15 @@
 
 ## 8. 主题检查与截图
 
-- 2026-09-30 主题修复记录：[修订说明 §11](../../revision-notes.md#11-主题配色修复2026-09-30)；R12 视觉验收：[§12](../../revision-notes.md#12-视觉验收与修复-r12)。
+- 2026-09-30 主题修复记录：[修订说明 §11](../../../revision-notes.md#11-主题配色修复2026-09-30)；R12 视觉验收：[§12](../../../revision-notes.md#12-视觉验收与修复-r12)。
 - R12 证据目录：`evidence/visual-r12/`（before/before-xl/after/after-xl 四矩阵 audit.json＋缺陷页截图＋修复页配对截图＋按住态）。
 - 旧证据目录：`evidence/theme-fix-20260930/`（§11）。`contrast-results.json` 为浏览器渲染后的 DOM 颜色采样；`inspect-colors.js` 为本轮通过浏览器工具执行的只读检查表达式。采样不完整模拟祖先透明度、emoji、伪元素或所有交互状态，不能替代截图目检与完整无障碍验收。
 - 交互脚本通过、`data-theme` 切换成功或 `git diff --check` 干净，都不能单独证明配色、布局与视觉层级合格。
 
 ## 9. 当前复核入口与脚本口径
 
-- 最新 UI 与操作：[六能力证据](evidence/learning-upgrade-20260930/README.md)。此前世界页、刷词、我的与续读间距修整保留在 `ui-polish-20260930/`，其截图与测量对应当时版本。
-- 阅读缺陷：[独立复核与复现](evidence/independent-r14/review-findings.md)保留 R14 时点结论；最新跨书续读修复与操作证据见[六能力说明](../../mobile-learning-upgrade-20260930.md)。
+- 最新 UI 与操作：[六能力证据](../../mobile/evidence/learning-upgrade-20260930/README.md)。此前世界页、刷词、我的与续读间距修整保留在 `ui-polish-20260930/`，其截图与测量对应当时版本。
+- 阅读缺陷：[独立复核与复现](../../mobile/evidence/independent-r14/review-findings.md)保留 R14 时点结论；最新跨书续读修复与操作证据见[六能力说明](../../../mobile-learning-upgrade-20260930.md)。
 - 从仓库根运行静态检查：`node --check docs/06-design/v2-980plus/redesign/mockups/mobile/app.js`、`node scripts/check-mobile-mockups.mjs`、`git diff --check`。
 - `verify-mock-flows.cjs`、`verify-mock-extra.cjs`、`verify-r14.cjs` 是本地 Chromium/Playwright 验证脚本，需已有 Playwright 和 Chromium；依赖与运行环境由项目维护，不在本次另装依赖。保存结果为 23＋10＋8 项断言，部分场景用状态注入准备，不等于 41 条完整用户旅程，也不表示本次文档归档重新执行了它们。
 - `audit-visual-r12.cjs` 检查可渲染状态、颜色、触区、溢出等，注入状态不证明交互可达。历史 before/after 截图对应当时版本；在当前版本重跑不能重建历史 before，请勿覆盖已归档证据。
@@ -88,4 +88,4 @@
 
 存储键继续使用 `yxx-demo-v3`，对象版本升级至 4，新增 `learning` 数据。兼容旧版偏好、任务、书章、位置和记录；旧总分缺少作答明细时显示“旧版汇总”，不据此补造答案或 XP。
 
-本轮检查：`node --check .../app.js`、`node --check .../learning.js`、`node scripts/check-mobile-mockups.mjs`、`node scripts/verify-mobile-learning-model.cjs`。后者仅验证纯数据规则，浏览器证据另见 [本轮索引](evidence/learning-upgrade-20260930/README.md)。旧 `verify-mock-*` / R14 脚本与结果保留历史语义，不能把原先“变式即掌握”等断言用于 v4，也没有据旧脚本声称本轮全量回归通过。
+本轮检查：`node --check .../app.js`、`node --check .../learning.js`、`node scripts/check-mobile-mockups.mjs`、`node scripts/verify-mobile-learning-model.cjs`。后者仅验证纯数据规则，浏览器证据另见 [本轮索引](../../mobile/evidence/learning-upgrade-20260930/README.md)。旧 `verify-mock-*` / R14 脚本与结果保留历史语义，不能把原先“变式即掌握”等断言用于 v4，也没有据旧脚本声称本轮全量回归通过。
